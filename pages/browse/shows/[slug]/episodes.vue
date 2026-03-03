@@ -9,6 +9,7 @@ import { useGlobalToast } from "~/composables/states"
 
 const config = useRuntimeConfig()
 const route = useRoute()
+console.log("route", route)
 
 const {
   data: show,
@@ -31,6 +32,9 @@ const breadcrumbs = computed(() => [
   {
     label: show.value?.show?.title,
     route: `/browse/shows/${show.value?.show?.slug}`,
+  },
+  {
+    label: "All Episodes",
   },
 ])
 
@@ -56,14 +60,14 @@ const loadMore = async () => {
   pendingMore.value = true
   try {
     const moreShows = await $fetch(
-      `${config.public.BFF_URL}/api/v3/show/${route.params.slug}?page=${page.value}`
+      `${config.public.BFF_URL}/api/v3/show/${show.value?.show?.slug}/?page=${page.value}`
     )
     pendingMore.value = false
     episodes.value = [...episodes.value, ...moreShows?.episodes?.data]
     trackClickEvent(
       "Event Tracking - load more episodes",
       "Shows Page",
-      show.value.show.title
+      show.value?.show?.title
     )
   } catch (e) {
     pendingMore.value = false
@@ -140,7 +144,7 @@ onMounted(() => {
       <FetchError v-if="error" />
     </section>
 
-    <ShowHeader :show="show" />
+    <ShowHeader :show="show?.show" />
 
     <section class="py-4">
       <!-- <pre>{{ show }}</pre> -->
@@ -196,7 +200,7 @@ onMounted(() => {
           <BackToTopButton />
         </div>
         <div class="col-fixed hidden lg:block w-20rem">
-          <ShowSummary :show="show" />
+          <ShowSummary :show="show?.show" />
         </div>
       </div>
     </section>
