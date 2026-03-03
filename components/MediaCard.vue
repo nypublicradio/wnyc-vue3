@@ -195,10 +195,10 @@ const reactiveData = toRef(props, "data")
 
 const nativeImageHeight = computed(() => {
   //console.log("reactiveData.value.imageFullHeight", reactiveData.value.imageFullHeight)
-  return reactiveData.value.imageFullHeight ?? 112
+  return reactiveData.value?.imageFullHeight || 192
 })
 const nativeImageWidth = computed(() => {
-  return reactiveData.value.imageFullWidth ?? 112
+  return reactiveData.value?.imageFullWidth || 192
 })
 
 const getImage = computed(() => {

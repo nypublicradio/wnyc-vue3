@@ -32,7 +32,7 @@ const getWagtailPageData = async (pageSlug: string) => {
     try {
         const res = await axios(options)
         const resData = humps.camelizeKeys(res.data)
-        console.log('resData', resData.body[2].value.list)
+        // console.log('resData', resData)
         // Add cmsSource to the data so normalizeArticlePage knows which normalizer to use
         resData.cmsSource = cmsSources.WAGTAIL
 

@@ -133,7 +133,8 @@ onUnmounted(() => {
       </div>
       <FetchError v-if="error" />
     </section>
-    <!-- <pre>{{ show }}</pre> -->
+    show:
+    <pre>{{ show }}</pre>
     <ShowHeader :show="show" />
     <!-- JUMP LINKS -->
     <div
