@@ -22,7 +22,7 @@ const streamfield = props.article?.body
 
 const layoutComponents = {}
 const defaultLayout = "river-thin"
-const verticalSpacingClasses = "mb-4 md:mb-6"
+const verticalSpacingClasses = "mb-6 md:mb-8"
 // dynamically import and Cache layout components to prevent re-creating them on each render
 const getLayoutComponent = (layout) => {
   if (!layoutComponents[layout]) {
@@ -105,7 +105,7 @@ onMounted(() => {
           >
             <Button
               severity="secondary"
-              class="mt-2 px-5 mx-auto block"
+              class="mt-4 px-5 mx-auto block"
               :label="block?.value?.seeMoreLink.label"
             />
           </VFlexibleLink>
