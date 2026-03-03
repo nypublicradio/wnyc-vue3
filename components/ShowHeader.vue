@@ -158,7 +158,7 @@ const handleAddToFavorites = () => {
           <div v-if="!isApp">
             <div
               v-if="show"
-              class="flex flex-column justify-content-start gap-3 mt-1 md:mt-2"
+              class="flex flex-column justify-content-start gap-2"
             >
               <h2 class="line-height-1 text-2xl md:text-6xl">
                 {{ topperTitle }}
