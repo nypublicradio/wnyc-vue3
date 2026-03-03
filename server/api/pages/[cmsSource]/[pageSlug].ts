@@ -23,7 +23,8 @@ const getWagtailPageData = async (pageSlug: string) => {
     const config = __getConfig()
     const options = {
         method: 'GET',
-        url: `${config.public.AVIARY_BASE_API}pages/${pageSlug}`,
+        url: `${config.public.AVIARY_BASE_API}pages/find/`,
+        params: { html_path: `/shows/${pageSlug}/` },
         headers: {
             'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
         }
