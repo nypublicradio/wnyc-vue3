@@ -15,9 +15,7 @@ const {
   data: show,
   status,
   error,
-} = useFetch(
-  `${config.public.BFF_URL}/api/v3/show/${route.params.slug}/episodes?offset=0&limit=10`
-)
+} = useFetch(`${config.public.BFF_URL}/api/v3/show/${route.params.slug}`)
 
 const page = ref(null)
 const episodes = ref(null)
@@ -149,7 +147,7 @@ onMounted(() => {
     <ShowHeader :show="show?.show" />
 
     <section class="py-4">
-      <pre>{{ show }}</pre>
+      <!-- <pre>{{ show }}</pre> -->
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
