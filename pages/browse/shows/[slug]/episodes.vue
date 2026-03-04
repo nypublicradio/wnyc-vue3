@@ -1,32 +1,52 @@
 <script setup>
-import { useIntersectionObserver } from "@vueuse/core"
+import { useIntersectionObserver } from "@vueuse/core";
 import {
   checkIsFavorited,
   trackClickEvent,
   dynamicNavigation,
-} from "~/utilities/helpers"
-import { useGlobalToast } from "~/composables/states"
+} from "~/utilities/helpers";
+import { useGlobalToast } from "~/composables/states";
 
-const config = useRuntimeConfig()
-const route = useRoute()
-console.log("route", route)
+const config = useRuntimeConfig();
+const route = useRoute();
+console.log("route", route);
 
 const {
   data: show,
   status,
   error,
 } = useFetch(
+  `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`,
+  {
+    onResponse(res) {
+      sectionAnchorData.value = res.response._data.inPageNavigation.map(
+        (item) => {
+          return {
+            label: item.value.linkText,
+            id: slugify(item.value.targetId),
+          };
+        }
+      );
+    },
+  }
+);
+
+const {
+  data: scShows,
+  status: scStatus,
+  error: scError,
+} = useFetch(
   `${config.public.BFF_URL}/api/v3/show/${route.params.slug}/episodes?offset=0&limit=10`
-)
+);
 
-const page = ref(null)
-const episodes = ref(null)
-let maxPages = null
+const page = ref(null);
+const episodes = ref(null);
+let maxPages = null;
 
-const pendingMore = ref(false)
-const loadMoreRefVisible = ref(false)
-const loadMoreRef = ref(null)
-const isInitialObserver = ref(true)
+const pendingMore = ref(false);
+const loadMoreRefVisible = ref(false);
+const loadMoreRef = ref(null);
+const isInitialObserver = ref(true);
 
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
@@ -38,87 +58,87 @@ const breadcrumbs = computed(() => [
   {
     label: "All Episodes",
   },
-])
+]);
 
 const { stop } = useIntersectionObserver(
   loadMoreRef,
   ([{ isIntersecting }]) => {
     // so it does not trigger on initial load and before we have data
     if (!isInitialObserver.value && episodes.value) {
-      loadMoreRefVisible.value = isIntersecting
+      loadMoreRefVisible.value = isIntersecting;
     } else {
-      isInitialObserver.value = false
+      isInitialObserver.value = false;
     }
   }
-)
+);
 
 // clean up the useIntersectionObserver
 onUnmounted(() => {
-  stop()
-})
+  stop();
+});
 // load more episodes and track it
 const loadMore = async () => {
-  page.value += 1
-  pendingMore.value = true
+  page.value += 1;
+  pendingMore.value = true;
   try {
     const moreShows = await $fetch(
       `${config.public.BFF_URL}/api/v3/show/${show.value?.show?.slug}/?page=${page.value}`
-    )
-    pendingMore.value = false
-    episodes.value = [...episodes.value, ...moreShows?.episodes?.data]
+    );
+    pendingMore.value = false;
+    episodes.value = [...episodes.value, ...moreShows?.episodes?.data];
     trackClickEvent(
       "Event Tracking - load more episodes",
       "Shows Page",
       show.value?.show?.title
-    )
+    );
   } catch (e) {
-    pendingMore.value = false
-    const globalToast = useGlobalToast()
+    pendingMore.value = false;
+    const globalToast = useGlobalToast();
     globalToast.value = {
       severity: "error",
       summary:
         "Sorry. We are having trouble loading more episodes. Please try again later.",
       life: null,
       closable: true,
-    }
-    console.error("error = ", e)
+    };
+    console.error("error = ", e);
   }
-}
+};
 
 // if user is logged in, check if item is already favorited
-const isFavorited = ref(false)
+const isFavorited = ref(false);
 watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(route.params.slug)
-})
+  isFavorited.value = await checkIsFavorited(route.params.slug);
+});
 
 // Watch for show data changes to update episodes and pagination
 watch(
   show,
   (newShow) => {
     if (newShow?.episodes) {
-      page.value = newShow.episodes?.meta?.pagination?.page || 1
-      maxPages = newShow.episodes?.meta?.pagination?.pages || 0
-      episodes.value = newShow.episodes?.data
+      page.value = newShow.episodes?.meta?.pagination?.page || 1;
+      maxPages = newShow.episodes?.meta?.pagination?.pages || 0;
+      episodes.value = newShow.episodes?.data;
     }
   },
   { immediate: true }
-)
+);
 
 watch(loadMoreRefVisible, (val) => {
   if (val) {
-    loadMore()
+    loadMore();
   }
-})
+});
 
 onMounted(() => {
   // send GA page view
-  const { $analytics } = useNuxtApp()
+  const { $analytics } = useNuxtApp();
   $analytics.sendPageView({
     page_title: "Browse Show Episodes",
     page_type: "browse_shows_episodes_page",
     content_group: "app_tab",
-  })
-})
+  });
+});
 </script>
 
 <template>
