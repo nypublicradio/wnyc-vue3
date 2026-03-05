@@ -97,6 +97,7 @@ onMounted(() => {
             :is="getLayoutComponent(block?.value?.layout)"
             :list="block?.value?.list"
             :label="block?.value?.label"
+            :seeMore="block?.value?.seeMoreLink"
           />
           <VFlexibleLink
             v-if="block?.value?.seeMoreLink"

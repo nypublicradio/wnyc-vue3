@@ -2,6 +2,10 @@
 import { dynamicNavigation } from "~/utilities/helpers"
 
 const props = defineProps({
+  label: {
+    type: String,
+    default: "",
+  },
   list: {
     type: Object,
     required: true,
@@ -9,6 +13,10 @@ const props = defineProps({
   maxItems: {
     type: Number,
     default: undefined,
+  },
+  seeMore: {
+    type: Object,
+    required: false,
   },
 })
 
@@ -47,7 +55,10 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
 
 <template>
   <div class="layout layout-carousel">
-    <h2 class="mb-4">{{ props.list.title }}</h2>
+    <LayoutsTitleHeader
+      :label="props.label || props.list.title"
+      :seeMore="props.seeMore"
+    />
     <MaterialCarouselBasic :gap="16">
       <MediaCard
         v-for="(item, index) in reactiveItems?.slice(0, props.maxItems)"

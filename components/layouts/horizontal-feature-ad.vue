@@ -3,6 +3,10 @@ import { dynamicNavigation } from "~/utilities/helpers"
 import { useBreakpoints } from "~/composables/useBreakpoints"
 import { mediaTypes } from "~/composables/globals"
 const props = defineProps({
+  label: {
+    type: String,
+    default: "",
+  },
   list: {
     type: Object,
     required: true,
@@ -10,6 +14,10 @@ const props = defineProps({
   maxItems: {
     type: Number,
     default: 4,
+  },
+  seeMore: {
+    type: Object,
+    required: false,
   },
 })
 
@@ -67,7 +75,11 @@ const featureSizes = computed(() => {
       />
     </div>
     <div class="grid">
-      <h2 class="col-12 mb-1 order-2 lg:order-1">{{ props.list?.title }}</h2>
+      <LayoutsTitleHeader
+        class="col-12 order-2 lg:order-1 -mb-3"
+        :label="props.label || props.list?.title"
+        :seeMore="props.seeMore"
+      />
       <MediaCard
         v-if="reactiveItems?.length > 0"
         class="col-12 lg:col-8 mb-3 hidden md:block"

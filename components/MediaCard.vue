@@ -579,7 +579,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                     :menuItems="getDotMenuItems(props.data)"
                     label=""
                     @changeEmit="onMenuChange"
-                    class="z-1 -mr-2"
+                    class="z-1"
                   >
                     <template #header-bottom>
                       <div>

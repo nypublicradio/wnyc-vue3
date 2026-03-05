@@ -25,7 +25,7 @@ const showImage = computed(
 )
 const showTitle = computed(() => show.value?.title)
 
-const showSlug = computed(() => show.value?.meta?.slug)
+const showSlug = computed(() => show.value?.meta?.slug || show.value?.slug)
 
 const aboutContent = computed(() => {
   const showData = show.value
@@ -57,8 +57,14 @@ const handleShowClick = () => {
       ></VImage>
       <h2 class="mt-1">{{ showTitle }}</h2>
     </div>
-
-    <VStreamfield :streamfieldBlocks="aboutContent" />
+    <VStreamfield
+      :streamfieldBlocks="aboutContent"
+      :article="
+        !aboutContent
+          ? { body: props.show?.tease || props.show?.description }
+          : null
+      "
+    />
     <story-htlAd
       layout="rectangle"
       slotClass="htlad-wnyc_homepage_rectangle"

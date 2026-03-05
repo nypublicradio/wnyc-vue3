@@ -116,7 +116,7 @@ watch(
     <EpisodeTemplate
       :pending="status !== 'success'"
       :episodeData="episodeData"
-      :show="show"
+      :show="show?.show"
       :showPending="showStatus !== 'success'"
     >
       <template #bottom>
