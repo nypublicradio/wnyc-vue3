@@ -9,23 +9,30 @@ import { useGlobalToast } from "~/composables/states"
 
 const config = useRuntimeConfig()
 const route = useRoute()
-console.log("route", route)
+const podcastId = ref(null)
 
 const {
   data: show,
   status,
   error,
 } = useFetch(
-  `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}?showOnly=true`
+  `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}?showOnly=true`,
+  {
+    onResponse(res) {
+      podcastId.value = res.response._data.linkedDataSource[0].value.id
+    },
+  }
 )
 
-// const {
-//   data: scShows,
-//   status: scStatus,
-//   error: scError,
-// } = useFetch(
-//   `${config.public.BFF_URL}/api/v3/show/${route.params.slug}/episodes?offset=0&limit=10`
-// );
+const {
+  data: scShows,
+  status: scStatus,
+  error: scError,
+} = useFetch(
+  () =>
+    `${config.public.BFF_URL}/api/v3/show/${podcastId.value}/episodes?offset=0&limit=10`,
+  { watch: [podcastId], immediate: false }
+)
 
 const page = ref(null)
 const episodes = ref(null)
@@ -157,7 +164,9 @@ onMounted(() => {
     <ShowHeader :show="show" />
 
     <section class="py-4">
-      <!-- <pre>{{ show }}</pre> -->
+      <pre>{{ show }}</pre>
+      <pre>{{ podcastId }}</pre>
+      <pre>{{ scShows }}</pre>
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
