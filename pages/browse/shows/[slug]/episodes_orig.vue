@@ -9,7 +9,6 @@ import { useGlobalToast } from "~/composables/states"
 
 const config = useRuntimeConfig()
 const route = useRoute()
-console.log("route", route)
 
 const {
   data: show,

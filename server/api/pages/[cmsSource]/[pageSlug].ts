@@ -39,7 +39,7 @@ const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean) => {
         if (resData.body && Array.isArray(resData.body)) {
             // if isShowOnly is true, just return null and ignore the body
             const transformedCuratedContent = isShowOnly ? null : await transformCuratedContent(resData.body)
-
+            //console.log('transformedCuratedContent = ', transformedCuratedContent[0].value.list.listItems)
             // if isShowOnly is true, we don't want to return the inPageNavigation
             if (isShowOnly) {
                 delete resData.inPageNavigation

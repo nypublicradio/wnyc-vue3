@@ -43,7 +43,6 @@ async function handleNprCdsItem (listItem: any, componentType: string) {
 	// Handle simple curated NPR items (title, url, image, body directly on listItem)
 	const hasTitle = listItem.title && typeof listItem.title === 'string' && listItem.title.trim()
 	const hasUrl = listItem.url && typeof listItem.url === 'string' && listItem.url.trim()
-
 	if (hasTitle && hasUrl) {
 		return {
 			id: listItem.url,
