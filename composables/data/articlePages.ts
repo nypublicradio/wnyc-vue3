@@ -2,7 +2,7 @@ import type Author from '../types/Author'
 import type Person from '../types/Person'
 import type ISocial from '../types/Social'
 import type { ArticlePage } from '../types/Page'
-import { cmsSources, mediaTypes } from '~/composables/globals'
+import { cmsSources, mediaTypes, mediaTypeRoutes } from '~/composables/globals'
 import { normalizePage } from './basePages'
 import { getWagtailRawBody } from "~/utilities/helpers"
 import { estimateMp3Duration } from '~/server/utils/duration'
@@ -329,7 +329,7 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
     showId, // Preserve the show UUID
     showSlug: showId, // Use showId as slug for Simplecast shows
     description: article.subtitle || article.description,
-    image: article.image,
+    image: article.image || article.imageUrl,
     imageFullWidth: undefined,
     imageFullHeight: undefined,
     cmsSource: cmsSources.SIMPLECAST,
@@ -345,7 +345,7 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
     sponsoredContent: undefined,
     relatedLinks: undefined,
     url: article.url,
-    link: `/browse/shows/episode/simplecast/${simplecastId}`,
+    link: `${mediaTypeRoutes.simplecast}${simplecastId}`,
     section: undefined,
     //rawBody: getWagtailRawBody(article.body),
     body: article.body,
@@ -453,7 +453,7 @@ export async function normalizeSimplecastPage (article: SimplecastArticle): Prom
     leadImageCaption: undefined,
     imageLink: undefined,
     type: article.type || 'episode',
-    link: `/browse/shows/episode/simplecast/${simplecastId}`,
+    link: `${mediaTypeRoutes.simplecast}${simplecastId}`,
     cmsSource: cmsSources.SIMPLECAST,
     sortDate: article.publishedAt,
     leadAsset: undefined,
