@@ -261,7 +261,6 @@ export async function normalizeWagtailListItem (article: Record<string, any | un
       ?? article.leadAsset?.[0]?.value?.defaultImage
     )
     : (article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage ?? article.image)
-
   return Object.assign({}, await normalizePage(article), {
     image: normalizedImage,
     imageFullWidth: normalizedImage?.width ?? article.leadAsset?.[0]?.value?.image?.width ?? article.leadAsset?.[0]?.value?.defaultImage?.width,

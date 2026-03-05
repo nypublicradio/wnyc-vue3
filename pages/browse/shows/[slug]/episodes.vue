@@ -14,7 +14,6 @@ const podcastId = ref(null)
 const meta = ref(null)
 const page = ref(1)
 const episodes = ref(null)
-let maxPages = null
 
 const pendingMore = ref(false)
 const loadMoreRefVisible = ref(false)
