@@ -15,7 +15,6 @@ const getNprStoryData = async (id: string) => {
         }
 
         const res = await axios(option)
-        console.log('res', res)
         return normalizeNprPage(res.data.resources[0])
 
     } catch (e) {
