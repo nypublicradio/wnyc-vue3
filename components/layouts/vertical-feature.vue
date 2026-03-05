@@ -2,6 +2,10 @@
 import { dynamicNavigation } from "~/utilities/helpers"
 import { mediaTypes } from "~/composables/globals"
 const props = defineProps({
+  label: {
+    type: String,
+    default: "",
+  },
   list: {
     type: Object,
     required: true,
@@ -9,6 +13,10 @@ const props = defineProps({
   maxItems: {
     type: Number,
     default: 5,
+  },
+  seeMore: {
+    type: Object,
+    required: false,
   },
 })
 // TODO: use new smarter ratio calc
@@ -69,7 +77,10 @@ const featureSizes = computed(() => {
 
 <template>
   <div class="layout layout-vertical-feature">
-    <h2 class="mb-4">{{ props.list.title }}</h2>
+    <LayoutsTitleHeader
+      :label="props.label || props.list.title"
+      :seeMore="props.seeMore"
+    />
     <!-- <pre class="text-xs">{{ reactiveItems }}</pre> -->
     <div class="grid">
       <MediaCard

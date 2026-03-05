@@ -64,13 +64,6 @@ watchEffect(async () => {
   isFavorited.value = await checkIsFavorited(route.params.slug)
 })
 
-// navigate to the episodes page
-const handleViewAll = () => {
-  if (showSlug.value) {
-    navigateTo(`${showSlug.value}/episodes`)
-  }
-}
-
 // scrolls to the selected section from the jump link buttons
 const scrollToSection = (sectionId, behavior = "smooth", offset = 90) => {
   const element = document.getElementById(sectionId)
@@ -133,7 +126,7 @@ onUnmounted(() => {
       </div>
       <FetchError v-if="error" />
     </section>
-    <pre>{{ show }}</pre>
+    <!-- <pre>{{ show }}</pre> -->
     <ShowHeader :show="show" />
     <!-- JUMP LINKS -->
     <div

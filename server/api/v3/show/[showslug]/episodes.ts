@@ -75,7 +75,6 @@ const getSimplecastEpisodes = async (podcastId: string, offset = 0, limit = 10) 
 
         const res = await axios(options)
         const resData = humps.camelizeKeys(res.data)
-        //console.log("resData", resData)
         // Extract episodes collection
         const episodes = resData.collection || []
 
@@ -111,7 +110,6 @@ const getSimplecastEpisodes = async (podcastId: string, offset = 0, limit = 10) 
         // so we can only provide limited pagination info
         const hasMore = episodes.length === limit
         const currentPage = Math.floor(offset / limit) + 1
-        console.log("normalizedEpisodes", normalizedEpisodes)
         return {
             data: normalizedEpisodes,
             meta: {
@@ -169,7 +167,6 @@ const getSimplecastEpisodes = async (podcastId: string, offset = 0, limit = 10) 
 export default defineEventHandler(async (event) => {
     const res = event?.node?.res
     const showslug: string | undefined = event?.context?.params?.showslug
-    console.log("showslug", showslug)
     // Validate showslug parameter
     if (!showslug) {
         return {

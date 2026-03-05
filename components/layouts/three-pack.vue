@@ -2,6 +2,10 @@
 import { dynamicNavigation } from "~/utilities/helpers"
 import { useBreakpoints } from "~/composables/useBreakpoints"
 const props = defineProps({
+  label: {
+    type: String,
+    default: "",
+  },
   list: {
     type: Object,
     required: true,
@@ -14,6 +18,10 @@ const props = defineProps({
     type: Number,
     default: 3,
   },
+  seeMore: {
+    type: Object,
+    required: false,
+  },
 })
 
 const reactiveItems = toRef(props.list, "listItems")
@@ -23,7 +31,10 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
 
 <template>
   <div class="layout layout-three-pack">
-    <h2 class="mb-4">{{ props.list.title }}</h2>
+    <LayoutsTitleHeader
+      :label="props.label || props.list.title"
+      :seeMore="props.seeMore"
+    />
 
     <div class="grid">
       <template v-if="reactiveItems?.length > 0">

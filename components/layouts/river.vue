@@ -1,5 +1,5 @@
 <script setup>
-import { dynamicNavigation } from "~/utilities/helpers"
+import { dynamicNavigation, getRouteOrLink } from "~/utilities/helpers"
 const props = defineProps({
   label: {
     type: String,
@@ -13,6 +13,10 @@ const props = defineProps({
     type: String,
     default: "col-12 lg:col-6",
   },
+  seeMore: {
+    type: Object,
+    required: false,
+  },
 })
 
 const reactiveItems = toRef(props.list, "listItems")
@@ -20,8 +24,10 @@ const reactiveItems = toRef(props.list, "listItems")
 
 <template>
   <div class="layout layout-river">
-    <h2 class="mb-4">{{ props.label }}</h2>
-
+    <LayoutsTitleHeader
+      :label="props.label || props.list.title"
+      :seeMore="props.seeMore"
+    />
     <div v-if="reactiveItems?.length > 0" class="grid">
       <div
         v-for="(article, index) in reactiveItems"
