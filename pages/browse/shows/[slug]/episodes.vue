@@ -103,6 +103,7 @@ onUnmounted(() => {
 const loadMore = async () => {
   page.value += 1
   pendingMore.value = true
+  meta.value.pagination.offset += meta.value.pagination.limit
   trackClickEvent(
     "Event Tracking - load more episodes",
     "Shows Page",
@@ -171,13 +172,14 @@ onMounted(() => {
       <FetchError v-if="error || scError" />
     </section>
 
+    <!-- <pre>{{ scShows?.meta }}</pre> -->
     <ShowHeader :show="show" />
 
     <section class="py-4">
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
-          <div v-if="scStatus === 'success'" class="flex flex-column gap-5">
+          <div class="flex flex-column gap-5">
             <h2 class="md:text-xl">All Episodes</h2>
             <template v-for="ep in episodes" :key="ep.id">
               <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
@@ -216,8 +218,8 @@ onMounted(() => {
               class="mb-5"
             />
           </div>
+          <!-- v-if="meta?.pagination?.count < meta?.totalCount" -->
           <WnycLoader
-            v-if="meta?.pagination?.count < meta?.totalCount"
             ref="loadMoreRef"
             spinner
             size="40px"
