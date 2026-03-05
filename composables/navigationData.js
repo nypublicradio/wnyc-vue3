@@ -26,7 +26,7 @@ const allMenuData = [
     },
     {
         label: "Browse All Shows",
-        url: "/browse",
+        url: "/browse?all=false",
         id: "1",
         icon: "",
         hasSubmenu: true,
@@ -36,7 +36,7 @@ const allMenuData = [
             [
                 {
                     label: "All Shows",
-                    url: "/browse"
+                    url: "/browse?all=true"
                 },
             ],
         ],
