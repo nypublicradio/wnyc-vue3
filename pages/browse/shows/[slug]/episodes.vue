@@ -33,11 +33,7 @@ const {
   }
 )
 
-const {
-  data: scShows,
-  status: scStatus,
-  error: scError,
-} = useFetch(
+const { status: scStatus, error: scError } = useFetch(
   () =>
     `${config.public.BFF_URL}/api/v3/show/${podcastId.value}/episodes?offset=${
       meta.value?.pagination?.offset || 0
@@ -99,7 +95,7 @@ onUnmounted(() => {
   stop()
 })
 // load more episodes and track it
-const loadMore = async () => {
+const loadMore = () => {
   page.value += 1
   pendingMore.value = true
   meta.value.pagination.offset += meta.value.pagination.limit
@@ -171,7 +167,6 @@ onMounted(() => {
       <FetchError v-if="error || scError" />
     </section>
 
-    <!-- <pre>{{ scShows?.meta }}</pre> -->
     <ShowHeader :show="show" />
 
     <section class="py-4">

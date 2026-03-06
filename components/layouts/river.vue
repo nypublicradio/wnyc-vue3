@@ -1,5 +1,5 @@
 <script setup>
-import { dynamicNavigation, getRouteOrLink } from "~/utilities/helpers"
+import { dynamicNavigation } from "~/utilities/helpers"
 const props = defineProps({
   label: {
     type: String,
@@ -15,6 +15,7 @@ const props = defineProps({
   },
   seeMore: {
     type: Object,
+    default: null,
     required: false,
   },
 })

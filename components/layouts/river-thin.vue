@@ -15,6 +15,7 @@ const props = defineProps({
   seeMore: {
     type: Object,
     default: null,
+    required: false,
   },
 })
 </script>

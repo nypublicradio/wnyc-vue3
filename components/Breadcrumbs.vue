@@ -65,6 +65,9 @@ const routeBack = () => {
   scrollbar-width: none;
 }
 .p-breadcrumb li {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   flex: none;
 }
 .p-breadcrumb button {

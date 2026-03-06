@@ -1,5 +1,4 @@
 <script setup>
-import VFlexibleLink from "./VFlexibleLink.vue"
 import Button from "primevue/button"
 import Dialog from "primevue/dialog"
 import ProgressSpinner from "primevue/progressspinner"

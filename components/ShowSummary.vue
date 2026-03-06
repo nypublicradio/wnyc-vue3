@@ -34,7 +34,7 @@ const aboutContent = computed(() => {
     return showData.aboutModule
   // if (showData.description) return [{ id: "desc", value: showData.description }]
   // if (showData.tease) return [{ id: "tease", value: showData.tease }]
-  // return []
+  return []
 })
 
 // handle click on show title or image to navigate to show page

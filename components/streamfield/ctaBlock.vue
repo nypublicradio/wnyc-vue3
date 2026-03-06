@@ -21,6 +21,7 @@ const widthsObj = {
 const link = getRouteOrLink(props.block.value.url)
 const image = props.block.value.image
 
+// calculate the height of the image based on the ratio
 const getHeight = (w: number) => Math.round((w * ratio[0]) / ratio[1])
 
 const ctaImageSize = Object.fromEntries(
