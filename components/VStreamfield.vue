@@ -36,6 +36,10 @@ const getLayoutComponent = (layout) => {
         try {
           return await import(`~/components/layouts/${layout}.vue`)
         } catch (e) {
+          console.warn(
+            `Could not load streamfield layout ${layout}. Using the default streamfield layout.`,
+            e
+          )
           return await import(`~/components/layouts/${defaultLayout}.vue`)
         }
       })
@@ -86,6 +90,7 @@ onMounted(() => {
           :class="verticalSpacingClasses"
         /> -->
         <div
+          :key="`${block.id}-curated-list`"
           v-if="
             block.type === 'curated_list' &&
             block?.value?.list?.listItems?.length

@@ -1,12 +1,6 @@
 <script setup>
-import { useIntersectionObserver } from "@vueuse/core"
-import {
-  checkIsFavorited,
-  trackClickEvent,
-  dynamicNavigation,
-  slugify,
-} from "~/utilities/helpers"
-import { useGlobalToast, useIsApp } from "~/composables/states"
+import { checkIsFavorited, slugify } from "~/utilities/helpers"
+import { useIsApp } from "~/composables/states"
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -34,29 +28,7 @@ const {
   }
 )
 
-const page = ref(null)
-const episodes = ref([])
-let maxPages = null
-
-const showSlug = computed(() => show.value?.meta?.slug)
-
 const isApp = useIsApp()
-
-const loadMoreRefVisible = ref(false)
-const loadMoreRef = ref(null)
-const isInitialObserver = ref(true)
-
-const { stop } = useIntersectionObserver(
-  loadMoreRef,
-  ([{ isIntersecting }]) => {
-    // so it does not trigger on initial load and before we have data
-    if (!isInitialObserver.value && episodes.value) {
-      loadMoreRefVisible.value = isIntersecting
-    } else {
-      isInitialObserver.value = false
-    }
-  }
-)
 
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
@@ -179,13 +151,6 @@ onUnmounted(() => {
               class="mb-6 mt-5"
             />
           </div>
-          <WnycLoader
-            v-if="page < maxPages && isApp"
-            ref="loadMoreRef"
-            spinner
-            size="40px"
-            class="mt-8 flex justify-content-center"
-          />
           <div v-if="!isApp">
             <div class="block lg:hidden mt-8">
               <ShowSummary :show="show" />

@@ -16,7 +16,7 @@ import {
   useIsApp,
   useAppDownloadLink,
 } from "~/composables/states"
-import { mediaTypeRoutes, mediaTypes } from "~/composables/globals"
+//import { mediaTypeRoutes, mediaTypes } from "~/composables/globals"
 import useSleepTimer from "~/composables/useSleepTimer"
 
 const props = defineProps({
@@ -50,16 +50,13 @@ const topperBackground = computed(() => {
   }
 })
 //const showScheduleSummary = computed(() => show.value?.scheduleSummary)
-const showSlug = computed(() => show.value?.meta?.slug)
+//const showSlug = computed(() => show.value?.meta?.slug)
 // const showType = computed(() => show.value?.type)
 // const canDownload = computed(() => show.value?.canDownloadEpisodes)
 // const canEmbed = computed(() => show.value?.canEmbedEpisodes)
 
 const route = useRoute()
 const appDownloadLink = useAppDownloadLink()
-
-// Reactive computed properties for episodes
-const firstPlayableItem = ref(null)
 
 const isApp = useIsApp()
 const user = useCurrentUser()
@@ -215,6 +212,7 @@ const handleAddToFavorites = () => {
                   label="Listen in the app"
                   severity="secondary"
                   rounded
+                  aria-label="Listen in the app"
                   class=""
                   @click="
                     navigateTo(appDownloadLink, {
@@ -259,7 +257,7 @@ const handleAddToFavorites = () => {
           </div>
         </div>
         <!-- mobile buttons -->
-        <!-- <div
+        <div
           v-if="show"
           class="flex md:hidden justify-content-center align-items-center gap-2 mt-3"
         >
@@ -304,6 +302,7 @@ const handleAddToFavorites = () => {
             text
             plain
             class=""
+            aria-label="Listen in the app"
             @click="
               navigateTo(appDownloadLink, {
                 external: appDownloadLink.startsWith('http') ? true : false,
@@ -322,7 +321,7 @@ const handleAddToFavorites = () => {
           <Skeleton height="37px" width="37px" borderRadius="20px" />
           <Skeleton height="48px" width="48px" borderRadius="24px" />
           <Skeleton height="37px" width="37px" borderRadius="20px" />
-        </div> -->
+        </div>
       </div>
       <div class="col-fixed hidden xl:block w-20rem"></div>
     </section>
