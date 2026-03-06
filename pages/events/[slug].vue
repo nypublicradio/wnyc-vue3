@@ -90,7 +90,7 @@ const otherEvents = computed(() => {
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Events", route: "/events" },
-  { label: title.value || "Event", route: route.path },
+  { label: title.value || "Event" },
 ])
 
 </script>
