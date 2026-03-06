@@ -1380,13 +1380,9 @@ export const getRouteOrLink = (
   ]
 ) => {
   if (!url) return url
-  try {
-    const parsedUrl = new URL(url)
-    if (routingDomains.includes(parsedUrl.hostname)) {
-      return parsedUrl.pathname + parsedUrl.search + parsedUrl.hash
-    }
-  } catch (e) {
-    // Ignore invalid URL errors, might already be a relative path
+  const parsedUrl = new URL(url)
+  if (routingDomains.includes(parsedUrl.hostname)) {
+    return parsedUrl.pathname + parsedUrl.search + parsedUrl.hash
   }
   return url
 }
