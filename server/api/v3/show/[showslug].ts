@@ -14,9 +14,10 @@ const __getConfig = () => {
  * @param showData - The complete show data object
  * @param page - Page number
  * @param pageSize - Number of episodes per page
+ * @param showSlug - Optional show slug to pass to NPR content
  * @returns Episodes data with pagination metadata
  */
-const getWagtailEpisodes = async (showData: any, page = 1, pageSize = '10') => {
+const getWagtailEpisodes = async (showData: any, page = 1, pageSize = '10', showSlug?: string) => {
     try {
         // If no body or body is not an array, return empty
         if (!showData.body || !Array.isArray(showData.body)) {
@@ -35,7 +36,7 @@ const getWagtailEpisodes = async (showData: any, page = 1, pageSize = '10') => {
         }
 
         // Transform curated content to normalize episodes
-        const transformedContent = await transformCuratedContent(showData.body, 'default')
+        const transformedContent = await transformCuratedContent(showData.body, 'default', showSlug)
 
         // Extract all episodes from the transformed curated lists
         const allEpisodes: any[] = []
@@ -173,7 +174,8 @@ export default defineEventHandler(async (event) => {
     const episodes = await getWagtailEpisodes(
         showDataForEpisodes,
         page,
-        pageSize
+        pageSize,
+        slug
     )
 
     // Set cache header to match v2 endpoint
