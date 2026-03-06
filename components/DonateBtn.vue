@@ -11,21 +11,21 @@ const props = defineProps({
 </script>
 <template>
   <VFlexibleLink
-    v-if="donateButtonData.buttonText"
+    v-if="donateButtonData?.buttonText"
     raw
-    :to="donateButtonData.buttonLink"
+    :to="donateButtonData?.buttonLink"
     radius="100px"
     @flexible-link-click="
       trackClickEvent(
-        `Click Tracking - ${donateButtonData.buttonText} Button`,
+        `Click Tracking - ${donateButtonData?.buttonText} Button`,
         props.trackingLocation,
-        `${donateButtonData.buttonText} Button`
+        `${donateButtonData?.buttonText} Button`
       )
     "
   >
     <Button
-      :label="donateButtonData.buttonText"
-      :aria-label="`${donateButtonData.buttonText} donate`"
+      :label="donateButtonData?.buttonText"
+      :aria-label="`${donateButtonData?.buttonText} donate`"
       class="px-3 sm:px-5"
       tabindex="-1"
     />
