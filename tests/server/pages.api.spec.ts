@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 
 // Mock axios to return our fixture without making network calls
 let mockResponse: any
-const axiosMock = vi.fn(async (_arg: any) => ({ data: mockResponse }))
+const axiosMock = vi.fn((_arg: any) => ({ data: mockResponse }))
 vi.mock('axios', () => ({ default: axiosMock }))
 
 // Keep server import tree minimal by mocking globals composable to avoid UI imports
