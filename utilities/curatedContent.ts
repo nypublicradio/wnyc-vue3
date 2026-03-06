@@ -14,7 +14,7 @@ interface NprAsset {
 /**
  * Helper to handle NPR CDS items.
  */
-async function handleNprCdsItem (listItem: any, componentType: string) {
+async function handleNprCdsItem (listItem: any, componentType: string, showSlug?: string) {
 	// Content can be either an object directly or an array with one element
 	const nprDocument: NprDocument = listItem.content
 		? (Array.isArray(listItem.content) ? listItem.content[0] : listItem.content)
@@ -37,7 +37,7 @@ async function handleNprCdsItem (listItem: any, componentType: string) {
 			return null
 		}
 
-		return await normalizeNprPage(nprDocument, componentType)
+		return await normalizeNprPage(nprDocument, componentType, showSlug)
 	}
 
 	// Handle simple curated NPR items (title, url, image, body directly on listItem)
@@ -116,9 +116,10 @@ interface NprDocument {
  * 
  * @param curatedContent - Array of curated content items containing lists of items
  * @param componentType - Layout type for image preference (default: "default")
+ * @param showSlug - Optional show slug to add to NPR content
  * @returns Transformed curated content with normalized list items
  */
-export async function transformCuratedContent (curatedContent: any[], componentType = 'default') {
+export async function transformCuratedContent (curatedContent: any[], componentType = 'default', showSlug?: string) {
 	try {
 		return await Promise.all(
 			curatedContent.map(async (item) => {
@@ -132,7 +133,7 @@ export async function transformCuratedContent (curatedContent: any[], componentT
 					item.value.list.listItems.map(async (listItem) => {
 						try {
 							if (listItem.contentType === 'npr_cds_item') {
-								return await handleNprCdsItem(listItem, componentType)
+								return await handleNprCdsItem(listItem, componentType, showSlug)
 							} else {
 								return await handleOtherContentType(listItem)
 							}

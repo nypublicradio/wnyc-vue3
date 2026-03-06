@@ -38,8 +38,9 @@ const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean) => {
         // Transform curated content if it exists
         if (resData.body && Array.isArray(resData.body)) {
             // if isShowOnly is true, just return null and ignore the body
-            const transformedCuratedContent = isShowOnly ? null : await transformCuratedContent(resData.body)
-            //console.log('transformedCuratedContent = ', transformedCuratedContent[0].value.list.listItems)
+            // Pass the pageSlug so NPR content can include it
+            const transformedCuratedContent = isShowOnly ? null : await transformCuratedContent(resData.body, 'default', pageSlug)
+
             // if isShowOnly is true, we don't want to return the inPageNavigation
             if (isShowOnly) {
                 delete resData.inPageNavigation
