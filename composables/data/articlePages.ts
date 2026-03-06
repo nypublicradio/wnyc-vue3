@@ -703,6 +703,31 @@ const getAuthorsFromBylineUrl = memoize(async (url: string): Promise<Author> => 
   return author
 })
 
+// get show info from program collection url
+const getShowInfoFromProgramUrl = memoize(async (url: string): Promise<{ title: string; slug?: string }> => {
+  const config = useRuntimeConfig()
+  const options = {
+    method: 'GET',
+    url: `${config.public.NPR_CDS_API}${url}`,
+    headers: {
+      Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
+    },
+  }
+  
+  try {
+    const response = await axios(options)
+    const resource = response.data?.resources?.[0]
+    const showTitle = resource?.title || 'NPR'
+    // Extract slug from nprWebsitePath (e.g., "/programs/all-things-considered/" -> "all-things-considered")
+    const nprPath = resource?.nprWebsitePath
+    const showSlug = nprPath ? nprPath.split('/').filter(Boolean).pop() : undefined
+    return { title: showTitle, slug: showSlug }
+  } catch (e) {
+    console.error('Error fetching show info from NPR:', e)
+    return { title: 'NPR' }
+  }
+})
+
 // NPR Article Type Definitions
 interface NprEnclosure {
   href?: string
@@ -920,7 +945,7 @@ const extractImageDimensions = (image?: string): { w: number; h: number } => {
 }
 
 // Normalize an article page object from NPR into a generic ArticlePage object.
-export async function normalizeNprPage (article: NprArticle, componentType = "default"): Promise<ArticlePage> {
+export async function normalizeNprPage (article: NprArticle, componentType = "default", showSlug?: string): Promise<ArticlePage> {
   const id = article.id
   const firstImageHref = article.images?.[0]?.href
   const rawImageId = firstImageHref?.substring(firstImageHref.lastIndexOf("/") + 1)
@@ -957,6 +982,11 @@ export async function normalizeNprPage (article: NprArticle, componentType = "de
   const bylineUrl = article.collections?.find(c => c.rels?.includes('byline'))?.href ?? null
   const authors = bylineUrl ? [await getAuthorsFromBylineUrl(bylineUrl)] : null
 
+  // Fetch show info from program collection if available
+  const programUrl = article.collections?.find(c => c.rels?.includes('program'))?.href ?? null
+  const showInfo = programUrl ? await getShowInfoFromProgramUrl(programUrl) : { title: article.showTitle ?? 'NPR' }
+  const derivedShowSlug = showInfo.slug || showSlug
+
   const dimensions = extractImageDimensions(image)
 
   return Promise.resolve({
@@ -980,8 +1010,9 @@ export async function normalizeNprPage (article: NprArticle, componentType = "de
     meta: {
       firstPublishedAt: article.publishDateTime,
       slug: id,
+      ...(derivedShowSlug ? { showSlug: derivedShowSlug } : {}),
     },
-    showTitle: article.showTitle ?? 'NPR',
+    showTitle: showInfo.title,
     body: textBody,
     rawBody: textBody,
     link: article.webPages?.[0]?.href ?? '/',
