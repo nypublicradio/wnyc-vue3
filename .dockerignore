@@ -30,3 +30,5 @@ README.md
 export-aws-credentials.py
 
 start-local.sh
+
+.env
