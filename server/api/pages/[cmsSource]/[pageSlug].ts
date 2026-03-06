@@ -11,7 +11,7 @@ const __getConfig = () => {
 }
 
 // getting flat page data from the publisher api
-const getPublisherPageData = async (pageSlug: string, isShowOnly?: boolean) => {
+const getPublisherPageData = async (pageSlug: string) => {
     const config = __getConfig()
     const res = await axios(`${config.public.PUBLISHER_BASE_API}v3/flatpages/${pageSlug}`)
     const resData = humps.camelizeKeys(res.data)
@@ -64,7 +64,7 @@ const getPageData = async (pageSlug: string, cmsSource: string, isShowOnly?: boo
         case cmsSources.WAGTAIL:
             return await getWagtailPageData(pageSlug, isShowOnly)
         case cmsSources.PUBLISHER:
-            return await getPublisherPageData(pageSlug, isShowOnly)
+            return await getPublisherPageData(pageSlug)
         default:
             return null
     };
