@@ -41,9 +41,9 @@ const globalWindowWidth = ref(0)
 let listenerCount = 0
 let isInitialized = false
 
-const showOverlayBreakpoint = true
+const showOverlayBreakpoint = false
 let overlayElement = null
-
+// update the overlay styles
 function updateOverlay (breakpoint, width) {
     if (!showOverlayBreakpoint || typeof document === 'undefined') return
     if (!overlayElement) {
