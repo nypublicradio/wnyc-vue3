@@ -39,6 +39,10 @@ const props = defineProps({
     default: null,
     required: false,
   },
+  isThin: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const reactiveItems = toRef(props.list, "listItems")
@@ -52,9 +56,10 @@ const getImgSize = (width) => {
 
 const imgSizes = {
   xs: getImgSize(112),
-  md: getImgSize(176),
-  lg: getImgSize(261),
-  xl: getImgSize(305),
+  md: getImgSize(192),
+  lg: getImgSize(props.isThin ? 371 : 261),
+  xl: getImgSize(props.isThin ? 454 : 305),
+  xxl: getImgSize(305),
 }
 const { breakpoint } = useBreakpoints()
 const isLgBreakpoint = computed(() => breakpoint("<lg"))
@@ -90,6 +95,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
         :class="props.cardClass"
         :size="imgSizes"
         :ratio="imgRatio"
+        isVertical
       />
     </div>
   </div>

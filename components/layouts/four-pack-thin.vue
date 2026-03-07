@@ -39,6 +39,10 @@ const props = defineProps({
     default: null,
     required: false,
   },
+  isThin: {
+    type: Boolean,
+    default: true,
+  },
 })
 </script>
 
@@ -53,5 +57,6 @@ const props = defineProps({
     :gap="props.gap"
     :square="props.square"
     :seeMore="props.seeMore"
+    :isThin="props.isThin"
   />
 </template>
