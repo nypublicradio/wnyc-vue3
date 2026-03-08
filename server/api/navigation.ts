@@ -30,7 +30,7 @@ async function getNavigationData () {
                     'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
                 }
             }),
-            axios.get(`${config.public.BFF_URL}/api/streams`),
+            $fetch('/api/streams'),
             axios.get(`${config.public.AVIARY_BASE_API}curated_lists/20/`),
         ])
 
@@ -50,7 +50,7 @@ async function getNavigationData () {
         return {
             wagtailResponse: wagtail.status === 'fulfilled' ? wagtail.value.data : null,
             donateResponse: donate.status === 'fulfilled' ? donate.value.data : null,
-            stationsResponse: stations.status === 'fulfilled' ? stations.value.data : null,
+            stationsResponse: stations.status === 'fulfilled' ? stations.value : null,
             showsResponse: shows.status === 'fulfilled' ? normalizeShowsResponseForMenu(shows.value.data.list_items) : null,
         }
     } catch (fetchError) {

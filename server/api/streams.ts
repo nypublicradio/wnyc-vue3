@@ -84,11 +84,10 @@ const getLivestreams = async () => {
                 }
                 const stationImage = { cmsSource: 'publisher', template: metadata.imageLogo || templatizePublisherImageUrl(stream.image_logo), url: stream.image_logo }
                 // Fetch schedule data from the schedule API
-                const scheduleUrl = `${config.public.BFF_URL}/api/schedule/${slug}?filterMode=next24hours`
-                const scheduleRes = await axios(scheduleUrl)
+                const scheduleRes = await $fetch(`/api/schedule/${slug}?filterMode=next24hours`)
 
                 // Get the current episode from the schedule
-                const currentEpisode = getCurrentEpisodeFromSchedule(scheduleRes.data)
+                const currentEpisode = getCurrentEpisodeFromSchedule(scheduleRes)
 
                 if (!currentEpisode) {
                     return null
