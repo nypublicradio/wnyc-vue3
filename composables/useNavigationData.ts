@@ -91,6 +91,7 @@ export default async function useNavigationData () {
         isInitialized = true
 
         const config = useRuntimeConfig()
+        const isApp = useIsApp()
 
         // Define shared state (singleton)
         headerNavigationData = useState("headerNavigationData", () => [])
@@ -139,7 +140,6 @@ export default async function useNavigationData () {
 
             workingHeaderNav = workingHeaderNav.filter((item) => item.inHeaderMenu !== false)
 
-            const isApp = useIsApp()
             const donateButtonLabel = isApp.value ? "WNYC App Donate Button" : "WNYC Donate Button"
             const donateBanner = bffData.donateResponse?.product_banners?.find(
                 (banner) => banner.value.title === donateButtonLabel

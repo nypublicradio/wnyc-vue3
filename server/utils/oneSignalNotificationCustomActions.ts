@@ -1,19 +1,21 @@
 import {
     askTrackingPermissions,
 } from "~/utilities/helpers"
-import OneSignal from "onesignal-cordova-plugin"
 
 // function to handle trigger actions from OneSignal
 export const doTrigger = async (id: string, val = 'true') => {
-    if (typeof OneSignal !== 'undefined') {
-        await OneSignal.InAppMessages.addTrigger(id, val);
-    } else {
-        console.error('OneSignal SDK not initialized.');
+    if (import.meta.client) {
+        const OneSignal = (await import("onesignal-cordova-plugin")).default || await import("onesignal-cordova-plugin")
+        if (typeof OneSignal !== 'undefined') {
+            await OneSignal.InAppMessages.addTrigger(id, val)
+        } else {
+            console.error('OneSignal SDK not initialized.')
+        }
     }
 }
 
 // switch case for custom actions that can be triggered by OneSignal notifications based on the actionId
-export async function doActionId(actionId: string) {
+export async function doActionId (actionId: string) {
     switch (actionId) {
         case "tracking-permission":
             await askTrackingPermissions()

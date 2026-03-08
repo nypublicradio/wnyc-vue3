@@ -134,7 +134,7 @@ const allMenuData = [
                 },
                 {
                     label: "Get the App",
-                    url: () => useAppDownloadLink().value
+                    url: () => import.meta.client ? useAppDownloadLink().value : "/mobile"
                 },
                 {
                     label: "Careers",
@@ -212,9 +212,6 @@ const allMenuData = [
                     label: "Log out",
                     class: "logout",
                     url: "/home",
-                    command: () => {
-                        logOutUser()
-                    },
                 },
             ],
         ],

@@ -56,7 +56,9 @@ const initializeDeviceInfo = async () => {
   fullDeviceInfo.value = await getFullDeviceInfo();
   appDownloadLink.value = await getAppDownloadLink();
 };
-initializeDeviceInfo();
+if (import.meta.client) {
+  initializeDeviceInfo();
+}
 
 useHead({
   htmlAttrs: {
@@ -74,19 +76,22 @@ const clearAllToasts = () => {
 };
 
 // init the Network listener
-Network.addListener("networkStatusChange", (status) => {
-  if (!isNetworkConnected.value && status.connected) {
-    setTimeout(() => {
-      refreshData();
-      clearAllToasts();
-    }, 1000);
-  }
-  isNetworkConnected.value = status.connected;
-});
+if (import.meta.client) {
+  Network.addListener("networkStatusChange", (status) => {
+    if (!isNetworkConnected.value && status.connected) {
+      setTimeout(() => {
+        refreshData();
+        clearAllToasts();
+      }, 1000);
+    }
+    isNetworkConnected.value = status.connected;
+  });
 
-// set the initial network status
-const initNetworkStatus = await Network.getStatus();
-isNetworkConnected.value = initNetworkStatus.connected;
+  // set the initial network status
+  Network.getStatus().then((initNetworkStatus) => {
+    isNetworkConnected.value = initNetworkStatus.connected;
+  });
+}
 
 // adds listeners for push notifications and appStateChange and appUrlOpen
 const addListeners = async () => {

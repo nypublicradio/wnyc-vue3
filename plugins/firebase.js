@@ -34,5 +34,7 @@ export default defineNuxtPlugin(async () => {
         measurementId: config.public.FB_MEASUREMENT_ID,
     }
     const app = initializeApp(firebaseConfig)
-    getAnalytics(app)
+    if (import.meta.client) {
+        getAnalytics(app)
+    }
 })
