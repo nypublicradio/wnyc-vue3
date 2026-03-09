@@ -97,10 +97,8 @@ export function formatTime (date: any, formatString = "h:mm a") {
 }
 
 // Function to strip HTML tags and return text content
-function stripHtmlTags (str) {
-  const parser = new DOMParser()
-  const dom = parser.parseFromString(str, "text/html")
-  return dom.body.textContent ?? ""
+export function stripHtmlTags (str) {
+  return str ? str.replace(/<[^>]*>?/gm, '') : ''
 }
 
 // Computed property to calculate reading time
@@ -403,21 +401,14 @@ export const copyToClipBoard = async (content: string) => {
   }
 }
 
-// helper function to remove HTML tags from a string
-export const removeHTMLTags = (str) => {
-  const parser = new DOMParser()
-  const parsedHTML = parser.parseFromString(str, "text/html")
-  return parsedHTML.body.textContent ?? ""
-}
-
 // share API
 export const shareAPI = async (
   content,
   componentOfOrigin = "Component of origin not specified"
 ) => {
   const shareData = {
-    title: removeHTMLTags(content.socialTitle || content.title),
-    text: removeHTMLTags(content.rawBody || content.description || content.title),
+    title: stripHtmlTags(content.socialTitle || content.title),
+    text: stripHtmlTags(content.rawBody || content.description || content.title),
     url: content.url || content.titleLink,
   }
 
