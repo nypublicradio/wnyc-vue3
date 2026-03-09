@@ -50,6 +50,32 @@ import useOneSignal from "~/composables/useOneSignal"
 import { capacitorIosNotificationSettings } from '@nypublicradio/capacitor-ios-notification-settings'
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics'
 
+// helper function that turns any string into a valid element id or slug
+export const slugify = (text) => {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
+}
+
+// handle an internal route or external link
+export const getRouteOrLink = (
+  url: string,
+  routingDomains: string[] = [
+    "www.wnyc.org",
+    "demo.wnyc.org",
+    "www.demo.wnyc.org",
+  ]
+) => {
+  if (!url) return url
+  const parsedUrl = new URL(url)
+  if (routingDomains.includes(parsedUrl.hostname)) {
+    console.log("parsedUrl = ", parsedUrl)
+    return parsedUrl.pathname
+  }
+  return url
+}
+
 // function to check if a URL returns a 404
 export const checkUrl404 = async (url) => {
   try {
@@ -70,6 +96,8 @@ export const getOrg = (cmsSource) => {
       return "Gothamist"
     case cmsSources.NPR:
       return "NPR"
+    case cmsSources.SIMPLECAST:
+      return "WNYC"
     default:
       return "WNYC"
   }
@@ -97,10 +125,8 @@ export function formatTime (date: any, formatString = "h:mm a") {
 }
 
 // Function to strip HTML tags and return text content
-function stripHtmlTags (str) {
-  const parser = new DOMParser()
-  const dom = parser.parseFromString(str, "text/html")
-  return dom.body.textContent ?? ""
+export function stripHtmlTags (str) {
+  return str ? str.replace(/<[^>]*>?/gm, '') : ''
 }
 
 // Computed property to calculate reading time
@@ -403,21 +429,14 @@ export const copyToClipBoard = async (content: string) => {
   }
 }
 
-// helper function to remove HTML tags from a string
-export const removeHTMLTags = (str) => {
-  const parser = new DOMParser()
-  const parsedHTML = parser.parseFromString(str, "text/html")
-  return parsedHTML.body.textContent ?? ""
-}
-
 // share API
 export const shareAPI = async (
   content,
   componentOfOrigin = "Component of origin not specified"
 ) => {
   const shareData = {
-    title: removeHTMLTags(content.socialTitle || content.title),
-    text: removeHTMLTags(content.rawBody || content.description || content.title),
+    title: stripHtmlTags(content.socialTitle || content.title),
+    text: stripHtmlTags(content.rawBody || content.description || content.title),
     url: content.url || content.titleLink,
   }
 
@@ -1025,6 +1044,20 @@ export const goToShowPage = (show, params = null) => {
     query: params,
   })
 }
+/* centralized function to route to a card page */
+export const goToCardPage = (item, params = null) => {
+  const path = `${mediaTypeRoutes[mediaTypes.CARD]}${getRouteOrLink(item.url)}`
+  // if the path is a full url, open in new tab
+  if (path.startsWith("http")) {
+    window.open(path, "_blank")
+    return
+  } else {
+    navigateTo({
+      path,
+      query: params,
+    })
+  }
+}
 
 // return bool if the url has a query param
 export const hasQueryParams = (url) => {
@@ -1129,6 +1162,9 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
         break
       case mediaTypes.EVENT:
         goToEventPage(item)
+        break
+      case mediaTypes.CARD:
+        goToCardPage(item)
         break
       default:
         goToEpisodePage(item, null, isSaveHistory)
@@ -1362,27 +1398,3 @@ export const initializeStationList = (stations) => {
   return tempMenuData
 }
 
-// helper function that turns any string into a valid element id or slug
-export const slugify = (text) => {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "")
-}
-
-// handle an internal route or external link
-export const getRouteOrLink = (
-  url: string,
-  routingDomains: string[] = [
-    "www.wnyc.org",
-    "demo.wnyc.org",
-    "www.demo.wnyc.org",
-  ]
-) => {
-  if (!url) return url
-  const parsedUrl = new URL(url)
-  if (routingDomains.includes(parsedUrl.hostname)) {
-    return parsedUrl.pathname + parsedUrl.search + parsedUrl.hash
-  }
-  return url
-}

@@ -8,6 +8,7 @@ export const WAGTAIL_PAGE_TYPES = {
   'tagpages.TagPage': 'tag_page',
   'event_page': 'event',
   'episode': 'episode',
+  'card': 'card',
 }
 
 /**
