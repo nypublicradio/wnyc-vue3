@@ -56,8 +56,7 @@ export default defineNuxtConfig({
     },
   },
 
-  /* ssr: process.env.ISAPP === 'false' ? true : false, */
-  ssr: process.env.NUXT_PUBLIC_IS_CAPACITOR_BUILD ? false : true,
+  ssr: Boolean(process.env.NUXT_SSR),
 
   ionic: {
     integrations: {
