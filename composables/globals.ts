@@ -58,6 +58,7 @@ export const mediaTypes = {
     ARTICLE: 'article',
     NPR_EPISODE: 'npr_episode',
     NPR_ARTICLE: 'npr_article',
+    CARD: 'card',
 }
 
 export const mediaTypeRoutes = {
@@ -72,6 +73,7 @@ export const mediaTypeRoutes = {
     [mediaTypes.NPR_ARTICLE]: '/npr/',
     [mediaTypes.EVENT]: '/events/',
     [mediaTypes.SIMPLECAST]: '/browse/shows/episode/simplecast/',
+    [mediaTypes.CARD]: '',
 }
 
 export const FALLBACKIMAGE = '/fallback/wnyc.webp'

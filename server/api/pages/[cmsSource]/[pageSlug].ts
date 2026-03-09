@@ -35,6 +35,7 @@ const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean) => {
         const resData = humps.camelizeKeys(res.data)
         // Add cmsSource to the data so normalizeArticlePage knows which normalizer to use
         resData.cmsSource = cmsSources.WAGTAIL
+        console.log("resData", resData?.body[0].value.list)
         // Transform curated content if it exists
         if (resData.body && Array.isArray(resData.body)) {
             // if isShowOnly is true, just return null and ignore the body
@@ -42,6 +43,7 @@ const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean) => {
             const transformedCuratedContent = isShowOnly ? null : await transformCuratedContent(resData.body, 'default', pageSlug)
 
             // if isShowOnly is true, we don't want to return the inPageNavigation
+
             if (isShowOnly) {
                 delete resData.inPageNavigation
             }

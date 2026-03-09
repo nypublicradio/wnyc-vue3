@@ -20,7 +20,7 @@ const {
         (item) => {
           return {
             label: item.value.linkText,
-            id: slugify(item.value.targetId),
+            id: slugify(item.value.targetId || item.value.linkText),
           }
         }
       )
@@ -126,6 +126,7 @@ onUnmounted(() => {
       </template>
     </div>
     <section class="py-4">
+      <!-- <pre class="text-xs">{{ show?.body }}</pre> -->
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
