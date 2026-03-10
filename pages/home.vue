@@ -1,45 +1,45 @@
 <script setup>
-import { useCurrentEpisode, useIsApp } from "~/composables/states"
+import { useCurrentEpisode, useIsApp } from "~/composables/states";
 // import { useTopStories } from "~/composables/useTopStories"
 // const { topStories } = useTopStories()
-import { brandCards } from "~/composables/globals.ts"
+import { brandCards } from "~/composables/globals.ts";
 
 useHead({
   bodyAttrs: {
     class: "no-bottom-padding",
   },
-})
+});
 
-const config = useRuntimeConfig()
-const currentEpisode = useCurrentEpisode()
-const isApp = useIsApp()
+const config = useRuntimeConfig();
+const currentEpisode = useCurrentEpisode();
+const isApp = useIsApp();
 
 const { data: latestNewsUpdatesData, error: error2 } = useLazyFetch(
   `${config.public.BFF_URL}/api/homepagelatestnewsupdates`
-)
+);
 
 const {
   data: pagedata,
   error,
   status,
-} = useLazyFetch(`${config.public.BFF_URL}/api/homepagecuration`)
+} = useLazyFetch(`${config.public.BFF_URL}/api/homepagecuration`);
 
 definePageMeta({
   layout: "default",
   layoutTransition: {
     name: "login",
   },
-})
+});
 
 onMounted(() => {
   // send GA page view
-  const { $analytics } = useNuxtApp()
+  const { $analytics } = useNuxtApp();
   $analytics.sendPageView({
     page_title: "Home",
     page_type: "home_page",
     content_group: "home",
-  })
-})
+  });
+});
 </script>
 
 <template>
