@@ -1,0 +1,105 @@
+components/VImageWagtail.vue:169:  return window.innerWidth * window.devicePixelRatio > props.maxWidth
+components/VImageWagtail.vue:171:    : (window.innerWidth - modalFramePaddingOffset) * window.devicePixelRatio
+components/VImageWagtail.vue:176:  const newWidth = computedEnlargeWidth.value / window.devicePixelRatio
+components/VImageWagtail.vue:179:  return Math.round((newWidth / originalRatio) * window.devicePixelRatio)
+components/VShareToolsItem.vue:154:    window.open(`${shareUrl.value}`, "_self")
+components/VShareToolsItem.vue:176:  const newWindow = window.open(
+components/TheHeader.vue:59:  window.open(memberCenterLink, "_blank")
+components/SkipToContent.vue:8:  const mainContent = document.getElementById("main-content")
+components/VSmartHeader.vue:65:      ? document.getElementsByClassName(props.targetWindowClass)[0]
+components/FileSystem.vue:18://     navigator.webkitPersistentStorage.queryUsageAndQuota((usedBytes, grantedBytes) => {
+components/HtmlConvert.vue:39:    return window.innerWidth >= 1200 ? 658 : window.innerWidth - 48
+components/supabase/VUploadImage.vue:91:        const canvas = document.createElement("canvas")
+components/SField.vue:43:  const closeBtn = document.querySelectorAll(
+components/Schedule.vue:130:  window.open(
+components/VImagePublisher.vue:240:  const img = document.getElementsByClassName("p-image-preview")
+components/VImagePublisher.vue:256:      : window.innerWidth
+components/EpisodeTemplate.vue:179:  const activeStation = document.getElementById("comments")
+components/VImageNpr.vue:170:  return window.innerWidth * window.devicePixelRatio > props.maxWidth
+components/VImageNpr.vue:172:    : (window.innerWidth - modalFramePaddingOffset) * window.devicePixelRatio
+components/VImageNpr.vue:177:  const newWidth = computedEnlargeWidth.value / window.devicePixelRatio
+components/VImageNpr.vue:180:  return Math.round((newWidth / originalRatio) * window.devicePixelRatio)
+components/VImageNpr.vue:261:      : window.innerWidth
+components/PullToRefresh.vue:23:  window.addEventListener("touchstart", swipeStart, false)
+components/PullToRefresh.vue:27:  window.removeEventListener("touchstart", swipeStart, false)
+components/PullToRefresh.vue:31:  window.addEventListener("touchmove", swipeMove, false)
+components/PullToRefresh.vue:32:  window.addEventListener("touchend", swipeEnd, false)
+components/PullToRefresh.vue:36:  window.removeEventListener("touchmove", swipeMove, false)
+components/PullToRefresh.vue:37:  window.removeEventListener("touchend", swipeEnd, false)
+components/PullToRefresh.vue:69:    //window.location.reload()
+components/PullToRefresh.vue:87:  if (window.scrollY < 10) {
+components/PullToRefresh.vue:110:  if (isPullDown(changeY) && window.scrollY === 0) {
+components/account-modals/AdjustDonation.vue:49:      document.getElementById("otherInputId")?.focus()
+components/BrandCard.vue:12:  window.open(brand.url, "_blank")
+components/DonateBanner.vue:27:    window.open(donateLink.value, "_blank")
+components/DonateBanner.vue:30:    window.open("https://donate.wnyc.org/page/contribute", "_blank")
+components/VStreamfield.vue:54:  if (window.twttr) {
+components/VStreamfield.vue:56:    window.twttr.widgets.load()
+components/VStreamfield.vue:57:  } else if (!document.getElementById("twttr-widgets")) {
+components/VStreamfield.vue:58:    const embed = document.createElement("script")
+components/VStreamfield.vue:61:    document.body.appendChild(embed)
+components/DropupMenuApp.vue:69:  document.body.removeEventListener("touchmove", preventScrollOnTouch, {
+components/DropupMenuApp.vue:89:  panel.value = document.getElementById("dropup-panel")
+components/DropupMenuApp.vue:92:  document.body.addEventListener("touchmove", preventScrollOnTouch, {
+components/player/VNewPersistentPlayer.vue:518:  window.addEventListener("keydown", (event) => {
+components/streamfield/EmbedInstagram.vue:11:  const js = document.createElement("script")
+components/streamfield/EmbedTiktok.vue:11:  const js = document.createElement("script")
+components/streamfield/EmbedTweet.vue:13:      children: `window.twttr = (function(d, s, id) {
+components/streamfield/EmbedTweet.vue:15:            t = window.twttr || {};
+components/streamfield/EmbedTweet.vue:61:    if (window.twttr?.widgets?.createTweet) {
+components/streamfield/EmbedTweet.vue:67:      const newTweetDiv = document.createElement("DIV")
+components/streamfield/EmbedTweet.vue:70:      window.twttr.widgets
+components/streamfield/EmbedTweet.vue:84:  if (window.twttr) {
+pages/saved.vue:16:  const selectedItem = document.getElementsByClassName("selected")
+pages/staff/[slug].vue:110:  window.history.state.back ? router.go(-1) : navigateTo("/home")
+pages/browse/index.vue:70:    window.scrollTo(0, 0)
+pages/browse/shows/episode/[cmsSource]/[slug]/transcript.vue:97:    `${window.location.href}`,
+pages/browse/shows/episode/[cmsSource]/[slug]/transcript.vue:134:  const scrolled = window.scrollY > 0
+pages/browse/shows/episode/[cmsSource]/[slug]/transcript.vue:159:  window.addEventListener("scroll", debouncedScroll, { passive: true })
+pages/browse/shows/episode/[cmsSource]/[slug]/transcript.vue:163:  window.removeEventListener("scroll", debouncedScroll)
+pages/browse/shows/[slug]/index.vue:41:  const element = document.getElementById(sectionId)
+pages/browse/shows/[slug]/index.vue:45:      element.getBoundingClientRect().top + window.pageYOffset
+pages/browse/shows/[slug]/index.vue:48:    window.scrollTo({
+layouts/default.vue:32:      const header = document.querySelector("the-header");
+composables/useManageScrollPosition.ts:7:        scrollPosition.value = window.scrollY
+composables/useManageScrollPosition.ts:10:            document.body.classList.add("p-overflow-hidden")
+composables/useManageScrollPosition.ts:15:        document.body.classList.remove("p-overflow-hidden")
+composables/useManageScrollPosition.ts:17:            window.scrollTo(0, parseInt(scrollPosition.value))
+composables/useBreakpoints.js:50:        overlayElement = document.createElement('div')
+composables/useBreakpoints.js:61:        document.body.appendChild(overlayElement)
+composables/useBreakpoints.js:135:        globalWindowWidth.value = window.innerWidth
+composables/useBreakpoints.js:136:        const newBreakpoint = getCurrentBreakpoint(window.innerWidth)
+composables/useBreakpoints.js:148:        globalWindowWidth.value = window.innerWidth
+composables/useBreakpoints.js:149:        globalBreakpoint.value = getCurrentBreakpoint(window.innerWidth)
+composables/useBreakpoints.js:150:        window.addEventListener("resize", handleResize)
+composables/useBreakpoints.js:160:        window.removeEventListener("resize", handleResize)
+composables/useMembership.js:149:    window.open(
+composables/useMembership.js:158:    window.open(url, "_blank")
+composables/useMembership.js:163:    window.open(url, "_blank")
+composables/useOneSignal.ts:87:        window.open(url, "_blank")
+composables/useOneSignal.ts:123:        window.location.reload()
+composables/data/liveStream.ts:365:    const activeStation = document.getElementsByClassName("activestation")
+utilities/file-system.ts:198:        const aElm = document.createElement('a')
+utilities/file-system.ts:203:        document.body.appendChild(aElm)
+utilities/file-system.ts:209:        document.body.removeChild(aElm)
+utilities/helpers.ts:248:  document.documentElement.style.fontSize = size
+utilities/helpers.ts:274:    ? document.documentElement.classList.add("style-mode-dark")
+utilities/helpers.ts:275:    : document.documentElement.classList.remove("style-mode-dark")
+utilities/helpers.ts:297:    window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+utilities/helpers.ts:373:      if (navigator.clipboard && window.isSecureContext) {
+utilities/helpers.ts:374:        await navigator.clipboard.writeText(content)
+utilities/helpers.ts:377:        const textArea = document.createElement('textarea')
+utilities/helpers.ts:382:        document.body.appendChild(textArea)
+utilities/helpers.ts:385:        document.execCommand('copy')
+utilities/helpers.ts:428:  if (navigator.share && shareData.url) {
+utilities/helpers.ts:430:      await navigator.share({
+utilities/helpers.ts:534:        await localStorage.clear()
+utilities/helpers.ts:932:  const val = getComputedStyle(document.documentElement).getPropertyValue(name)
+utilities/helpers.ts:973:    window.open(theLink, "_blank")
+utilities/helpers.ts:990:  //   window.open(theLink, "_blank")
+utilities/local-notifications.ts:97:            window.location.href = `/live?slug=${data.notification.extra.slug}&autoplay=true`
+utilities/media-session.js:78:            navigator.mediaSession.metadata = new MediaMetadata({
+plugins/analytics.client.ts:21:            page_location: document.location.href,
+plugins/analytics.client.ts:22:            page_title: document.title,
+plugins/analytics.client.ts:30:        page_location: document.location.href,
+plugins/analytics.client.ts:31:        page_title: document.title,

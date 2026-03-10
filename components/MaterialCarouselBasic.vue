@@ -1,7 +1,7 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from "vue"
-import { useBreakpoints } from "~/composables/useBreakpoints"
-import scssVariables from "~/assets/scss/export.module.scss"
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { useBreakpoints } from "~/composables/useBreakpoints";
+import scssVariables from "~/assets/scss/export.module.scss";
 
 const props = defineProps({
   // Gap between items in pixels (M3 default: 8dp)
@@ -19,227 +19,227 @@ const props = defineProps({
     type: Number,
     default: 40,
   },
-})
+});
 
-const carouselRef = ref(null)
-const trackRef = ref(null)
-const currentScrollLeft = ref(0)
-const maxScrollLeft = ref(0)
-const containerWidth = ref(0)
-const showLeftArrow = ref(false)
-const showRightArrow = ref(true)
+const carouselRef = ref(null);
+const trackRef = ref(null);
+const currentScrollLeft = ref(0);
+const maxScrollLeft = ref(0);
+const containerWidth = ref(0);
+const showLeftArrow = ref(false);
+const showRightArrow = ref(true);
 
 // Resize observing
-let resizeObserver = null
+let resizeObserver = null;
 
 // Breakpoint logic for snap buffer
-const { breakpoint } = useBreakpoints()
+const { breakpoint } = useBreakpoints();
 
 const marginBuffer = computed(() => {
   // Parse SCSS values (e.g. "1.5rem" -> pixels)
   const getPx = (val) => {
-    if (!val) return 0
-    if (val.endsWith("px")) return parseFloat(val)
+    if (!val) return 0;
+    if (val.endsWith("px")) return parseFloat(val);
     if (val.endsWith("rem")) {
       // Approximate or assume root 16px
-      return parseFloat(val) * 16
+      return parseFloat(val) * 16;
     }
-    return parseFloat(val)
-  }
+    return parseFloat(val);
+  };
 
-  const mobilePadding = getPx(scssVariables.padding)
-  const desktopPadding = getPx(scssVariables.paddingDesktop)
+  const mobilePadding = getPx(scssVariables.padding);
+  const desktopPadding = getPx(scssVariables.paddingDesktop);
 
   // Match SCSS logic:
   // >= xxl -> 0
   // >= md -> desktopPadding
   // else -> mobilePadding
-  if (breakpoint(">=xxl")) return 0
-  if (breakpoint(">=md")) return desktopPadding
-  return mobilePadding
-})
+  if (breakpoint(">=xxl")) return 0;
+  if (breakpoint(">=md")) return desktopPadding;
+  return mobilePadding;
+});
 
 // Edge fade gradient mask style - Dynamic based on scroll position
 const maskStyle = computed(() => {
-  if (!props.edgeFade) return {}
+  if (!props.edgeFade) return {};
 
-  const fadeDistance = props.edgeFadeDistance
-  const isStart = currentScrollLeft.value <= 5 // Tolerance
-  const isEnd = currentScrollLeft.value >= maxScrollLeft.value - 5 // Tolerance
+  const fadeDistance = props.edgeFadeDistance;
+  const isStart = currentScrollLeft.value <= 5; // Tolerance
+  const isEnd = currentScrollLeft.value >= maxScrollLeft.value - 5; // Tolerance
 
-  let maskString = ""
+  let maskString = "";
 
   if (isStart && isEnd) {
     // Content fits, no mask needed usually, or full visibility
-    return {}
+    return {};
   } else if (isStart) {
     // Only right mask
-    maskString = `linear-gradient(to right, black calc(100% - ${fadeDistance}px), transparent 100%)`
+    maskString = `linear-gradient(to right, black calc(100% - ${fadeDistance}px), transparent 100%)`;
   } else if (isEnd) {
     // Only left mask
-    maskString = `linear-gradient(to right, transparent 0, black ${fadeDistance}px)`
+    maskString = `linear-gradient(to right, transparent 0, black ${fadeDistance}px)`;
   } else {
     // Both masks
-    maskString = `linear-gradient(to right, transparent 0, black ${fadeDistance}px, black calc(100% - ${fadeDistance}px), transparent 100%)`
+    maskString = `linear-gradient(to right, transparent 0, black ${fadeDistance}px, black calc(100% - ${fadeDistance}px), transparent 100%)`;
   }
 
   return {
     maskImage: maskString,
     WebkitMaskImage: maskString,
-  }
-})
+  };
+});
 
 // Scroll Handler
 const onScroll = () => {
-  if (!trackRef.value) return
-  currentScrollLeft.value = trackRef.value.scrollLeft
+  if (!trackRef.value) return;
+  currentScrollLeft.value = trackRef.value.scrollLeft;
 
   // Update Arrow State
-  showLeftArrow.value = currentScrollLeft.value > 5
+  showLeftArrow.value = currentScrollLeft.value > 5;
   // Allowing a small buffer for float precision
-  showRightArrow.value = currentScrollLeft.value < maxScrollLeft.value - 5
-}
+  showRightArrow.value = currentScrollLeft.value < maxScrollLeft.value - 5;
+};
 
 // Navigation Logic
-const isAnimating = ref(false)
+const isAnimating = ref(false);
 
 // Helper to unlock animation state
 const unlockAnimation = () => {
-  isAnimating.value = false
-}
+  isAnimating.value = false;
+};
 // Get snap position based on target position and direction
 const getSnapPosition = (targetPos, direction) => {
-  if (!trackRef.value) return targetPos
-  const children = Array.from(trackRef.value.children)
+  if (!trackRef.value) return targetPos;
+  const children = Array.from(trackRef.value.children);
 
   // Find closest item start to targetPos
   // But strictly respecting direction relative to current position
 
-  let bestPos = targetPos
-  let minDiff = Infinity
+  let bestPos = targetPos;
+  let minDiff = Infinity;
 
   // Safety buffer
-  const current = currentScrollLeft.value
-  const buffer = 10
-  const bufferOffset = marginBuffer.value
+  const current = currentScrollLeft.value;
+  const buffer = 10;
+  const bufferOffset = marginBuffer.value;
 
   for (const child of children) {
     // Adjust pos to account for the visual buffer we want to maintain
     // So if child starts at 100, and buffer is 20, we want to snap to 80 (so child starts at 20 visual)
-    const pos = Math.max(0, child.offsetLeft - bufferOffset)
+    const pos = Math.max(0, child.offsetLeft - bufferOffset);
 
     // Direction constraint
-    if (direction === "next" && pos <= current + buffer) continue
-    if (direction === "prev" && pos >= current - buffer) continue
+    if (direction === "next" && pos <= current + buffer) continue;
+    if (direction === "prev" && pos >= current - buffer) continue;
 
     // Find closest snap point to the ideal target
-    const diff = Math.abs(pos - targetPos)
+    const diff = Math.abs(pos - targetPos);
     if (diff < minDiff) {
-      minDiff = diff
-      bestPos = pos
+      minDiff = diff;
+      bestPos = pos;
     }
   }
 
   // Boundary checks if nothing found (should rarely happen if target is reasonable)
   if (minDiff === Infinity) {
-    return direction === "next" ? maxScrollLeft.value : 0
+    return direction === "next" ? maxScrollLeft.value : 0;
   }
 
-  return bestPos
-}
+  return bestPos;
+};
 // Scroll to previous item
 const scrollToPrev = () => {
-  if (!trackRef.value) return
-  isAnimating.value = true
+  if (!trackRef.value) return;
+  isAnimating.value = true;
 
-  const containerW = containerWidth.value
-  const idealTarget = currentScrollLeft.value - containerW * 0.9
-  const targetScroll = getSnapPosition(Math.max(0, idealTarget), "prev")
+  const containerW = containerWidth.value;
+  const idealTarget = currentScrollLeft.value - containerW * 0.9;
+  const targetScroll = getSnapPosition(Math.max(0, idealTarget), "prev");
 
   trackRef.value.scrollTo({
     left: targetScroll,
     behavior: "smooth",
-  })
+  });
 
   // Safety timeout for unlock if scrollend doesn't fire
-  setTimeout(unlockAnimation, 600)
-}
+  setTimeout(unlockAnimation, 600);
+};
 // Scroll to next item
 const scrollToNext = () => {
-  if (!trackRef.value) return
-  isAnimating.value = true
+  if (!trackRef.value) return;
+  isAnimating.value = true;
 
-  const containerW = containerWidth.value
-  const idealTarget = currentScrollLeft.value + containerW * 0.9
+  const containerW = containerWidth.value;
+  const idealTarget = currentScrollLeft.value + containerW * 0.9;
   const targetScroll = getSnapPosition(
     Math.min(maxScrollLeft.value, idealTarget),
     "next"
-  )
+  );
 
   trackRef.value.scrollTo({
     left: targetScroll,
     behavior: "smooth",
-  })
+  });
 
   // Safety timeout for unlock if scrollend doesn't fire
-  setTimeout(unlockAnimation, 600)
-}
+  setTimeout(unlockAnimation, 600);
+};
 
 // Update metrics logic
 const updateMetrics = () => {
-  if (!trackRef.value || !carouselRef.value) return
+  if (!trackRef.value || !carouselRef.value) return;
 
-  containerWidth.value = carouselRef.value.offsetWidth
+  containerWidth.value = carouselRef.value.offsetWidth;
   // maxScrollLeft is total scroll width minus visible width
-  maxScrollLeft.value = trackRef.value.scrollWidth - trackRef.value.clientWidth
+  maxScrollLeft.value = trackRef.value.scrollWidth - trackRef.value.clientWidth;
 
-  onScroll()
-}
+  onScroll();
+};
 
-let mutationObserver = null
+let mutationObserver = null;
 
 onMounted(() => {
   if (carouselRef.value) {
-    containerWidth.value = carouselRef.value.offsetWidth
+    containerWidth.value = carouselRef.value.offsetWidth;
     resizeObserver = new ResizeObserver((entries) => {
       // Wrap in rAF to avoid "ResizeObserver loop limit exceeded"
       requestAnimationFrame(() => {
-        if (!entries.length) return
-        updateMetrics()
-      })
-    })
-    resizeObserver.observe(carouselRef.value)
+        if (!entries.length) return;
+        updateMetrics();
+      });
+    });
+    resizeObserver.observe(carouselRef.value);
   }
 
-  if (trackRef.value) {
+  if (trackRef.value && trackRef.value instanceof Element) {
     mutationObserver = new MutationObserver(() => {
       // Content changed (e.g. items added), re-measure scroll width
-      updateMetrics()
-    })
+      updateMetrics();
+    });
     mutationObserver.observe(trackRef.value, {
       childList: true,
       subtree: true,
       characterData: true,
-    })
+    });
 
     // Initial Scroll Check
-    updateMetrics()
+    updateMetrics();
 
     // Add scrollend listener for robust unlock
-    trackRef.value.addEventListener("scrollend", unlockAnimation)
+    trackRef.value.addEventListener("scrollend", unlockAnimation);
   }
 
   // Double check after a tick to ensure layout is done
-  setTimeout(updateMetrics, 100)
-})
+  setTimeout(updateMetrics, 100);
+});
 
 onBeforeUnmount(() => {
   if (trackRef.value) {
-    trackRef.value.removeEventListener("scrollend", unlockAnimation)
+    trackRef.value.removeEventListener("scrollend", unlockAnimation);
   }
-  if (mutationObserver) mutationObserver.disconnect()
-  if (resizeObserver) resizeObserver.disconnect()
-})
+  if (mutationObserver) mutationObserver.disconnect();
+  if (resizeObserver) resizeObserver.disconnect();
+});
 </script>
 
 <template>

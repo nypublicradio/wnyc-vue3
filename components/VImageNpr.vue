@@ -1,9 +1,9 @@
 <script setup>
-import VFlexibleLink from "./VFlexibleLink.vue"
-import Button from "primevue/button"
-import Dialog from "primevue/dialog"
-import ProgressSpinner from "primevue/progressspinner"
-import { computed, ref } from "vue"
+import VFlexibleLink from "./VFlexibleLink.vue";
+import Button from "primevue/button";
+import Dialog from "primevue/dialog";
+import ProgressSpinner from "primevue/progressspinner";
+import { computed, ref } from "vue";
 
 const props = defineProps({
   /**
@@ -106,7 +106,7 @@ const props = defineProps({
   /** * List of display densities to generate sizes for in the srcset */
   srcset: {
     default() {
-      return [1, 2]
+      return [1, 2];
     },
     type: Array,
   },
@@ -124,22 +124,22 @@ const props = defineProps({
     default: null,
     type: [Number, String],
   },
-})
+});
 const emit = defineEmits([
   "image-click",
   "image-enlarge-click",
   "image-load",
   "enlarge-image-load",
-])
+]);
 
-const refThisImg = ref(null)
-const thisWidth = ref(null)
+const refThisImg = ref(null);
+const thisWidth = ref(null);
 const theSrc = computed(() => {
   return props.src
     .replace("{width}", props.width)
     .replace("{quality}", props.quality)
-    .replace("{format}", props.format)
-})
+    .replace("{format}", props.format);
+});
 
 const theSrcFull = computed(() => {
   return props.src
@@ -148,118 +148,124 @@ const theSrcFull = computed(() => {
       props.maxWidth !== Infinity ? `s=${props.maxWidth}` : ""
     )
     .replace("{quality}", props.quality)
-    .replace("{format}", props.format)
-})
+    .replace("{format}", props.format);
+});
 
 const isVertical = ref(
   props.allowVerticalEffect &&
     props.maxHeight >= props.maxWidth &&
     props.maxHeight !== Infinity &&
     props.maxWidth !== Infinity
-)
-const loadingEnlargedImage = ref(false)
-const loadedEnlargedImage = ref(true)
+);
+const loadingEnlargedImage = ref(false);
+const loadedEnlargedImage = ref(true);
 
 const computedWidth = computed(() => {
   return isVertical.value
     ? Math.round(props.maxWidth / (props.maxHeight / props.height))
-    : props.width
-})
+    : props.width;
+});
 const computedEnlargeWidth = computed(() => {
-  const modalFramePaddingOffset = 84
-  return window.innerWidth * window.devicePixelRatio > props.maxWidth
-    ? props.maxWidth
-    : (window.innerWidth - modalFramePaddingOffset) * window.devicePixelRatio
-})
+  const modalFramePaddingOffset = 84;
+  if (import.meta.client) {
+    return window.innerWidth * window.devicePixelRatio > props.maxWidth
+      ? props.maxWidth
+      : (window.innerWidth - modalFramePaddingOffset) * window.devicePixelRatio;
+  }
+  return props.maxWidth;
+});
 const computedEnlargeHeight = computed(() => {
-  const originalWidth = props.maxWidth
-  const originalHeight = props.maxHeight
-  const newWidth = computedEnlargeWidth.value / window.devicePixelRatio
-  const originalRatio = originalWidth / originalHeight
+  if (import.meta.client) {
+    const originalWidth = props.maxWidth;
+    const originalHeight = props.maxHeight;
+    const newWidth = computedEnlargeWidth.value / window.devicePixelRatio;
+    const originalRatio = originalWidth / originalHeight;
 
-  return Math.round((newWidth / originalRatio) * window.devicePixelRatio)
-})
+    return Math.round((newWidth / originalRatio) * window.devicePixelRatio);
+  }
+  return props.height;
+});
 // method to handle the click on the enlarge button and its loading states
 const enlarge = () => {
-  loadingEnlargedImage.value = true
-  loadedEnlargedImage.value = false
-  emit("image-enlarge-click")
-}
+  loadingEnlargedImage.value = true;
+  loadedEnlargedImage.value = false;
+  emit("image-enlarge-click");
+};
 // method called when the imamge is loaded
 const enlargeLoad = (target) => {
-  emit("enlarge-image-load", target)
-  loadedEnlargedImage.value = true
-}
+  emit("enlarge-image-load", target);
+  loadedEnlargedImage.value = true;
+};
 
 const handleProvider = computed(() => {
-  return isNaN(props.src) ? null : props.provider
-})
+  return isNaN(props.src) ? null : props.provider;
+});
 // a function that returns the dimensions of the image
 const getDimensions = () => {
-  const hRatio = Number(props.ratio[0])
-  const vRatio = Number(props.ratio[1])
+  const hRatio = Number(props.ratio[0]);
+  const vRatio = Number(props.ratio[1]);
   if (props.width) {
     return {
       height: props.height,
       width: isVertical.value
         ? Math.round(props.maxWidth / (props.maxHeight / props.height))
         : props.width,
-    }
+    };
   } else {
     //console.log('thisWidth.value =  ', thisWidth.value)
-    let theWidth = thisWidth.value
+    let theWidth = thisWidth.value;
     if (props.maxWidth && props.maxWidth < theWidth) {
-      theWidth = props.maxWidth
+      theWidth = props.maxWidth;
     }
     return {
       height: Math.round((theWidth * vRatio) / hRatio),
       width: theWidth,
-    }
+    };
   }
-}
+};
 
 const srcset = computed(() => {
-  const template = props.src
+  const template = props.src;
   if (template) {
     //# skipcq JS-0123
-    let srcset = ""
-    let lastImage = false
+    let srcset = "";
+    let lastImage = false;
     for (const size of props.srcset) {
       /* continue if it is NOT the lastImage and the image has more pixels than its rendered area */
       if (!lastImage && props.maxWidth > getDimensions().width) {
-        let width = Math.round(getDimensions().width * size)
+        let width = Math.round(getDimensions().width * size);
 
         /* the image no longer has enough resolution to support the next srcset, use its maximum size and make it the last on the srcset list */
         if (width > props.maxWidth) {
-          width = props.maxWidth
-          lastImage = true
+          width = props.maxWidth;
+          lastImage = true;
         }
         // if we are on the last size in the arraym set lastImage to true
         if (props.srcset.length - 1 === props.srcset.indexOf(size)) {
-          lastImage = true
+          lastImage = true;
         }
         const url = template
           .replace("{width}", width)
           .replace("{quality}", props.quality)
-          .replace("{format}", props.format)
-        srcset += `${url} ${size}x${!lastImage ? "," : ""} `
+          .replace("{format}", props.format);
+        srcset += `${url} ${size}x${!lastImage ? "," : ""} `;
       }
     }
-    return srcset
+    return srcset;
   } else {
-    return undefined
+    return undefined;
   }
-})
+});
 
 onMounted(async () => {
-  await nextTick()
+  await nextTick();
   thisWidth.value =
     refThisImg.value.offsetWidth !== 0
       ? refThisImg.value.offsetWidth
       : typeof window === "undefined"
       ? props.defaultWidth
-      : window.innerWidth
-})
+      : window.innerWidth;
+});
 </script>
 
 <template>

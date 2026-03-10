@@ -1,0 +1,86 @@
+server/api/series/[seriesSlug].ts:1:import axios from 'axios'
+server/api/series/[seriesSlug].ts:9:    const res = await axios(`${config.public.PUBLISHER_BASE_API}v3/channel/series/${seriesSlug}`);
+server/api/buckets/[bucketSlug].ts:1:import axios from 'axios'
+server/api/buckets/[bucketSlug].ts:9:    const res = await axios(`${config.public.PUBLISHER_BASE_API}/v3/buckets/${bucketSlug}`);
+server/api/donation/cancel.post.ts:1:import axios from 'axios';
+server/api/donation/cancel.post.ts:87:        const response = await axios.post(apiUrl, null, {
+server/api/donation/cancel.post.ts:128:        // Handle axios errors
+server/api/donation/update.post.ts:1:import axios from 'axios';
+server/api/donation/update.post.ts:73:        const response = await axios.post(apiUrl, null, {
+server/api/navigation.ts:1:import axios from 'axios'
+server/api/navigation.ts:23:            axios.get(config.public.HEADER_NAVIGATION_API as string, {
+server/api/navigation.ts:28:            axios.get(config.public.SYSTEM_MESSAGES_API as string, {
+server/api/navigation.ts:34:            axios.get(`${config.public.AVIARY_BASE_API}curated_lists/20/`),
+server/api/show/episode/[episodeslug].ts:1:import axios from 'axios'
+server/api/show/episode/[episodeslug].ts:14:        const res = await axios(option)
+server/api/show/[showslug].ts:1:import axios from 'axios'
+server/api/show/[showslug].ts:27:        const res = await axios(option)
+server/api/show/[showslug].ts:51:        const res = await axios(option)
+server/api/homepagetopstories.ts:2:import axios from 'axios'
+server/api/homepagetopstories.ts:27:		res = await axios(options)
+server/api/homepagetopstories.ts:49:		res = await axios(options)
+server/api/radio-shows/[showSlug].ts:1:import axios from 'axios'
+server/api/radio-shows/[showSlug].ts:9:    const res = await axios(`${config.public.PUBLISHER_BASE_API}v3/channel/shows/${showSlug}/radio-shows`);
+server/api/npr/[storyId].ts:1:import axios from 'axios'
+server/api/npr/[storyId].ts:17:        const res = await axios(option)
+server/api/homepagelatestnewsupdates.ts:2:import axios from 'axios'
+server/api/homepagelatestnewsupdates.ts:22:		const res = await axios(options)
+server/api/homepagelatestnewsupdates.ts:46:		const res = await axios(options)
+server/api/homepagelatestnewsupdates.ts:48:		const mp3Res = await axios(resData.attributes.audio)
+server/api/v2/show/episode/[cmsSource]/[episodeslug].ts:1:import axios from 'axios'
+server/api/v2/show/episode/[cmsSource]/[episodeslug].ts:36:        const res = await axios(option)
+server/api/v2/show/episode/[cmsSource]/[episodeslug].ts:128:    const res = await axios(option)
+server/api/v2/show/[showslug].ts:1:import axios from 'axios'
+server/api/v2/show/[showslug].ts:83:    const res = await axios(option)
+server/api/v2/show/[showslug].ts:119:            const res = await axios(option)
+server/api/v2/show/[showslug].ts:149:            const { data } = await axios(options)
+server/api/v2/show/[showslug].ts:171:        const res = await axios(option)
+server/api/v2/showsmenu.ts:1:import axios from 'axios'
+server/api/v2/showsmenu.ts:19:    const res = await axios(option)
+server/api/v2/shows.ts:1:import axios from 'axios'
+server/api/v2/shows.ts:33:            const { data } = await axios(options)
+server/api/v2/shows.ts:71:    const res = await axios(option)
+server/api/v2/shows.ts:94:    const res = await axios(option)
+server/api/whatson/[stationslug].ts:15:import axios from 'axios'
+server/api/whatson/[stationslug].ts:87:		const scheduleRes = await axios(scheduleUrl)
+server/api/whatson/[stationslug].ts:160:// 	const playlistResponse = await axios.get(stream);
+server/api/whatson/[stationslug].ts:174:// 		const mediaPlaylistResponse = await axios.get(variantUri);
+server/api/whatson/[stationslug].ts:186:// 	// 	const mediaPlaylistResponse = await axios.get(variantUri);
+server/api/team/[cmsSource]/[showSlug].ts:1:import axios from 'axios'
+server/api/team/[cmsSource]/[showSlug].ts:9:    const res = await axios(`${config.public.PUBLISHER_BASE_API}/v3/channel/shows/${showSlug}/the-team`);
+server/api/v3/show/[showslug]/episodes.ts:1:import axios from 'axios'
+server/api/v3/show/[showslug]/episodes.ts:76:        const res = await axios(options)
+server/api/v3/show/[showslug].ts:1:import axios from 'axios'
+server/api/v3/show/[showslug].ts:126:        const res = await axios(options)
+server/api/v3/shows.ts:1:import axios from "axios"
+server/api/v3/shows.ts:35:        const res = await axios(options)
+server/api/v3/shows.ts:75:        const res = await axios(options)
+server/api/people/[cmsSource]/[personSlug].ts:1:import axios from 'axios'
+server/api/people/[cmsSource]/[personSlug].ts:12:    const res = await axios(`${config.public.PUBLISHER_BASE_API}/v3/person/${personSlug}`);
+server/api/staff/[cmsSource]/[staffSlug].ts:1:import axios from 'axios'
+server/api/staff/[cmsSource]/[staffSlug].ts:24:    const res = await axios(options);
+server/api/browse/browse-topic/getTopicData.ts:2:import axios from 'axios'
+server/api/browse/browse-topic/getTopicData.ts:15:        const res = await axios(options)
+server/api/events/[eventSlug].ts:1:import axios from 'axios'
+server/api/events/[eventSlug].ts:38:        const res = await axios(option)
+server/api/events/[eventSlug].ts:68:        const res = await axios(option)
+server/api/events/list.ts:1:import axios from 'axios'
+server/api/events/list.ts:43:        const res = await axios(options)
+server/api/streams.ts:16:import axios from 'axios'
+server/api/streams.ts:71:        const res_v1 = await axios(streams_v1_url)
+server/api/pages/[cmsSource]/find.ts:1:import axios from 'axios'
+server/api/pages/[cmsSource]/find.ts:48:  const res = await axios.get(`${baseApi}pages/find/`, {
+server/api/pages/[cmsSource]/find.ts:60:    const pageRes = await axios.get(nextUrl, requestOptions)
+server/api/pages/[cmsSource]/[pageSlug].ts:1:import axios from 'axios'
+server/api/pages/[cmsSource]/[pageSlug].ts:16:    const res = await axios(`${config.public.PUBLISHER_BASE_API}v3/flatpages/${pageSlug}`)
+server/api/pages/[cmsSource]/[pageSlug].ts:34:        const res = await axios(options)
+server/api/homepagecuration.ts:2://import axios from 'axios'
+server/api/homepagecuration.ts:17:// 		res = await axios(options)
+server/api/homepagecuration.ts:38:// 		res = await axios(options)
+server/api/homepagecuration.ts:114:// 		response = await axios(options)
+server/api/shows.ts:1:import axios from 'axios'
+server/api/shows.ts:15:        const res = await axios(option)
+server/api/shows.ts:38:        const res = await axios(option)
+server/api/story/[cmsSource]/[storyId].ts:1:import axios from 'axios'
+server/api/story/[cmsSource]/[storyId].ts:16:        const res = await axios(option);
+server/api/story/[cmsSource]/[storyId].ts:38:        const res = await axios(option);

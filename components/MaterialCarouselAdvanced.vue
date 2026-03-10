@@ -1,11 +1,11 @@
 <script setup>
-import { ref, computed, onMounted, watch } from "vue"
-import { gsap } from "gsap"
-import { Draggable } from "gsap/Draggable"
-import InertiaPlugin from "~/assets/gsap/InertiaPlugin.js"
+import { ref, computed, onMounted, watch } from "vue";
+import { gsap } from "gsap";
+import { Draggable } from "gsap/Draggable";
+import InertiaPlugin from "~/assets/gsap/InertiaPlugin.js";
 
 // Register GSAP plugins
-gsap.registerPlugin(Draggable, InertiaPlugin)
+gsap.registerPlugin(Draggable, InertiaPlugin);
 
 const props = defineProps({
   // Gap between items in pixels (M3 default: 8dp)
@@ -43,25 +43,25 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
-})
+});
 
-const carouselRef = ref(null)
-const trackRef = ref(null)
-const currentTranslate = ref(0)
-let draggableInstance = null
-let resizeTimeout = null
-const containerWidth = ref(0)
-let resizeObserver = null
+const carouselRef = ref(null);
+const trackRef = ref(null);
+const currentTranslate = ref(0);
+let draggableInstance = null;
+let resizeTimeout = null;
+const containerWidth = ref(0);
+let resizeObserver = null;
 
-const itemNativeDimensions = ref([])
+const itemNativeDimensions = ref([]);
 
 // Edge fade gradient mask style
 
 // Edge fade gradient mask style
 const maskStyle = computed(() => {
-  if (!props.edgeFade) return {}
+  if (!props.edgeFade) return {};
 
-  const fadeDistance = props.edgeFadeDistance
+  const fadeDistance = props.edgeFadeDistance;
   return {
     maskImage: `linear-gradient(to right, 
       transparent 0, 
@@ -73,38 +73,38 @@ const maskStyle = computed(() => {
       black ${fadeDistance}px, 
       black calc(100% - ${fadeDistance}px), 
       transparent 100%)`,
-  }
-})
+  };
+});
 
-const contentResizeObserver = ref(null)
-const isInteracting = ref(false) // True during entire drag + throw sequence
+const contentResizeObserver = ref(null);
+const isInteracting = ref(false); // True during entire drag + throw sequence
 
 // Optimization: Cache slide elements to avoid querySelector/children access every frame
-const cachedSlides = ref([])
+const cachedSlides = ref([]);
 
 // Optimization: Dirty check map to avoid unnecessary style writes
 // Map<Element, { width, maxWidth, height, flex, marginLeft, transition }>
-const styleCache = new WeakMap()
+const styleCache = new WeakMap();
 
 // Update cached slides
 const updateCachedSlides = () => {
-  if (!trackRef.value) return
-  cachedSlides.value = Array.from(trackRef.value.children)
-}
+  if (!trackRef.value) return;
+  cachedSlides.value = Array.from(trackRef.value.children);
+};
 
 // Helper to apply style only if changed
 const setStyle = (element, property, value) => {
-  let cache = styleCache.get(element)
+  let cache = styleCache.get(element);
   if (!cache) {
-    cache = {}
-    styleCache.set(element, cache)
+    cache = {};
+    styleCache.set(element, cache);
   }
 
   if (cache[property] !== value) {
-    element.style[property] = value
-    cache[property] = value
+    element.style[property] = value;
+    cache[property] = value;
   }
-}
+};
 
 // Calculate slide progress for Material scaling
 const updateSlideProgress = () => {
@@ -113,89 +113,89 @@ const updateSlideProgress = () => {
     !trackRef.value ||
     !itemNativeDimensions.value.length
   )
-    return
+    return;
 
   // Use cached slides if available, otherwise update cache
   if (!cachedSlides.value.length) {
-    updateCachedSlides()
+    updateCachedSlides();
   }
 
   // Use reactive container width
-  const currentWidth = containerWidth.value
-  if (!currentWidth) return
+  const currentWidth = containerWidth.value;
+  if (!currentWidth) return;
 
-  const x = currentTranslate.value
+  const x = currentTranslate.value;
 
-  let accumulatedWidth = 0
+  let accumulatedWidth = 0;
 
   cachedSlides.value.forEach((slide, index) => {
     // Determine Native Width from measurements
-    const dims = itemNativeDimensions.value[index]
-    if (!dims) return
+    const dims = itemNativeDimensions.value[index];
+    if (!dims) return;
 
-    const nativeWidth = dims.width
-    const nativeHeight = dims.height
+    const nativeWidth = dims.width;
+    const nativeHeight = dims.height;
 
     // 2. Algorithm: "Waterfill" from Left to Right
     // Determine position relative to viewport
-    const leftPos = accumulatedWidth
-    const visualLeft = leftPos + x
+    const leftPos = accumulatedWidth;
+    const visualLeft = leftPos + x;
 
     // Calculate space from Left and Right of viewport
-    const availableSpaceRight = currentWidth - visualLeft
-    const availableSpaceLeft = visualLeft + nativeWidth // How much of the item is past the left edge (0) to its own right edge?
+    const availableSpaceRight = currentWidth - visualLeft;
+    const availableSpaceLeft = visualLeft + nativeWidth; // How much of the item is past the left edge (0) to its own right edge?
 
     // Target Width: Native, but capped by Available Space (and Min Width)
     // - Right side: availableSpaceRight < nativeWidth -> scale down.
     // - Left side: availableSpaceLeft < nativeWidth -> scale down.
 
-    let targetWidth = nativeWidth
+    let targetWidth = nativeWidth;
 
     // Check constraints
     if (visualLeft > 0) {
       // Normal or Right side
-      targetWidth = Math.min(targetWidth, availableSpaceRight)
+      targetWidth = Math.min(targetWidth, availableSpaceRight);
     } else {
       // Left side interaction (visualLeft <= 0)
-      targetWidth = Math.min(targetWidth, availableSpaceLeft)
+      targetWidth = Math.min(targetWidth, availableSpaceLeft);
     }
 
-    targetWidth = Math.max(targetWidth, props.minItemWidth)
+    targetWidth = Math.max(targetWidth, props.minItemWidth);
 
     // Calculate Padding/Margin Compensation for Left Side
     // If we are on the left side, AND we are squished (width < native),
     // we must push the element right (via margin-left) by the amount "lost".
     // This keeps the visually rendered left edge pinned to 0 (or wherever it settled).
 
-    let marginLeft = 0
+    let marginLeft = 0;
     if (visualLeft <= 0) {
       // We are potentially squishing on the left.
       // The amount we ideally wanted was nativeWidth.
       // The amount we got is targetWidth.
       // The difference is what we chopped off the left.
-      const lostWidth = nativeWidth - targetWidth
+      const lostWidth = nativeWidth - targetWidth;
       // Apply only if valid positive number
       if (lostWidth > 0) {
-        marginLeft = lostWidth
+        marginLeft = lostWidth;
       }
     }
 
     // Apply Styles - Use max-width to allow squishing
     // OPTIMIZATION: Use dirty checking 'setStyle'
-    setStyle(slide, "width", "100%")
-    setStyle(slide, "maxWidth", `${targetWidth}px`)
-    setStyle(slide, "height", `${nativeHeight}px`)
-    setStyle(slide, "flex", `0 0 ${targetWidth}px`)
-    setStyle(slide, "marginLeft", `${marginLeft}px`)
+    setStyle(slide, "width", "100%");
+    setStyle(slide, "maxWidth", `${targetWidth}px`);
+    setStyle(slide, "height", `${nativeHeight}px`);
+    setStyle(slide, "flex", `0 0 ${targetWidth}px`);
+    setStyle(slide, "marginLeft", `${marginLeft}px`);
 
     // Only disable transitions when not interacting (preserve throw smoothness)
     if (!isInteracting.value) {
-      setStyle(slide, "transition", "none")
+      setStyle(slide, "transition", "none");
     } else {
       // Re-enable if needed, or let CSS handle it?
       // If we forced "none" previously, we might need to clear it.
       // For now, assuming CSS handles default transition if we don't override.
-      setStyle(slide, "transition", "")
+      setStyle(slide, "transition", "");
     }
 
     // No need for translateX anymore - content scales naturally via max-width: 100%
@@ -206,8 +206,8 @@ const updateSlideProgress = () => {
     // If we reduced width by 50 but added margin 50, the total footprint is 100% native.
     // This ensures subsequent items don't jump around.
 
-    accumulatedWidth += targetWidth + marginLeft + props.gap
-  })
+    accumulatedWidth += targetWidth + marginLeft + props.gap;
+  });
 
   // Update track width explicitly?
   // Flexbox handles the total width, but GSAP Draggable needs to know the bounds.
@@ -215,49 +215,49 @@ const updateSlideProgress = () => {
   // If we change widths, scrollWidth changes.
   // We might need to refresh Draggable bounds if the total width changes significantly?
   // But forcing 'x' is safe.
-}
+};
 
 // Initialize GSAP Draggable for throw physics
 const initDraggable = () => {
-  if (!props.enableThrow || !trackRef.value) return
+  if (!props.enableThrow || !trackRef.value) return;
 
   // Clean up existing instance
   if (draggableInstance) {
-    draggableInstance[0].kill()
-    draggableInstance = null
+    draggableInstance[0].kill();
+    draggableInstance = null;
   }
 
   // Get track and item dimensions
-  const track = trackRef.value
-  const items = Array.from(track.children)
-  if (!items.length) return
+  const track = trackRef.value;
+  const items = Array.from(track.children);
+  if (!items.length) return;
 
   // Calculate Theoretical Total Width (All items at Native Width)
   // This is required because offscreen items are currently "squished" to minWidth,
   // making track.scrollWidth inaccurately small for the full scroll range.
 
   // Calculate Theoretical Total Width (All items at Native Width)
-  const currentWidth = containerWidth.value
-  if (!currentWidth) return
+  const currentWidth = containerWidth.value;
+  if (!currentWidth) return;
 
-  let totalNativeWidth = 0
+  let totalNativeWidth = 0;
   items.forEach((slide, index) => {
     // Get stored dimensions
-    const dims = itemNativeDimensions.value[index]
-    const nativeWidth = dims ? dims.width : 0
+    const dims = itemNativeDimensions.value[index];
+    const nativeWidth = dims ? dims.width : 0;
 
-    totalNativeWidth += nativeWidth
+    totalNativeWidth += nativeWidth;
 
     // Add gap for all except last
     if (index < items.length - 1) {
-      totalNativeWidth += props.gap
+      totalNativeWidth += props.gap;
     }
-  })
+  });
 
   // Calculate scroll bounds based on FULL theoretical width
-  const maxScroll = -(totalNativeWidth - currentWidth)
+  const maxScroll = -(totalNativeWidth - currentWidth);
   // Safety check: if content fits in container, maxScroll might be positive -> clamp to 0
-  const actualMaxScroll = Math.min(maxScroll, 0)
+  const actualMaxScroll = Math.min(maxScroll, 0);
 
   draggableInstance = Draggable.create(track, {
     type: "x",
@@ -279,183 +279,183 @@ const initDraggable = () => {
 
     // Interaction starts when drag begins
     onDragStart() {
-      isInteracting.value = true
+      isInteracting.value = true;
     },
     onDrag() {
-      currentTranslate.value = this.x
-      updateSlideProgress()
+      currentTranslate.value = this.x;
+      updateSlideProgress();
     },
     // Drag ends but throw might be starting
     onDragEnd() {
       // If no throw is happening, interaction is done
       if (!this.isThrowing) {
-        isInteracting.value = false
+        isInteracting.value = false;
       }
       // Otherwise keep isInteracting true through the throw
     },
     onThrowUpdate() {
-      currentTranslate.value = this.x
-      updateSlideProgress()
+      currentTranslate.value = this.x;
+      updateSlideProgress();
     },
     // Interaction ends when throw completes
     onThrowComplete() {
-      isInteracting.value = false
+      isInteracting.value = false;
       // Final update to ensure correct state
-      updateSlideProgress()
+      updateSlideProgress();
     },
-  })
-}
+  });
+};
 
 // Measure natural dimensions of items
 const measureItems = () => {
-  if (!trackRef.value) return
-  if (isInteracting.value) return // Don't re-measure during drag/throw
+  if (!trackRef.value) return;
+  if (isInteracting.value) return; // Don't re-measure during drag/throw
 
-  const children = Array.from(trackRef.value.children)
-  if (!children.length) return
+  const children = Array.from(trackRef.value.children);
+  if (!children.length) return;
 
   // 1. Reset Reset styles to get natural size
   // CRITICAL: We must reset the parent slide constraints so the child (MediaCard)
   // can expand to its natural 'min-content' width.
   children.forEach((slide) => {
-    slide.style.width = ""
-    slide.style.maxWidth = "" // CRITICAL: Clear this so it doesn't constrain next measure
-    slide.style.flex = "0 0 auto"
-    slide.style.marginLeft = ""
+    slide.style.width = "";
+    slide.style.maxWidth = ""; // CRITICAL: Clear this so it doesn't constrain next measure
+    slide.style.flex = "0 0 auto";
+    slide.style.marginLeft = "";
     // slide.style.height = "" // Height is usually consistent, but could reset too
 
     // CRITICAL: Also clear the content constraints we applied (pinning)
-    const content = slide.firstElementChild
+    const content = slide.firstElementChild;
     if (content) {
-      content.style.width = ""
-      content.style.minWidth = ""
-      content.style.transform = ""
+      content.style.width = "";
+      content.style.minWidth = "";
+      content.style.transform = "";
     }
-  })
+  });
 
   // 2. Measure
   itemNativeDimensions.value = children.map((slide) => {
     // Measure the slide itself now that it's unconstrained (auto width)
     // We prefer the first child's scrollWidth or offsetWidth to get the "Content" size
-    const content = slide.firstElementChild
+    const content = slide.firstElementChild;
     return {
       width: content ? content.offsetWidth : slide.offsetWidth,
       height: slide.offsetHeight,
-    }
-  })
+    };
+  });
 
   // Refresh cache since children might have changed
-  updateCachedSlides()
+  updateCachedSlides();
 
   // After measurement, we must re-run the layout logic
-  updateSlideProgress()
-  initDraggable() // Re-calculate bounds and draggable instance
-}
+  updateSlideProgress();
+  initDraggable(); // Re-calculate bounds and draggable instance
+};
 
 // Observe content changes (image loads, etc)
 const setupContentObserver = () => {
-  if (!trackRef.value) return
+  if (!trackRef.value) return;
 
-  let debounceTimer = null
+  let debounceTimer = null;
   // Create observer if not exists
   if (!contentResizeObserver.value) {
     contentResizeObserver.value = new ResizeObserver(() => {
       // Don't interfere with active drag/throw operations
-      if (isInteracting.value) return
+      if (isInteracting.value) return;
 
       // Debounce the measurement
-      clearTimeout(debounceTimer)
+      clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => {
-        measureItems()
-        updateSlideProgress()
-        initDraggable()
-      }, 50)
-    })
+        measureItems();
+        updateSlideProgress();
+        initDraggable();
+      }, 50);
+    });
   }
 
   // Observe all children's content
   // Observe all children's CONTENT (Images)
   // We avoid observing the slide/card wrapper itself because it resizes during the drag effect (feedback loop).
   // The image inside MediaCard has 'width: auto', so it should maintain natural size.
-  const children = Array.from(trackRef.value.children)
+  const children = Array.from(trackRef.value.children);
   children.forEach((slide) => {
     // Look for image inside
-    const img = slide.querySelector("img")
+    const img = slide.querySelector("img");
     if (img) {
-      contentResizeObserver.value.observe(img)
+      contentResizeObserver.value.observe(img);
     } else {
       // Fallback if no image? Observe first child but be careful
       // If content is text-only, it might resizing.
       // For now, optimize for MediaCard with images.
-      const content = slide.firstElementChild
-      if (content) contentResizeObserver.value.observe(content)
+      const content = slide.firstElementChild;
+      if (content) contentResizeObserver.value.observe(content);
     }
-  })
-}
+  });
+};
 
 // Handle resize
 const onResize = () => {
   // Simple debounce
-  clearTimeout(resizeTimeout)
+  clearTimeout(resizeTimeout);
   resizeTimeout = setTimeout(() => {
     // Re-measure content
-    measureItems()
+    measureItems();
 
     // Re-run logic
-    updateSlideProgress()
+    updateSlideProgress();
 
     // Re-init Draggable to update bounds
     // We need to ensure we keep the current position if valid, or clamp if out of bounds
-    initDraggable()
+    initDraggable();
 
     // Explicitly apply bounds enforcement?
     // Draggable.create doesn't auto-snap to bounds immediately if we just created it.
     // We might need to check if current x is out of bounds.
     if (draggableInstance?.[0]) {
-      draggableInstance[0].applyBounds()
+      draggableInstance[0].applyBounds();
     }
-  }, 100)
-}
+  }, 100);
+};
 
 // Watch for changes that require re-initialization
 watch(
   () => props.enableThrow,
   () => {
     if (props.enableThrow) {
-      initDraggable()
+      initDraggable();
     } else if (draggableInstance) {
-      draggableInstance[0].kill()
-      draggableInstance = null
+      draggableInstance[0].kill();
+      draggableInstance = null;
       // Reset transform
-      gsap.set(trackRef.value, { x: 0 })
+      gsap.set(trackRef.value, { x: 0 });
     }
   }
-)
+);
 
-let observer = null
+let observer = null;
 
 onMounted(() => {
   // Setup ResizeObserver for container
   if (carouselRef.value) {
     // Initialize width immediately if possible
-    containerWidth.value = carouselRef.value.offsetWidth
+    containerWidth.value = carouselRef.value.offsetWidth;
 
     resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         // Use contentRect.width
-        containerWidth.value = entry.contentRect.width
-        onResize()
+        containerWidth.value = entry.contentRect.width;
+        onResize();
       }
-    })
-    resizeObserver.observe(carouselRef.value)
+    });
+    resizeObserver.observe(carouselRef.value);
   }
 
   // Observe track for added/removed items (async content)
-  if (trackRef.value) {
+  if (trackRef.value && trackRef.value instanceof Element) {
     observer = new MutationObserver(() => {
-      onResize()
-    })
-    observer.observe(trackRef.value, { childList: true })
+      onResize();
+    });
+    observer.observe(trackRef.value, { childList: true });
   }
 
   // Initial init
@@ -463,31 +463,31 @@ onMounted(() => {
   // Initial init
   // Wait for content to render?
   requestAnimationFrame(() => {
-    setupContentObserver() // Start observing content
-    measureItems() // This will trigger updateSlideProgress and initDraggable
+    setupContentObserver(); // Start observing content
+    measureItems(); // This will trigger updateSlideProgress and initDraggable
 
     // Also re-measure after a short delay to catch any late-loading images
     setTimeout(() => {
-      measureItems()
-    }, 100)
-  })
-})
+      measureItems();
+    }, 100);
+  });
+});
 
 onUnmounted(() => {
   if (draggableInstance) {
-    draggableInstance[0].kill()
+    draggableInstance[0].kill();
   }
   if (observer) {
-    observer.disconnect()
+    observer.disconnect();
   }
   if (resizeObserver) {
-    resizeObserver.disconnect()
+    resizeObserver.disconnect();
   }
   if (contentResizeObserver.value) {
-    contentResizeObserver.value.disconnect()
+    contentResizeObserver.value.disconnect();
   }
-  clearTimeout(resizeTimeout)
-})
+  clearTimeout(resizeTimeout);
+});
 </script>
 
 <template>

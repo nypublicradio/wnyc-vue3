@@ -20,84 +20,83 @@ const config = useRuntimeConfig()
 
 // Station metadata mapping
 const STATION_METADATA = {
-    'wnyc-fm939': {
-        name: 'WNYC 93.9 FM',
-        audio: 'https://fm939.wnyc.org/wnycfm',
-        hls: 'https://hls-live.wnyc.org/wnycfmapp-hls.aac/playlist.m3u8',
-        imageLogo: 'https://media.wnyc.org/static/img/app-icons/WNYC_iOS_AppIcon_29@3x.png',
-    },
-    'wqxr': {
-        name: 'WQXR 105.9 FM',
-        audio: 'https://fm1059.wqxr.org/wqxr',
-        hls: 'https://hls-live.wnyc.org/wqxrapp-hls.aac/playlist.m3u8',
-        imageLogo: 'https://media.wnyc.org/static/img/app-icons/WQXR_iOS_AppIcon_29@3x.png',
-    },
-    'q2': {
-        name: 'New Sounds',
-        audio: 'https://q2stream.wqxr.org/q2',
-        hls: 'https://hls-live.wnyc.org/q2app-hls.aac/playlist.m3u8',
-        imageLogo: 'https://media.wnyc.org/static/img/app-icons/Q2_iOS_AppIcon_29@3x.png',
-    },
-    'wqxr-holiday-channel-on-wnyc': {
-        name: 'WQXR Holiday Channel',
-        audio: 'https://holidaystream.wqxr.org/holiday',
-        hls: 'https://hls-live.wnyc.org/holidayapp-hls.aac/playlist.m3u8',
-        imageLogo: 'https://media.wnyc.org/static/img/app-icons/WQXR_iOS_AppIcon_29@3x.png',
-    },
+	'wnyc-fm939': {
+		name: 'WNYC 93.9 FM',
+		audio: 'https://fm939.wnyc.org/wnycfm',
+		hls: 'https://hls-live.wnyc.org/wnycfmapp-hls.aac/playlist.m3u8',
+		imageLogo: 'https://media.wnyc.org/static/img/app-icons/WNYC_iOS_AppIcon_29@3x.png',
+	},
+	'wqxr': {
+		name: 'WQXR 105.9 FM',
+		audio: 'https://fm1059.wqxr.org/wqxr',
+		hls: 'https://hls-live.wnyc.org/wqxrapp-hls.aac/playlist.m3u8',
+		imageLogo: 'https://media.wnyc.org/static/img/app-icons/WQXR_iOS_AppIcon_29@3x.png',
+	},
+	'q2': {
+		name: 'New Sounds',
+		audio: 'https://q2stream.wqxr.org/q2',
+		hls: 'https://hls-live.wnyc.org/q2app-hls.aac/playlist.m3u8',
+		imageLogo: 'https://media.wnyc.org/static/img/app-icons/Q2_iOS_AppIcon_29@3x.png',
+	},
+	'wqxr-holiday-channel-on-wnyc': {
+		name: 'WQXR Holiday Channel',
+		audio: 'https://holidaystream.wqxr.org/holiday',
+		hls: 'https://hls-live.wnyc.org/holidayapp-hls.aac/playlist.m3u8',
+		imageLogo: 'https://media.wnyc.org/static/img/app-icons/WQXR_iOS_AppIcon_29@3x.png',
+	},
 }
 
 // Helper function to convert image URLs to a templated format for responsive images
 const templatizeImageUrl = (url: string) => {
-    if (!url) return null
-    const urlParts = url.split('/')
-    const filename = urlParts[urlParts.length - 1]
-    return `https://media.wnyc.org/i/%s/%s/%s/%s/${filename}`
+	if (!url) return null
+	const urlParts = url.split('/')
+	const filename = urlParts[urlParts.length - 1]
+	return `https://media.wnyc.org/i/%s/%s/%s/%s/${filename}`
 }
 
 // Helper function to get the current episode from schedule data
 const getCurrentEpisodeFromSchedule = (scheduleData: any) => {
-    if (!scheduleData || !Array.isArray(scheduleData)) {
-        return null
-    }
-    
-    const now = new Date()
-    
-    // Find the episode that is currently airing
-    const currentEpisode = scheduleData.find((episode: any) => {
-        const startTime = new Date(episode.attributes.start)
-        const endTime = new Date(episode.attributes.end)
-        return now >= startTime && now < endTime
-    })
-    
-    return currentEpisode || scheduleData[0] // Fallback to first episode if no current match
+	if (!scheduleData || !Array.isArray(scheduleData)) {
+		return null
+	}
+
+	const now = new Date()
+
+	// Find the episode that is currently airing
+	const currentEpisode = scheduleData.find((episode: any) => {
+		const startTime = new Date(episode.attributes.start)
+		const endTime = new Date(episode.attributes.end)
+		return now >= startTime && now < endTime
+	})
+
+	return currentEpisode || scheduleData[0] // Fallback to first episode if no current match
 }
 
 // Fetch the livestream data from the Schedule API
 const getLivestream = async (slug: string) => {
 	try {
 		const metadata = STATION_METADATA[slug]
-		
+
 		if (!metadata) {
 			console.error(`No metadata found for stream ${slug}`)
 			throw new Error(`Station ${slug} not supported`)
 		}
-		
+
 		// Fetch schedule data from the schedule API
-		const scheduleUrl = `${config.public.BFF_URL}/api/schedule/${slug}?filterMode=next24hours`
-		const scheduleRes = await axios(scheduleUrl)
-		
+		const scheduleRes = await $fetch(`/api/schedule/${slug}?filterMode=next24hours`)
+
 		// Get the current episode from the schedule
-		const currentEpisode = getCurrentEpisodeFromSchedule(scheduleRes.data)
-		
+		const currentEpisode = getCurrentEpisodeFromSchedule(scheduleRes)
+
 		if (!currentEpisode) {
 			console.warn(`No current episode found for ${slug}`)
 			throw new Error(`No current episode found for ${slug}`)
 		}
-		
+
 		const attrs = currentEpisode.attributes
 		const episodeImages = attrs.images || []
 		const primaryImage = episodeImages[0]
-		
+
 		// Format the data to match the expected structure
 		const formattedData = {
 			cmsSource: cmsSources.PUBLISHER,
@@ -107,7 +106,7 @@ const getLivestream = async (slug: string) => {
 			file: metadata.audio,
 			hls: metadata.hls,
 			stationImage: { template: templatizeImageUrl(metadata.imageLogo) },
-			image: primaryImage 
+			image: primaryImage
 				? { template: templatizeImageUrl(primaryImage.url) }
 				: { template: templatizeImageUrl(metadata.imageLogo) },
 			showTitle: attrs.parentTitle || attrs.scheduleEventTitle || 'Live Stream',
@@ -145,7 +144,7 @@ const getLivestream = async (slug: string) => {
 				'iso-end-time': attrs.end,
 			}
 		}
-		
+
 		return humps.camelizeKeys(formattedData)
 	} catch (error) {
 		console.error(`Error fetching schedule data for ${slug}:`, error.message)
@@ -193,10 +192,10 @@ export default defineEventHandler(async (event) => {
 
 	//getLivestreamHlsMetadataTemp()
 
-	const slug: string | undefined = event?.context?.params?.stationslug;
+	const slug: string | undefined = event?.context?.params?.stationslug
 	if (slug) {
 		try {
-			return await getLivestream(slug);
+			return await getLivestream(slug)
 		} catch (error) {
 			console.error(`Failed to get livestream for slug "${slug}":`, error)
 			throw createError({
@@ -210,4 +209,4 @@ export default defineEventHandler(async (event) => {
 		statusCode: 400,
 		statusMessage: 'Station slug is required',
 	})
-});
+})
