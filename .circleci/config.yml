@@ -171,6 +171,7 @@ jobs:
       FL_OUTPUT_DIR: output
       FASTLANE_LANE: <<parameters.FASTLANE_LANE>>
       ISAPP: "true"
+      NUXT_SSR: "false"
       ENV: <<parameters.env>>
     shell: /bin/bash --login -o pipefail
     steps:
@@ -220,6 +221,7 @@ jobs:
       release-key-store-password: RELEASE_KEYSTORE_PASSWORD
       RELEASE_KEYSTORE: keystore
       ISAPP: "true"
+      NUXT_SSR: "false"
       ENV: <<parameters.env>>
     shell: /bin/bash --login -o pipefail
     steps:
