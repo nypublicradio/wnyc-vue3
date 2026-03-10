@@ -56,12 +56,11 @@ export default defineNuxtConfig({
     },
   },
 
-  /* ssr: process.env.ISAPP === 'false' ? true : false, */
   ssr: false,
 
   ionic: {
     integrations: {
-      router: false,
+      router: Boolean(process.env.NUXT_SSR),
     },
     css: {
       core: false,
