@@ -70,7 +70,6 @@ export const getRouteOrLink = (
   if (!url) return url
   const parsedUrl = new URL(url)
   if (routingDomains.includes(parsedUrl.hostname)) {
-    console.log("parsedUrl = ", parsedUrl)
     return parsedUrl.pathname
   }
   return url
@@ -1045,8 +1044,8 @@ export const goToShowPage = (show, params = null) => {
   })
 }
 /* centralized function to route to a card page */
-export const goToCardPage = (item, params = null) => {
-  const path = `${mediaTypeRoutes[mediaTypes.CARD]}${getRouteOrLink(item.url)}`
+export const goToUrlOverrideDestination = (item, params = null) => {
+  const path = `${getRouteOrLink(item.url)}`
   // if the path is a full url, open in new tab
   if (path.startsWith("http")) {
     window.open(path, "_blank")
@@ -1138,6 +1137,11 @@ export const addToFavorites2 = async ({ item, isFavorited, message = isFavorited
 export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = false) => {
   const isNetworkConnected = useIsNetworkConnected()
   if (isNetworkConnected.value) {
+    // if the item has a url, we ignore everything and route based on the url, because it is the override destination
+    if (item.url) {
+      goToUrlOverrideDestination(item)
+      return
+    }
     switch (item.type || item.contentType) {
       case mediaTypes.LIVE:
         goToLivePage(item, { slug: item.slug, type: item.type }, isSaveHistory)
@@ -1164,7 +1168,7 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
         goToEventPage(item)
         break
       case mediaTypes.CARD:
-        goToCardPage(item)
+        goToUrlOverrideDestination(item)
         break
       default:
         goToEpisodePage(item, null, isSaveHistory)
