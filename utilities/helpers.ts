@@ -86,14 +86,17 @@ export const checkUrl404 = async (url) => {
   }
 }
 
-// return organization name from CMS source
+// return organization name from CMS source and/or the url for Wagtail
 export const getOrg = (data) => {
   const cmsSource = data?.cmsSource
   switch (cmsSource) {
     case cmsSources.PUBLISHER:
       return "WNYC"
     case cmsSources.WAGTAIL:
-      return "Gothamist"
+      if (data.url?.includes('gothamist.com')) {
+        return "Gothamist"
+      }
+      return "WNYC"
     case cmsSources.NPR:
       return "NPR"
     case cmsSources.SIMPLECAST:
