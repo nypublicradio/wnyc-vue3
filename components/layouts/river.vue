@@ -41,6 +41,7 @@ const reactiveItems = toRef(props.list, "listItems")
           imgCol="w-7rem md:w-12rem"
           :data="article"
           :size="{ xs: [112, 112], md: [192, 192] }"
+          :allowVerticalEffect="false"
           @on-click="dynamicNavigation(article)"
         />
       </div>

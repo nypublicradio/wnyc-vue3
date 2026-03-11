@@ -83,7 +83,7 @@ const featureSizes = computed(() => {
       />
       <MediaCard
         v-if="reactiveItems?.length > 0"
-        class="col-12 lg:col-8 mb-3 hidden md:block"
+        class="col-12 lg:col-8 hidden md:block"
         titleClasses="t7lines"
         :data="reactiveItems[0]"
         is-horizontal
@@ -91,6 +91,7 @@ const featureSizes = computed(() => {
         showTease
         imgCol="w-6"
         :size="featureSizes"
+        :allowVerticalEffect="!isSquare"
         @on-click="dynamicNavigation(reactiveItems[0])"
       />
       <skeleton-media-card
@@ -120,7 +121,7 @@ const featureSizes = computed(() => {
           :key="`${article.id}-${index}`"
           showTease
           teaseClasses="text-sm t2lines"
-          class="col-12 lg:col-4 mb-3 order-4"
+          class="col-12 lg:col-4 order-4"
           :class="{ 'md:hidden': index === 0 }"
           :data="article"
           :isHorizontal="isLgBreakpoint"
@@ -149,7 +150,11 @@ const featureSizes = computed(() => {
 $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
 .layout-horizontal-feature-ad {
   .ad {
-    min-width: 300px;
+    width: 100%;
+    .ad-wrapper {
+      width: 100%;
+      max-width: 300px;
+    }
   }
 }
 </style>

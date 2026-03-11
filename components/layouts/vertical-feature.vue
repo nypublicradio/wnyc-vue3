@@ -125,6 +125,7 @@ const listTextClasses = props.isThin ? "text-sm" : "text-base lg:text-base"
         :pipeClasses="listTextClasses"
         :showTitleClasses="listTextClasses"
         :size="featureSizes"
+        :allowVerticalEffect="!isSquare"
         @on-click="dynamicNavigation(reactiveItems[0])"
       />
       <skeleton-media-card
@@ -185,10 +186,16 @@ const listTextClasses = props.isThin ? "text-sm" : "text-base lg:text-base"
 .layout-vertical-feature {
   .media-card.is-feature {
     .holder {
+      border-radius: 0 !important;
       background-color: transparent !important;
       .image {
         border-radius: var(--media-card-border-radius) !important;
         overflow: hidden;
+      }
+      @include media("<lg") {
+        .image {
+          border-radius: 0 !important;
+        }
       }
       .content {
         text-align: center !important;
