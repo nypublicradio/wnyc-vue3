@@ -95,6 +95,10 @@ export const getOrg = (data) => {
     case cmsSources.WAGTAIL:
       if (data.url?.includes('gothamist.com')) {
         return "Gothamist"
+      } else if (data.url?.includes('wqxr.org')) {
+        return "WQXR"
+      } else if (data.url?.includes('NPR.org')) {
+        return "NPR"
       }
       return "WNYC"
     case cmsSources.NPR:
