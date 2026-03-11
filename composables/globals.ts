@@ -150,8 +150,8 @@ export const brandCards = [
     {
         label: 'The New Yorker Radio Hour',
         svg: '/brand-card-images/radio-hour-logo.svg',
-        value: 'the-new-yorker-radio-hour',
-        url: `${mediaTypeRoutes[mediaTypes.SHOW]}the-new-yorker-radio-hour`,
+        value: 'new-yorker-radio-hour',
+        url: `${mediaTypeRoutes[mediaTypes.SHOW]}new-yorker-radio-hour`,
         color: '#DE1E3D',
         image: '/brand-card-images/radio-hour-bg.png',
     },
