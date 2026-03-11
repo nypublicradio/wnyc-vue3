@@ -1,24 +1,24 @@
 <script setup lang="ts">
-import { useIsApp } from "~/composables/states";
+import { useIsApp } from "~/composables/states"
 
-const isApp = useIsApp();
-const route = useRoute();
+const isApp = useIsApp()
+const route = useRoute()
 // control pages that show the smart header for app
-const pagesToShowAppSmartHeaderArray = ["home"];
-const showAppSmartHeader = ref(false);
+const pagesToShowAppSmartHeaderArray = ["home"]
+const showAppSmartHeader = ref(false)
 
 const bodyClass = computed(
   () =>
     `template-default ${isApp.value ? "app" : "browser"} ${
       showAppSmartHeader.value && isApp.value ? "show-app-header" : ""
     }`
-);
+)
 
 useHead({
   bodyAttrs: {
     class: bodyClass,
   },
-});
+})
 
 //check when the route changes
 watch(
@@ -26,17 +26,17 @@ watch(
   () => {
     showAppSmartHeader.value = isApp.value
       ? pagesToShowAppSmartHeaderArray.includes(route.name as string)
-      : true;
+      : true
     // set the focus to the header
     if (import.meta.client) {
-      const header = document.querySelector("the-header");
+      const header = document.querySelector("the-header")
       if (header) {
-        header.focus();
+        header.focus()
       }
     }
   },
   { immediate: true }
-);
+)
 </script>
 
 <template>

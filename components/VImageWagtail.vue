@@ -1,10 +1,10 @@
 <script setup>
-import Button from "primevue/button";
-import Dialog from "primevue/dialog";
-import ProgressSpinner from "primevue/progressspinner";
-import { useFallbackImages } from "~/composables/useFallbackImages";
+import Button from "primevue/button"
+import Dialog from "primevue/dialog"
+import ProgressSpinner from "primevue/progressspinner"
+import { useFallbackImages } from "~/composables/useFallbackImages"
 
-const { getEpisodeFallBackImage } = useFallbackImages();
+const { getEpisodeFallBackImage } = useFallbackImages()
 
 const props = defineProps({
   /**
@@ -141,53 +141,53 @@ const props = defineProps({
     default: null,
     type: Number,
   },
-});
+})
 const emit = defineEmits([
   "image-click",
   "image-enlarge-click",
   "image-load",
   "enlarge-image-load",
-]);
+])
 
 const isVertical = ref(
   props.allowVerticalEffect &&
     props.maxHeight >= props.maxWidth &&
     props.maxHeight !== Infinity &&
     props.maxWidth !== Infinity
-);
-const loadingEnlargedImage = ref(false);
-const loadedEnlargedImage = ref(true);
-const imageRef = ref(null);
+)
+const loadingEnlargedImage = ref(false)
+const loadedEnlargedImage = ref(true)
+const imageRef = ref(null)
 
 const computedWidth = computed(() => {
   return isVertical.value
     ? Math.round(props.maxWidth / (props.maxHeight / props.height))
-    : props.width;
-});
+    : props.width
+})
 const computedEnlargeWidth = computed(() => {
-  const modalFramePaddingOffset = 84;
+  const modalFramePaddingOffset = 84
   if (import.meta.client) {
     return window.innerWidth * window.devicePixelRatio > props.maxWidth
       ? props.maxWidth
-      : (window.innerWidth - modalFramePaddingOffset) * window.devicePixelRatio;
+      : (window.innerWidth - modalFramePaddingOffset) * window.devicePixelRatio
   }
-  return props.maxWidth;
-});
+  return props.maxWidth
+})
 const computedEnlargeHeight = computed(() => {
   if (import.meta.client) {
-    const originalWidth = props.maxWidth;
-    const originalHeight = props.maxHeight;
-    const newWidth = computedEnlargeWidth.value / window.devicePixelRatio;
-    const originalRatio = originalWidth / originalHeight;
+    const originalWidth = props.maxWidth
+    const originalHeight = props.maxHeight
+    const newWidth = computedEnlargeWidth.value / window.devicePixelRatio
+    const originalRatio = originalWidth / originalHeight
 
-    return Math.round((newWidth / originalRatio) * window.devicePixelRatio);
+    return Math.round((newWidth / originalRatio) * window.devicePixelRatio)
   }
-  return props.height;
-});
+  return props.height
+})
 
 const computedSrc = computed(() => {
   if (!props.src || props.src === "undefined" || props.src === "null") {
-    return getEpisodeFallBackImage();
+    return getEpisodeFallBackImage()
   }
 
   if (typeof props.src === "object") {
@@ -200,47 +200,47 @@ const computedSrc = computed(() => {
       props.src.file ||
       props.src.template ||
       getEpisodeFallBackImage()
-    );
+    )
   }
-  return String(props.src);
-});
+  return String(props.src)
+})
 // method to handle the click on the enlarge button and its loading states
 const enlarge = () => {
-  loadingEnlargedImage.value = true;
-  loadedEnlargedImage.value = false;
-  emit("image-enlarge-click");
-};
+  loadingEnlargedImage.value = true
+  loadedEnlargedImage.value = false
+  emit("image-enlarge-click")
+}
 // method called when the imamge is loaded
 const enlargeLoad = (target) => {
-  emit("enlarge-image-load", target);
-  loadedEnlargedImage.value = true;
-};
+  emit("enlarge-image-load", target)
+  loadedEnlargedImage.value = true
+}
 
 // Handle image load with better reliability for cached images
 const handleImageLoad = () => {
-  emit("image-load");
-};
+  emit("image-load")
+}
 
 // Check if image is already loaded on mount (for cached images)
 onMounted(async () => {
-  await nextTick();
+  await nextTick()
 
   if (!imageRef.value) {
-    return;
+    return
   }
 
   // The nuxt-img component renders directly as an <img> element
-  const img = imageRef.value.$el;
+  const img = imageRef.value.$el
 
   if (img && img.tagName === "IMG" && img.complete && img.naturalHeight !== 0) {
     // Image is already loaded (cached)
-    emit("image-load");
+    emit("image-load")
   }
-});
+})
 
 const handleProvider = computed(() => {
-  return isNaN(props.src) ? null : props.provider;
-});
+  return isNaN(props.src) ? null : props.provider
+})
 </script>
 
 <template>

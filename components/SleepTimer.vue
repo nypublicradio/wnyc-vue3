@@ -1,8 +1,8 @@
 <script setup>
-import { Device } from "@capacitor/device";
-import useSleepTimer from "~/composables/useSleepTimer";
-import SleepIcon from "~/components/icons/SleepIcon.vue";
-import { useBackgroundMode } from "~/composables/useBackgroundMode";
+import { Device } from "@capacitor/device"
+import useSleepTimer from "~/composables/useSleepTimer"
+import SleepIcon from "~/components/icons/SleepIcon.vue"
+import { useBackgroundMode } from "~/composables/useBackgroundMode"
 const {
   sleepTimerSelectedTime,
   sleepTimerCurrentTime,
@@ -15,68 +15,68 @@ const {
   sleepTimerPaused,
   updateUserPreferences,
   getUserPreferenceSleepTime,
-} = useSleepTimer();
-const globalToast = useGlobalToast();
-const { initBackgroundMode } = useBackgroundMode();
+} = useSleepTimer()
+const globalToast = useGlobalToast()
+const { initBackgroundMode } = useBackgroundMode()
 
 const timeLengthOptions = [
   { id: "15 minutes", label: "15 minutes", value: 900 },
   { id: "30 minutes", label: "30 minutes", value: 1800 },
   { id: "45 minutes", label: "45 minutes", value: 2700 },
   { id: "60 minutes", label: "60 minutes", value: 3600 },
-];
+]
 
-const timeToIncrement = 5;
-const customTime = ref(90);
+const timeToIncrement = 5
+const customTime = ref(90)
 
 onMounted(async () => {
   if (import.meta.client) {
-    customTime.value = await getUserPreferenceSleepTime();
+    customTime.value = await getUserPreferenceSleepTime()
   }
-});
+})
 
 // increment or decrement the custom time
 const handleCustomTimeChange = (inc) => {
-  const seconds = inc ? timeToIncrement * 60 : -timeToIncrement * 60;
+  const seconds = inc ? timeToIncrement * 60 : -timeToIncrement * 60
   if (customTime.value + seconds / 60 >= 5) {
-    customTime.value += seconds / 60;
+    customTime.value += seconds / 60
     // add preferred custom time to the local storage preferences
-    updateUserPreferences(customTime.value);
+    updateUserPreferences(customTime.value)
   }
-};
+}
 // increment or decrement the current time
 const handleCurrentTimeChange = (inc) => {
-  const seconds = inc ? timeToIncrement * 60 : -timeToIncrement * 60;
-  const destination = sleepTimerCurrentTime.value + seconds;
+  const seconds = inc ? timeToIncrement * 60 : -timeToIncrement * 60
+  const destination = sleepTimerCurrentTime.value + seconds
   if (sleepTimerRunning.value && destination > 0) {
-    sleepTimerCurrentTime.value += seconds;
+    sleepTimerCurrentTime.value += seconds
   }
-};
+}
 
 // build the object from the id
 const buildSleepTimerDataFromId = (id) => {
-  const obj = timeLengthOptions.find((option) => option.id === id);
-  return { entry: obj };
-};
+  const obj = timeLengthOptions.find((option) => option.id === id)
+  return { entry: obj }
+}
 
 // start the timer
 const handleStartTimer = async (data) => {
-  let obj = null;
+  let obj = null
   // data is already an object
   if (typeof data === "object") {
-    obj = data;
+    obj = data
   } else {
     // dropdown menu: id that builds the object
-    obj = buildSleepTimerDataFromId(data);
+    obj = buildSleepTimerDataFromId(data)
   }
 
-  let platform = "web";
-  let osVersion = "0";
+  let platform = "web"
+  let osVersion = "0"
 
   if (import.meta.client) {
-    const info = await Device.getInfo();
-    platform = info.platform;
-    osVersion = info.osVersion;
+    const info = await Device.getInfo()
+    platform = info.platform
+    osVersion = info.osVersion
   }
 
   // ios only
@@ -86,8 +86,8 @@ const handleStartTimer = async (data) => {
       summary: "Sleep Timer requires iOS 17 or later",
       life: 3000,
       closable: true,
-    };
-    return;
+    }
+    return
   }
 
   // allow for background interval on android only
@@ -100,14 +100,14 @@ const handleStartTimer = async (data) => {
           "You must allow WNYC to run in the background for the sleep timer",
         life: 8000,
         closable: true,
-      };
-      return;
+      }
+      return
     }
   }
 
   // start the timer
-  onUpdateDuration(obj);
-};
+  onUpdateDuration(obj)
+}
 
 //adds the custom time to the timeLengthOptions so it renders in the select menu
 watch(
@@ -118,14 +118,14 @@ watch(
         (option) => option.value === sleepTimerSelectedTime.value.entry.value
       )
     ) {
-      timeLengthOptions.push(sleepTimerSelectedTime.value.entry);
+      timeLengthOptions.push(sleepTimerSelectedTime.value.entry)
     }
   },
   {
     immediate: true,
     once: true,
   }
-);
+)
 </script>
 
 <template>
