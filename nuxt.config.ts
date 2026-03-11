@@ -174,8 +174,22 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     // Server-only runtime values (read at runtime by Nitro)
-    cmsSite: process.env.CMS_SITE || 'demo.wnyc.org:443',
-    aviaryBaseApi: process.env.AVIARY_BASE_API,
+    cmsSite: process.env.CMS_SITE || (() => {
+      // Map review to demo since cms.review.nypr.digital doesn't exist
+      const env = process.env.ENV ?? 'prod'
+      if (env === 'review') {
+        return 'demo.wnyc.org:443'
+      }
+      return 'demo.wnyc.org:443'
+    })(),
+    aviaryBaseApi: process.env.AVIARY_BASE_API ?? (() => {
+      // Fallback to demo CMS for review environments since cms.review.nypr.digital doesn't exist
+      const env = process.env.ENV ?? 'prod'
+      if (env === 'review') {
+        return 'https://cms.demo.nypr.digital/api/v2/'
+      }
+      return undefined
+    })(),
     simplecastUrl: process.env.SIMPLECAST_URL ?? 'https://api.simplecast.com',
     simplecastApiKey: process.env.SIMPLECAST_API_KEY,
     featuredShowsPageId: process.env.FEATURED_SHOWS_PAGE_ID,
@@ -203,7 +217,14 @@ export default defineNuxtConfig({
         process.env.STORIES_API ??
         "https://cms.prod.nypr.digital/api/v2/pages/?type=news.ArticlePage&fields=ancestry%2Cdescription%2Clead_asset%2Clegacy_id%2Clisting_image%2Cpublication_date%2Cshow_as_feature%2Csponsored_content%2Ctags%2Cupdated_date%2Curl%2Cuuid%2Clisting_title%2Clisting_summary%2Crelated_authors&order=-publication_date&show_on_index_listing=true&limit=3&show_as_feature=true&sponsored_content=false",
       PUBLISHER_BASE_API: process.env.PUBLISHER_BASE_API ?? "https://api.wnyc.org/api/",
-      AVIARY_BASE_API: process.env.AVIARY_BASE_API,
+      AVIARY_BASE_API: process.env.AVIARY_BASE_API ?? (() => {
+        // Fallback to demo CMS for review environments since cms.review.nypr.digital doesn't exist
+        const env = process.env.ENV ?? 'prod'
+        if (env === 'review') {
+          return 'https://cms.demo.nypr.digital/api/v2/'
+        }
+        return undefined
+      })(),
       IMAGE_BASE_URL:
         process.env.IMAGE_BASE_URL ?? "https://cms.demo.nypr.digital/images/",
       FEATURED_SHOWS:
