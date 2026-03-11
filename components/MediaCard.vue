@@ -482,7 +482,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                           ? props.data?.category
                           : props.data?.showTitle ||
                             props.data?.headers?.brand?.title ||
-                            getOrg(props.data?.cmsSource)
+                            getOrg(props.data)
                       }}
                     </template>
                     <template #right v-if="!props.hideDate">

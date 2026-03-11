@@ -87,7 +87,8 @@ export const checkUrl404 = async (url) => {
 }
 
 // return organization name from CMS source
-export const getOrg = (cmsSource) => {
+export const getOrg = (data) => {
+  const cmsSource = data?.cmsSource
   switch (cmsSource) {
     case cmsSources.PUBLISHER:
       return "WNYC"

@@ -22,6 +22,7 @@ const streamfield = props.article?.body
 
 const layoutComponents = {}
 const defaultLayout = "river-thin"
+const headerClasses = "mb-3"
 const verticalSpacingClasses = "mb-6 md:mb-8"
 // dynamically import and Cache layout components to prevent re-creating them on each render
 const getLayoutComponent = (layout) => {
@@ -122,7 +123,6 @@ onMounted(() => {
           :block="block"
           :class="verticalSpacingClasses"
           :key="`${block.id}-cta-block`"
-          :id="slugify(block?.value?.label || block?.id)"
         />
 
         <HtmlConvert
@@ -130,7 +130,6 @@ onMounted(() => {
           :htmlContent="block"
           :class="verticalSpacingClasses"
           :key="`${block.id}-rich_text`"
-          :id="slugify(block?.value?.label || block?.id)"
         />
 
         <StreamfieldBlockQuote
@@ -138,7 +137,6 @@ onMounted(() => {
           :key="`${block.id}-block-quote`"
           :block="block"
           :class="verticalSpacingClasses"
-          :id="slugify(block?.value?.label || block?.id)"
         />
 
         <StreamfieldCode
@@ -146,7 +144,6 @@ onMounted(() => {
           :key="`${block.id}-code`"
           :block="block"
           :class="verticalSpacingClasses"
-          :id="slugify(block?.value?.label || block?.id)"
         />
 
         <StreamfieldContentCollection
@@ -155,7 +152,6 @@ onMounted(() => {
           :block="block"
           tracking-component-location="Streamfield"
           :class="verticalSpacingClasses"
-          :id="slugify(block?.value?.label || block?.id)"
         />
 
         <StreamfieldEmbed
@@ -163,15 +159,14 @@ onMounted(() => {
           :key="`${block.id}-embed`"
           :block="block"
           :class="verticalSpacingClasses"
-          :id="slugify(block?.value?.label || block?.id)"
         />
 
         <StreamfieldHeading
           v-else-if="block.type === 'heading'"
           :key="`${block.id}-heading`"
           :block="block"
-          :class="verticalSpacingClasses"
-          :id="slugify(block?.value?.label || block?.id)"
+          :class="headerClasses"
+          :id="slugify(block?.value)"
         />
 
         <StreamfieldImage
@@ -179,7 +174,6 @@ onMounted(() => {
           :key="`${block.id}-image`"
           :block="block"
           :class="verticalSpacingClasses"
-          :id="slugify(block?.value?.label || block?.id)"
         />
 
         <StreamfieldParagraph
@@ -187,7 +181,6 @@ onMounted(() => {
           :key="`${block.id}-paragraph`"
           :block="block"
           :class="verticalSpacingClasses"
-          :id="slugify(block?.value?.label || block?.id)"
         />
 
         <StreamfieldAviaryPullQuote
@@ -195,7 +188,6 @@ onMounted(() => {
           :key="`${block.id}-pull-quote`"
           :block="block"
           :class="verticalSpacingClasses"
-          :id="slugify(block?.value?.label || block?.id)"
         />
 
         <StreamfieldFactbox
@@ -203,18 +195,13 @@ onMounted(() => {
           :key="`${block.id}-factbox`"
           :block="block"
           :class="verticalSpacingClasses"
-          :id="slugify(block?.value?.label || block?.id)"
         />
       </template>
     </div>
     <!-- <pre>{{ props.article }}</pre> -->
     <div v-else v-for="(block, index) in streamfield" :key="`block-${index}`">
       <!-- image -->
-      <div
-        v-if="block.type === 'image'"
-        class="streamfield-image mt-4 mx-auto"
-        :id="slugify(block?.value?.label || block?.id)"
-      >
+      <div v-if="block.type === 'image'" class="streamfield-image mt-4 mx-auto">
         <VImage
           :src="block.value.image"
           :ratio="[block.value.image.width ?? 3, block.value.image.height ?? 2]"
@@ -250,7 +237,6 @@ onMounted(() => {
           v-if="block.type === 'paragraph' && block.value"
           class="streamfield-paragraph"
           :key="`paragraph-${index}`"
-          :id="slugify(block?.value?.label || block?.id)"
         />
         <!-- image -->
 
@@ -258,7 +244,6 @@ onMounted(() => {
         <div
           v-else-if="block.type === 'block_quote'"
           class="streamfield-block-quote"
-          :id="slugify(block?.value?.label || block?.id)"
         >
           <blockquote>
             <HtmlConvert
@@ -275,7 +260,6 @@ onMounted(() => {
           class="streamfield-code"
           :htmlContent="block.value.code"
           :key="`code-${index}`"
-          :id="slugify(block?.value?.label || block?.id)"
         />
 
         <!-- embed -->
@@ -284,7 +268,6 @@ onMounted(() => {
           class="streamfield-embed"
           :htmlContent="block.value.embed"
           :key="`embed-${index}`"
-          :id="slugify(block?.value?.label || block?.id)"
         />
 
         <!-- heading -->
@@ -295,7 +278,6 @@ onMounted(() => {
           :htmlContent="block.value"
           :aria-label="block.value"
           :key="`heading-${index}`"
-          :id="slugify(block?.value?.label || block?.id)"
         />
 
         <!-- pull-quote -->
@@ -303,7 +285,6 @@ onMounted(() => {
           v-else-if="block.type === 'pull_quote'"
           :quote="block.value.pullQuote"
           :author="block.value.attribution"
-          :id="slugify(block?.value?.label || block?.id)"
         />
       </div>
       <!-- 1/2 way through the streamfield, insert the donation block -->

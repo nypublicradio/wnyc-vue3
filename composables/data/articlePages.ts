@@ -713,7 +713,7 @@ const getShowInfoFromProgramUrl = memoize(async (url: string): Promise<{ title: 
       Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
     },
   }
-  
+
   try {
     const response = await axios(options)
     const resource = response.data?.resources?.[0]
