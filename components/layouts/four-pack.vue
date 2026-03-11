@@ -2,33 +2,34 @@
 import { dynamicNavigation } from "~/utilities/helpers"
 import { useBreakpoints } from "~/composables/useBreakpoints"
 const props = defineProps({
+  label: {
+    type: String,
+    default: "",
+  },
   list: {
     type: Object,
     required: true,
   },
   cardClass: {
     type: String,
-    default: "col-12 md:col-12 lg:col-3 mb-3",
+    default: "col-12 md:col-12 lg:col-3",
   },
   maxItems: {
     type: Number,
     default: 4,
   },
-  scrolling: {
-    type: Boolean,
-    default: false,
-  },
-  scrollingMaxItems: {
-    type: Number,
-    default: 5,
-  },
-  gap: {
-    type: String,
-    default: null,
-  },
   square: {
     type: Boolean,
     default: true,
+  },
+  seeMore: {
+    type: Object,
+    default: null,
+    required: false,
+  },
+  isThin: {
+    type: Boolean,
+    default: false,
   },
 })
 
@@ -43,9 +44,10 @@ const getImgSize = (width) => {
 
 const imgSizes = {
   xs: getImgSize(112),
-  md: getImgSize(176),
-  lg: getImgSize(261),
-  xl: getImgSize(305),
+  md: getImgSize(192),
+  lg: getImgSize(props.isThin ? 371 : 261),
+  xl: getImgSize(props.isThin ? 454 : 305),
+  xxl: getImgSize(305),
 }
 const { breakpoint } = useBreakpoints()
 const isLgBreakpoint = computed(() => breakpoint("<lg"))
@@ -53,7 +55,10 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
 
 <template>
   <div class="layout layout-four-pack">
-    <h2 class="mb-4">{{ props.list.title }}</h2>
+    <LayoutsTitleHeader
+      :label="props.label || props.list?.title"
+      :seeMore="props.seeMore"
+    />
 
     <div class="grid">
       <template v-if="reactiveItems?.length > 0">
@@ -68,6 +73,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
           :ratio="imgRatio"
           :isHorizontal="isLgBreakpoint"
           imgCol="w-7rem md:w-12rem lg:w-full"
+          :allowVerticalEffect="!props.square"
           @on-click="dynamicNavigation(item)"
         />
       </template>
@@ -78,6 +84,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
         :class="props.cardClass"
         :size="imgSizes"
         :ratio="imgRatio"
+        isVertical
       />
     </div>
   </div>

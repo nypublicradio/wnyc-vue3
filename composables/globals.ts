@@ -58,6 +58,7 @@ export const mediaTypes = {
     ARTICLE: 'article',
     NPR_EPISODE: 'npr_episode',
     NPR_ARTICLE: 'npr_article',
+    CARD: 'card',
 }
 
 export const mediaTypeRoutes = {
@@ -71,6 +72,8 @@ export const mediaTypeRoutes = {
     [mediaTypes.NPR_EPISODE]: '/npr/',
     [mediaTypes.NPR_ARTICLE]: '/npr/',
     [mediaTypes.EVENT]: '/events/',
+    [mediaTypes.SIMPLECAST]: '/browse/shows/episode/simplecast/',
+    [mediaTypes.CARD]: '',
 }
 
 export const FALLBACKIMAGE = '/fallback/wnyc.webp'
@@ -147,8 +150,8 @@ export const brandCards = [
     {
         label: 'The New Yorker Radio Hour',
         svg: '/brand-card-images/radio-hour-logo.svg',
-        value: 'the-new-yorker-radio-hour',
-        url: 'https://www.newyorker.com/podcast/the-new-yorker-radio-hour',
+        value: 'new-yorker-radio-hour',
+        url: `${mediaTypeRoutes[mediaTypes.SHOW]}new-yorker-radio-hour`,
         color: '#DE1E3D',
         image: '/brand-card-images/radio-hour-bg.png',
     },
@@ -164,7 +167,7 @@ export const brandCards = [
         label: 'Radiolab',
         svg: '/brand-card-images/radiolab-logo.svg',
         value: 'radiolab',
-        url: 'https://radiolab.org',
+        url: `${mediaTypeRoutes[mediaTypes.SHOW]}radiolab`,
         color: '#0454D6',
         image: '/brand-card-images/radiolab-bg.png',
     },
@@ -172,7 +175,7 @@ export const brandCards = [
         label: 'New Sounds',
         svg: '/brand-card-images/new-sounds-logo.svg',
         value: 'new-sounds',
-        url: 'https://www.wnyc.org/shows/newsounds',
+        url: `${mediaTypeRoutes[mediaTypes.SHOW]}new-sounds`,
         color: '#E788EF',
         image: '/brand-card-images/new-sounds-bg.png',
     },
@@ -180,7 +183,7 @@ export const brandCards = [
         label: 'On The Media',
         svg: '/brand-card-images/on-the-media-logo.svg',
         value: 'on-the-media',
-        url: 'https://www.wnycstudios.org/podcasts/otm',
+        url: `${mediaTypeRoutes[mediaTypes.SHOW]}on-the-media`,
         color: '#DDDDDB',
         image: '/brand-card-images/on-the-media-bg.png',
     },
@@ -188,7 +191,7 @@ export const brandCards = [
         label: 'The Greene Space',
         svg: '/brand-card-images/the-greene-space-logo.svg',
         value: 'the-greene-space',
-        url: 'https://thegreenespace.org',
+        url: `${mediaTypeRoutes[mediaTypes.EVENT]}`,
         color: '#91BD63',
         image: '/brand-card-images/the-greene-space-bg.png',
     },

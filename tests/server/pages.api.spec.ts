@@ -2,17 +2,38 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 
 // Mock axios to return our fixture without making network calls
 let mockResponse: any
-const axiosMock = vi.fn(async (_arg: any) => ({ data: mockResponse }))
+const axiosMock = vi.fn((_arg: any) => ({ data: mockResponse }))
 vi.mock('axios', () => ({ default: axiosMock }))
 
 // Keep server import tree minimal by mocking globals composable to avoid UI imports
 vi.mock('~/composables/globals', () => ({
   cmsSources: { PUBLISHER: 'publisher', WAGTAIL: 'wagtail', NPR: 'npr', SIMPLECAST: 'simplecast' },
+  mediaTypes: {
+    LIVE: 'live', SIMPLECAST: 'simplecast', SHOW: 'show', EVENT: 'event',
+    EPISODE: 'episode', SEGMENT: 'segment', STORY: 'story', ARTICLE_PAGE: 'article_page',
+    ARTICLE: 'article', NPR_EPISODE: 'npr_episode', NPR_ARTICLE: 'npr_article',
+  },
+  mediaTypeRoutes: {
+    live: '/live/',
+    show: '/browse/shows/',
+    episode: '/browse/shows/episode/',
+    segment: '/browse/shows/episode/',
+    story: '/story/',
+    article_page: '/story/',
+    article: '/story/',
+    npr_episode: '/npr/',
+    npr_article: '/npr/',
+    event: '/events/',
+    simplecast: '/browse/shows/episode/simplecast/',
+  },
 }))
 
 // Mock Nuxt's defineEventHandler to work in test environment
 // @ts-expect-error - globalThis augmentation for test environment
 globalThis.defineEventHandler = (handler: unknown) => handler
+
+// @ts-expect-error - mock getQuery for test environment
+globalThis.getQuery = (event: any) => event?.query || {}
 
 // Provide a test-only runtime config so the server file doesn't rely on Nuxt auto-imports
 globalThis.__testRuntimeConfig = {
@@ -97,9 +118,17 @@ describe('server/api/pages [wagtail] passes through body.curated_list', () => {
     const list = result.body[0].value.list
     expect(Array.isArray(list.listItems)).toBe(true)
     const first = list.listItems[0]
-    expect(first.content.id).toBe('eb14cb68-f272-4f27-ae33-b8ff8035ef24')
-    expect(first.content.enclosureUrl).toContain('default.mp3')
-    expect(first.content.showImageUrl).toContain('new-sounds-logo.jpg')
-    expect(first.content.showTitle).toBe('New Sounds ')
+    console.log("FIRST LOG:", first)
+    // After transformCuratedContent, `content` is merged to root-level by handleOtherContentType,
+    // then normalizeSimplecastListItem maps the fields:
+    //   content.id       → uuid
+    //   content.enclosureUrl → audio
+    //   content.showImageUrl → showImageUrl (preserved directly)
+    //   content.showTitle    → showTitle (preserved directly)
+    expect(first.uuid).toBe('eb14cb68-f272-4f27-ae33-b8ff8035ef24')
+    expect(first.audio).toContain('default.mp3')
+    // showImageUrl is not set at root; normalizeSimplecastListItem puts it inside headers
+    expect(first.headers.brand.logoImage.url).toContain('new-sounds-logo.jpg')
+    expect(first.showTitle).toBe('New Sounds ')
   })
 })

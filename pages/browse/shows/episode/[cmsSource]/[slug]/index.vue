@@ -2,7 +2,6 @@
 import { useToast } from "primevue/usetoast"
 import { togglePlayEpisode } from "~/utilities/helpers"
 import { useTopStories } from "~/composables/useTopStories"
-import EpisodeTemplate from "~/components/EpisodeTemplate.vue"
 const { getFilteredTopStories } = useTopStories()
 const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
@@ -111,12 +110,12 @@ watch(
     </section>
     <FetchError v-if="error" />
     <FetchError v-if="showError" />
-    <!-- <pre>{{ show }}</pre> -->
-    <!-- <pre>{{ episodeData }}</pre> -->
+    <!-- <pre>{{ show }}</pre>
+    <pre>{{ episodeData }}</pre> -->
     <EpisodeTemplate
       :pending="status !== 'success'"
       :episodeData="episodeData"
-      :show="show"
+      :show="show?.show"
       :showPending="showStatus !== 'success'"
     >
       <template #bottom>

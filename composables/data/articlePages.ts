@@ -2,7 +2,7 @@ import type Author from '../types/Author'
 import type Person from '../types/Person'
 import type ISocial from '../types/Social'
 import type { ArticlePage } from '../types/Page'
-import { cmsSources, mediaTypes } from '~/composables/globals'
+import { cmsSources, mediaTypes, mediaTypeRoutes } from '~/composables/globals'
 import { normalizePage } from './basePages'
 import { getWagtailRawBody } from "~/utilities/helpers"
 import { estimateMp3Duration } from '~/server/utils/duration'
@@ -90,14 +90,14 @@ function getArticleLink (articleData): string {
   if (articleData.link) {
     return articleData.link
   }
-  
+
   // Fallback to CMS-specific logic
   if (articleData.ancestry || articleData.meta?.slug) {
     return getWagtailArticleLink(articleData)
   } else if (articleData.attributes?.slug) {
     return getPublisherArticleLink(articleData)
   }
-  
+
   // Last fallback
   return '/'
 }
@@ -193,7 +193,7 @@ export async function normalizeWagtailPage (article: Record<string, any | undefi
   //console.log("normalizeWagtailPage", article)
   return Object.assign({}, await normalizePage(article), {
     description: article.description,
-    image: article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
+    image: article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage ?? article.showArt,
     imageFullWidth: article.leadAsset?.[0]?.value?.image?.width ?? article.leadAsset?.[0]?.value?.defaultImage?.width,
     imageFullHeight: article.leadAsset?.[0]?.value?.image?.height ?? article.leadAsset?.[0]?.value?.defaultImage?.height,
     leadImageCaption: article.leadAsset?.[0]?.value?.caption || article.leadAsset?.[0]?.value?.image?.caption,
@@ -202,7 +202,7 @@ export async function normalizeWagtailPage (article: Record<string, any | undefi
     cmsSource: cmsSources.WAGTAIL,
     leadAsset: article.leadAsset?.[0],
     leadImage: article.leadAsset?.[0]?.type === 'lead_image' ? article.leadAsset?.[0]?.value.image : undefined,
-    leadGallery: article.leadAsset?.[0]?.type === 'lead_gallery' ? article.leadAsset?.[0]?.value : undefined,    gallerySlides: article.leadAsset?.[0]?.type === 'lead_gallery' ? article.leadAsset?.[0]?.slides : undefined,
+    leadGallery: article.leadAsset?.[0]?.type === 'lead_gallery' ? article.leadAsset?.[0]?.value : undefined, gallerySlides: article.leadAsset?.[0]?.type === 'lead_gallery' ? article.leadAsset?.[0]?.slides : undefined,
     legacyId: article.legacyId,
     authors: article.relatedAuthors?.map(normalizeAuthor),
     contributingOrganizations: article.relatedContributingOrganizations,
@@ -225,6 +225,11 @@ export async function normalizeWagtailPage (article: Record<string, any | undefi
     aboutModule: article?.aboutModule,
     inPageNavigation: article?.inPageNavigation,
     linkedDataSource: article?.linkedDataSource,
+    topper: {
+      topperTitle: article?.topperTitle,
+      topperDescription: article?.description,
+      topperBackground: article?.topperBackground,
+    },
     // curated images
     listingImage: article.listingImage ?? article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
     socialImage: article.socialImage ?? article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
@@ -249,14 +254,13 @@ export async function normalizeWagtailListItem (article: Record<string, any | un
   const isEventItem = article.contentType === 'event_page' || article.type === 'event'
   const normalizedImage = isEventItem
     ? (
-        article.image
-        ?? article.listingImage
-        ?? article.content?.listingImage
-        ?? article.leadAsset?.[0]?.value?.image
-        ?? article.leadAsset?.[0]?.value?.defaultImage
-      )
-    : (article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage)
-
+      article.image
+      ?? article.listingImage
+      ?? article.content?.listingImage
+      ?? article.leadAsset?.[0]?.value?.image
+      ?? article.leadAsset?.[0]?.value?.defaultImage
+    )
+    : (article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage ?? article.image)
   return Object.assign({}, await normalizePage(article), {
     image: normalizedImage,
     imageFullWidth: normalizedImage?.width ?? article.leadAsset?.[0]?.value?.image?.width ?? article.leadAsset?.[0]?.value?.defaultImage?.width,
@@ -310,21 +314,21 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
   if (typeof article === 'undefined')
     return null
   //console.log("normalizeSimplecastListItem", article)
-  
+
   // Simplecast uses UUIDs as episode IDs - preserve the original UUID for API calls
   const simplecastId = article.id || article.episodeId || article.uuid
-  
+
   // Extract show UUID from CMS data
   const showId = article.showId || article.show_id
   const showTitle = article.showTitle || article.show_title
   const showImageUrl = article.showImageUrl || article.show_image_url
-  
+
   return Object.assign({}, await normalizePage(article), {
     uuid: simplecastId, // Preserve the Simplecast UUID
     showId, // Preserve the show UUID
     showSlug: showId, // Use showId as slug for Simplecast shows
     description: article.subtitle || article.description,
-    image: article.image,
+    image: article.image || article.imageUrl,
     imageFullWidth: undefined,
     imageFullHeight: undefined,
     cmsSource: cmsSources.SIMPLECAST,
@@ -340,7 +344,7 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
     sponsoredContent: undefined,
     relatedLinks: undefined,
     url: article.url,
-    link: `/browse/shows/episode/simplecast/${simplecastId}`,
+    link: `${mediaTypeRoutes.simplecast}${simplecastId}`,
     section: undefined,
     //rawBody: getWagtailRawBody(article.body),
     body: article.body,
@@ -358,7 +362,7 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
 /**
  * Helper: Extract image data from Simplecast article
  */
-function getSimplecastImage(article: SimplecastArticle) {
+function getSimplecastImage (article: SimplecastArticle) {
   if (article.imageUrl) {
     return { url: article.imageUrl }
   }
@@ -371,18 +375,18 @@ function getSimplecastImage(article: SimplecastArticle) {
 /**
  * Helper: Extract show information from Simplecast article
  */
-function getSimplecastShowInfo(article: SimplecastArticle) {
+function getSimplecastShowInfo (article: SimplecastArticle) {
   const showId = article.showId || article.show_id
   const showTitle = article.showTitle || article.show_title || article.podcast?.title
   const showImageUrl = article.showImageUrl || article.show_image_url || article.podcast?.imageUrl
-  
+
   return { showId, showTitle, showImageUrl }
 }
 
 /**
  * Helper: Extract show object from Simplecast article
  */
-function getSimplecastShow(article: SimplecastArticle, showTitle?: string) {
+function getSimplecastShow (article: SimplecastArticle, showTitle?: string) {
   if (article.podcast) {
     return { title: article.podcast.title, url: article.podcast.href }
   }
@@ -395,7 +399,7 @@ function getSimplecastShow(article: SimplecastArticle, showTitle?: string) {
 /**
  * Helper: Extract headers from Simplecast show info
  */
-function getSimplecastHeaders(showTitle?: string, showImageUrl?: string) {
+function getSimplecastHeaders (showTitle?: string, showImageUrl?: string) {
   if (showTitle && showImageUrl) {
     return { brand: { title: showTitle, logoImage: { url: showImageUrl } } }
   }
@@ -405,14 +409,14 @@ function getSimplecastHeaders(showTitle?: string, showImageUrl?: string) {
 /**
  * Helper: Extract and process tags from Simplecast article
  */
-function getSimplecastTags(article: SimplecastArticle): string[] {
+function getSimplecastTags (article: SimplecastArticle): string[] {
   return article.keywords?.collection?.filter(k => k?.value)?.map(k => k.value) || []
 }
 
 /**
  * Helper: Calculate or estimate duration for Simplecast article
  */
-async function getSimplecastDuration(article: SimplecastArticle): Promise<number | undefined> {
+async function getSimplecastDuration (article: SimplecastArticle): Promise<number | undefined> {
   const duration = article.duration
   if (duration && typeof duration === 'number' && duration > 0) {
     return duration
@@ -429,7 +433,7 @@ async function getSimplecastDuration(article: SimplecastArticle): Promise<number
 export async function normalizeSimplecastPage (article: SimplecastArticle): Promise<ArticlePage> {
   if (typeof article === 'undefined')
     return null
-  
+
   const duration = await getSimplecastDuration(article)
   const simplecastId = article.id
   const { showId, showTitle, showImageUrl } = getSimplecastShowInfo(article)
@@ -448,7 +452,7 @@ export async function normalizeSimplecastPage (article: SimplecastArticle): Prom
     leadImageCaption: undefined,
     imageLink: undefined,
     type: article.type || 'episode',
-    link: `/browse/shows/episode/simplecast/${simplecastId}`,
+    link: `${mediaTypeRoutes.simplecast}${simplecastId}`,
     cmsSource: cmsSources.SIMPLECAST,
     sortDate: article.publishedAt,
     leadAsset: undefined,
@@ -699,6 +703,31 @@ const getAuthorsFromBylineUrl = memoize(async (url: string): Promise<Author> => 
   return author
 })
 
+// get show info from program collection url
+const getShowInfoFromProgramUrl = memoize(async (url: string): Promise<{ title: string; slug?: string }> => {
+  const config = useRuntimeConfig()
+  const options = {
+    method: 'GET',
+    url: `${config.public.NPR_CDS_API}${url}`,
+    headers: {
+      Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
+    },
+  }
+
+  try {
+    const response = await axios(options)
+    const resource = response.data?.resources?.[0]
+    const showTitle = resource?.title || 'NPR'
+    // Extract slug from nprWebsitePath (e.g., "/programs/all-things-considered/" -> "all-things-considered")
+    const nprPath = resource?.nprWebsitePath
+    const showSlug = nprPath ? nprPath.split('/').filter(Boolean).pop() : undefined
+    return { title: showTitle, slug: showSlug }
+  } catch (e) {
+    console.error('Error fetching show info from NPR:', e)
+    return { title: 'NPR' }
+  }
+})
+
 // NPR Article Type Definitions
 interface NprEnclosure {
   href?: string
@@ -862,13 +891,14 @@ const extractNprAudio = (article: NprArticle): { url?: string; duration?: number
   }
 
   for (const asset of Object.values(article.assets)) {
-    if (!asset?.profiles?.[0]) {
-      continue
-    }
+    const hasAudioProfile = asset.profiles?.some(p => p.href === '/v1/profiles/audio')
+    const hasAudioEnclosure = asset.enclosures?.some(e => e.type?.startsWith('audio/'))
 
-    if (asset.profiles[0].href === '/v1/profiles/audio') {
+    if (hasAudioProfile || hasAudioEnclosure) {
       const audioURL = asset.enclosures?.find(enclosure =>
         enclosure.type?.includes('audio/mpeg')
+      )?.href || asset.enclosures?.find(enclosure =>
+        enclosure.type?.startsWith('audio/')
       )?.href
 
       return {
@@ -915,7 +945,7 @@ const extractImageDimensions = (image?: string): { w: number; h: number } => {
 }
 
 // Normalize an article page object from NPR into a generic ArticlePage object.
-export async function normalizeNprPage (article: NprArticle, componentType = "default"): Promise<ArticlePage> {
+export async function normalizeNprPage (article: NprArticle, componentType = "default", showSlug?: string): Promise<ArticlePage> {
   const id = article.id
   const firstImageHref = article.images?.[0]?.href
   const rawImageId = firstImageHref?.substring(firstImageHref.lastIndexOf("/") + 1)
@@ -952,6 +982,11 @@ export async function normalizeNprPage (article: NprArticle, componentType = "de
   const bylineUrl = article.collections?.find(c => c.rels?.includes('byline'))?.href ?? null
   const authors = bylineUrl ? [await getAuthorsFromBylineUrl(bylineUrl)] : null
 
+  // Fetch show info from program collection if available
+  const programUrl = article.collections?.find(c => c.rels?.includes('program'))?.href ?? null
+  const showInfo = programUrl ? await getShowInfoFromProgramUrl(programUrl) : { title: article.showTitle ?? 'NPR' }
+  const derivedShowSlug = showInfo.slug || showSlug
+
   const dimensions = extractImageDimensions(image)
 
   return Promise.resolve({
@@ -975,8 +1010,9 @@ export async function normalizeNprPage (article: NprArticle, componentType = "de
     meta: {
       firstPublishedAt: article.publishDateTime,
       slug: id,
+      ...(derivedShowSlug ? { showSlug: derivedShowSlug } : {}),
     },
-    showTitle: article.showTitle ?? 'NPR',
+    showTitle: showInfo.title,
     body: textBody,
     rawBody: textBody,
     link: article.webPages?.[0]?.href ?? '/',
@@ -1099,7 +1135,7 @@ const getCommentId = (result: any) => {
 // Transform page data from the API into a simpler and typed format
 export function normalizeSearchResults (results: Record<string, any | undefined>): ArticlePage {
   const result = results.result
-  
+
   return {
     id: result.id,
     type: result.type,

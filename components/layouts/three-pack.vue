@@ -2,17 +2,26 @@
 import { dynamicNavigation } from "~/utilities/helpers"
 import { useBreakpoints } from "~/composables/useBreakpoints"
 const props = defineProps({
+  label: {
+    type: String,
+    default: "",
+  },
   list: {
     type: Object,
     required: true,
   },
   cardClass: {
     type: String,
-    default: "col-12 md:col-12 lg:col-4 mb-3",
+    default: "col-12 md:col-12 lg:col-4",
   },
   maxItems: {
     type: Number,
     default: 3,
+  },
+  seeMore: {
+    type: Object,
+    default: null,
+    required: false,
   },
 })
 
@@ -23,7 +32,10 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
 
 <template>
   <div class="layout layout-three-pack">
-    <h2 class="mb-4">{{ props.list.title }}</h2>
+    <LayoutsTitleHeader
+      :label="props.label || props.list.title"
+      :seeMore="props.seeMore"
+    />
 
     <div class="grid">
       <template v-if="reactiveItems?.length > 0">
@@ -34,7 +46,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
           :class="props.cardClass"
           :data="article"
           :isHorizontal="isLgBreakpoint"
-          :allowVerticalEffect="true"
+          :allowVerticalEffect="!isLgBreakpoint"
           imgCol="w-7rem md:w-12rem lg:w-full"
           :size="{
             xs: [112, 112],

@@ -19,7 +19,7 @@ const getPublisherPageData = async (pageSlug: string) => {
 }
 
 // getting page data from the wagtail api
-const getWagtailPageData = async (pageSlug: string) => {
+const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean) => {
     const config = __getConfig()
     const options = {
         method: 'GET',
@@ -33,16 +33,24 @@ const getWagtailPageData = async (pageSlug: string) => {
     try {
         const res = await axios(options)
         const resData = humps.camelizeKeys(res.data)
-
         // Add cmsSource to the data so normalizeArticlePage knows which normalizer to use
         resData.cmsSource = cmsSources.WAGTAIL
-
+        //console.log("resData", resData?.body[0].value.list)
         // Transform curated content if it exists
-        if (resData.curatedContent && Array.isArray(resData.curatedContent)) {
-            const transformedCuratedContent = await transformCuratedContent(resData.curatedContent)
+        if (resData.body && Array.isArray(resData.body)) {
+            // if isShowOnly is true, just return null and ignore the body
+            // Pass the pageSlug so NPR content can include it
+            const transformedCuratedContent = isShowOnly ? null : await transformCuratedContent(resData.body, 'default', pageSlug)
+
+            // if isShowOnly is true, we don't want to return the inPageNavigation
+
+            if (isShowOnly) {
+                delete resData.inPageNavigation
+            }
+
             return {
-                ...resData,
-                curatedContent: transformedCuratedContent
+                ...await normalizeArticlePage(resData),
+                body: transformedCuratedContent
             }
         }
 
@@ -54,10 +62,10 @@ const getWagtailPageData = async (pageSlug: string) => {
 }
 
 // get page data from the proper CMS
-const getPageData = async (pageSlug: string, cmsSource: string) => {
+const getPageData = async (pageSlug: string, cmsSource: string, isShowOnly?: boolean) => {
     switch (cmsSource) {
         case cmsSources.WAGTAIL:
-            return await getWagtailPageData(pageSlug)
+            return await getWagtailPageData(pageSlug, isShowOnly)
         case cmsSources.PUBLISHER:
             return await getPublisherPageData(pageSlug)
         default:
@@ -69,8 +77,15 @@ const getPageData = async (pageSlug: string, cmsSource: string) => {
 export default defineEventHandler(async (event) => {
     const pageSlug: string | undefined = event?.context?.params?.pageSlug
     const cmsSource: string | undefined = event?.context?.params?.cmsSource
+
+    // Get query parameters (e.g. ?showOnly=true)
+    const query = getQuery(event)
+    const showOnly: string | undefined = query.showOnly as string | undefined
+
+    const isShowOnly = showOnly === 'true'
     if (pageSlug && cmsSource) {
-        const PageData = await getPageData(pageSlug, cmsSource)
+        const PageData = await getPageData(pageSlug, cmsSource, isShowOnly)
+
         return PageData
     } else {
         return null

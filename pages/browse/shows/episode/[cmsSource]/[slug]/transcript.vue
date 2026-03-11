@@ -6,13 +6,12 @@ import {
   checkIsFavorited,
   copyToClipBoard,
 } from "~/utilities/helpers"
-import { useFallbackImages } from "~/composables/useFallbackImages"
 import { useIsApp } from "~/composables/states"
+import { mediaTypeRoutes } from "~/composables/globals"
 const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
-const { getEpisodeHeadFallBackImage } = useFallbackImages()
 const toast = useToast()
 const isMinimized = ref(false)
 const isApp = useIsApp()
@@ -67,7 +66,10 @@ const theSlug = computed(
     episodeData.value?.show ||
     episodeData.value?.headers.brand.slug
 )
-
+const backToEpisodePath = computed(
+  () =>
+    `${mediaTypeRoutes.episode}${route.params.cmsSource}/${route.params.slug}`
+)
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
 watchEffect(async () => {
@@ -79,11 +81,9 @@ const handleReturnToEpisode = () => {
   trackClickEvent(
     "Click Tracking - Return to Episode from transcript",
     "Episode transcript",
-    `/browse/shows/episode/${route.params.cmsSource}/${route.params.slug}`
+    backToEpisodePath.value
   )
-  navigateTo(
-    `/browse/shows/episode/${route.params.cmsSource}/${route.params.slug}`
-  )
+  navigateTo(backToEpisodePath.value)
 }
 
 // handle transcript link click
@@ -102,12 +102,19 @@ const handleTranscriptLinkClick = () => {
 // get the image for the episode. if the episode image is the same as the show image, use the fallback image
 const getEpisodeImage = () => {
   const epImage = episodeData.value?.image
-  const showImage = episodeData.value?.headers.brand.logoImage
-  return epImage
-    ? epImage.template !== showImage.template
+  const showImage = episodeData.value?.headers?.brand?.logoImage
+
+  // Handle Simplecast images which use 'url' instead of 'template'
+  if (epImage && typeof epImage === "object") {
+    const epImageIdentifier = epImage?.url || epImage?.template
+    const showImageIdentifier = showImage?.url || showImage?.template
+
+    return epImageIdentifier !== showImageIdentifier
       ? epImage
-      : getEpisodeHeadFallBackImage()
-    : getEpisodeHeadFallBackImage()
+      : gallery.value?.slides?.[0]?.image || null
+  }
+
+  return epImage
 }
 
 const {
@@ -136,6 +143,17 @@ const debouncedScroll = () => {
   clearTimeout(scrollTimeout)
   scrollTimeout = setTimeout(handleScroll, 20)
 }
+
+const breadcrumbs = computed(() => [
+  { label: "Home", route: "/home" },
+  { label: "Browse", route: "/browse" },
+  {
+    label: show.value?.show?.title,
+    route: `/browse/shows/${show.value?.show?.slug}`,
+  },
+  { label: episodeData.value?.title, route: backToEpisodePath.value },
+  { label: "Transcript" },
+])
 
 onMounted(() => {
   window.addEventListener("scroll", debouncedScroll, { passive: true })
@@ -172,6 +190,13 @@ watch(
         />
       </Head>
     </Html>
+    <section>
+      <transition name="fade">
+        <div v-if="status === 'success'" class="flex align-items-center mb-4">
+          <Breadcrumbs :items="breadcrumbs" />
+        </div>
+      </transition>
+    </section>
     <FetchError v-if="error" />
     <FetchError v-if="showError" />
 
@@ -193,11 +218,16 @@ watch(
               >
                 <VImage
                   :src="getEpisodeImage()"
-                  :alt="episodeData?.title"
-                  class="episode-page-image"
+                  :size="{
+                    xxs: [112, 112],
+                  }"
+                  :allowVerticalEffect="false"
+                  :ratio="[1, 1]"
+                  :alt="episodeData?.image?.altText || episodeData?.title"
+                  class="episode-page-image flex-none w-7rem md:w-7rem"
                   :class="{ minimize: isMinimized }"
-                  :size="[112, 112]"
-                />
+                >
+                </VImage>
                 <h1 class="h2" :class="isMinimized ? 'mt-0' : 'mt-2'">
                   {{ episodeData?.title }}
                 </h1>
@@ -289,11 +319,9 @@ watch(
         height var(--p-transition-duration);
       -webkit-transition: width var(--p-transition-duration),
         height var(--p-transition-duration);
-      width: 112px;
-      height: 112px;
       &.minimize {
-        width: 46px;
-        height: 46px;
+        width: 46px !important;
+        height: 46px !important;
       }
     }
   }

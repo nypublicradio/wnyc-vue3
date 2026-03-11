@@ -81,6 +81,23 @@ export interface FactboxBlock {
   }
 }
 
+export interface CuratedListBlock {
+  id: string
+  type: "curated_list"
+  value: {
+    label: string
+    layout: string
+    list: {
+      listItems: any[]
+      title?: string
+    }
+    seeMoreLink?: {
+      url: string
+      label: string
+    }
+  }
+}
+
 export type StreamfieldBlock =
   | BlockQuoteBlock
   | CodeBlock
@@ -92,6 +109,7 @@ export type StreamfieldBlock =
   | PullQuoteBlock
   | FactboxBlock
   | DocumentBlock
+  | CuratedListBlock
 
 // About Module blocks
 export interface RichTextBlock {
@@ -123,3 +141,13 @@ export interface SimplecastShowBlock {
 }
 
 export type LinkedDataSource = SimplecastShowBlock
+
+
+export interface ctaBlock {
+  id: string
+  type: "cta_block"
+  value: {
+    url: string
+    image: Image
+  }
+}

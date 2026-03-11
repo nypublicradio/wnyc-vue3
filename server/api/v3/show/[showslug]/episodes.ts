@@ -75,7 +75,6 @@ const getSimplecastEpisodes = async (podcastId: string, offset = 0, limit = 10) 
 
         const res = await axios(options)
         const resData = humps.camelizeKeys(res.data)
-
         // Extract episodes collection
         const episodes = resData.collection || []
 
@@ -111,7 +110,6 @@ const getSimplecastEpisodes = async (podcastId: string, offset = 0, limit = 10) 
         // so we can only provide limited pagination info
         const hasMore = episodes.length === limit
         const currentPage = Math.floor(offset / limit) + 1
-
         return {
             data: normalizedEpisodes,
             meta: {
@@ -169,7 +167,6 @@ const getSimplecastEpisodes = async (podcastId: string, offset = 0, limit = 10) 
 export default defineEventHandler(async (event) => {
     const res = event?.node?.res
     const showslug: string | undefined = event?.context?.params?.showslug
-
     // Validate showslug parameter
     if (!showslug) {
         return {
@@ -185,17 +182,17 @@ export default defineEventHandler(async (event) => {
 
     // Get query parameters for pagination
     const query = getQuery(event)
-    
+
     // Parse offset (default: 0)
-    const offset: number = Array.isArray(query.offset) 
-        ? Number(query.offset[0]) 
+    const offset: number = Array.isArray(query.offset)
+        ? Number(query.offset[0])
         : (query.offset ? Number(query.offset) : 0)
-    
+
     // Parse limit (default: 10, max: 100)
     let limit: number = Array.isArray(query.limit)
         ? Number(query.limit[0])
         : (query.limit ? Number(query.limit) : 10)
-    
+
     // Enforce maximum limit of 100
     limit = Math.min(limit, 100)
 

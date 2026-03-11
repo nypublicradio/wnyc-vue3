@@ -4,13 +4,19 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-})
+});
 
 // route to the show page and add query
 const selectBrand = (brand) => {
-  // open up a new tab to the brand.url
-  window.open(brand.url, "_blank")
-}
+  // if the brand.url starts with http
+  if (brand.url.startsWith("http")) {
+    // open up a new tab to the brand.url
+    window.open(brand.url, "_blank");
+  } else {
+    // route to the show page and add query
+    navigateTo(brand.url);
+  }
+};
 </script>
 
 <template>

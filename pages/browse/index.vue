@@ -6,16 +6,17 @@ import { useBreakpoints } from "~/composables/useBreakpoints"
 import { useIsApp } from "~/composables/states"
 const config = useRuntimeConfig()
 const isApp = useIsApp()
+const route = useRoute()
 const {
   data: shows,
   status,
   error,
 } = useLazyFetch(`${config.public.BFF_URL}/api/v3/shows`)
 
-//const router = useRouter()
+const router = useRouter()
 const searchFieldValue = ref("")
 const isSearching = ref(false)
-const allOrFeatured = ref(true)
+const allOrFeatured = computed(() => route.query.all !== "true")
 const { isMobileBreakpoint } = useBreakpoints()
 
 // computed property to get the current shows based on allOrFeatured
@@ -55,7 +56,12 @@ const clearSearchField = () => {
 
 // handle the toggle of all or featured shows
 const toggleAllShows = () => {
-  allOrFeatured.value = !allOrFeatured.value
+  router.replace({
+    query: {
+      ...route.query,
+      all: allOrFeatured.value ? "true" : "false",
+    },
+  })
 }
 
 watch(searchFieldValue, () => {

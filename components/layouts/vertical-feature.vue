@@ -2,6 +2,10 @@
 import { dynamicNavigation } from "~/utilities/helpers"
 import { mediaTypes } from "~/composables/globals"
 const props = defineProps({
+  label: {
+    type: String,
+    default: "",
+  },
   list: {
     type: Object,
     required: true,
@@ -10,27 +14,35 @@ const props = defineProps({
     type: Number,
     default: 5,
   },
+  seeMore: {
+    type: Object,
+    default: null,
+    required: false,
+  },
+  isThin: {
+    type: Boolean,
+    default: false,
+  },
 })
 // TODO: use new smarter ratio calc
 const reactiveItems = toRef(props.list, "listItems")
-
 const squareSizes = {
-  xs: [317, 317],
-  sm: [709, 709],
-  md: [885, 885],
+  xs: [435, 435],
+  sm: [435, 435],
+  md: [435, 435],
   lg: [446, 446],
-  xl: [550, 550],
+  xl: [516, 516],
 }
 
 const rectSizes = {
-  xs: [317, 211],
-  sm: [518, 345],
-  md: [622, 441],
+  xs: [435, 290],
+  sm: [664, 443],
+  md: [664, 443],
   lg: [885, 590],
   xl: [664, 443],
 }
-const leftCol = ref("lg:col-6")
-const rightCol = ref("lg:col-6")
+const leftCol = ref(props.isThin ? "col-12 md:col-8" : "lg:col-6")
+const rightCol = ref(props.isThin ? "col-12" : "lg:col-6")
 const isSquare = ref(false)
 
 onBeforeMount(() => {
@@ -58,6 +70,20 @@ onBeforeMount(() => {
 })
 
 watch(isSquare, (newVal) => {
+  leftCol.value = props.isThin
+    ? "col-12 md:col-8"
+    : newVal
+    ? "lg:col-5"
+    : "lg:col-5 xl:col-6"
+  rightCol.value = props.isThin
+    ? "col-12 lg:col-12"
+    : newVal
+    ? "lg:col-7"
+    : "lg:col-7 xl:col-6"
+})
+
+watch(isSquare, (newVal) => {
+  if (props.isThin) return
   leftCol.value = newVal ? "lg:col-5" : "lg:col-5 xl:col-6"
   rightCol.value = newVal ? "lg:col-7" : "lg:col-7 xl:col-6"
 })
@@ -65,11 +91,25 @@ watch(isSquare, (newVal) => {
 const featureSizes = computed(() => {
   return isSquare.value ? squareSizes : rectSizes
 })
+
+const featureTitleClasses = props.isThin ? "text-xxl" : ""
+const listImgColClasses = props.isThin
+  ? "w-7rem md:w-7rem lg:w-7rem xl:w-7rem"
+  : "w-7rem md:w-12rem lg:w-13rem xl:w-13rem"
+
+const listTitleClasses = props.isThin ? "text-base" : "text-base lg:text-lg"
+const listTextClasses = props.isThin ? "text-sm" : "text-base lg:text-base"
 </script>
 
 <template>
-  <div class="layout layout-vertical-feature">
-    <h2 class="mb-4">{{ props.list.title }}</h2>
+  <div
+    class="layout layout-vertical-feature"
+    :class="{ 'is-thin': props.isThin }"
+  >
+    <LayoutsTitleHeader
+      :label="props.label || props.list.title"
+      :seeMore="props.seeMore"
+    />
     <!-- <pre class="text-xs">{{ reactiveItems }}</pre> -->
     <div class="grid">
       <MediaCard
@@ -80,10 +120,12 @@ const featureSizes = computed(() => {
         is-vertical
         is-feature
         showTease
-        teaseClasses="text-sm lg:text-base"
-        pipeClasses="text-sm lg:text-base"
-        showTitleClasses="text-sm lg:text-base"
+        :titleClasses="featureTitleClasses"
+        :teaseClasses="listTextClasses"
+        :pipeClasses="listTextClasses"
+        :showTitleClasses="listTextClasses"
         :size="featureSizes"
+        :allowVerticalEffect="!isSquare"
         @on-click="dynamicNavigation(reactiveItems[0])"
       />
       <skeleton-media-card
@@ -98,17 +140,22 @@ const featureSizes = computed(() => {
       <div class="col-12 grid grid-nogutter gap-3 h-full" :class="rightCol">
         <template v-if="reactiveItems.length > 0">
           <MediaCard
-            v-for="(article, index) in reactiveItems.slice(1, props.maxItems)"
+            v-for="(article, index) in reactiveItems.slice(
+              1,
+              props.maxItems === null ? undefined : props.maxItems
+            )"
             :key="`${article.id}-${index}`"
             class="col-12"
             :data="article"
             is-horizontal
             is-event
-            imgCol="w-7rem md:w-12rem lg:w-13rem xl:w-13rem"
-            titleClasses="text-base lg:text-lg"
-            teaseClasses="text-sm lg:text-base"
-            pipeClasses="text-sm lg:text-base"
-            showTitleClasses="text-sm lg:text-base"
+            :showBg="!props.isThin"
+            :imgCol="listImgColClasses"
+            :titleClasses="listTitleClasses"
+            :teaseClasses="listTextClasses"
+            :pipeClasses="listTextClasses"
+            :showTitleClasses="listTextClasses"
+            :allowVerticalEffect="false"
             :ratio="[1, 1]"
             :size="{
               xs: [112, 112],
@@ -139,10 +186,16 @@ const featureSizes = computed(() => {
 .layout-vertical-feature {
   .media-card.is-feature {
     .holder {
+      border-radius: 0 !important;
       background-color: transparent !important;
       .image {
         border-radius: var(--media-card-border-radius) !important;
         overflow: hidden;
+      }
+      @include media("<lg") {
+        .image {
+          border-radius: 0 !important;
+        }
       }
       .content {
         text-align: center !important;
@@ -179,6 +232,18 @@ const featureSizes = computed(() => {
             .tease-metadata-holder {
               gap: 0.75rem !important;
             }
+          }
+        }
+      }
+    }
+  }
+  &.is-thin {
+    .media-card.is-feature {
+      .holder {
+        .content {
+          h2 {
+            font-size: var(--font-size-9);
+            line-height: var(--font-size-10);
           }
         }
       }

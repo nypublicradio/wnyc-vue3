@@ -50,6 +50,31 @@ import useOneSignal from "~/composables/useOneSignal"
 import { capacitorIosNotificationSettings } from '@nypublicradio/capacitor-ios-notification-settings'
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics'
 
+// helper function that turns any string into a valid element id or slug
+export const slugify = (text) => {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
+}
+
+// handle an internal route or external link
+export const getRouteOrLink = (
+  url: string,
+  routingDomains: string[] = [
+    "www.wnyc.org",
+    "demo.wnyc.org",
+    "www.demo.wnyc.org",
+  ]
+) => {
+  if (!url) return url
+  const parsedUrl = new URL(url)
+  if (routingDomains.includes(parsedUrl.hostname)) {
+    return parsedUrl.pathname
+  }
+  return url
+}
+
 // function to check if a URL returns a 404
 export const checkUrl404 = async (url) => {
   try {
@@ -61,15 +86,25 @@ export const checkUrl404 = async (url) => {
   }
 }
 
-// return organization name from CMS source
-export const getOrg = (cmsSource) => {
+// return organization name from CMS source and/or the url for Wagtail
+export const getOrg = (data) => {
+  const cmsSource = data?.cmsSource
   switch (cmsSource) {
     case cmsSources.PUBLISHER:
       return "WNYC"
     case cmsSources.WAGTAIL:
-      return "Gothamist"
+      if (data.url?.includes('gothamist.com')) {
+        return "Gothamist"
+      } else if (data.url?.includes('wqxr.org')) {
+        return "WQXR"
+      } else if (data.url?.includes('NPR.org')) {
+        return "NPR"
+      }
+      return "WNYC"
     case cmsSources.NPR:
       return "NPR"
+    case cmsSources.SIMPLECAST:
+      return "WNYC"
     default:
       return "WNYC"
   }
@@ -97,10 +132,8 @@ export function formatTime (date: any, formatString = "h:mm a") {
 }
 
 // Function to strip HTML tags and return text content
-function stripHtmlTags (str) {
-  const parser = new DOMParser()
-  const dom = parser.parseFromString(str, "text/html")
-  return dom.body.textContent ?? ""
+export function stripHtmlTags (str) {
+  return str ? str.replace(/<[^>]*>?/gm, '') : ''
 }
 
 // Computed property to calculate reading time
@@ -403,21 +436,14 @@ export const copyToClipBoard = async (content: string) => {
   }
 }
 
-// helper function to remove HTML tags from a string
-export const removeHTMLTags = (str) => {
-  const parser = new DOMParser()
-  const parsedHTML = parser.parseFromString(str, "text/html")
-  return parsedHTML.body.textContent ?? ""
-}
-
 // share API
 export const shareAPI = async (
   content,
   componentOfOrigin = "Component of origin not specified"
 ) => {
   const shareData = {
-    title: removeHTMLTags(content.socialTitle || content.title),
-    text: removeHTMLTags(content.rawBody || content.description || content.title),
+    title: stripHtmlTags(content.socialTitle || content.title),
+    text: stripHtmlTags(content.rawBody || content.description || content.title),
     url: content.url || content.titleLink,
   }
 
@@ -1025,6 +1051,19 @@ export const goToShowPage = (show, params = null) => {
     query: params,
   })
 }
+/* centralized function to route to a card page */
+export const goToUrlOverrideDestination = (item, params = null) => {
+  const path = `${getRouteOrLink(item.url)}`
+  // if the path is a full url, open in new tab
+  if (path.startsWith("http")) {
+    window.open(path, "_blank")
+  } else {
+    navigateTo({
+      path,
+      query: params,
+    })
+  }
+}
 
 // return bool if the url has a query param
 export const hasQueryParams = (url) => {
@@ -1105,7 +1144,12 @@ export const addToFavorites2 = async ({ item, isFavorited, message = isFavorited
 export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = false) => {
   const isNetworkConnected = useIsNetworkConnected()
   if (isNetworkConnected.value) {
-    switch (item.type) {
+    // if the item has a url, we ignore everything and route based on the url, because it is the override destination
+    if (item.url) {
+      goToUrlOverrideDestination(item)
+      return
+    }
+    switch (item.type || item.contentType) {
       case mediaTypes.LIVE:
         goToLivePage(item, { slug: item.slug, type: item.type }, isSaveHistory)
         break
@@ -1129,6 +1173,9 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
         break
       case mediaTypes.EVENT:
         goToEventPage(item)
+        break
+      case mediaTypes.CARD:
+        goToUrlOverrideDestination(item)
         break
       default:
         goToEpisodePage(item, null, isSaveHistory)
@@ -1361,3 +1408,4 @@ export const initializeStationList = (stations) => {
   })
   return tempMenuData
 }
+

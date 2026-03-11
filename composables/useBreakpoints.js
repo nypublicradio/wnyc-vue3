@@ -41,6 +41,28 @@ const globalWindowWidth = ref(0)
 let listenerCount = 0
 let isInitialized = false
 
+const showOverlayBreakpoint = false
+let overlayElement = null
+// update the overlay styles
+function updateOverlay (breakpointArg, widthArg) {
+    if (!showOverlayBreakpoint || typeof document === 'undefined') return
+    if (!overlayElement) {
+        overlayElement = document.createElement('div')
+        overlayElement.style.position = 'fixed'
+        overlayElement.style.top = '0'
+        overlayElement.style.left = '0'
+        overlayElement.style.backgroundColor = 'black'
+        overlayElement.style.color = 'white'
+        overlayElement.style.padding = '8px 12px'
+        overlayElement.style.zIndex = '9999999'
+        overlayElement.style.fontFamily = 'monospace'
+        overlayElement.style.fontSize = '14px'
+        overlayElement.style.pointerEvents = 'none'
+        document.body.appendChild(overlayElement)
+    }
+    overlayElement.textContent = `Breakpoint: ${ breakpointArg } (${ widthArg }px)`
+}
+
 /**
  * Compare current breakpoint with a given condition
  * @param {string} condition - Condition like '>md', '>=lg', '<xl', '<=sm', '=md', or pixel values '<1440', '>=1024'
@@ -115,6 +137,9 @@ const handleResize = () => {
         if (globalBreakpoint.value !== newBreakpoint) {
             globalBreakpoint.value = newBreakpoint
         }
+        if (showOverlayBreakpoint) {
+            updateOverlay(globalBreakpoint.value, globalWindowWidth.value)
+        }
     }
 }
 // Initialize breakpoints on first mount and set up resize listener
@@ -123,6 +148,9 @@ const initializeBreakpoints = () => {
         globalWindowWidth.value = window.innerWidth
         globalBreakpoint.value = getCurrentBreakpoint(window.innerWidth)
         window.addEventListener("resize", handleResize)
+        if (showOverlayBreakpoint) {
+            updateOverlay(globalBreakpoint.value, globalWindowWidth.value)
+        }
         isInitialized = true
     }
 }

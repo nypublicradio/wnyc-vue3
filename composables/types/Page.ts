@@ -7,6 +7,12 @@ import type Sponsor from './Sponsor'
 import type Tag from './Tag'
 import type { NavigationLink, InPageNavigationLink } from './NavigationLink'
 
+export interface Topper {
+  topperTitle: string
+  topperDescription: string
+  topperBackground: string
+}
+
 export interface PageMeta {
   type: string
   detail_url: string
@@ -121,6 +127,7 @@ export interface ArticlePage extends Page {
   segments?: any
   transcript?: string
   embedCode?: string
+  topper?: Topper
 
   // Event-specific fields
   contentType?: string

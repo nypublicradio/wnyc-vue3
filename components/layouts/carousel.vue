@@ -2,6 +2,10 @@
 import { dynamicNavigation } from "~/utilities/helpers"
 
 const props = defineProps({
+  label: {
+    type: String,
+    default: "",
+  },
   list: {
     type: Object,
     required: true,
@@ -9,6 +13,11 @@ const props = defineProps({
   maxItems: {
     type: Number,
     default: undefined,
+  },
+  seeMore: {
+    type: Object,
+    default: null,
+    required: false,
   },
 })
 
@@ -31,15 +40,10 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
   }
 
   // Treat obj values as HEIGHT (user request), calculate WIDTH
-  const sizeObj = {
-    xs: obj.xs ? [Math.round(obj.xs * ratio), obj.xs] : undefined,
-    md: obj.md ? [Math.round(obj.md * ratio), obj.md] : undefined,
-    lg: obj.lg ? [Math.round(obj.lg * ratio), obj.lg] : undefined,
-  }
-  // Clean up undefined
-  Object.keys(sizeObj).forEach(
-    (key) => sizeObj[key] === undefined && delete sizeObj[key]
-  )
+  const sizeObj = {}
+  if (obj.xs) sizeObj.xs = [Math.round(obj.xs * ratio), obj.xs]
+  if (obj.md) sizeObj.md = [Math.round(obj.md * ratio), obj.md]
+  if (obj.lg) sizeObj.lg = [Math.round(obj.lg * ratio), obj.lg]
 
   return sizeObj
 }
@@ -47,8 +51,11 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
 
 <template>
   <div class="layout layout-carousel">
-    <h2 class="mb-4">{{ props.list.title }}</h2>
-    <MaterialCarouselBasic :gap="16">
+    <LayoutsTitleHeader
+      :label="props.label || props.list.title"
+      :seeMore="props.seeMore"
+    />
+    <MaterialCarouselBasic :gap="16" xlTop="28%" lgTop="28%" mdTop="23%">
       <MediaCard
         v-for="(item, index) in reactiveItems?.slice(0, props.maxItems)"
         :key="`carousel-${item.id}-${index}`"

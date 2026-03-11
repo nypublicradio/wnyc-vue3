@@ -65,6 +65,9 @@ const routeBack = () => {
   scrollbar-width: none;
 }
 .p-breadcrumb li {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   flex: none;
 }
 .p-breadcrumb button {
@@ -81,6 +84,7 @@ const routeBack = () => {
   .p-breadcrumb ol {
     display: flex;
     flex-wrap: nowrap;
+    align-items: center;
     width: 100%;
     min-width: 0;
   }

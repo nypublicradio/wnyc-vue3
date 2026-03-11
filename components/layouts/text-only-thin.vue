@@ -21,7 +21,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <layouts-river
+  <layouts-text-only
     :label="props.label"
     :list="props.list"
     :cardClass="props.cardClass"

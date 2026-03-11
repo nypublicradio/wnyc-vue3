@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { trackClickEvent } from "~/utilities/helpers"
+import { trackClickEvent, slugify, getRouteOrLink } from "~/utilities/helpers"
 import { cmsSources } from "~/composables/globals"
 import type { StreamfieldBlock } from "../composables/types/StreamfieldBlock"
 
@@ -19,6 +19,35 @@ const props = defineProps({
 })
 
 const streamfield = props.article?.body
+
+const layoutComponents = {}
+const defaultLayout = "river-thin"
+const headerClasses = "mb-3"
+const verticalSpacingClasses = "mb-6 md:mb-8"
+// dynamically import and Cache layout components to prevent re-creating them on each render
+const getLayoutComponent = (layout) => {
+  if (!layoutComponents[layout]) {
+    if (layout === "default") {
+      // setting "river" as default layout
+      layoutComponents[layout] = defineAsyncComponent(
+        () => import(`~/components/layouts/${defaultLayout}.vue`)
+      )
+    } else {
+      layoutComponents[layout] = defineAsyncComponent(async () => {
+        try {
+          return await import(`~/components/layouts/${layout}.vue`)
+        } catch (e) {
+          console.warn(
+            `Could not load streamfield layout ${layout}. Using the default streamfield layout.`,
+            e
+          )
+          return await import(`~/components/layouts/${defaultLayout}.vue`)
+        }
+      })
+    }
+  }
+  return layoutComponents[layout]
+}
 
 onMounted(() => {
   // you can't have script tags in v-html
@@ -41,39 +70,81 @@ onMounted(() => {
       v-if="
         props.article?.cmsSource === cmsSources.PUBLISHER ||
         props.article?.cmsSource === cmsSources.NPR ||
-        typeof props.article.body === 'string'
+        typeof props.article?.body === 'string'
       "
     >
       <HtmlConvert
-        v-if="props.article.body"
-        :htmlContent="props.article.body"
-        :key="`article-body-${props.article.id || 'default'}`"
+        v-if="props.article?.body"
+        :htmlContent="props.article?.body"
+        :key="`article-body-${props.article?.id || 'default'}`"
       />
     </div>
     <div v-else-if="streamfieldBlocks">
       <template v-for="block in streamfieldBlocks">
-        <!-- 
-        Streamfield Document is not ready on the back end at this time
-        Keeping it here for future reference
-        <StreamfieldDocument
+        <!-- Streamfield Document is not ready on the back end at this time
+        Keeping it here for future reference -->
+        <!-- <StreamfieldDocument
           v-if="block.type === 'document'"
           :key="`${block.id}-document`"
           :block="block"
-          class="mb-4"
+          :class="verticalSpacingClasses"
+          :id="slugify(block?.value?.title)"
         /> -->
+        <div
+          :key="`${block.id}-curated-list`"
+          v-if="
+            block.type === 'curated_list' &&
+            block?.value?.list?.listItems?.length
+          "
+          :class="verticalSpacingClasses"
+          :id="slugify(block?.value?.label)"
+        >
+          <component
+            :is="getLayoutComponent(block?.value?.layout)"
+            :list="block?.value?.list"
+            :label="block?.value?.label"
+            :seeMore="block?.value?.seeMoreLink"
+          />
+          <VFlexibleLink
+            v-if="block?.value?.seeMoreLink"
+            :to="getRouteOrLink(block?.value?.seeMoreLink.url)"
+            raw
+          >
+            <Button
+              severity="secondary"
+              class="mt-4 px-5 mx-auto block"
+              :label="block?.value?.seeMoreLink.label"
+            />
+          </VFlexibleLink>
+        </div>
+
+        <StreamfieldCtaBlock
+          v-if="block.type === 'cta_block'"
+          :block="block"
+          :class="verticalSpacingClasses"
+          :key="`${block.id}-cta-block`"
+        />
+
+        <HtmlConvert
+          v-if="block.type === 'rich_text'"
+          :htmlContent="block"
+          :class="verticalSpacingClasses"
+          :key="`${block.id}-rich_text`"
+        />
 
         <StreamfieldBlockQuote
-          v-if="block.type === 'block_quote'"
+          v-else-if="block.type === 'block_quote'"
           :key="`${block.id}-block-quote`"
           :block="block"
-          class="mb-4"
+          :class="verticalSpacingClasses"
         />
 
         <StreamfieldCode
           v-else-if="block.type === 'code'"
           :key="`${block.id}-code`"
           :block="block"
-          class="mb-4"
+          :class="verticalSpacingClasses"
+          :id="slugify(block.value.title)"
         />
 
         <StreamfieldContentCollection
@@ -81,49 +152,52 @@ onMounted(() => {
           :key="`${block.id}-content-collection`"
           :block="block"
           tracking-component-location="Streamfield"
-          class="mb-4"
+          :class="verticalSpacingClasses"
         />
 
         <StreamfieldEmbed
           v-else-if="block.type === 'embed'"
           :key="`${block.id}-embed`"
           :block="block"
-          class="mb-4"
+          :class="verticalSpacingClasses"
+          :id="slugify(block.value.title)"
         />
 
         <StreamfieldHeading
           v-else-if="block.type === 'heading'"
           :key="`${block.id}-heading`"
           :block="block"
-          class="mb-4"
+          :class="headerClasses"
+          :id="slugify(block?.value)"
         />
 
         <StreamfieldImage
           v-else-if="block.type === 'image'"
           :key="`${block.id}-image`"
           :block="block"
-          class="mb-4"
+          :class="verticalSpacingClasses"
         />
 
         <StreamfieldParagraph
           v-else-if="block.type === 'paragraph'"
           :key="`${block.id}-paragraph`"
           :block="block"
-          class="mb-4"
+          :class="verticalSpacingClasses"
         />
 
         <StreamfieldAviaryPullQuote
           v-else-if="block.type === 'pull_quote'"
           :key="`${block.id}-pull-quote`"
           :block="block"
-          class="mb-4"
+          :class="verticalSpacingClasses"
         />
 
         <StreamfieldFactbox
           v-else-if="block.type === 'factbox'"
           :key="`${block.id}-factbox`"
           :block="block"
-          class="mb-4"
+          :class="verticalSpacingClasses"
+          :id="slugify(block.value.heading)"
         />
       </template>
     </div>
@@ -197,6 +271,7 @@ onMounted(() => {
           class="streamfield-embed"
           :htmlContent="block.value.embed"
           :key="`embed-${index}`"
+          :id="`${block.title}`"
         />
 
         <!-- heading -->

@@ -8,23 +8,29 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  cardClass: {
-    type: String,
-    default: "col-12",
+  maxItems: {
+    type: Number,
+    default: null,
   },
   seeMore: {
     type: Object,
     default: null,
     required: false,
   },
+  isThin: {
+    type: Boolean,
+    default: true,
+  },
 })
 </script>
 
 <template>
-  <layouts-river
+  <layouts-vertical-feature
+    :is-thin="props.isThin"
     :label="props.label"
     :list="props.list"
-    :cardClass="props.cardClass"
-    :seeMore="props.seeMore"
+    :max-items="props.maxItems"
+    :see-more="props.seeMore"
   />
 </template>
+

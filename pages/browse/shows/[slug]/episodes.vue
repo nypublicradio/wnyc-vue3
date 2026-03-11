@@ -9,28 +9,72 @@ import { useGlobalToast } from "~/composables/states"
 
 const config = useRuntimeConfig()
 const route = useRoute()
+const podcastId = ref(null)
 
-const {
-  data: show,
-  status,
-  error,
-} = useFetch(`${config.public.BFF_URL}/api/v3/show/${route.params.slug}`)
-
-const page = ref(null)
+const meta = ref(null)
+const page = ref(1)
 const episodes = ref(null)
-let maxPages = null
 
 const pendingMore = ref(false)
 const loadMoreRefVisible = ref(false)
 const loadMoreRef = ref(null)
 const isInitialObserver = ref(true)
 
+const {
+  data: show,
+  status,
+  error,
+} = useFetch(
+  `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}?showOnly=true`,
+  {
+    onResponse(res) {
+      podcastId.value = res.response._data.linkedDataSource[0].value.id
+    },
+  }
+)
+
+const { status: scStatus, error: scError } = useFetch(
+  () =>
+    `${config.public.BFF_URL}/api/v3/show/${podcastId.value}/episodes?offset=${
+      meta.value?.pagination?.offset || 0
+    }&limit=${meta.value?.pagination?.limit || 10}`,
+  {
+    onResponse(res) {
+      pendingMore.value = false
+      meta.value = res.response._data.meta
+      //episodes.value = res.response._data.data
+
+      episodes.value =
+        episodes.value?.length > 0
+          ? [...episodes.value, ...res.response._data.data]
+          : res.response._data.data
+    },
+    onError(error) {
+      pendingMore.value = false
+      const globalToast = useGlobalToast()
+      globalToast.value = {
+        severity: "error",
+        summary:
+          "Sorry. We are having trouble loading more episodes. Please try again later.",
+        life: null,
+        closable: true,
+      }
+      console.error("error = ", error)
+    },
+    watch: [podcastId],
+    immediate: false,
+  }
+)
+
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Browse", route: "/browse" },
   {
-    label: show.value?.show?.title,
-    route: `/browse/shows/${show.value?.show?.slug}`,
+    label: show.value?.title,
+    route: `/browse/shows/${route.params.slug}`,
+  },
+  {
+    label: "All Episodes",
   },
 ])
 
@@ -51,32 +95,15 @@ onUnmounted(() => {
   stop()
 })
 // load more episodes and track it
-const loadMore = async () => {
+const loadMore = () => {
   page.value += 1
   pendingMore.value = true
-  try {
-    const moreShows = await $fetch(
-      `${config.public.BFF_URL}/api/v3/show/${route.params.slug}?page=${page.value}`
-    )
-    pendingMore.value = false
-    episodes.value = [...episodes.value, ...moreShows?.episodes?.data]
-    trackClickEvent(
-      "Event Tracking - load more episodes",
-      "Shows Page",
-      show.value.show.title
-    )
-  } catch (e) {
-    pendingMore.value = false
-    const globalToast = useGlobalToast()
-    globalToast.value = {
-      severity: "error",
-      summary:
-        "Sorry. We are having trouble loading more episodes. Please try again later.",
-      life: null,
-      closable: true,
-    }
-    console.error("error = ", e)
-  }
+  meta.value.pagination.offset += meta.value.pagination.limit
+  trackClickEvent(
+    "Event Tracking - load more episodes",
+    "Shows Page",
+    show.value?.show?.title
+  )
 }
 
 // if user is logged in, check if item is already favorited
@@ -137,17 +164,16 @@ onMounted(() => {
       <div class="flex align-items-center">
         <Breadcrumbs :items="breadcrumbs" />
       </div>
-      <FetchError v-if="error" />
+      <FetchError v-if="error || scError" />
     </section>
 
     <ShowHeader :show="show" />
 
     <section class="py-4">
-      <!-- <pre>{{ show }}</pre> -->
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
-          <div v-if="status === 'success'" class="flex flex-column gap-5">
+          <div class="flex flex-column gap-5">
             <h2 class="md:text-xl">All Episodes</h2>
             <template v-for="ep in episodes" :key="ep.id">
               <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
@@ -169,7 +195,7 @@ onMounted(() => {
               />
             </template>
           </div>
-          <div v-if="status === 'pending'">
+          <div v-if="status === 'pending' || scStatus === 'pending'">
             <div class="flex mb-5">
               <Skeleton height="1.5rem" width="80px" borderRadius="4px" />
             </div>
@@ -186,8 +212,8 @@ onMounted(() => {
               class="mb-5"
             />
           </div>
+          <!-- v-if="meta?.pagination?.count < meta?.totalCount" -->
           <WnycLoader
-            v-if="page < maxPages"
             ref="loadMoreRef"
             spinner
             size="40px"

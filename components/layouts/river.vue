@@ -1,6 +1,10 @@
 <script setup>
 import { dynamicNavigation } from "~/utilities/helpers"
 const props = defineProps({
+  label: {
+    type: String,
+    default: "",
+  },
   list: {
     type: Object,
     required: true,
@@ -9,6 +13,11 @@ const props = defineProps({
     type: String,
     default: "col-12 lg:col-6",
   },
+  seeMore: {
+    type: Object,
+    default: null,
+    required: false,
+  },
 })
 
 const reactiveItems = toRef(props.list, "listItems")
@@ -16,8 +25,10 @@ const reactiveItems = toRef(props.list, "listItems")
 
 <template>
   <div class="layout layout-river">
-    <h2 class="mb-4">{{ props.list.title }}</h2>
-
+    <LayoutsTitleHeader
+      :label="props.label || props.list.title"
+      :seeMore="props.seeMore"
+    />
     <div v-if="reactiveItems?.length > 0" class="grid">
       <div
         v-for="(article, index) in reactiveItems"
@@ -29,7 +40,8 @@ const reactiveItems = toRef(props.list, "listItems")
           isHorizontal
           imgCol="w-7rem md:w-12rem"
           :data="article"
-          :size="{ xs: [112, 112], md: [176, 176] }"
+          :size="{ xs: [112, 112], md: [192, 192] }"
+          :allowVerticalEffect="false"
           @on-click="dynamicNavigation(article)"
         />
       </div>
@@ -44,7 +56,7 @@ const reactiveItems = toRef(props.list, "listItems")
           isHorizontal
           imgCol="w-7rem md:w-12rem "
           class="w-full"
-          :size="{ xs: [112, 112], md: [176, 176] }"
+          :size="{ xs: [112, 112], md: [192, 192] }"
         />
       </div>
     </div>

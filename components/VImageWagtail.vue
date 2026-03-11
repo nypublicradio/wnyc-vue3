@@ -1,5 +1,4 @@
 <script setup>
-import VFlexibleLink from "./VFlexibleLink.vue"
 import Button from "primevue/button"
 import Dialog from "primevue/dialog"
 import ProgressSpinner from "primevue/progressspinner"
@@ -188,6 +187,7 @@ const computedSrc = computed(() => {
   if (typeof props.src === "object") {
     return (
       (props.src.id != null ? String(props.src.id) : null) ||
+      props.src.imageTemplate ||
       props.src.url ||
       props.src.src ||
       props.src.image ||

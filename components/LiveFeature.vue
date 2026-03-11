@@ -98,7 +98,7 @@ const onUpdateStation = (station) => {
               <LiveBadge />
               <div class="schedule-text flex gap-1">
                 <p class="font-bold" v-if="currentEpisodeHolder?.cmsSource">
-                  {{ getOrg(currentEpisodeHolder?.cmsSource) }}
+                  {{ getOrg(currentEpisodeHolder) }}
                 </p>
                 <p
                   class="font-bold"

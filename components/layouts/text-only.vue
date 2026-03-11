@@ -1,6 +1,10 @@
 <script setup>
 import { dynamicNavigation } from "~/utilities/helpers"
 const props = defineProps({
+  label: {
+    type: String,
+    default: "",
+  },
   list: {
     type: Object,
     required: true,
@@ -9,6 +13,11 @@ const props = defineProps({
     type: String,
     default: "col-12 md:col-6",
   },
+  seeMore: {
+    type: Object,
+    default: null,
+    required: false,
+  },
 })
 
 const reactiveItems = toRef(props.list, "listItems")
@@ -16,7 +25,10 @@ const reactiveItems = toRef(props.list, "listItems")
 
 <template>
   <div class="layout layout-text-only">
-    <h2 class="mb-4 header">{{ props.list.title }}</h2>
+    <LayoutsTitleHeader
+      :label="props.label || props.list.title"
+      :seeMore="props.seeMore"
+    />
     <div class="w-full lg:w-10 xl:w-9">
       <div class="grid grid-lggutter">
         <template v-if="reactiveItems?.length > 0">
@@ -33,7 +45,7 @@ const reactiveItems = toRef(props.list, "listItems")
                 'border-bottom':
                   index === reactiveItems.length - 1
                     ? 'none'
-                    : '1px solid var(--p-surface-25)',
+                    : '1px solid var(--p-divider-border-color)',
               }"
             >
               <Button

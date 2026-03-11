@@ -195,10 +195,10 @@ const reactiveData = toRef(props, "data")
 
 const nativeImageHeight = computed(() => {
   //console.log("reactiveData.value.imageFullHeight", reactiveData.value.imageFullHeight)
-  return reactiveData.value.imageFullHeight ?? 112
+  return reactiveData.value?.imageFullHeight || 192
 })
 const nativeImageWidth = computed(() => {
-  return reactiveData.value.imageFullWidth ?? 112
+  return reactiveData.value?.imageFullWidth || 192
 })
 
 const getImage = computed(() => {
@@ -482,7 +482,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                           ? props.data?.category
                           : props.data?.showTitle ||
                             props.data?.headers?.brand?.title ||
-                            getOrg(props.data?.cmsSource)
+                            getOrg(props.data)
                       }}
                     </template>
                     <template #right v-if="!props.hideDate">
@@ -542,7 +542,11 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                 >
                 </PlayButton>
                 <ReadButton
-                  v-else
+                  v-else-if="
+                    props.data?.reading_time ||
+                    props.data?.readingTime ||
+                    props.data?.rawBody
+                  "
                   class="z-2"
                   :label="
                     getReadingTime(
@@ -554,6 +558,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                   :file="props.data?.name"
                   @on-click="handleClick"
                 />
+                <div v-else></div>
               </template>
               <div v-else></div>
               <slot>
@@ -574,7 +579,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                     :menuItems="getDotMenuItems(props.data)"
                     label=""
                     @changeEmit="onMenuChange"
-                    class="z-1 -mr-2"
+                    class="z-1"
                   >
                     <template #header-bottom>
                       <div>
@@ -625,7 +630,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
             </template>
             <div
               v-else-if="isEvent"
-              class="flex row-gap-2 column-gap-2 align-items-center flex-wrap justify-content-between w-full flex-wrap-reverse"
+              class="flex row-gap-2 column-gap-2 align-items-center justify-content-between w-full flex-wrap-reverse"
             >
               <div class="w-full md:w-auto">
                 <EventButton
@@ -671,37 +676,6 @@ $contentPaddingY: 1.25rem;
     // Force overlay onto its own GPU layer to prevent blocking content below
     will-change: transform;
     transform: translateZ(0);
-  }
-
-  /* Carousel Specific: Shrink to fit content */
-  &.in-carousel {
-    width: min-content;
-    max-width: 100%;
-    min-width: var(--min-content-width);
-
-    /* Force override of any other layout mode when in carousel */
-    &.is-vertical .image,
-    &.is-horizontal .image,
-    .holder .image {
-      /* Force strict image sizing behavior when in carousel */
-      flex: 0 0 auto !important;
-      display: flex !important;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-
-      /* Override fixed dimensions from media queries */
-      max-width: none !important;
-
-      /* Ensure img child behaves */
-      :deep(img) {
-        height: 100%;
-        width: auto;
-        max-width: none;
-        object-fit: cover;
-        object-position: center center;
-      }
-    }
   }
 
   .holder {
@@ -896,6 +870,37 @@ $contentPaddingY: 1.25rem;
 
       .content {
         padding: $contentPaddingY !important;
+      }
+    }
+  }
+
+  /* Carousel Specific: Shrink to fit content */
+  &.in-carousel {
+    width: min-content;
+    max-width: 100%;
+    min-width: var(--min-content-width);
+
+    /* Force override of any other layout mode when in carousel */
+    &.is-vertical .image,
+    &.is-horizontal .image,
+    .holder .image {
+      /* Force strict image sizing behavior when in carousel */
+      flex: 0 0 auto !important;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+
+      /* Override fixed dimensions from media queries */
+      max-width: none !important;
+
+      /* Ensure img child behaves */
+      :deep(img) {
+        height: 100%;
+        width: auto;
+        max-width: none;
+        object-fit: cover;
+        object-position: center center;
       }
     }
   }
