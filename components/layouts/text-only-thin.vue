@@ -1,5 +1,4 @@
 <script setup>
-import { dynamicNavigation } from "~/utilities/helpers"
 const props = defineProps({
   label: {
     type: String,
