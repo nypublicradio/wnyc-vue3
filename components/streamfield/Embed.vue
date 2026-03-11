@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from "vue"
-import { slugify } from "~/utilities/helpers"
 import type { EmbedBlock } from "../../composables/types/StreamfieldBlock"
 
 const props = defineProps<{

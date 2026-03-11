@@ -90,7 +90,7 @@ isNetworkConnected.value = initNetworkStatus.connected
 
 // adds listeners for push notifications and appStateChange and appUrlOpen
 const addListeners = async () => {
-  await App.addListener("appUrlOpen", async (event: URLOpenListenerEvent) => {
+  await App.addListener("appUrlOpen", (event: URLOpenListenerEvent) => {
     //Handle the app url open event
     handleAppUrlOpen(event)
   })
