@@ -81,14 +81,14 @@ onMounted(() => {
     </div>
     <div v-else-if="streamfieldBlocks">
       <template v-for="block in streamfieldBlocks">
-        <!-- 
-        Streamfield Document is not ready on the back end at this time
-        Keeping it here for future reference
-        <StreamfieldDocument
+        <!-- Streamfield Document is not ready on the back end at this time
+        Keeping it here for future reference -->
+        <!-- <StreamfieldDocument
           v-if="block.type === 'document'"
           :key="`${block.id}-document`"
           :block="block"
           :class="verticalSpacingClasses"
+          :id="slugify(block?.value?.title)"
         /> -->
         <div
           :key="`${block.id}-curated-list`"
@@ -144,6 +144,7 @@ onMounted(() => {
           :key="`${block.id}-code`"
           :block="block"
           :class="verticalSpacingClasses"
+          :id="slugify(block.value.title)"
         />
 
         <StreamfieldContentCollection
@@ -159,6 +160,7 @@ onMounted(() => {
           :key="`${block.id}-embed`"
           :block="block"
           :class="verticalSpacingClasses"
+          :id="slugify(block.value.title)"
         />
 
         <StreamfieldHeading
@@ -195,6 +197,7 @@ onMounted(() => {
           :key="`${block.id}-factbox`"
           :block="block"
           :class="verticalSpacingClasses"
+          :id="slugify(block.value.heading)"
         />
       </template>
     </div>
@@ -268,6 +271,7 @@ onMounted(() => {
           class="streamfield-embed"
           :htmlContent="block.value.embed"
           :key="`embed-${index}`"
+          :id="`${block.title}`"
         />
 
         <!-- heading -->

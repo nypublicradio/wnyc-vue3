@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue"
+import { slugify } from "~/utilities/helpers"
 import type { EmbedBlock } from "../../composables/types/StreamfieldBlock"
 
 const props = defineProps<{
@@ -38,27 +39,35 @@ const minHeight = computed(() => {
 </script>
 
 <template>
-  <StreamfieldEmbedDefault
-    v-if="embedType === 'default' || embedType === 'youtube-video'"
-    :key="`${block.id}-embed-default`"
-    :class="[{ youtube: embedType === 'youtube-video' }]"
-    :block="block"
-  />
-  <div v-else :style="`min-height: ${minHeight}px`">
-    <LazyStreamfieldEmbedTweet
-      v-if="embedType === 'twitter-tweet'"
-      :key="`${block.id}-embed-tweet`"
+  <div>
+    <StreamfieldHeading
+      v-if="block.value.title"
+      :key="`${block.id}-heading`"
+      :block="{ value: block.value.title }"
+      class="mb-4"
+    />
+    <StreamfieldEmbedDefault
+      v-if="embedType === 'default' || embedType === 'youtube-video'"
+      :key="`${block.id}-embed-default`"
+      :class="[{ youtube: embedType === 'youtube-video' }]"
       :block="block"
     />
-    <LazyStreamfieldEmbedTiktok
-      v-else-if="embedType === 'tiktok-embed'"
-      :key="`${block.id}-tiktok-embed`"
-      :block="block"
-    />
-    <LazyStreamfieldEmbedInstagram
-      v-else-if="embedType === 'instagram-media'"
-      :key="`${block.id}-instagram-media`"
-      :block="block"
-    />
+    <div v-else :style="`min-height: ${minHeight}px`">
+      <LazyStreamfieldEmbedTweet
+        v-if="embedType === 'twitter-tweet'"
+        :key="`${block.id}-embed-tweet`"
+        :block="block"
+      />
+      <LazyStreamfieldEmbedTiktok
+        v-else-if="embedType === 'tiktok-embed'"
+        :key="`${block.id}-tiktok-embed`"
+        :block="block"
+      />
+      <LazyStreamfieldEmbedInstagram
+        v-else-if="embedType === 'instagram-media'"
+        :key="`${block.id}-instagram-media`"
+        :block="block"
+      />
+    </div>
   </div>
 </template>
