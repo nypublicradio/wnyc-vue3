@@ -1053,7 +1053,6 @@ export const goToUrlOverrideDestination = (item, params = null) => {
   // if the path is a full url, open in new tab
   if (path.startsWith("http")) {
     window.open(path, "_blank")
-    return
   } else {
     navigateTo({
       path,

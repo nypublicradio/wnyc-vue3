@@ -44,7 +44,7 @@ let isInitialized = false
 const showOverlayBreakpoint = false
 let overlayElement = null
 // update the overlay styles
-function updateOverlay (breakpoint, width) {
+function updateOverlay (breakpointArg, widthArg) {
     if (!showOverlayBreakpoint || typeof document === 'undefined') return
     if (!overlayElement) {
         overlayElement = document.createElement('div')
@@ -60,7 +60,7 @@ function updateOverlay (breakpoint, width) {
         overlayElement.style.pointerEvents = 'none'
         document.body.appendChild(overlayElement)
     }
-    overlayElement.textContent = `Breakpoint: ${ breakpoint } (${ width }px)`
+    overlayElement.textContent = `Breakpoint: ${ breakpointArg } (${ widthArg }px)`
 }
 
 /**

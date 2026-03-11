@@ -1,6 +1,4 @@
 <script setup>
-import { dynamicNavigation } from "~/utilities/helpers"
-import { useBreakpoints } from "~/composables/useBreakpoints"
 const props = defineProps({
   label: {
     type: String,
