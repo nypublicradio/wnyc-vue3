@@ -55,7 +55,7 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
       :label="props.label || props.list.title"
       :seeMore="props.seeMore"
     />
-    <MaterialCarouselBasic :gap="16">
+    <MaterialCarouselBasic :gap="16" xlTop="28%" lgTop="28%" mdTop="23%">
       <MediaCard
         v-for="(item, index) in reactiveItems?.slice(0, props.maxItems)"
         :key="`carousel-${item.id}-${index}`"

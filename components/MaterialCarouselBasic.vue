@@ -19,6 +19,21 @@ const props = defineProps({
     type: Number,
     default: 40,
   },
+  // nav arrows position >=xl
+  xlTop: {
+    type: String,
+    default: "50%",
+  },
+  // nav arrows position <lg
+  lgTop: {
+    type: String,
+    default: "50%",
+  },
+  // nav arrows position <md
+  mdTop: {
+    type: String,
+    default: "50%",
+  },
 })
 
 const carouselRef = ref(null)
@@ -409,7 +424,7 @@ onBeforeUnmount(() => {
   position: absolute;
   z-index: 10;
   transform: translateY(-50%);
-  top: 27%;
+  top: v-bind(xlTop);
   background: white;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 50%;
@@ -431,10 +446,10 @@ onBeforeUnmount(() => {
     transform: translateY(-50%) scale(0.95);
   }
   @include media("<lg") {
-    top: 26%;
+    top: v-bind(lgTop);
   }
   @include media("<md") {
-    top: 21%;
+    top: v-bind(mdTop);
   }
 }
 </style>

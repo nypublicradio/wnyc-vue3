@@ -45,7 +45,7 @@ const reactiveItems = toRef(props.list, "listItems")
                 'border-bottom':
                   index === reactiveItems.length - 1
                     ? 'none'
-                    : '1px solid var(--p-surface-25)',
+                    : '1px solid var(--p-divider-border-color)',
               }"
             >
               <Button
