@@ -40,6 +40,7 @@ export default defineEventHandler(async (event) => {
   const requestOptions = {
     headers: {
       'X-CMS-Site': cmsSite,
+      'X-Forwarded-Host': cmsSite,
     },
     maxRedirects: 0,
     validateStatus: () => true,
