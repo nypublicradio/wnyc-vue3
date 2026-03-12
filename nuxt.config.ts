@@ -56,7 +56,7 @@ export default defineNuxtConfig({
     },
   },
 
-  ssr: false,
+  ssr: process.env.NUXT_SSR === 'true',
 
   ionic: {
     integrations: {
