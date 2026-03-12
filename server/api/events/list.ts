@@ -14,9 +14,8 @@ const getWagtailEvents = async (query: Record<string, any>) => {
     try {
         const options = {
             method: 'GET',
-            url: `${config.public.AVIARY_BASE_API}pages/`,
+            url: `${config.public.AVIARY_BASE_API}events/`,
             params: {
-                type: 'events.EventPage',
                 fields: 'id,title,start_datetime,end_datetime,duration,event_image,description,ticket_url,price,event_location,venue_name,event_url,body,tags,listing_title,listing_summary',
                 limit: query.limit || queryLimit,
                 offset: query.offset || 0,
@@ -26,13 +25,11 @@ const getWagtailEvents = async (query: Record<string, any>) => {
             }
         }
 
-        // Add date filtering if requested
+        // Pass explicit event mode params through to CMS endpoint
         if (query.upcoming === 'true') {
-            const now = new Date().toISOString().split('T')[0]; // Get date part only
-            (options.params as any).event_date__gte = now
+            (options.params as any).upcoming = true
         } else if (query.past === 'true') {
-            const now = new Date().toISOString().split('T')[0]; // Get date part only
-            (options.params as any).event_date__lt = now
+            (options.params as any).past = true
         }
 
         // Add venue filter if provided
