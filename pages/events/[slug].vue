@@ -92,7 +92,6 @@ const breadcrumbs = computed(() => [
   { label: "Events", route: "/events" },
   { label: title.value || "Event" },
 ])
-
 </script>
 
 <template>
@@ -104,174 +103,161 @@ const breadcrumbs = computed(() => [
         <Meta name="twitter:title" :content="`${title} | WNYC`" />
       </Head>
     </Html>
-    <section>
-      <div class="flex align-items-center">
-        <Breadcrumbs :items="breadcrumbs" />
-      </div>
-    </section>
     <FetchError v-if="error" />
-
-    <section class="event-hero">
-      <div class="event-section">
-        <template v-if="status === 'success'">
-          <div class="event-hero__layout">
-            <div class="event-hero__header">
-              <div class="event-hero__datebox" v-if="eventDayNumber">
-                <span class="event-hero__datebox-day">{{
-                  eventDayNumber
-                }}</span>
-                <span class="event-hero__datebox-month">{{
-                  eventDateShort
-                }}</span>
-              </div>
-              <div class="event-hero__titlegroup">
-                <h1
-                  class="event-hero__title text-2xl md:text-4xl -mt-1 md:mt-0 line-height-1 md:line-height-2"
-                >
-                  {{ title }}
-                </h1>
-                <div class="event-hero__meta">
-                  <PipeData
-                    v-if="eventDateLabel"
-                    class="event-hero__date text-sm md:text-base"
-                    :hide-pipe="!eventTimeLabel"
-                    :full-width="false"
-                  >
-                    <template #left>{{ eventDateLabel }}</template>
-                    <template #right>{{ eventTimeLabel }}</template>
-                  </PipeData>
-                  <div v-if="eventBadges.length" class="event-hero__badges">
-                    <VBadge
-                      v-for="badge in eventBadges"
-                      :key="badge.label"
-                      :label="badge.label"
-                      :color="badge.color"
-                      :bg-color="badge.bg"
-                    />
-                  </div>
+    <template v-else>
+      <section>
+        <div class="flex align-items-center">
+          <Breadcrumbs :items="breadcrumbs" />
+        </div>
+      </section>
+      <section class="event-hero">
+        <div class="event-section">
+          <template v-if="status === 'success'">
+            <div class="event-hero__layout">
+              <div class="event-hero__header">
+                <div class="event-hero__datebox" v-if="eventDayNumber">
+                  <span class="event-hero__datebox-day">{{ eventDayNumber }}</span>
+                  <span class="event-hero__datebox-month">{{ eventDateShort }}</span>
                 </div>
-                <EventButton
-                  v-if="eventCtaUrl"
-                  class="event-hero__cta"
-                  severity="primary"
-                  @on-click="handleEventCta"
+                <div class="event-hero__titlegroup">
+                  <h1
+                    class="event-hero__title text-2xl md:text-4xl -mt-1 md:mt-0 line-height-1 md:line-height-2"
+                  >
+                    {{ title }}
+                  </h1>
+                  <div class="event-hero__meta">
+                    <PipeData
+                      v-if="eventDateLabel"
+                      class="event-hero__date text-sm md:text-base"
+                      :hide-pipe="!eventTimeLabel"
+                      :full-width="false"
+                    >
+                      <template #left>{{ eventDateLabel }}</template>
+                      <template #right>{{ eventTimeLabel }}</template>
+                    </PipeData>
+                    <div v-if="eventBadges.length" class="event-hero__badges">
+                      <VBadge
+                        v-for="badge in eventBadges"
+                        :key="badge.label"
+                        :label="badge.label"
+                        :color="badge.color"
+                        :bg-color="badge.bg"
+                      />
+                    </div>
+                  </div>
+                  <EventButton
+                    v-if="eventCtaUrl"
+                    class="event-hero__cta"
+                    severity="primary"
+                    @on-click="handleEventCta"
+                  />
+                </div>
+              </div>
+              <div class="event-hero__rail-spacer" aria-hidden="true"></div>
+            </div>
+          </template>
+          <template v-else>
+            <Skeleton class="mb-2" height="18px" width="120px" borderRadius="8px" />
+            <Skeleton class="mb-3" height="48px" width="85%" borderRadius="16px" />
+            <Skeleton class="mb-2" height="16px" width="70%" borderRadius="8px" />
+            <Skeleton class="mb-2" height="16px" width="60%" borderRadius="8px" />
+          </template>
+        </div>
+      </section>
+
+      <section class="event-body">
+        <div class="event-section">
+          <div class="event-body__layout">
+            <div class="event-body__content">
+              <div v-if="status === 'success'" class="event-body__image">
+                <VImage
+                  v-if="eventData?.image"
+                  :src="eventData?.image"
+                  :size="{
+                    xxs: [316, 210],
+                    xs: [517, 344],
+                    sm: [709, 472],
+                    md: [885, 589],
+                    lg: [672, 447],
+                    xl: [662, 440],
+                  }"
+                  :alt="eventData?.image?.title || eventData?.title"
+                  class="event-body__image-frame mb-4"
+                />
+                <p v-if="eventData?.image?.credit" class="event-body__credit">
+                  {{ eventData?.image?.credit }}
+                </p>
+              </div>
+              <Skeleton
+                v-else
+                borderRadius="0px"
+                class="event-body__image-frame mb-4 opacity-60 w-full h-auto"
+              />
+              <VStreamfield
+                v-if="eventData?.body && status === 'success'"
+                class="event-body__streamfield mb-5"
+                :article="eventData"
+                :showDonation="false"
+              />
+              <HtmlConvert
+                v-else-if="eventData?.description && status === 'success'"
+                class="event-body__description mb-4"
+                :htmlContent="eventData?.description"
+              />
+              <div v-else-if="status !== 'success'" class="mb-5">
+                <skeleton-text />
+              </div>
+            </div>
+            <aside class="event-rail">
+              <div class="event-rail__section">
+                <h3>Date &amp; Time</h3>
+                <PipeData
+                  v-if="eventDateLabel"
+                  class="event-rail__value"
+                  :hide-pipe="!eventTimeLabel"
+                >
+                  <template #left>{{ eventDateLabel }}</template>
+                  <template #right>{{ eventTimeLabel }}</template>
+                </PipeData>
+              </div>
+
+              <div v-if="locationName" class="event-rail__section">
+                <h3>Location</h3>
+                <p v-if="venueName" class="event-rail__value">{{ venueName }}</p>
+                <p v-if="eventLocation" class="event-rail__address">
+                  {{ eventLocation }}
+                </p>
+                <VFlexibleLink v-if="mapsUrl" :to="mapsUrl" raw>
+                  <span class="event-rail__link">Open in Google Maps</span>
+                </VFlexibleLink>
+              </div>
+
+              <div v-if="eventData?.price" class="event-rail__section">
+                <h3>Price</h3>
+                <p class="event-rail__value event-rail__price">
+                  {{ formattedPrice }}
+                </p>
+              </div>
+
+              <div class="event-rail__ad">
+                <story-htlAd
+                  layout="rectangle"
+                  slotClass="htlad-wnyc_event_detail_rectangle"
+                  fineprint="WNYC is funded by sponsors and member donations"
                 />
               </div>
-            </div>
-            <div class="event-hero__rail-spacer" aria-hidden="true"></div>
+
+              <div v-if="eventData?.url" class="event-rail__section">
+                <h3>Event URL</h3>
+                <VFlexibleLink :to="eventData?.url" raw>
+                  <span class="event-rail__link">{{ eventData?.url }}</span>
+                </VFlexibleLink>
+              </div>
+            </aside>
           </div>
-        </template>
-        <template v-else>
-          <Skeleton
-            class="mb-2"
-            height="18px"
-            width="120px"
-            borderRadius="8px"
-          />
-          <Skeleton
-            class="mb-3"
-            height="48px"
-            width="85%"
-            borderRadius="16px"
-          />
-          <Skeleton class="mb-2" height="16px" width="70%" borderRadius="8px" />
-          <Skeleton class="mb-2" height="16px" width="60%" borderRadius="8px" />
-        </template>
-      </div>
-    </section>
-
-    <section class="event-body">
-      <div class="event-section">
-        <div class="event-body__layout">
-          <div class="event-body__content">
-            <div v-if="status === 'success'" class="event-body__image">
-              <VImage
-                v-if="eventData?.image"
-                :src="eventData?.image"
-                :size="{
-                  xxs: [316, 210],
-                  xs: [517, 344],
-                  sm: [709, 472],
-                  md: [885, 589],
-                  lg: [672, 447],
-                  xl: [662, 440],
-                }"
-                :alt="eventData?.image?.title || eventData?.title"
-                class="event-body__image-frame mb-4"
-              />
-              <p v-if="eventData?.image?.credit" class="event-body__credit">
-                {{ eventData?.image?.credit }}
-              </p>
-            </div>
-            <Skeleton
-              v-else
-              borderRadius="0px"
-              class="event-body__image-frame mb-4 opacity-60 w-full h-auto"
-            />
-            <VStreamfield
-              v-if="eventData?.body && status === 'success'"
-              class="event-body__streamfield mb-5"
-              :article="eventData"
-              :showDonation="false"
-            />
-            <HtmlConvert
-              v-else-if="eventData?.description && status === 'success'"
-              class="event-body__description mb-4"
-              :htmlContent="eventData?.description"
-            />
-            <div v-else-if="status !== 'success'" class="mb-5">
-              <skeleton-text />
-            </div>
-          </div>
-          <aside class="event-rail">
-            <div class="event-rail__section">
-              <h3>Date &amp; Time</h3>
-              <PipeData
-                v-if="eventDateLabel"
-                class="event-rail__value"
-                :hide-pipe="!eventTimeLabel"
-              >
-                <template #left>{{ eventDateLabel }}</template>
-                <template #right>{{ eventTimeLabel }}</template>
-              </PipeData>
-            </div>
-
-            <div v-if="locationName" class="event-rail__section">
-              <h3>Location</h3>
-              <p v-if="venueName" class="event-rail__value">{{ venueName }}</p>
-              <p v-if="eventLocation" class="event-rail__address">
-                {{ eventLocation }}
-              </p>
-              <VFlexibleLink v-if="mapsUrl" :to="mapsUrl" raw>
-                <span class="event-rail__link">Open in Google Maps</span>
-              </VFlexibleLink>
-            </div>
-
-            <div v-if="eventData?.price" class="event-rail__section">
-              <h3>Price</h3>
-              <p class="event-rail__value event-rail__price">
-                {{ formattedPrice }}
-              </p>
-            </div>
-
-            <div class="event-rail__ad">
-              <story-htlAd
-                layout="rectangle"
-                slotClass="htlad-wnyc_event_detail_rectangle"
-                fineprint="WNYC is funded by sponsors and member donations"
-              />
-            </div>
-
-            <div v-if="eventData?.url" class="event-rail__section">
-              <h3>Event URL</h3>
-              <VFlexibleLink :to="eventData?.url" raw>
-                <span class="event-rail__link">{{ eventData?.url }}</span>
-              </VFlexibleLink>
-            </div>
-          </aside>
         </div>
-      </div>
-    </section>
+      </section>
+    </template>
 
     <section v-if="otherEvents.length" class="event-more">
       <div class="event-section">
