@@ -9,11 +9,7 @@ const route = useRoute()
 const router = useRouter()
 const toast = useToast()
 
-const {
-  data: episode,
-  status,
-  error,
-} = useFetch(
+const { data: episode, status, error } = useFetch(
   () =>
     `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
   {
@@ -25,9 +21,7 @@ const {
         content_group: "on_demand_episode",
         article_authors: res?.authors?.map((author) => author.name).join(","),
         article_publish_date: res.publicationDate,
-        article_updated_date: res.updatedDate
-          ? res.updatedDate
-          : res.publicationDate,
+        article_updated_date: res.updatedDate ? res.updatedDate : res.publicationDate,
         article_title: res.title,
       })
 
@@ -41,8 +35,7 @@ const {
     onResponseError() {
       toast.add({
         severity: "error",
-        summary:
-          "We are having a problem loading this episode. Please try again later.",
+        summary: "We are having a problem loading this episode. Please try again later.",
         life: 6000,
         closable: true,
       })
@@ -65,13 +58,10 @@ const {
   status: showStatus,
   error: showError,
   execute: executeShowFetch,
-} = useLazyFetch(
-  () => `${config.public.BFF_URL}/api/v2/show/${theSlug.value}`,
-  {
-    immediate: false,
-    server: false,
-  }
-)
+} = useLazyFetch(() => `${config.public.BFF_URL}/api/v2/show/${theSlug.value}`, {
+  immediate: false,
+  server: false,
+})
 
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
@@ -103,29 +93,31 @@ watch(
         <Meta name="twitter:title" :content="`${episodeData?.title} | WNYC`" />
       </Head>
     </Html>
-    <section>
-      <div class="flex align-items-center mb-4">
-        <Breadcrumbs :items="breadcrumbs" />
-      </div>
-    </section>
     <FetchError v-if="error" />
-    <FetchError v-if="showError" />
-    <!-- <pre>{{ show }}</pre>
+    <FetchError v-else-if="showError" />
+    <template v-else>
+      <section>
+        <div class="flex align-items-center mb-4">
+          <Breadcrumbs :items="breadcrumbs" />
+        </div>
+      </section>
+      <!-- <pre>{{ show }}</pre>
     <pre>{{ episodeData }}</pre> -->
-    <EpisodeTemplate
-      :pending="status !== 'success'"
-      :episodeData="episodeData"
-      :show="show?.show"
-      :showPending="showStatus !== 'success'"
-    >
-      <template #bottom>
-        <Divider class="mt-8 mb-5" />
-        <h2 class="mb-3">Top Stories From Gothamist</h2>
-        <TopStories :articles="getFilteredTopStories(episodeData)" />
-      </template>
-    </EpisodeTemplate>
+      <EpisodeTemplate
+        :pending="status !== 'success'"
+        :episodeData="episodeData"
+        :show="show?.show"
+        :showPending="showStatus !== 'success'"
+      >
+        <template #bottom>
+          <Divider class="mt-8 mb-5" />
+          <h2 class="mb-3">Top Stories From Gothamist</h2>
+          <TopStories :articles="getFilteredTopStories(episodeData)" />
+        </template>
+      </EpisodeTemplate>
 
-    <BackToTopButton />
+      <BackToTopButton />
+    </template>
   </div>
 </template>
 

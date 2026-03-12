@@ -8,22 +8,16 @@ const sectionAnchorData = ref([
   //  { label: "Most Recent", id: "most-recent" },
 ])
 
-const {
-  data: show,
-  status,
-  error,
-} = useFetch(
+const { data: show, status, error } = useFetch(
   `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`,
   {
     onResponse(res) {
-      sectionAnchorData.value = res.response._data.inPageNavigation.map(
-        (item) => {
-          return {
-            label: item.value.linkText,
-            id: slugify(item.value.targetId || item.value.linkText),
-          }
+      sectionAnchorData.value = res.response._data.inPageNavigation.map((item) => {
+        return {
+          label: item.value.linkText,
+          id: slugify(item.value.targetId || item.value.linkText),
         }
-      )
+      })
     },
   }
 )
@@ -41,8 +35,7 @@ const scrollToSection = (sectionId, behavior = "smooth", offset = 90) => {
   const element = document.getElementById(sectionId)
 
   if (element) {
-    const elementPosition =
-      element.getBoundingClientRect().top + window.pageYOffset
+    const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
     const offsetPosition = elementPosition - offset
 
     window.scrollTo({
@@ -79,8 +72,8 @@ onUnmounted(() => {
     <Html lang="en">
       <Head>
         <Title
-          >{{ show?.show?.title }} | WNYC | New York Public Radio, Podcasts,
-          Live Streaming Radio, News</Title
+          >{{ show?.show?.title }} | WNYC | New York Public Radio, Podcasts, Live
+          Streaming Radio, News</Title
         >
         <Meta
           name="og:title"
@@ -98,72 +91,71 @@ onUnmounted(() => {
       </div>
       <FetchError v-if="error" />
     </section>
-    <!-- <pre>{{ show }}</pre> -->
-    <ShowHeader :show="show" />
-    <!-- JUMP LINKS -->
-    <div
-      class="hidden md:flex flex-wrap justify-content-center align-items-center gap-3 my-5 px-3"
-    >
-      <template v-if="status === 'success'">
-        <Button
-          v-for="i in sectionAnchorData"
-          :key="i.id"
-          :label="i.label"
-          severity="secondary"
-          class="px-3 md:px-3 lg:px-4"
-          @click="scrollToSection(i.id)"
-        />
-      </template>
-      <template v-else>
-        <Skeleton
-          v-for="i in 5"
-          :key="`jump-link-${i}`"
-          height="2rem"
-          width="8rem"
-          borderRadius="1.75rem"
-          class="w-7rem md:w-8rem lg:w-11rem"
-        />
-      </template>
-    </div>
-    <section class="py-4">
-      <!-- <pre class="text-xs">{{ show?.body }}</pre> -->
-      <div class="grid">
-        <div class="col-fixed hidden xxl:block w-20rem"></div>
-        <div class="col pr-2 lg:pr-4">
-          <div v-if="status === 'success'" class="flex flex-column gap-5">
-            <VStreamfield :streamfieldBlocks="show?.body" />
-          </div>
-          <div v-if="status !== 'success'">
-            <div
-              class="flex justify-content-between align-items-center mb-5 mt-2"
-            >
-              <Skeleton height="18px" width="80px" borderRadius="4px" />
-              <Skeleton height="18px" width="80px" borderRadius="4px" />
-            </div>
-            <skeleton-media-card
-              v-for="i in 10"
-              :key="`sk1-${i}`"
-              is-horizontal
-              imgCol="w-7rem md:w-10rem"
-              :size="[1, 1]"
-              :showBg="false"
-              :showBgMobile="false"
-              showTease
-              class="mb-6 mt-5"
-            />
-          </div>
-          <div v-if="!isApp">
-            <div class="block lg:hidden mt-8">
-              <ShowSummary :show="show" />
-            </div>
-          </div>
-        </div>
-        <div class="col-fixed hidden lg:block w-20rem">
-          <ShowSummary :show="show" />
-        </div>
+    <template v-if="!error">
+      <!-- <pre>{{ show }}</pre> -->
+      <ShowHeader :show="show" />
+      <!-- JUMP LINKS -->
+      <div
+        class="hidden md:flex flex-wrap justify-content-center align-items-center gap-3 my-5 px-3"
+      >
+        <template v-if="status === 'success'">
+          <Button
+            v-for="i in sectionAnchorData"
+            :key="i.id"
+            :label="i.label"
+            severity="secondary"
+            class="px-3 md:px-3 lg:px-4"
+            @click="scrollToSection(i.id)"
+          />
+        </template>
+        <template v-else>
+          <Skeleton
+            v-for="i in 5"
+            :key="`jump-link-${i}`"
+            height="2rem"
+            width="8rem"
+            borderRadius="1.75rem"
+            class="w-7rem md:w-8rem lg:w-11rem"
+          />
+        </template>
       </div>
-    </section>
-    <BackToTopButton />
+      <section class="py-4">
+        <!-- <pre class="text-xs">{{ show?.body }}</pre> -->
+        <div class="grid">
+          <div class="col-fixed hidden xxl:block w-20rem"></div>
+          <div class="col pr-2 lg:pr-4">
+            <div v-if="status === 'success'" class="flex flex-column gap-5">
+              <VStreamfield :streamfieldBlocks="show?.body" />
+            </div>
+            <div v-if="status !== 'success'">
+              <div class="flex justify-content-between align-items-center mb-5 mt-2">
+                <Skeleton height="18px" width="80px" borderRadius="4px" />
+                <Skeleton height="18px" width="80px" borderRadius="4px" />
+              </div>
+              <skeleton-media-card
+                v-for="i in 10"
+                :key="`sk1-${i}`"
+                is-horizontal
+                imgCol="w-7rem md:w-10rem"
+                :size="[1, 1]"
+                :showBg="false"
+                :showBgMobile="false"
+                showTease
+                class="mb-6 mt-5"
+              />
+            </div>
+            <div v-if="!isApp">
+              <div class="block lg:hidden mt-8">
+                <ShowSummary :show="show" />
+              </div>
+            </div>
+          </div>
+          <div class="col-fixed hidden lg:block w-20rem">
+            <ShowSummary :show="show" />
+          </div>
+        </div>
+      </section>
+      <BackToTopButton />
+    </template>
   </div>
 </template>
-
