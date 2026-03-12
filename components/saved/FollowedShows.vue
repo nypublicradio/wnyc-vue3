@@ -18,7 +18,8 @@ const user = useCurrentUser()
               <FollowIcon class="w-2rem -mb-2" />
             </p>
             <p class="line-height-3">
-              to follow your favorite shows — the latest episodes will appear here.
+              to follow your favorite shows — the latest episodes will appear
+              here.
             </p>
           </div>
           <Button
@@ -70,8 +71,12 @@ const user = useCurrentUser()
     }
     .v-image,
     .v-image-wrapper {
-      width: 40px !important;
-      height: 40px !important;
+      width: 84px !important;
+      height: 84px !important;
+      @include media("<md") {
+        width: 70px !important;
+        height: 70px !important;
+      }
     }
   }
 }

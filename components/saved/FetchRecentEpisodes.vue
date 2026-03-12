@@ -31,9 +31,11 @@ const { data, status, error } = useFetch(
       class="my-5"
       showPlayButton
       is-horizontal
-      imgCol="w-7rem"
+      imgCol="w-7rem h-7rem md:w-12rem md:h-12rem"
+      :size="{ xs: [112, 112], md: [192, 192] }"
       :showBg="false"
       :showBgMobile="false"
+      showTease
       @on-click="dynamicNavigation(episode)"
     />
     <hr />
@@ -44,7 +46,7 @@ const { data, status, error } = useFetch(
       :key="`sk-${i}`"
       showPlayButton
       is-horizontal
-      imgCol="w-7rem"
+      imgCol="w-7rem h-7rem md:w-12rem md:h-12rem"
       :size="[1, 1]"
       :showBg="false"
       :showBgMobile="false"
