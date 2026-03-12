@@ -1,12 +1,22 @@
 <script setup lang="ts">
 import { refreshData } from "./utilities/helpers"
 
-defineProps({
+const props = defineProps({
   error: {
     type: Object,
     default: null,
   },
 })
+
+// Set the HTTP response status code based on the error
+// This is critical for nginx to intercept 404s and proxy to CMS
+if (props.error?.statusCode) {
+  const event = useRequestEvent()
+  if (event) {
+    setResponseStatus(event, props.error.statusCode, props.error.statusMessage)
+  }
+}
+
 //clear error and route home
 function handleGoHome() {
   //nuxt global
