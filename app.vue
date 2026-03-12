@@ -47,8 +47,15 @@ const isNetworkConnected = useIsNetworkConnected()
 const fullDeviceInfo = useFullDeviceInfo()
 const appDownloadLink = useAppDownloadLink()
 const isApp = useIsApp()
-const { initOneSignal, notificationPermissionSync, handleAppUrlOpen } =
-  useOneSignal()
+
+// Only initialize OneSignal on client-side to avoid SSR errors
+let initOneSignal: any, notificationPermissionSync: any, handleAppUrlOpen: any
+if (process.client) {
+  const oneSignal = useOneSignal()
+  initOneSignal = oneSignal.initOneSignal
+  notificationPermissionSync = oneSignal.notificationPermissionSync
+  handleAppUrlOpen = oneSignal.handleAppUrlOpen
+}
 
 const isWeb = Capacitor.getPlatform() === 'web';
 isApp.value = !isWeb;

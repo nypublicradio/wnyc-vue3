@@ -19,7 +19,9 @@ import {
   useSettingSideBar,
   useIsApp,
   useGlobalToast,
-  useIsNetworkConnected
+  useIsNetworkConnected,
+  masterNotificationChannelsArray,
+  getMasterNotificationChannels
 } from "~/composables/states"
 import {
   trackClickEvent,
@@ -33,20 +35,6 @@ import { Capacitor } from "@capacitor/core"
 import { LocalNotifications } from "@capacitor/local-notifications"
 // shared state for in-app notification
 export const isInAppNotificationActive = ref(false)
-
-// notification channels array from the BFF server
-export const masterNotificationChannelsArray = ref(null)
-
-export const getMasterNotificationChannels = async () => {
-  // get notification topics
-  const client = useSupabaseClient()
-  const { data } = await client
-    .from("notification_topics")
-    .select("*")
-
-  masterNotificationChannelsArray.value = data
-  return data
-}
 
 // base OneSignal composable
 export default function useOneSignal() {

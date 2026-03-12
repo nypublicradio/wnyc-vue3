@@ -22,6 +22,7 @@ import {
   useAccountDeleteSideBar,
   useSettingSideBar,
   useGlobalToast,
+  masterNotificationChannelsArray,
 } from "~/composables/states.ts"
 import { Preferences } from "@capacitor/preferences"
 import {
@@ -62,8 +63,12 @@ const isDisabled = computed(() => {
   return currentUser.value?.app_metadata?.provider !== "email"
 })
 
-const { toggleOneSignalUserTag, masterNotificationChannelsArray } =
-  useOneSignal()
+// Only initialize OneSignal on client-side to avoid SSR errors
+let toggleOneSignalUserTag: any
+if (process.client) {
+  const oneSignal = useOneSignal()
+  toggleOneSignalUserTag = oneSignal.toggleOneSignalUserTag
+}
 
 // main function to update the toast component
 const showMessage = (
