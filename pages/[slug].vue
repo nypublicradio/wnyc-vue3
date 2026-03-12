@@ -21,6 +21,7 @@ if (isPreview) {
   console.log('[slug] ============ START PAGE LOAD ============')
   console.log('[slug] Loading page for slug:', route?.params?.slug)
   console.log('[slug] Full path:', `/${route?.params?.slug as string}`)
+  console.log('[slug] Environment:', { server: import.meta.server, client: import.meta.client })
   
   const result = await findPage(`/${route?.params?.slug as string}`)
   
@@ -29,19 +30,24 @@ if (isPreview) {
     slug: route?.params?.slug,
     hasError: !!result.error?.value,
     hasData: !!result.data?.value,
+    status: result.status?.value,
     errorDetails: result.error?.value ? JSON.stringify(result.error.value) : 'none',
     errorStatusCode: result.error?.value?.statusCode,
+    errorStatusMessage: result.error?.value?.statusMessage,
     dataType: result.data?.value ? typeof result.data.value : 'undefined',
     dataKeys: result.data?.value ? Object.keys(result.data.value) : [],
     dataPreview: result.data?.value ? JSON.stringify(result.data.value).substring(0, 300) : 'null',
   })
   
-  // Check if the API returned an error or no data
-  if (result.error?.value || !result.data?.value) {
+  // Check if the API returned an error, no data, or error status
+  const hasApiError = result.error?.value || !result.data?.value || (result.status?.value && result.status.value !== 'success')
+  
+  if (hasApiError) {
     console.log('[slug] ERROR DETECTED - Entering 404 flow')
     console.log('[slug] Error check details:', {
       'result.error?.value': !!result.error?.value,
       'result.data?.value': !!result.data?.value,
+      'result.status?.value': result.status?.value,
       'import.meta.server': import.meta.server,
     })
     
@@ -62,8 +68,8 @@ if (isPreview) {
     
     console.log('[slug] About to throw createError')
     throw createError({
-      statusCode: 404,
-      statusMessage: "Page Not Found",
+      statusCode: result.error?.value?.statusCode || 404,
+      statusMessage: result.error?.value?.statusMessage || "Page Not Found",
       fatal: true,
     })
   }
