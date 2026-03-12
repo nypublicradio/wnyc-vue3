@@ -237,7 +237,7 @@ export const useGlobalToast = () => useState<object>('globalToast', () => null)
 export const useFullDeviceInfo = () => useState<object>('fullDeviceInfo', () => null)
 
 // app download link
-export const useAppDownloadLink = () => useState<string>('appDownloadLink', () => null)
+export const useAppDownloadLink = () => useState<string>('appDownloadLink', () => '')
 
 // saved page tab state
 export const useSelectedSavedTab = () => useState<number>('useSelectedSavedTab', () => 0)
