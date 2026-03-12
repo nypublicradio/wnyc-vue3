@@ -7,7 +7,18 @@ import { transformResponseData } from '~/composables/useAviary'
 
 export async function findPage (htmlPath: string, cmsSite?: string) {
   const params = cmsSite ? { html_path: htmlPath, cms_site: cmsSite } : { html_path: htmlPath }
+  console.log('[findPage] Calling useFetch with params:', params)
   const { data, error } = await useFetch('/api/pages/wagtail/find', { params })
+  
+  // Debug logging
+  console.log('[findPage] useFetch completed:', {
+    hasData: !!data?.value,
+    hasError: !!error?.value,
+    dataType: data?.value ? typeof data.value : 'undefined',
+    dataPreview: data?.value ? JSON.stringify(data.value).substring(0, 200) : 'null',
+    errorValue: error?.value,
+  })
+  
   // Return refs as-is so consumers can properly access .value
   return { data, error }
 }
