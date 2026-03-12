@@ -64,7 +64,7 @@ const isDisabled = computed(() => {
 })
 
 // Only initialize OneSignal on client-side to avoid SSR errors
-let toggleOneSignalUserTag: any
+let toggleOneSignalUserTag = null
 if (process.client) {
   const oneSignal = useOneSignal()
   toggleOneSignalUserTag = oneSignal.toggleOneSignalUserTag
