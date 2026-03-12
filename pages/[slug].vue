@@ -8,6 +8,14 @@ import type { InformationPage } from "~/composables/types/Page"
 
 const route = useRoute()
 
+// Log immediately to see if this runs on server
+console.log('[slug] SCRIPT SETUP - Environment check:', {
+  server: import.meta.server,
+  client: import.meta.client,
+  slug: route?.params?.slug,
+  nuxtApp: !!useNuxtApp(),
+})
+
 /* preview */
 import { usePreviewData } from "~/composables/states"
 const previewData = usePreviewData()

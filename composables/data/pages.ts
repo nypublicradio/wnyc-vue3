@@ -4,33 +4,42 @@ import { normalizeArticlePage } from './articlePages'
 import { normalizeGalleryPage } from './galleryPages'
 import { normalizeTagPage } from './tagPages'
 import { transformResponseData } from '~/composables/useAviary'
+import { ref } from 'vue'
 
 export async function findPage (htmlPath: string, cmsSite?: string) {
   const params = cmsSite ? { html_path: htmlPath, cms_site: cmsSite } : { html_path: htmlPath }
-  console.log('[findPage] Calling useFetch with params:', params)
+  console.log('[findPage] Calling $fetch with params:', params)
   console.log('[findPage] Environment:', { server: import.meta.server, client: import.meta.client })
   
-  const { data, error, status } = await useFetch('/api/pages/wagtail/find', { 
-    params,
-    // Don't throw on error status codes - let us handle them
-    ignoreResponseError: false,
-  })
-  
-  // Debug logging
-  console.log('[findPage] useFetch completed:', {
-    hasData: !!data?.value,
-    hasError: !!error?.value,
-    status: status?.value,
-    dataType: data?.value ? typeof data.value : 'undefined',
-    dataPreview: data?.value ? JSON.stringify(data.value).substring(0, 200) : 'null',
-    errorValue: error?.value,
-    errorStatusCode: error?.value?.statusCode,
-    errorMessage: error?.value?.message,
-    errorData: error?.value?.data,
-  })
-  
-  // Return refs as-is so consumers can properly access .value
-  return { data, error, status }
+  try {
+    const response = await $fetch('/api/pages/wagtail/find', {
+      params,
+      // This will throw on 4xx/5xx responses
+    })
+    
+    console.log('[findPage] $fetch SUCCESS:', {
+      hasResponse: !!response,
+      responseType: typeof response,
+      responseKeys: response ? Object.keys(response as any) : [],
+      responsePreview: response ? JSON.stringify(response).substring(0, 200) : 'null',
+    })
+    
+    return { data: ref(response), error: ref(null), status: ref('success') }
+  } catch (err: any) {
+    console.log('[findPage] $fetch ERROR:', {
+      errorType: typeof err,
+      errorMessage: err?.message,
+      errorStatusCode: err?.statusCode,
+      errorData: err?.data,
+      errorFull: JSON.stringify(err, null, 2).substring(0, 500),
+    })
+    
+    return { 
+      data: ref(null), 
+      error: ref(err), 
+      status: ref('error') 
+    }
+  }
 }
 
 // Get a page by it's cms id
