@@ -61,15 +61,12 @@ export default defineEventHandler(async (event) => {
     const redirectUrl = new URL(location, baseApi)
     const redirectPath = redirectUrl.pathname + redirectUrl.search + redirectUrl.hash
 
-    // Pass the redirect through to the client
-    throw createError({
+    // Return redirect information as a successful response
+    return {
+      redirect: true,
+      location: redirectPath,
       statusCode: res.status,
-      statusMessage: 'Redirect',
-      data: {
-        location: redirectPath,
-        statusCode: res.status,
-      },
-    })
+    }
   }
 
   if (res.status >= 200 && res.status < 300) {

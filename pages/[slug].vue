@@ -17,28 +17,31 @@ const isPreview = Boolean(route.query.preview)
 const page = isPreview
   ? previewData.value.data
   : await findPage(`/${route?.params?.slug as string}`)
-      .then(({ data }) => normalizeFindPageResponse(data))
-      .catch((err) => {
+      .then(({ data, error }) => {
         // Check if this is a redirect from Wagtail
-        if (err?.data?.data?.location) {
+        if (data?.value?.redirect) {
           // Preserve query params from the original request
           const queryString = route.fullPath.includes('?') 
             ? route.fullPath.substring(route.fullPath.indexOf('?'))
             : ''
           
-          navigateTo(err.data.data.location + queryString, {
-            redirectCode: err.data.data.statusCode || 301,
+          navigateTo(data.value.location + queryString, {
+            redirectCode: data.value.statusCode || 301,
             external: false,
           })
           return null // Return null to prevent further processing
         }
         
-        // Not a redirect, throw 404
-        throw createError({
-          statusCode: 404,
-          statusMessage: "Page Not Found",
-          fatal: true,
-        })
+        // Check for API errors
+        if (error?.value) {
+          throw createError({
+            statusCode: error.value.statusCode || 404,
+            statusMessage: error.value.statusMessage || "Page Not Found",
+            fatal: true,
+          })
+        }
+        
+        return normalizeFindPageResponse(data)
       })
 
 // const { $analytics } = useNuxtApp()
