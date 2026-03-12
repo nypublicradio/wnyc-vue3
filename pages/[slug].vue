@@ -17,7 +17,22 @@ const page = isPreview
   ? previewData.value.data
   : await findPage(`/${route?.params?.slug as string}`)
       .then(({ data }) => normalizeFindPageResponse(data))
-      .catch(() => {
+      .catch((err) => {
+        // Check if this is a redirect from Wagtail
+        if (err?.data?.data?.location) {
+          // Preserve query params from the original request
+          const queryString = route.fullPath.includes('?') 
+            ? route.fullPath.substring(route.fullPath.indexOf('?'))
+            : ''
+          
+          navigateTo(err.data.data.location + queryString, {
+            redirectCode: err.data.data.statusCode || 301,
+            external: false,
+          })
+          return null // Return null to prevent further processing
+        }
+        
+        // Not a redirect, throw 404
         throw createError({
           statusCode: 404,
           statusMessage: "Page Not Found",
@@ -48,7 +63,7 @@ const page = isPreview
 </script>
 
 <template>
-  <div>
+  <div v-if="page">
     <InformationPageTemplate
       v-if="page?.type === 'information_page'"
       :page="page as InformationPage"

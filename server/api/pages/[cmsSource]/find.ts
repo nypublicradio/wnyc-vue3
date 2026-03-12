@@ -57,14 +57,19 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 502, statusMessage: 'CMS redirect missing location header' })
     }
 
-    const nextUrl = normalizeCmsLocation(location, baseApi)
-    const pageRes = await axios.get(nextUrl, requestOptions)
+    // Extract just the path from the CMS redirect location (remove CMS domain)
+    const redirectUrl = new URL(location, baseApi)
+    const redirectPath = redirectUrl.pathname + redirectUrl.search + redirectUrl.hash
 
-    if (pageRes.status < 200 || pageRes.status >= 300) {
-      throw createError({ statusCode: pageRes.status, statusMessage: 'CMS page fetch failed' })
-    }
-
-    return humps.camelizeKeys(pageRes.data)
+    // Pass the redirect through to the client
+    throw createError({
+      statusCode: res.status,
+      statusMessage: 'Redirect',
+      data: {
+        location: redirectPath,
+        statusCode: res.status,
+      },
+    })
   }
 
   if (res.status >= 200 && res.status < 300) {
