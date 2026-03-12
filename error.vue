@@ -10,7 +10,8 @@ const props = defineProps({
 
 // Set the HTTP response status code based on the error
 // This is critical for nginx to intercept 404s and proxy to CMS
-if (props.error?.statusCode) {
+// MUST run only on server side when SSR is enabled
+if (import.meta.server && props.error?.statusCode) {
   const event = useRequestEvent()
   if (event) {
     setResponseStatus(event, props.error.statusCode, props.error.statusMessage)

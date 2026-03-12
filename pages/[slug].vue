@@ -13,17 +13,23 @@ import { usePreviewData } from "~/composables/states"
 const previewData = usePreviewData()
 const isPreview = Boolean(route.query.preview)
 
-const page = isPreview
-  ? previewData.value.data
-  : await findPage(`/${route?.params?.slug as string}`)
-      .then(({ data }) => normalizeFindPageResponse(data))
-      .catch(() => {
-        throw createError({
-          statusCode: 404,
-          statusMessage: "Page Not Found",
-          fatal: true,
-        })
-      })
+let page
+if (isPreview) {
+  page = previewData.value.data
+} else {
+  const result = await findPage(`/${route?.params?.slug as string}`)
+  
+  // Check if the API returned an error (useFetch doesn't throw, it returns errors)
+  if (result.error?.value || !result.data?.value) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: "Page Not Found",
+      fatal: true,
+    })
+  }
+  
+  page = normalizeFindPageResponse(result.data)
+}
 
 // const { $analytics } = useNuxtApp()
 
