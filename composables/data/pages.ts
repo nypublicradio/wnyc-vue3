@@ -8,8 +8,8 @@ import { transformResponseData } from '~/composables/useAviary'
 export async function findPage (htmlPath: string, cmsSite?: string) {
   const params = cmsSite ? { html_path: htmlPath, cms_site: cmsSite } : { html_path: htmlPath }
   const { data, error } = await useFetch('/api/pages/wagtail/find', { params })
-  const transformedData = transformResponseData(data)
-  return { data: transformedData, error }
+  // Return refs as-is so consumers can properly access .value
+  return { data, error }
 }
 
 // Get a page by it's cms id

@@ -19,7 +19,7 @@ if (isPreview) {
 } else {
   const result = await findPage(`/${route?.params?.slug as string}`)
   
-  // Check if the API returned an error (useFetch doesn't throw, it returns errors)
+  // Check if the API returned an error or no data
   if (result.error?.value || !result.data?.value) {
     // Set the response status code on the server side before throwing the error
     if (import.meta.server) {
@@ -36,6 +36,7 @@ if (isPreview) {
     })
   }
   
+  // Normalize the page data - data is already camelized from the API
   page = normalizeFindPageResponse(result.data)
 }
 
