@@ -1046,6 +1046,7 @@ export const goToEventPage = (story, log = true) => {
 }
 /* centralized function to route to a show page */
 export const goToShowPage = (show, params = null) => {
+  console.log("goToShowPage", show)
   navigateTo({
     path: `${mediaTypeRoutes[mediaTypes.SHOW]}${show.meta?.slug ?? show.slug}`,
     query: params,
@@ -1142,6 +1143,7 @@ export const addToFavorites2 = async ({ item, isFavorited, message = isFavorited
 
 // handles how to use the correct navigate method based on the item type
 export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = false) => {
+  console.log("dynamicNavigation", item)
   const isNetworkConnected = useIsNetworkConnected()
   if (isNetworkConnected.value) {
     // if the item has a url, we ignore everything and route based on the url, because it is the override destination

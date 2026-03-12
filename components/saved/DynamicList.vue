@@ -57,7 +57,9 @@ const loadComponent = async (item) => {
     await defineAsyncComponent({
       loader: () => import(`~/components/${componentName.value}.vue`),
       onError: (err) => {
-        console.error(`Failed to load component ${componentName.value}: ${err.message}`)
+        console.error(
+          `Failed to load component ${componentName.value}: ${err.message}`
+        )
       },
     })
   )
@@ -67,7 +69,9 @@ const getFilteredItemsData = computed(async () => {
   pending.value = true
   let typeFilterCondition = ""
   if (Array.isArray(props.typeFilter)) {
-    typeFilterCondition = props.typeFilter.map((filter) => `type.eq.${filter}`).join(",")
+    typeFilterCondition = props.typeFilter
+      .map((filter) => `type.eq.${filter}`)
+      .join(",")
   } else {
     typeFilterCondition = `type.eq.${props.typeFilter}`
   }
@@ -149,10 +153,11 @@ watch(
             :class="item.type"
             :menu="true"
             is-horizontal
-            imgCol="w-7rem h-7rem"
-            :size="{ xs: [112, 112] }"
+            imgCol="w-7rem h-7rem md:w-12rem md:h-12rem"
+            :size="{ xs: [112, 112], md: [192, 192] }"
             :showBg="false"
             :showBgMobile="false"
+            showTease
             @on-click="dynamicNavigation(item)"
           />
           <slot name="recent-episodes" :show="item" />
@@ -170,8 +175,8 @@ watch(
       is-horizontal
       :showBg="false"
       :showBgMobile="false"
-      imgCol="w-7rem"
-      :size="{ xs: [112, 112] }"
+      imgCol="w-7rem h-7rem md:w-12rem md:h-12rem"
+      :size="[1, 1]"
     />
   </div>
 </template>
