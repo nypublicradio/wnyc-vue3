@@ -33,7 +33,11 @@ import {
 import useManageScrollPosition from "~/composables/useManageScrollPosition"
 import { initMediaSession } from "~/utilities/media-session.js"
 
-const devicePlatform = Capacitor.getPlatform()
+// Initialize device platform on client-side only to avoid SSR errors
+const devicePlatform = ref('web')
+if (process.client) {
+  devicePlatform.value = Capacitor.getPlatform()
+}
 const { saveScrollPosition, restoreScrollPosition } = useManageScrollPosition()
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
@@ -110,7 +114,7 @@ const getConfiguredAudioUrl = computed(() => {
   const hasQuery = hasQueryParams(url)
   const adID = deviceId.value?.identifier ?? "0"
   const userID = currentUser?.value?.id ?? "0"
-  const thisDevice = devicePlatform
+  const thisDevice = devicePlatform.value
   // update restriction when we have the value from setting panel
   const restriction = "0"
   return `${url}${
