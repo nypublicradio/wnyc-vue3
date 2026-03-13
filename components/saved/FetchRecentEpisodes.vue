@@ -24,6 +24,7 @@ const config = useRuntimeConfig()
 console.log("props.show = ", props.show)
 const podcastId = ref(null)
 const episodes = ref(null)
+const pendingMore = ref(true)
 const {
   data: show,
   status,
@@ -33,7 +34,12 @@ const {
   {
     onResponse(res) {
       console.log("res.response._data = ", res.response._data)
-      podcastId.value = res.response._data.linkedDataSource?.[0]?.value?.id
+      const pId = res.response._data.linkedDataSource?.[0]?.value?.id
+      if (pId) {
+        podcastId.value = pId
+      } else {
+        pendingMore.value = false
+      }
     },
   }
 )
@@ -49,11 +55,11 @@ const {
     }/episodes?offset=0&limit=${props.episodesPerShow || 3}`,
   {
     onResponse(res) {
-      //pendingMore.value = false
       //meta.value = res.response._data.meta
       //episodes.value = res.response._data.data
       console.log("res.response._data.data = ", res.response._data.data)
       episodes.value = res.response._data.data
+      pendingMore.value = false
     },
     onError(error) {
       //pendingMore.value = false
@@ -73,7 +79,7 @@ const {
 )
 </script>
 <template>
-  <div v-if="scStatus === 'success' && episodes" :key="props.show.media_id">
+  <div v-if="!pendingMore" :key="props.show.media_id">
     <!-- {{ podcastId }} -->
     <!-- <pre>{{ oldShow }}</pre> -->
     <MediaCard
@@ -90,7 +96,7 @@ const {
       showTease
       @on-click="dynamicNavigation(episode)"
     />
-    <hr />
+    <hr class="mt-5 mb-0" />
   </div>
   <div v-else>
     <skeleton-media-card
