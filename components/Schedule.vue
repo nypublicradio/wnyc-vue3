@@ -501,7 +501,7 @@ html {
   }
   @mixin selectedEntry {
     background-color: var(--p-content-background);
-    border-radius: 10px;
+    border-radius: var(--p-border-radius-xl);
     overflow: hidden;
     .active-content {
       padding: 1rem 1rem 0.5rem 1rem;

@@ -119,7 +119,7 @@ onUnmounted(() => {
 .personality-banner {
   overflow: hidden;
   position: relative;
-  border-radius: 10px;
+  border-radius: var(--p-border-radius-xl);
   width: 100%;
   aspect-ratio: 2752/740;
 

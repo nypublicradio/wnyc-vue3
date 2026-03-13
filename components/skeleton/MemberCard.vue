@@ -27,7 +27,7 @@
 <style lang="scss" scoped>
 .member-card-skeleton {
   background-color: var(--s-box-background-color);
-  border-radius: 10px;
+  border-radius: var(--p-border-radius-xl);
   padding: 1rem;
 }
 </style>

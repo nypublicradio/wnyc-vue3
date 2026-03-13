@@ -164,6 +164,7 @@ watch(
         </div>
       </div>
     </div>
+    <!-- <slot v-if="!savedItems && !pending" name="empty" /> -->
     <slot v-if="!savedItems && !pending" name="empty" />
     <FetchError v-if="fetchError" @on-click="getItemsData" />
   </div>

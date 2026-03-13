@@ -1,6 +1,13 @@
 <script setup>
 import { useSelectedSavedTab, useIsDarkMode } from "~/composables/states"
 import { getSavedMenuItems } from "~/composables/globals"
+
+useHead({
+  bodyAttrs: {
+    class: "grey-bg",
+  },
+})
+
 const route = useRoute()
 const router = useRouter()
 const routeSlug = ref(route.query.slug)

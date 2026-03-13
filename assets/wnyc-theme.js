@@ -12,7 +12,7 @@ const MyPreset = definePreset(Aura, {
       sm: "4px",
       md: "6px",
       lg: "8px",
-      xl: "12px",
+      xl: "10px",
     },
     emerald: {
       50: "#ecfdf5",
