@@ -50,13 +50,12 @@ const isApp = useIsApp()
 const { initOneSignal, notificationPermissionSync, handleAppUrlOpen } =
   useOneSignal()
 
-isApp.value = Capacitor.getPlatform() !== "web"
-const gtmHeadConfig = computed(() =>
-  getGtmHeadConfig({
-    platform: isApp.value ? "app" : "web",
-    gtmId: config.public.GTM_ID,
-  }),
-)
+const isWeb = Capacitor.getPlatform() === 'web';
+isApp.value = !isWeb;
+const gtmHeadConfig = getGtmHeadConfig({
+  isWeb,
+  gtmId: config.public.GTM_ID,
+});
 
 // Initialize device info and app download link asynchronously
 const initializeDeviceInfo = async () => {
@@ -69,8 +68,8 @@ useHead({
   htmlAttrs: {
     lang: "en",
   },
-  script: [...gtmHeadConfig.value.script],
-  noscript: [...gtmHeadConfig.value.noscript],
+  script: [...gtmHeadConfig.script],
+  noscript: [...gtmHeadConfig.noscript],
 
   bodyAttrs: {},
 })
