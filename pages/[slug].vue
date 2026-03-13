@@ -16,6 +16,38 @@ console.log('[slug] SCRIPT SETUP - Environment check:', {
   nuxtApp: !!useNuxtApp(),
 })
 
+/* Handle 404 during SSR by checking page existence first */
+if (import.meta.server) {
+  const slug = `/${route?.params?.slug as string}`
+  console.log('[slug] SERVER - Checking page existence for:', slug)
+  
+  // Make a direct server-side check before component renders
+  try {
+    const config = useRuntimeConfig()
+    const result = await $fetch(`${config.public.AVIARY_BASE_API}pages/find/`, {
+      query: { html_path: slug },
+      headers: {
+        'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443',
+      },
+    })
+    console.log('[slug] SERVER - Page found:', slug)
+  } catch (err: any) {
+    console.log('[slug] SERVER - Page NOT found:', slug, 'status:', err?.statusCode)
+    if (err?.statusCode === 404) {
+      const event = useRequestEvent()
+      if (event) {
+        console.log('[slug] SERVER - Setting 404 status')
+        setResponseStatus(event, 404, 'Page Not Found')
+      }
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'Page Not Found',
+        fatal: true,
+      })
+    }
+  }
+}
+
 /* preview */
 import { usePreviewData } from "~/composables/states"
 const previewData = usePreviewData()
@@ -26,62 +58,30 @@ if (isPreview) {
   console.log('[slug] Using preview data')
   page = previewData.value.data
 } else {
-  console.log('[slug] ============ START PAGE LOAD ============')
-  console.log('[slug] Environment:', { server: import.meta.server, client: import.meta.client })
-  
   const slug = `/${route?.params?.slug as string}`
-  console.log('[slug] Fetching page for:', slug)
   
-  // Use useAsyncData with $fetch for better error control
-  const { data, error } = await useAsyncData(
-    `page-${slug}`,
-    async () => {
-      try {
-        const response = await $fetch('/api/pages/wagtail/find', {
-          query: { html_path: slug },
-        })
-        console.log('[slug] Fetch SUCCESS')
-        return response
-      } catch (err: any) {
-        console.log('[slug] Fetch ERROR:', {
-          statusCode: err?.statusCode,
-          message: err?.message,
-        })
-        
-        // On server, set the status code immediately when we catch the error
-        if (import.meta.server) {
-          const event = useRequestEvent()
-          if (event) {
-            console.log('[slug] Setting response status to', err?.statusCode || 404)
-            setResponseStatus(event, err?.statusCode || 404, err?.message || 'Page Not Found')
-          }
-        }
-        
-        // Re-throw to populate the error ref
-        throw err
-      }
-    }
-  )
-  
-  console.log('[slug] useAsyncData completed:', {
-    hasData: !!data.value,
-    hasError: !!error.value,
-    errorStatusCode: error.value?.statusCode,
+  // Fetch the page data (already validated on server if SSR)
+  const { data, error } = await useFetch('/api/pages/wagtail/find', {
+    key: `page-${slug}`,
+    query: { html_path: slug },
   })
   
-  // If there's an error or no data, throw to show error page
+  console.log('[slug] Data fetch:', {
+    hasData: !!data.value,
+    hasError: !!error.value,
+    env: { server: import.meta.server, client: import.meta.client },
+  })
+  
+  // Handle error case (shouldn't happen after server check, but handle for client-only nav)
   if (error.value || !data.value) {
-    console.log('[slug] Throwing error to display error  page')
     throw createError({
       statusCode: error.value?.statusCode || 404,
-      statusMessage: error.value?.message || "Page Not Found",
+      statusMessage: error.value?.message || 'Page Not Found',
       fatal: true,
     })
   }
   
-  console.log('[slug] SUCCESS - Normalizing page data')
   page = normalizeFindPageResponse(data)
-  console.log('[slug] ============ END PAGE LOAD (SUCCESS) ============')
 }
 
 // const { $analytics } = useNuxtApp()
