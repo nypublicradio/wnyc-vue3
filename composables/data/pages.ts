@@ -8,38 +8,26 @@ import { ref } from 'vue'
 
 export async function findPage (htmlPath: string, cmsSite?: string) {
   const params = cmsSite ? { html_path: htmlPath, cms_site: cmsSite } : { html_path: htmlPath }
-  console.log('[findPage] Calling $fetch with params:', params)
+  console.log('[findPage] Calling useFetch with params:', params)
   console.log('[findPage] Environment:', { server: import.meta.server, client: import.meta.client })
   
-  try {
-    const response = await $fetch('/api/pages/wagtail/find', {
-      params,
-      // This will throw on 4xx/5xx responses
-    })
-    
-    console.log('[findPage] $fetch SUCCESS:', {
-      hasResponse: !!response,
-      responseType: typeof response,
-      responseKeys: response ? Object.keys(response as any) : [],
-      responsePreview: response ? JSON.stringify(response).substring(0, 200) : 'null',
-    })
-    
-    return { data: ref(response), error: ref(null), status: ref('success') }
-  } catch (err: any) {
-    console.log('[findPage] $fetch ERROR:', {
-      errorType: typeof err,
-      errorMessage: err?.message,
-      errorStatusCode: err?.statusCode,
-      errorData: err?.data,
-      errorFull: JSON.stringify(err, null, 2).substring(0, 500),
-    })
-    
-    return { 
-      data: ref(null), 
-      error: ref(err), 
-      status: ref('error') 
-    }
-  }
+  // useFetch handles SSR hydration correctly and won't refetch on client
+  const { data, error, status } = await useFetch('/api/pages/wagtail/find', {
+    params,
+    // Don't cache error responses - let them bubble up
+    getCachedData: false,
+  })
+  
+  console.log('[findPage] useFetch completed:', {
+    hasData: !!data.value,
+    hasError: !!error.value,
+    status: status.value,
+    errorStatusCode: error.value?.statusCode,
+    errorMessage: error. value?.message,
+    dataType: data.value ? typeof data.value : 'undefined',
+  })
+  
+  return { data, error, status }
 }
 
 // Get a page by it's cms id
