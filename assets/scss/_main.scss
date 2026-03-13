@@ -91,6 +91,9 @@ body {
   &.solid-bg {
     background: var(--solid-dark-bg-color);
   }
+  &.grey-bg {
+    background: var(--p-surface-25);
+  }
   main {
     transition: padding-top var(--p-transition-duration) ease;
     padding-bottom: calc(
@@ -611,7 +614,7 @@ html.style-mode-dark {
           color: var(--p-red-500);
           border: 2px solid var(--p-button-secondary-focus-ring-color);
           outline-color: var(--p-button-secondary-focus-ring-color);
-          border-radius: 10px;
+          border-radius: var(--p-border-radius-xl);
         }
       }
     }

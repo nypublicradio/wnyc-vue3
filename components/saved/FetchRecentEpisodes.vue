@@ -13,7 +13,7 @@ const props = defineProps({
 
 const config = useRuntimeConfig()
 
-// const { data, status, error } = useFetch(
+// const { data: oldShow } = useFetch(
 //   `${config.public.BFF_URL}/api/show/${props.show.slug}`,
 //   {
 //     params: {
@@ -21,6 +21,7 @@ const config = useRuntimeConfig()
 //     },
 //   }
 // )
+console.log("props.show = ", props.show)
 const podcastId = ref(null)
 const episodes = ref(null)
 const {
@@ -31,7 +32,8 @@ const {
   `${config.public.BFF_URL}/api/pages/wagtail/${props.show.slug}?showOnly=true`,
   {
     onResponse(res) {
-      podcastId.value = res.response._data.linkedDataSource[0].value.id
+      console.log("res.response._data = ", res.response._data)
+      podcastId.value = res.response._data.linkedDataSource?.[0]?.value?.id
     },
   }
 )
@@ -71,7 +73,9 @@ const {
 )
 </script>
 <template>
-  <div v-if="scStatus === 'success' && episodes">
+  <div v-if="scStatus === 'success' && episodes" :key="props.show.media_id">
+    <!-- {{ podcastId }} -->
+    <!-- <pre>{{ oldShow }}</pre> -->
     <MediaCard
       v-for="episode in episodes"
       :key="episode.id"

@@ -48,7 +48,9 @@ const getStatus = computed(() => {
   } else if (hasPaymentFailed.value) {
     return memberStatus.ERROR
   } else {
-    return props.profileData?.isActiveSustainer ? memberStatus.CHECK : memberStatus.LOCK
+    return props.profileData?.isActiveSustainer
+      ? memberStatus.CHECK
+      : memberStatus.LOCK
   }
 })
 const getBrand = computed(() => {
@@ -69,7 +71,9 @@ const getBrand = computed(() => {
 
       <div v-if="hasPaymentFailed">
         <p class="font-bold">Your membership needs to be updated</p>
-        <p>We can’t process your donation. Please update your payment method.</p>
+        <p>
+          We can’t process your donation. Please update your payment method.
+        </p>
         <div
           class="flex gap-3 mt-3 align-items-center justify-content-center sm:justify-content-start flex-wrap"
         >
@@ -91,7 +95,8 @@ const getBrand = computed(() => {
           }}
         </p>
         <p>
-          Thank you for your {{ formatCurrency(props.donation?.amount) }} monthly gift!
+          Thank you for your
+          {{ formatCurrency(props.donation?.amount) }} monthly gift!
           <br />
           Your next donation will process
           {{ formatDate(props.donation?.nextChargeDate) }}
@@ -127,8 +132,9 @@ const getBrand = computed(() => {
       <div v-else-if="hasDonationHistory && !isActiveSustainer">
         <p class="font-bold">We need your support now more than ever</p>
         <p>
-          Your last donation was {{ formatDate(props.profileData.lastDonationDate) }}.
-          Become a WNYC Member now and help secure the future of public media.
+          Your last donation was
+          {{ formatDate(props.profileData.lastDonationDate) }}. Become a WNYC
+          Member now and help secure the future of public media.
         </p>
         <div
           class="flex gap-3 mt-3 align-items-center justify-content-center sm:justify-content-start flex-wrap"
@@ -152,8 +158,8 @@ const getBrand = computed(() => {
       <div v-else>
         <p class="font-bold">Become a WNYC Member</p>
         <p>
-          A monthly gift will provide us steady support to help secure the future of
-          public media.
+          A monthly gift will provide us steady support to help secure the
+          future of public media.
         </p>
         <div
           class="flex gap-3 mt-3 align-items-center justify-content-center sm:justify-content-start flex-wrap"
@@ -183,7 +189,7 @@ const getBrand = computed(() => {
   &.card {
     padding: 1rem 1.5rem 1rem 1rem !important;
     background-color: var(--s-box-background-color);
-    border-radius: 10px;
+    border-radius: var(--p-border-radius-xl);
   }
 }
 </style>

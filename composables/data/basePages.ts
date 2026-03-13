@@ -9,6 +9,7 @@ export const WAGTAIL_PAGE_TYPES = {
   'event_page': 'event',
   'episode': 'episode',
   'card': 'card',
+  'shows.ShowPage': 'show',
 }
 
 /**

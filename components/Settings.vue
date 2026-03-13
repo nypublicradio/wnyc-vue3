@@ -710,7 +710,7 @@ watch(
   .card {
     height: 100%;
     background: var(--s-box-background-color);
-    border-radius: 10px;
+    border-radius: var(--p-border-radius-xl);
     padding: 2rem 1.5rem;
     @include media("<md") {
       padding: 1rem 1.5rem;

@@ -166,15 +166,25 @@ const avatarUrl = computed(() => {
     </Dialog>
     <div v-if="currentUser" class="info flex flex-column gap-2 mt-2">
       <h2 :class="props.textSize">Hi, {{ currentUserProfile?.name }}</h2>
-      <VFlexibleLink to="/home" class="p1" @click="onLogOut">Log out</VFlexibleLink>
+      <VFlexibleLink to="/home" class="p1" @click="onLogOut"
+        >Log out</VFlexibleLink
+      >
     </div>
     <div v-else class="info flex flex-column gap-3 mt-2">
       <h2>You are logged out.</h2>
-      <Button label="Log in" rounded @click="onLogIn" class="w-9rem" aria-label="login" />
+      <Button
+        label="Log in"
+        rounded
+        @click="onLogIn"
+        class="w-9rem"
+        aria-label="login"
+      />
 
       <p>
         Don't have an account yet?
-        <VFlexibleLink to="#" @click.prevent="onSignUp"> Sign up </VFlexibleLink>
+        <VFlexibleLink to="#" @click.prevent="onSignUp">
+          Sign up
+        </VFlexibleLink>
       </p>
     </div>
   </div>
@@ -193,7 +203,7 @@ const avatarUrl = computed(() => {
       background-color: var(--p-primary-500);
       padding: 3px;
       line-height: normal;
-      border-radius: 10px;
+      border-radius: var(--p-border-radius-xl);
       left: -3px;
       bottom: -3px;
       font-weight: var(--font-weight-900);
