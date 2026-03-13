@@ -18,6 +18,7 @@ export default defineEventHandler(async (event) => {
     path.startsWith('/sw.js') ||
     path.includes('.') || // Files with extensions
     path === '/' || // Home page
+    path === '/home' || // Common home page alias
     path.startsWith('/__') // Nuxt internals
   ) {
     console.log('[check-page-exists] Skipping check for:', path)
