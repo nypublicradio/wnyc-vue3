@@ -25,6 +25,7 @@ import useLiveStream from "~/composables/data/liveStream"
 import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
 import { useToast } from "primevue/usetoast"
+import { getGtmHeadConfig } from "~/utilities/gtm";
 //import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
 import useOneSignal from "~/composables/useOneSignal"
 
@@ -50,6 +51,12 @@ const { initOneSignal, notificationPermissionSync, handleAppUrlOpen } =
   useOneSignal()
 
 isApp.value = Capacitor.getPlatform() !== "web"
+const gtmHeadConfig = computed(() =>
+  getGtmHeadConfig({
+    platform: isApp.value ? "app" : "web",
+    gtmId: config.public.GTM_ID,
+  }),
+)
 
 // Initialize device info and app download link asynchronously
 const initializeDeviceInfo = async () => {
@@ -61,10 +68,10 @@ initializeDeviceInfo()
 useHead({
   htmlAttrs: {
     lang: "en",
-    class: isApp.value ? "app" : "browser",
   },
-  script: [],
-  noscript: [],
+  script: [...gtmHeadConfig.value.script],
+  noscript: [...gtmHeadConfig.value.noscript],
+
   bodyAttrs: {},
 })
 
