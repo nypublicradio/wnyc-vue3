@@ -27,53 +27,60 @@ if (isPreview) {
   page = previewData.value.data
 } else {
   console.log('[slug] ============ START PAGE LOAD ============')
-  console.log('[slug] Loading page for slug:', route?.params?.slug)
-  console.log('[slug] Full path:', `/${route?.params?.slug as string}`)
   console.log('[slug] Environment:', { server: import.meta.server, client: import.meta.client })
   
-  const result = await findPage(`/${route?.params?.slug as string}`)
+  const slug = `/${route?.params?.slug as string}`
+  console.log('[slug] Fetching page for:', slug)
   
-  // Debug logging
-  console.log('[slug] findPage completed with result:', {
-    slug: route?.params?.slug,
-    hasError: !!result.error?.value,
-    hasData: !!result.data?.value,
-    status: result.status?.value,
-    errorStatusCode: result.error?.value?.statusCode,
-    errorStatusMessage: result.error?.value?.statusMessage,
-  })
-  
-  // IMPORTANT: Check for 404 immediately and throw error
-  // This must happen  during SSR to set the proper response status
-  if (result.error?.value || !result.data?.value) {
-    console.log('[slug] ERROR DETECTED - Page not found')
-    console.log('[slug] Environment check:', {
-      'import.meta.server': import.meta.server,
-      'result.error?.value': !!result.error?.value,
-      'result.data?.value': !!result.data?.value,
-    })
-    
-    // On server, set the HTTP status code before throwing
-    if (import.meta.server) {
-      const event = useRequestEvent()
-      if (event) {
-        console.log('[slug] Setting response status to 404')
-        setResponseStatus(event, 404, 'Page Not Found')
+  // Use useAsyncData with $fetch for better error control
+  const { data, error } = await useAsyncData(
+    `page-${slug}`,
+    async () => {
+      try {
+        const response = await $fetch('/api/pages/wagtail/find', {
+          query: { html_path: slug },
+        })
+        console.log('[slug] Fetch SUCCESS')
+        return response
+      } catch (err: any) {
+        console.log('[slug] Fetch ERROR:', {
+          statusCode: err?.statusCode,
+          message: err?.message,
+        })
+        
+        // On server, set the status code immediately when we catch the error
+        if (import.meta.server) {
+          const event = useRequestEvent()
+          if (event) {
+            console.log('[slug] Setting response status to', err?.statusCode || 404)
+            setResponseStatus(event, err?.statusCode || 404, err?.message || 'Page Not Found')
+          }
+        }
+        
+        // Re-throw to populate the error ref
+        throw err
       }
     }
-    
-    // Throw error with status code - this stops rendering
-    console.log('[slug] Throwing 404 error')
+  )
+  
+  console.log('[slug] useAsyncData completed:', {
+    hasData: !!data.value,
+    hasError: !!error.value,
+    errorStatusCode: error.value?.statusCode,
+  })
+  
+  // If there's an error or no data, throw to show error page
+  if (error.value || !data.value) {
+    console.log('[slug] Throwing error to display error  page')
     throw createError({
-      statusCode: result.error?.value?.statusCode || 404,
-      statusMessage: result.error?.value?.statusMessage || "Page Not Found",
+      statusCode: error.value?.statusCode || 404,
+      statusMessage: error.value?.message || "Page Not Found",
       fatal: true,
     })
   }
   
-  console.log('[slug] SUCCESS - Page data found')
-  // Normalize the page data - data is already camelized from the API
-  page = normalizeFindPageResponse(result.data)
+  console.log('[slug] SUCCESS - Normalizing page data')
+  page = normalizeFindPageResponse(data)
   console.log('[slug] ============ END PAGE LOAD (SUCCESS) ============')
 }
 
