@@ -14,8 +14,6 @@ export async function findPage (htmlPath: string, cmsSite?: string) {
   // useFetch handles SSR hydration correctly and won't refetch on client
   const { data, error, status } = await useFetch('/api/pages/wagtail/find', {
     params,
-    // Don't cache error responses - let them bubble up
-    getCachedData: false,
   })
   
   console.log('[findPage] useFetch completed:', {
@@ -23,7 +21,7 @@ export async function findPage (htmlPath: string, cmsSite?: string) {
     hasError: !!error.value,
     status: status.value,
     errorStatusCode: error.value?.statusCode,
-    errorMessage: error. value?.message,
+    errorMessage: error.value?.message,
     dataType: data.value ? typeof data.value : 'undefined',
   })
   
