@@ -221,7 +221,7 @@ export default defineNuxtConfig({
       FB_APP_ID_ANDROID: process.env.FB_APP_ID_ANDROID,
       ONESIGNAL_APP_ID: process.env.ONESIGNAL_APP_ID,
       BFF_URL: process.env.BFF_URL ?? "https://demo.native-app.wnyc.org",
-      GTM_ID: process.env.GTM_ID ?? "GTM-TKFJ684",
+      GTM_ID: process.env.GTM_ID ?? "GTM-TPK2CSXG",
       environment: process.env.environment ?? "prod",
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseKey: process.env.SUPABASE_KEY,
