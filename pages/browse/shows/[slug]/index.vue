@@ -8,16 +8,22 @@ const sectionAnchorData = ref([
   //  { label: "Most Recent", id: "most-recent" },
 ])
 
-const { data: show, status, error } = useFetch(
+const {
+  data: show,
+  status,
+  error,
+} = useFetch(
   `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`,
   {
     onResponse(res) {
-      sectionAnchorData.value = res.response._data.inPageNavigation.map((item) => {
-        return {
-          label: item.value.linkText,
-          id: slugify(item.value.targetId || item.value.linkText),
+      sectionAnchorData.value = res.response._data.inPageNavigation.map(
+        (item) => {
+          return {
+            label: item.value.linkText,
+            id: slugify(item.value.targetId || item.value.linkText),
+          }
         }
-      })
+      )
     },
   }
 )
@@ -35,7 +41,8 @@ const scrollToSection = (sectionId, behavior = "smooth", offset = 90) => {
   const element = document.getElementById(sectionId)
 
   if (element) {
-    const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+    const elementPosition =
+      element.getBoundingClientRect().top + window.pageYOffset
     const offsetPosition = elementPosition - offset
 
     window.scrollTo({
@@ -72,8 +79,8 @@ onUnmounted(() => {
     <Html lang="en">
       <Head>
         <Title
-          >{{ show?.show?.title }} | WNYC | New York Public Radio, Podcasts, Live
-          Streaming Radio, News</Title
+          >{{ show?.show?.title }} | WNYC | New York Public Radio, Podcasts,
+          Live Streaming Radio, News</Title
         >
         <Meta
           name="og:title"
@@ -128,7 +135,9 @@ onUnmounted(() => {
               <VStreamfield :streamfieldBlocks="show?.body" />
             </div>
             <div v-if="status !== 'success'">
-              <div class="flex justify-content-between align-items-center mb-5 mt-2">
+              <div
+                class="flex justify-content-between align-items-center mb-5 mt-2"
+              >
                 <Skeleton height="18px" width="80px" borderRadius="4px" />
                 <Skeleton height="18px" width="80px" borderRadius="4px" />
               </div>

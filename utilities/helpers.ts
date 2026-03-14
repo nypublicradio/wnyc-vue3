@@ -89,15 +89,16 @@ export const checkUrl404 = async (url) => {
 // return organization name from CMS source and/or the url for Wagtail
 export const getOrg = (data) => {
   const cmsSource = data?.cmsSource
+  const url = data?.meta?.htmlUrl || data?.url
   switch (cmsSource) {
     case cmsSources.PUBLISHER:
       return "WNYC"
     case cmsSources.WAGTAIL:
-      if (data.url?.includes('gothamist.com')) {
+      if (url?.includes('gothamist.com')) {
         return "Gothamist"
-      } else if (data.url?.includes('wqxr.org')) {
+      } else if (url?.includes('wqxr.org')) {
         return "WQXR"
-      } else if (data.url?.includes('NPR.org')) {
+      } else if (url?.includes('NPR.org')) {
         return "NPR"
       }
       return "WNYC"
@@ -1002,13 +1003,13 @@ export const goToLivePage = (ep, params, log = true) => {
 
 /* centralized function to route to a story page */
 export const goToStoryPage = (story, params, log = true) => {
-  const theLink = story.url || story.link
+  const theLink = story.url || story.link || stripApiSubdomain(story.meta?.htmlUrl)
   if (Capacitor.getPlatform() === "web" && theLink && story.cmsSource === cmsSources.WAGTAIL) {
     // open in new tab if web and wagtail source (Gothamist)
     window.open(theLink, "_blank")
   } else {
     navigateTo({
-      path: `${mediaTypeRoutes[mediaTypes.STORY]}${story.media_id ?? story.id}`,
+      path: `${mediaTypeRoutes[mediaTypes.STORY]}${story.media_id || story.id}`,
       query: params,
     })
   }
@@ -1369,6 +1370,20 @@ export function getPathAndQuery (urlString) {
   } catch (error) {
     console.error("Invalid URL:", error)
     return null
+  }
+}
+
+// strips any subdomain and replaces it with "www.", keeping only the root domain + TLD
+// e.g. https://api-demo.gothamist.com/... → https://www.gothamist.com/...
+// e.g. https://staging.gothamist.com/...  → https://www.gothamist.com/...
+export function stripApiSubdomain (urlString: string): string {
+  try {
+    const url = new URL(urlString)
+    const parts = url.hostname.split('.')
+    url.hostname = `www.${parts.slice(-2).join('.')}`
+    return url.toString()
+  } catch {
+    return urlString
   }
 }
 
