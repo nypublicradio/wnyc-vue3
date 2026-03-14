@@ -71,7 +71,7 @@ const storySource = computed(() =>
   isWagtail
     ? `Gothamist${
         props.episodeData?.section?.name
-          ? ` - ${props.episodeData.section.name}`
+          ? ` - ${props.episodeData?.section?.name}`
           : ""
       }`
     : props.episodeData?.headers?.brand?.title || "WNYC"
@@ -94,7 +94,7 @@ watch(
 
     if (props.episodeData?.leadGallery) {
       gallery.value = await usePageById(
-        props.episodeData?.leadGallery.gallery
+        props.episodeData?.leadGallery?.gallery
       ).then(({ data }) => normalizeGalleryPage(data.value))
 
       galleryLength.value = gallery.value?.slides?.length ?? 0
@@ -126,7 +126,7 @@ onMounted(() => {
 })
 
 const commentCount = computed(() => {
-  const result = commentCounts.value[props.episodeData?.commentId]
+  const result = commentCounts.value?.[props.episodeData?.commentId]
   return result ?? 0
 })
 
@@ -591,7 +591,7 @@ const getDotMenuItems = (bucketItem) => {
       </div>
       <div class="col-fixed hidden xl:block w-20rem"></div>
     </div>
-    <div class="grid">
+    <div v-if="!props.pending" class="grid">
       <div class="col-fixed hidden xxl:block w-20rem"></div>
       <div class="col pr-2 lg:pr-4">
         <div ref="mainContentRef" class="episode-main-content">
