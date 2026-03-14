@@ -593,7 +593,7 @@ const getDotMenuItems = (bucketItem) => {
     </div>
     <div class="grid">
       <div class="col-fixed hidden xxl:block w-20rem"></div>
-      <div class="col pr-2 lg:pr-4 overflow-hidden">
+      <div class="col pr-2 lg:pr-4">
         <div ref="mainContentRef" class="episode-main-content">
           <v-streamfield
             v-if="props.episodeData?.body && !props.pending"
