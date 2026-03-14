@@ -210,7 +210,7 @@ onUnmounted(() => {
 
       <section class="current-station-info grid grid-nogutter m-auto">
         <div class="col-fixed hidden xl:block xxl:w-15rem xl:w-7rem"></div>
-        <div class="col pr-2 lg:pr-4 overflow-hidden">
+        <div class="col pr-2 lg:pr-4">
           <LiveItem :data="currentEpisodeHolder" />
         </div>
         <div class="col-fixed hidden xl:block xxl:w-15rem xl:w-7rem"></div>

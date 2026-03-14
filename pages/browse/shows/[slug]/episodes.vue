@@ -172,7 +172,7 @@ onMounted(() => {
     <section class="py-4">
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
-        <div class="col pr-2 lg:pr-4 overflow-hidden">
+        <div class="col pr-2 lg:pr-4">
           <div class="flex flex-column gap-5">
             <h2 class="md:text-xl">All Episodes</h2>
             <template v-for="ep in episodes" :key="ep.id">

@@ -130,7 +130,7 @@ onUnmounted(() => {
         <!-- <pre class="text-xs">{{ show?.body }}</pre> -->
         <div class="grid">
           <div class="col-fixed hidden xxl:block w-20rem"></div>
-          <div class="col pr-2 lg:pr-4 overflow-hidden">
+          <div class="col pr-2 lg:pr-4">
             <div v-if="status === 'success'" class="flex flex-column gap-5">
               <VStreamfield :streamfieldBlocks="show?.body" />
             </div>

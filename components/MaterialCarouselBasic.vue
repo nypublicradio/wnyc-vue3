@@ -328,9 +328,7 @@ onBeforeUnmount(() => {
 .material-carousel-basic {
   overflow: hidden;
   position: relative;
-
-  // To allow arrows to float over
-  display: flex;
+  display: grid;
   align-items: center;
 
   $arrow-distance: 20px;

@@ -203,7 +203,7 @@ watch(
     <section class="pinned mt-0 lg:mt-6" :class="{ isApp: isApp }">
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
-        <div class="col pr-2 lg:pr-4 overflow-hidden">
+        <div class="col pr-2 lg:pr-4">
           <div v-if="status === 'success'">
             <div class="flex flex-column align-items-start">
               <Button
@@ -267,7 +267,7 @@ watch(
     <section class="py-0">
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
-        <div class="col pr-2 lg:pr-4 overflow-hidden">
+        <div class="col pr-2 lg:pr-4">
           <div v-if="status === 'success'">
             <div v-if="episodeData?.transcript">
               <div class="flex align-items-center gap-1">
