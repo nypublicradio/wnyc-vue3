@@ -1009,7 +1009,7 @@ export const goToStoryPage = (story, params, log = true) => {
     window.open(theLink, "_blank")
   } else {
     navigateTo({
-      path: `${mediaTypeRoutes[mediaTypes.STORY]}${story.media_id ?? story.id}`,
+      path: `${mediaTypeRoutes[mediaTypes.STORY]}${story.media_id || story.id}`,
       query: params,
     })
   }
