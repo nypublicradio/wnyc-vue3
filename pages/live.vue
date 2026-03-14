@@ -98,8 +98,8 @@ onUnmounted(() => {
     <Html lang="en">
       <Head>
         <Title
-          >Listen Live | WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
-          News</Title
+          >Listen Live | WNYC | New York Public Radio, Podcasts, Live Streaming
+          Radio, News</Title
         >
         <Meta
           name="og:title"
@@ -112,9 +112,14 @@ onUnmounted(() => {
       </Head>
     </Html>
     <div class="top flex flex-column gap-3 style-mode-dark mb-3">
-      <HorizontalScrollFeature :data="allCurrentStations" class="live-stations-holder">
+      <HorizontalScrollFeature
+        :data="allCurrentStations"
+        class="live-stations-holder"
+      >
         <template #default>
-          <div class="live-stations flex pb-2 md:w-full md:justify-content-center">
+          <div
+            class="live-stations flex pb-2 md:w-full md:justify-content-center"
+          >
             <div
               v-for="(station, index) in allCurrentStations"
               class="station-holder"
@@ -140,12 +145,17 @@ onUnmounted(() => {
                   @click="switchStation(station)"
                 >
                   <template #default>
-                    <div class="flex gap-1 align-items-center overflow-hidden w-full">
+                    <div
+                      class="flex gap-1 align-items-center overflow-hidden w-full"
+                    >
                       <div
                         v-if="currentEpisode?.station === station.station"
                         class="flex-shrink-0"
                       >
-                        <i v-if="isStreamLoading" class="pi pi-spin pi-spinner mr-2"></i>
+                        <i
+                          v-if="isStreamLoading"
+                          class="pi pi-spin pi-spinner mr-2"
+                        ></i>
                         <WnycLoader
                           v-else
                           class="pr-2"
@@ -200,7 +210,7 @@ onUnmounted(() => {
 
       <section class="current-station-info grid grid-nogutter m-auto">
         <div class="col-fixed hidden xl:block xxl:w-15rem xl:w-7rem"></div>
-        <div class="col pr-2 lg:pr-4">
+        <div class="col pr-2 lg:pr-4 overflow-hidden">
           <LiveItem :data="currentEpisodeHolder" />
         </div>
         <div class="col-fixed hidden xl:block xxl:w-15rem xl:w-7rem"></div>
@@ -216,7 +226,9 @@ onUnmounted(() => {
         <div class="col w-full md:pr-2 lg:pr-4">
           <Schedule />
         </div>
-        <div class="col-fixed hidden xl:block xl:w-19rem justify-content-center">
+        <div
+          class="col-fixed hidden xl:block xl:w-19rem justify-content-center"
+        >
           <story-htlAd
             layout="rectangle"
             slotClass="htlad-wnyc_livepage_rectangle"
