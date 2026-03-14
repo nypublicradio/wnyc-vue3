@@ -89,15 +89,16 @@ export const checkUrl404 = async (url) => {
 // return organization name from CMS source and/or the url for Wagtail
 export const getOrg = (data) => {
   const cmsSource = data?.cmsSource
+  const url = data?.meta?.htmlUrl || data?.url
   switch (cmsSource) {
     case cmsSources.PUBLISHER:
       return "WNYC"
     case cmsSources.WAGTAIL:
-      if (data.url?.includes('gothamist.com')) {
+      if (url?.includes('gothamist.com')) {
         return "Gothamist"
-      } else if (data.url?.includes('wqxr.org')) {
+      } else if (url?.includes('wqxr.org')) {
         return "WQXR"
-      } else if (data.url?.includes('NPR.org')) {
+      } else if (url?.includes('NPR.org')) {
         return "NPR"
       }
       return "WNYC"
@@ -876,20 +877,13 @@ export const saveFavorite = async (
       await deleteFavorite(existingRecord[0], tableArg)
     }
     const source = media?.cmsSource
-
-    // we only want gothamist items to populate the url
-    let theUrl = media?.url ?? media?.link
-    if (!theUrl.includes("gothamist.com")) {
-      theUrl = null
-    }
-    console.log("media = ", media)
     // format the media object to save
     // the fallbacks take into account if the user is selecting  an item that was fed by the CMS or Supabase
     const uid = user.value?.id
     const cmsSource = source
     const media_id = media?.media_id ?? media?.id
     const slug = thisSlug
-    const url = theUrl
+    const url = media?.url ?? media?.link
     const type = typeArg
     const reading_time = media?.reading_time ?? getReadingTime(media?.rawBody)
     const estimatedDuration = media?.estimatedDuration
@@ -979,10 +973,11 @@ export const getCssVar = (name: string, px = false) => {
 /* centralized function to route to a episode page */
 export const goToEpisodePage = (ep, params, log = true) => {
   const cmsSource = ep.cmsSource || cmsSources.PUBLISHER
+
   // For Simplecast episodes, use UUID in URL path since Simplecast API requires UUIDs
   // For other sources, use slug
-  const identifier = (cmsSource === cmsSources.SIMPLECAST && ep.meta?.simplecastId)
-    ? ep.meta?.simplecastId
+  const identifier = (cmsSource === cmsSources.SIMPLECAST && ep.uuid)
+    ? ep.uuid
     : (ep.meta?.slug ?? ep.slug)
 
   navigateTo({
@@ -1008,9 +1003,8 @@ export const goToLivePage = (ep, params, log = true) => {
 
 /* centralized function to route to a story page */
 export const goToStoryPage = (story, params, log = true) => {
-  console.log("goToStoryPage", story)
-  const theLink = story.url || story.link
-  if (Capacitor.getPlatform() === "web" && theLink && theLink.includes("gothamist.com") && story.cmsSource === cmsSources.WAGTAIL) {
+  const theLink = story.url || story.link || stripApiSubdomain(story.meta?.htmlUrl)
+  if (Capacitor.getPlatform() === "web" && theLink && story.cmsSource === cmsSources.WAGTAIL) {
     // open in new tab if web and wagtail source (Gothamist)
     window.open(theLink, "_blank")
   } else {
@@ -1053,7 +1047,6 @@ export const goToEventPage = (story, log = true) => {
 }
 /* centralized function to route to a show page */
 export const goToShowPage = (show, params = null) => {
-  console.log("goToShowPage", show)
   navigateTo({
     path: `${mediaTypeRoutes[mediaTypes.SHOW]}${show.meta?.slug ?? show.slug}`,
     query: params,
@@ -1150,7 +1143,6 @@ export const addToFavorites2 = async ({ item, isFavorited, message = isFavorited
 
 // handles how to use the correct navigate method based on the item type
 export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = false) => {
-  console.log("dynamicNavigation", item)
   const isNetworkConnected = useIsNetworkConnected()
   if (isNetworkConnected.value) {
     // if the item has a url, we ignore everything and route based on the url, because it is the override destination
@@ -1378,6 +1370,20 @@ export function getPathAndQuery (urlString) {
   } catch (error) {
     console.error("Invalid URL:", error)
     return null
+  }
+}
+
+// strips any subdomain and replaces it with "www.", keeping only the root domain + TLD
+// e.g. https://api-demo.gothamist.com/... → https://www.gothamist.com/...
+// e.g. https://staging.gothamist.com/...  → https://www.gothamist.com/...
+export function stripApiSubdomain (urlString: string): string {
+  try {
+    const url = new URL(urlString)
+    const parts = url.hostname.split('.')
+    url.hostname = `www.${parts.slice(-2).join('.')}`
+    return url.toString()
+  } catch {
+    return urlString
   }
 }
 
