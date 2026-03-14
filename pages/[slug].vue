@@ -8,8 +8,6 @@ import type { InformationPage } from "~/composables/types/Page"
 
 const route = useRoute()
 
-console.log('[slug] Component loading for:', route?.params?.slug)
-
 /* preview */
 import { usePreviewData } from "~/composables/states"
 const previewData = usePreviewData()

@@ -4,28 +4,12 @@ import { normalizeArticlePage } from './articlePages'
 import { normalizeGalleryPage } from './galleryPages'
 import { normalizeTagPage } from './tagPages'
 import { transformResponseData } from '~/composables/useAviary'
-import { ref } from 'vue'
 
 export async function findPage (htmlPath: string, cmsSite?: string) {
   const params = cmsSite ? { html_path: htmlPath, cms_site: cmsSite } : { html_path: htmlPath }
-  console.log('[findPage] Calling useFetch with params:', params)
-  console.log('[findPage] Environment:', { server: import.meta.server, client: import.meta.client })
-  
-  // useFetch handles SSR hydration correctly and won't refetch on client
-  const { data, error, status } = await useFetch('/api/pages/wagtail/find', {
-    params,
-  })
-  
-  console.log('[findPage] useFetch completed:', {
-    hasData: !!data.value,
-    hasError: !!error.value,
-    status: status.value,
-    errorStatusCode: error.value?.statusCode,
-    errorMessage: error.value?.message,
-    dataType: data.value ? typeof data.value : 'undefined',
-  })
-  
-  return { data, error, status }
+  const { data, error } = await useFetch('/api/pages/wagtail/find', { params })
+  const transformedData = transformResponseData(data)
+  return { data: transformedData, error }
 }
 
 // Get a page by it's cms id
