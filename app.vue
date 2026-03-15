@@ -61,10 +61,10 @@ initializeDeviceInfo()
 useHead({
   htmlAttrs: {
     lang: "en",
+    class: isApp.value ? "app" : "browser",
   },
   script: [],
   noscript: [],
-
   bodyAttrs: {},
 })
 
