@@ -51,10 +51,13 @@ html {
   overflow-x: hidden !important;
   overflow-y: auto !important;
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-  overscroll-behavior: none;
   height: 100%;
   /* Define the actual available width accounting for scrollbar */
   --full-width: 100%;
+  &.app {
+    // prevent pull to refresh
+    overscroll-behavior: none;
+  }
 }
 
 body {
