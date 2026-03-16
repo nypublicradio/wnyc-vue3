@@ -111,7 +111,7 @@ const getEpisodeImage = () => {
 
     return epImageIdentifier !== showImageIdentifier
       ? epImage
-      : gallery.value?.slides?.[0]?.image || null
+      : episodeData.value?.gallery?.value?.slides?.[0]?.image || null
   }
 
   return epImage
@@ -200,7 +200,7 @@ watch(
     <FetchError v-if="error" />
     <FetchError v-if="showError" />
 
-    <section class="pinned mt-0 lg:mt-6" :class="{ isApp: isApp }">
+    <section class="pinned mt-0" :class="{ isApp: isApp }">
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
@@ -213,7 +213,7 @@ watch(
                 @click="handleReturnToEpisode"
               />
               <div
-                class="flex align-items-start gap-2 mt-4"
+                class="flex align-items-center md:align-items-start gap-2 mt-4"
                 :class="{ 'align-items-center': isMinimized }"
               >
                 <VImage
@@ -228,13 +228,20 @@ watch(
                   :class="{ minimize: isMinimized }"
                 >
                 </VImage>
-                <h1 class="h2" :class="isMinimized ? 'mt-0' : 'mt-2'">
+                <!-- <h1 class="h2" :class="isMinimized ? 'mt-0' : 'mt-2'">
+                  {{ episodeData?.title }}
+                </h1> -->
+
+                <h1
+                  class="text-xl -mt-1 md:mt-0 line-height-1 md:line-height-2"
+                  :class="isMinimized ? 'mt-0 md:text-2xl' : 'mt-2 md:text-4xl'"
+                >
                   {{ episodeData?.title }}
                 </h1>
               </div>
             </div>
           </div>
-          <div v-else class="flex flex-column align-items-start gap-4">
+          <div v-else class="flex flex-column align-items-start gap-4 mt-6">
             <Skeleton height="36px" width="168px" borderRadius="18px" />
             <div
               class="flex gap-2 align-items-start w-full"
@@ -291,7 +298,7 @@ watch(
           </div>
         </div>
         <div class="col-fixed hidden lg:block w-20rem">
-          <ShowSummary :show="show" />
+          <ShowSummary :show="show?.show" />
         </div>
       </div>
     </section>

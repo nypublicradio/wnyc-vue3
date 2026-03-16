@@ -190,7 +190,6 @@ export function normalizePerson (person: Record<string, any>): Person {
 export async function normalizeWagtailPage (article: Record<string, any | undefined>): ArticlePage {
   if (typeof article === 'undefined')
     return null
-  //console.log("normalizeWagtailPage", article)
   return Object.assign({}, await normalizePage(article), {
     description: article.description,
     image: article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage ?? article.showArt,
@@ -440,7 +439,6 @@ export async function normalizeSimplecastPage (article: SimplecastArticle): Prom
   const image = getSimplecastImage(article)
   const audioUrl = article.audioFileUrl || article.enclosureUrl
   const bodyText = article.longDescription || article.description
-
   return Promise.resolve(Object.assign({}, normalizePage(article), {
     uuid: simplecastId,
     showId,
