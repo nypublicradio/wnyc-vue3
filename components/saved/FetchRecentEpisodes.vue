@@ -21,7 +21,7 @@ const config = useRuntimeConfig()
 //     },
 //   }
 // )
-console.log("props.show = ", props.show)
+//console.log("props.show = ", props.show)
 const podcastId = ref(null)
 const episodes = ref(null)
 const pendingMore = ref(true)
@@ -33,7 +33,7 @@ const {
   `${config.public.BFF_URL}/api/pages/wagtail/${props.show.slug}?showOnly=true`,
   {
     onResponse(res) {
-      console.log("res.response._data = ", res.response._data)
+      //console.log("res.response._data = ", res.response._data)
       const pId = res.response._data.linkedDataSource?.[0]?.value?.id
       if (pId) {
         podcastId.value = pId
@@ -57,7 +57,7 @@ const {
     onResponse(res) {
       //meta.value = res.response._data.meta
       //episodes.value = res.response._data.data
-      console.log("res.response._data.data = ", res.response._data.data)
+      //console.log("res.response._data.data = ", res.response._data.data)
       episodes.value = res.response._data.data
       pendingMore.value = false
     },

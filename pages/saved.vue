@@ -169,6 +169,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .saved-page {
+  min-height: 95vh;
   .items-holder {
     .item-holder {
       .item-btn {
