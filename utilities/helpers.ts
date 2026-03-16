@@ -1432,3 +1432,11 @@ export const initializeStationList = (stations) => {
   return tempMenuData
 }
 
+// global function to toggle native pull to refresh
+export const toggleNativePullToRefresh = (enable: boolean) => {
+  if (enable) {
+    document.documentElement.style.overscrollBehavior = 'auto'
+  } else {
+    document.documentElement.style.overscrollBehavior = 'none'
+  }
+}
