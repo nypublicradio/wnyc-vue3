@@ -54,10 +54,11 @@ html {
   height: 100%;
   /* Define the actual available width accounting for scrollbar */
   --full-width: 100%;
-  &.app {
-    // prevent pull to refresh
-    overscroll-behavior: none;
-  }
+  // &.app {
+  //   // prevent pull to refresh
+  //   overscroll-behavior: none;
+  // }
+  overscroll-behavior: auto;
 }
 
 body {

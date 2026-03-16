@@ -1,6 +1,7 @@
 <script setup>
 import { useSwipe } from "@vueuse/core"
 import VImage from "./VImage.vue"
+import { toggleNativePullToRefresh } from "~/utilities/helpers"
 
 const props = defineProps({
   options: {
@@ -94,12 +95,14 @@ const setPanel = async () => {
   })
   //sets distanceThreshold based on the height of the panel
   distanceThreshold = panel.value.offsetHeight / distanceThresholdDivider
+  toggleNativePullToRefresh(false)
 }
 
 // when the dropdown is closed, unset the panel ref and removes body prevent touch scroll
 const unsetPanel = () => {
   panel.value = null
   removeBodyTouch()
+  toggleNativePullToRefresh(true)
 }
 
 // swipe setup

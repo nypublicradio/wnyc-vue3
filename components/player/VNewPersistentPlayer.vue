@@ -6,6 +6,7 @@ import { useSwipe } from "@vueuse/core"
 import Button from "primevue/button"
 import { nextTick, onMounted, ref, watch } from "vue"
 import { useIsApp } from "~/composables/states"
+import { toggleNativePullToRefresh } from "~/utilities/helpers"
 
 const props = defineProps({
   /**
@@ -453,9 +454,10 @@ const toggleMinimize = (e) => {
   isMinimized.value = e
 }
 
-watch(isExpanded, () => {
+watch(isExpanded, (bool) => {
   // set expanded content scroll position to top
   expandedContentHolder.value.scrollTop = 0
+  toggleNativePullToRefresh(!bool)
 })
 
 // exposed method to handle the skip ahead
