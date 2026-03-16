@@ -15,6 +15,9 @@ interface GetGtmHeadConfigParams {
 
 const GTM_ID_PATTERN = /^GTM-[A-Z0-9]+$/
 
+/**
+ * Builds the GTM head config for web clients when a valid container ID is present.
+ */
 export const getGtmHeadConfig = ({
   isWeb,
   gtmId,

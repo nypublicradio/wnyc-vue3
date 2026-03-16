@@ -114,7 +114,7 @@ onMounted(async () => {
     await initLocalNotifications()
 
     // initial check for notification permission
-    await notificationPermissionSync(undefined)
+    await notificationPermissionSync()
   }
 
   // initial fetch of the schedule to start the live stream refresh loop
@@ -129,7 +129,7 @@ onMounted(async () => {
 
       // update user profile when coming back from the system settings
       if (isApp.value) {
-        await notificationPermissionSync(undefined)
+        await notificationPermissionSync()
       }
     }
   })
