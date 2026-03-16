@@ -63,7 +63,6 @@ const isBuffering = ref(false)
 const route = useRoute()
 
 let delay = 250
-const isError = ref(null)
 
 // function that returns the image for the episode
 const getTitle = computed(() => {
@@ -345,7 +344,7 @@ watch(
 
 onMounted(async () => {
   await RemoteStreamer.addListener("error", (err) => {
-    isError.value = err
+    handleError(err)
   })
   await RemoteStreamer.addListener("timeUpdate", (data) => {
     currentEpisodeProgress.value = data.currentTime

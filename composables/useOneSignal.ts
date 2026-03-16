@@ -403,7 +403,7 @@ export default function useOneSignal() {
         if (!accepted) {
           // they deny after being asked for permission
           // resync the setting tabs
-          await notificationPermissionSync(undefined)
+          await notificationPermissionSync()
         }
       }) : toSystemSettings()
     });
