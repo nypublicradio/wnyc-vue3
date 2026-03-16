@@ -521,7 +521,6 @@ const moreFromClick = () => {
         $bottomMenuHeight + $expandedFooterHeight + env(safe-area-inset-bottom) +
           2rem
       );
-
       .expanded-footer {
         background: var(--persistent-player-bg);
 
@@ -537,6 +536,9 @@ const moreFromClick = () => {
     }
 
     &.expanded {
+      &.browser {
+        padding-top: env(safe-area-inset-top);
+      }
       .expanded-footer {
         bottom: env(safe-area-inset-bottom);
       }
