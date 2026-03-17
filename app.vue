@@ -25,6 +25,7 @@ import useLiveStream from "~/composables/data/liveStream"
 import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
 import { useToast } from "primevue/usetoast"
+import { getGtmHeadConfig } from "~/utilities/gtm";
 //import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
 import useOneSignal from "~/composables/useOneSignal"
 
@@ -49,7 +50,12 @@ const isApp = useIsApp()
 const { initOneSignal, notificationPermissionSync, handleAppUrlOpen } =
   useOneSignal()
 
-isApp.value = Capacitor.getPlatform() !== "web"
+const isWeb = Capacitor.getPlatform() === 'web';
+isApp.value = !isWeb;
+const gtmHeadConfig = getGtmHeadConfig({
+  isWeb,
+  gtmId: config.public.GTM_ID,
+});
 
 // Initialize device info and app download link asynchronously
 const initializeDeviceInfo = async () => {
@@ -62,8 +68,8 @@ useHead({
   htmlAttrs: {
     lang: "en",
   },
-  script: [],
-  noscript: [],
+  script: [...gtmHeadConfig.script],
+  noscript: [...gtmHeadConfig.noscript],
 
   bodyAttrs: {},
 })
@@ -108,7 +114,7 @@ onMounted(async () => {
     await initLocalNotifications()
 
     // initial check for notification permission
-    await notificationPermissionSync(undefined)
+    await notificationPermissionSync()
   }
 
   // initial fetch of the schedule to start the live stream refresh loop
@@ -123,7 +129,7 @@ onMounted(async () => {
 
       // update user profile when coming back from the system settings
       if (isApp.value) {
-        await notificationPermissionSync(undefined)
+        await notificationPermissionSync()
       }
     }
   })
