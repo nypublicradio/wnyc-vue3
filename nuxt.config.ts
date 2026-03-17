@@ -105,6 +105,9 @@ export default defineNuxtConfig({
           content:
             "viewport-fit=cover, width=device-width, initial-scale=1, maximum-scale=1",
         },
+        {
+          charset: "utf-8"
+        }
         // { name: 'msapplication-TileColor', content: '#ffffff' },
         // { name: 'theme-color', content: '#ffffff' }
       ],
