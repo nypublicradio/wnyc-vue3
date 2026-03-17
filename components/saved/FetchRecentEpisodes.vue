@@ -86,7 +86,7 @@ const {
   <div v-if="!pendingMore" :key="props.show.media_id">
     <!-- {{ podcastId }} -->
     <!-- <pre>{{ oldShow }}</pre> -->
-    <pre>{{ episodes }}</pre>
+    <!-- <pre>{{ episodes }}</pre> -->
     <MediaCard
       v-for="episode in episodes"
       :key="episode.id"
