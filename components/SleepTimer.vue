@@ -18,7 +18,15 @@ const {
 } = useSleepTimer()
 import { useGlobalToast } from "~/composables/states"
 const globalToast = useGlobalToast()
-const { platform, osVersion } = await Device.getInfo()
+
+// Initialize device info on client-side only to avoid SSR errors
+let platform = ref(null)
+let osVersion = ref(null)
+if (process.client) {
+  const deviceInfo = await Device.getInfo()
+  platform.value = deviceInfo.platform
+  osVersion.value = deviceInfo.osVersion
+}
 const { initBackgroundMode } = useBackgroundMode()
 
 const timeLengthOptions = [
@@ -67,7 +75,7 @@ const handleStartTimer = async (data) => {
   }
 
   // ios only
-  if (platform === "ios" && parseInt(osVersion) < 17) {
+  if (platform.value === "ios" && parseInt(osVersion.value) < 17) {
     globalToast.value = {
       severity: "error",
       summary: "Sleep Timer requires iOS 17 or later",
@@ -78,7 +86,7 @@ const handleStartTimer = async (data) => {
   }
 
   // allow for background interval on android only
-  if (platform === "android") {
+  if (platform.value === "android") {
     if (!(await initBackgroundMode())) {
       // user did not allow the background mode
       globalToast.value = {

@@ -25,6 +25,7 @@ import useLiveStream from "~/composables/data/liveStream"
 import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
 import { useToast } from "primevue/usetoast"
+import { getGtmHeadConfig } from "~/utilities/gtm";
 //import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
 import useOneSignal from "~/composables/useOneSignal"
 
@@ -46,10 +47,22 @@ const isNetworkConnected = useIsNetworkConnected()
 const fullDeviceInfo = useFullDeviceInfo()
 const appDownloadLink = useAppDownloadLink()
 const isApp = useIsApp()
-const { initOneSignal, notificationPermissionSync, handleAppUrlOpen } =
-  useOneSignal()
 
-isApp.value = Capacitor.getPlatform() !== "web"
+// Only initialize OneSignal on client-side to avoid SSR errors
+let initOneSignal: any, notificationPermissionSync: any, handleAppUrlOpen: any
+if (process.client) {
+  const oneSignal = useOneSignal()
+  initOneSignal = oneSignal.initOneSignal
+  notificationPermissionSync = oneSignal.notificationPermissionSync
+  handleAppUrlOpen = oneSignal.handleAppUrlOpen
+}
+
+const isWeb = Capacitor.getPlatform() === 'web';
+isApp.value = !isWeb;
+const gtmHeadConfig = getGtmHeadConfig({
+  isWeb,
+  gtmId: config.public.GTM_ID,
+});
 
 // Initialize device info and app download link asynchronously
 const initializeDeviceInfo = async () => {
@@ -63,8 +76,9 @@ useHead({
     lang: "en",
     class: isApp.value ? "app" : "browser",
   },
-  script: [],
-  noscript: [],
+  script: [...gtmHeadConfig.script],
+  noscript: [...gtmHeadConfig.noscript],
+
   bodyAttrs: {},
 })
 
@@ -72,21 +86,6 @@ useHead({
 const clearAllToasts = () => {
   toast.removeAllGroups()
 }
-
-// init the Network listener
-Network.addListener("networkStatusChange", (status) => {
-  if (!isNetworkConnected.value && status.connected) {
-    setTimeout(() => {
-      refreshData()
-      clearAllToasts()
-    }, 1000)
-  }
-  isNetworkConnected.value = status.connected
-})
-
-// set the initial network status
-const initNetworkStatus = await Network.getStatus()
-isNetworkConnected.value = initNetworkStatus.connected
 
 // adds listeners for push notifications and appStateChange and appUrlOpen
 const addListeners = async () => {
@@ -97,6 +96,28 @@ const addListeners = async () => {
 }
 
 onMounted(async () => {
+  // Initialize Capacitor platform detection (client-side only)
+  isApp.value = Capacitor.getPlatform() !== "web"
+
+  // Initialize device info and app download link asynchronously (client-side only)
+  fullDeviceInfo.value = await getFullDeviceInfo()
+  appDownloadLink.value = await getAppDownloadLink()
+
+  // Init the Network listener (client-side only)
+  Network.addListener("networkStatusChange", (status) => {
+    if (!isNetworkConnected.value && status.connected) {
+      setTimeout(() => {
+        refreshData()
+        clearAllToasts()
+      }, 1000)
+    }
+    isNetworkConnected.value = status.connected
+  })
+
+  // Set the initial network status (client-side only)
+  const initNetworkStatus = await Network.getStatus()
+  isNetworkConnected.value = initNetworkStatus.connected
+
   // OneSignal
   if (isApp.value) initOneSignal()
 
@@ -108,7 +129,7 @@ onMounted(async () => {
     await initLocalNotifications()
 
     // initial check for notification permission
-    await notificationPermissionSync(undefined)
+    await notificationPermissionSync()
   }
 
   // initial fetch of the schedule to start the live stream refresh loop
@@ -123,7 +144,7 @@ onMounted(async () => {
 
       // update user profile when coming back from the system settings
       if (isApp.value) {
-        await notificationPermissionSync(undefined)
+        await notificationPermissionSync()
       }
     }
   })

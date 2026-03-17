@@ -1,4 +1,19 @@
-import { masterNotificationChannelsArray } from "~/composables/useOneSignal"
+import { ref } from "vue"
+
+// notification channels array from the BFF server
+export const masterNotificationChannelsArray = ref(null)
+
+export const getMasterNotificationChannels = async () => {
+  // get notification topics
+  const client = useSupabaseClient()
+  const { data } = await client
+    .from("notification_topics")
+    .select("*")
+
+  masterNotificationChannelsArray.value = data
+  return data
+}
+
 // Homepage data
 // // global state for the Bff useHomepageData data
 // export const useHomepageData = () => useState('useHomepageData', () => null)
@@ -222,7 +237,7 @@ export const useGlobalToast = () => useState<object>('globalToast', () => null)
 export const useFullDeviceInfo = () => useState<object>('fullDeviceInfo', () => null)
 
 // app download link
-export const useAppDownloadLink = () => useState<string>('appDownloadLink', () => null)
+export const useAppDownloadLink = () => useState<string>('appDownloadLink', () => '')
 
 // saved page tab state
 export const useSelectedSavedTab = () => useState<number>('useSelectedSavedTab', () => 0)

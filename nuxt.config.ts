@@ -57,7 +57,7 @@ export default defineNuxtConfig({
     },
   },
 
-  ssr: false,
+  ssr: process.env.NUXT_SSR === 'true',
 
   ionic: {
     integrations: {
@@ -166,7 +166,7 @@ export default defineNuxtConfig({
   plugins: [
     "~/plugins/router-guards.js",
     "~/plugins/error-handler.js",
-    "~/plugins/firebase.js",
+    "~/plugins/firebase.client.js",
   ],
 
   experimental: {
