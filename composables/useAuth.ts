@@ -1,4 +1,4 @@
-import { ref, computed, readonly, nextTick } from 'vue';
+import { computed, readonly, nextTick } from 'vue';
 import { Preferences } from "@capacitor/preferences"
 interface User {
     id: string;
@@ -12,13 +12,13 @@ interface AuthResponse {
     user: User;
 }
 
-// Global state for authentication
-const authToken = ref<string | null>(null);
-const currentUser = ref<User | null>(null);
-const refreshTokenValue = ref<string | null>(null);
-const isAuthenticated = computed(() => Boolean(authToken.value) && Boolean(currentUser.value));
-
 export const useAuth = () => {
+    // Use useState instead of module-level refs for SSR-safe global state
+    const authToken = useState<string | null>('authToken', () => null);
+    const currentUser = useState<User | null>('authCurrentUser', () => null);
+    const refreshTokenValue = useState<string | null>('refreshTokenValue', () => null);
+    const isAuthenticated = computed(() => Boolean(authToken.value) && Boolean(currentUser.value));
+
     // Token refresh interval ID
     let tokenRefreshIntervalId: ReturnType<typeof setInterval> | null = null;
 

@@ -48,7 +48,18 @@ import {
 import { initMediaSession } from "~/utilities/media-session.js"
 import useOneSignal from "~/composables/useOneSignal"
 import { capacitorIosNotificationSettings } from '@nypublicradio/capacitor-ios-notification-settings'
-import { FirebaseAnalytics } from '@capacitor-firebase/analytics'
+
+// Dynamic import for FirebaseAnalytics to avoid SSR errors
+const loadFirebaseAnalytics = async () => {
+  if (typeof window === 'undefined') return null
+  try {
+    const module = await import('@capacitor-firebase/analytics')
+    return module.FirebaseAnalytics
+  } catch (error) {
+    console.error('Failed to load FirebaseAnalytics:', error)
+    return null
+  }
+}
 
 // helper function that turns any string into a valid element id or slug
 export const slugify = (text) => {
@@ -722,6 +733,14 @@ export const getAndSetUserProfile = async () => {
           avatar_image_url: user.data.session.user.user_metadata.avatar_url,
         })
         .match({ id: user.data.session.user.id })
+
+      // Set Firebase Analytics user ID on client side only
+      const FirebaseAnalytics = await loadFirebaseAnalytics()
+      if (FirebaseAnalytics && currentUser.value) {
+        await FirebaseAnalytics.setUserId({
+          userId: currentUser.value.id,
+        })
+      }
     }
 
     // if no network connection, get the user profile from local storage
@@ -791,9 +810,12 @@ export const getAndSetUserProfile = async () => {
         await getProfile()
 
         //init Firebase Analytics
-        await FirebaseAnalytics.setUserId({
-          userId: currentUser.value.id,
-        })
+        const FirebaseAnalytics = await loadFirebaseAnalytics()
+        if (FirebaseAnalytics && currentUser.value) {
+          await FirebaseAnalytics.setUserId({
+            userId: currentUser.value.id,
+          })
+        }
 
         // get the device id if it's an app and not a browser
         if (isApp.value) {

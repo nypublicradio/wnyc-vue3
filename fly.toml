@@ -7,6 +7,7 @@ primary_region = "iad"
   PORT = "8080"
   TZ = "America/New_York"
   USE_MOCK_SCHEDULE = "true"
+  NUXT_SSR = "true"
 
 [http_service]
   internal_port = 8080

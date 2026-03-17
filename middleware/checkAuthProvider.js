@@ -4,7 +4,18 @@ import {
 } from '~/composables/states'
 import { Preferences } from '@capacitor/preferences'
 import { localUserProfileKey } from "~/composables/globals"
-import { FirebaseAnalytics } from '@capacitor-firebase/analytics'
+
+// Dynamic import for FirebaseAnalytics to avoid SSR errors
+const loadFirebaseAnalytics = async () => {
+  if (typeof window === 'undefined') return null
+  try {
+    const module = await import('@capacitor-firebase/analytics')
+    return module.FirebaseAnalytics
+  } catch (error) {
+    console.error('Failed to load FirebaseAnalytics:', error)
+    return null
+  }
+}
 
 export default defineNuxtRouteMiddleware(async () => {
   const client = useSupabaseClient()
@@ -25,9 +36,12 @@ export default defineNuxtRouteMiddleware(async () => {
         .match({ id: user.data.session.user.id })
     }
     if (currentUser.value) {
-      await FirebaseAnalytics.setUserId({
-        userId: currentUser.value.id,
-      })
+      const FirebaseAnalytics = await loadFirebaseAnalytics()
+      if (FirebaseAnalytics) {
+        await FirebaseAnalytics.setUserId({
+          userId: currentUser.value.id,
+        })
+      }
     }
   }
 
