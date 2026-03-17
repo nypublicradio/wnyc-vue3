@@ -883,7 +883,6 @@ export const saveFavorite = async (
     if (!theUrl.includes("gothamist.com")) {
       theUrl = null
     }
-    console.log("media = ", media)
     // format the media object to save
     // the fallbacks take into account if the user is selecting  an item that was fed by the CMS or Supabase
     const uid = user.value?.id
