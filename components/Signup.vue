@@ -42,7 +42,11 @@ const onLoginClick = () => {
 
 // actions to be taken with the signup link is clicked
 const onSignup = (provider) => {
-  trackClickEvent("Click Tracking - sign up", "Sign Up Sidebar - user section", provider)
+  trackClickEvent(
+    "Click Tracking - sign up",
+    "Sign Up Sidebar - user section",
+    provider
+  )
 }
 
 // close all sidebars
@@ -62,7 +66,9 @@ const closeAll = () => {
       <SHeader
         label="Sign up"
         :showButton="isApp"
-        @close-sidebar="props.isRoute ? navigateTo('/home') : (signUpSideBar = false)"
+        @close-sidebar="
+          props.isRoute ? navigateTo('/home') : (signUpSideBar = false)
+        "
       />
     </section>
     <section class="px-0 md:px-6">
@@ -103,12 +109,12 @@ const closeAll = () => {
         label="Sign up"
         slug="/confirm"
         @login-success="closeAll"
-        redirectUrl="https://demo.native-app.wnyc.org"
+        :redirectUrl="config.public.SUPABASE_AUTH_SIGN_IN_REDIRECT_TO"
       >
         <template #aboveSubmit>
           <p class="mb-3">
-            By proceeding to create your account, you are agreeing to New York Public
-            Radio's
+            By proceeding to create your account, you are agreeing to New York
+            Public Radio's
             <VFlexibleLink to="/terms">Terms of Service</VFlexibleLink> and
             <VFlexibleLink to="/privacy">Privacy Policy</VFlexibleLink>
           </p>
