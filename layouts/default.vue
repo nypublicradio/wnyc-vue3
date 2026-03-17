@@ -19,6 +19,14 @@ useHead({
     class: bodyClass,
   },
 })
+useServerHead({
+  meta: [
+    {
+      name: "robots",
+      content: "index,follow",
+    }
+  ]
+})
 
 //check when the route changes
 watch(
