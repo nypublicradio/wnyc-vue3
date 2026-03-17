@@ -13,17 +13,27 @@ import { usePreviewData } from "~/composables/states"
 const previewData = usePreviewData()
 const isPreview = Boolean(route.query.preview)
 
-const page = isPreview
-  ? previewData.value.data
-  : await findPage(`/${route?.params?.slug as string}`)
-      .then(({ data }) => normalizeFindPageResponse(data))
-      .catch(() => {
-        throw createError({
-          statusCode: 404,
-          statusMessage: "Page Not Found",
-          fatal: true,
-        })
-      })
+let page
+if (isPreview) {
+  page = previewData.value.data
+} else {
+  // Fetch page data - middleware has already checked existence and set 404 if needed
+  const slug = `/${route?.params?.slug as string}`
+  const { data, error } = await useFetch('/api/pages/wagtail/find', {
+    key: `page-${slug}`,
+    query: { html_path: slug },
+  })
+  
+  if (error.value || !data.value) {
+    throw createError({
+      statusCode: error.value?.statusCode || 404,
+      statusMessage: error.value?.message || 'Page Not Found',
+      fatal: true,
+    })
+  }
+  
+  page = normalizeFindPageResponse(data)
+}
 
 // const { $analytics } = useNuxtApp()
 

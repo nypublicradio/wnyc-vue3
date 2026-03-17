@@ -47,8 +47,15 @@ const isNetworkConnected = useIsNetworkConnected()
 const fullDeviceInfo = useFullDeviceInfo()
 const appDownloadLink = useAppDownloadLink()
 const isApp = useIsApp()
-const { initOneSignal, notificationPermissionSync, handleAppUrlOpen } =
-  useOneSignal()
+
+// Only initialize OneSignal on client-side to avoid SSR errors
+let initOneSignal: any, notificationPermissionSync: any, handleAppUrlOpen: any
+if (process.client) {
+  const oneSignal = useOneSignal()
+  initOneSignal = oneSignal.initOneSignal
+  notificationPermissionSync = oneSignal.notificationPermissionSync
+  handleAppUrlOpen = oneSignal.handleAppUrlOpen
+}
 
 const isWeb = Capacitor.getPlatform() === 'web';
 isApp.value = !isWeb;
@@ -79,21 +86,6 @@ const clearAllToasts = () => {
   toast.removeAllGroups()
 }
 
-// init the Network listener
-Network.addListener("networkStatusChange", (status) => {
-  if (!isNetworkConnected.value && status.connected) {
-    setTimeout(() => {
-      refreshData()
-      clearAllToasts()
-    }, 1000)
-  }
-  isNetworkConnected.value = status.connected
-})
-
-// set the initial network status
-const initNetworkStatus = await Network.getStatus()
-isNetworkConnected.value = initNetworkStatus.connected
-
 // adds listeners for push notifications and appStateChange and appUrlOpen
 const addListeners = async () => {
   await App.addListener("appUrlOpen", (event: URLOpenListenerEvent) => {
@@ -103,6 +95,28 @@ const addListeners = async () => {
 }
 
 onMounted(async () => {
+  // Initialize Capacitor platform detection (client-side only)
+  isApp.value = Capacitor.getPlatform() !== "web"
+
+  // Initialize device info and app download link asynchronously (client-side only)
+  fullDeviceInfo.value = await getFullDeviceInfo()
+  appDownloadLink.value = await getAppDownloadLink()
+
+  // Init the Network listener (client-side only)
+  Network.addListener("networkStatusChange", (status) => {
+    if (!isNetworkConnected.value && status.connected) {
+      setTimeout(() => {
+        refreshData()
+        clearAllToasts()
+      }, 1000)
+    }
+    isNetworkConnected.value = status.connected
+  })
+
+  // Set the initial network status (client-side only)
+  const initNetworkStatus = await Network.getStatus()
+  isNetworkConnected.value = initNetworkStatus.connected
+
   // OneSignal
   if (isApp.value) initOneSignal()
 

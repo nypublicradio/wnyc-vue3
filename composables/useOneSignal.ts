@@ -1,11 +1,27 @@
-import OneSignal from "onesignal-cordova-plugin"
+// Dynamic import for OneSignal - only loads on client side to avoid SSR errors
+let OneSignal: any = null
+const loadOneSignal = async () => {
+  if (typeof window === 'undefined') return null // Server-side guard
+  if (OneSignal) return OneSignal // Already loaded
+  try {
+    const module = await import('onesignal-cordova-plugin')
+    OneSignal = module.default
+    return OneSignal
+  } catch (error) {
+    console.error('Failed to load OneSignal:', error)
+    return null
+  }
+}
+
 import {
   useCurrentUserProfile,
   useCurrentUser,
   useSettingSideBar,
   useIsApp,
   useGlobalToast,
-  useIsNetworkConnected
+  useIsNetworkConnected,
+  masterNotificationChannelsArray,
+  getMasterNotificationChannels
 } from "~/composables/states"
 import {
   trackClickEvent,
@@ -20,20 +36,6 @@ import { LocalNotifications } from "@capacitor/local-notifications"
 // shared state for in-app notification
 export const isInAppNotificationActive = ref(false)
 
-// notification channels array from the BFF server
-export const masterNotificationChannelsArray = ref(null)
-
-export const getMasterNotificationChannels = async () => {
-  // get notification topics
-  const client = useSupabaseClient()
-  const { data } = await client
-    .from("notification_topics")
-    .select("*")
-
-  masterNotificationChannelsArray.value = data
-  return data
-}
-
 // base OneSignal composable
 export default function useOneSignal() {
 
@@ -45,6 +47,8 @@ export default function useOneSignal() {
   // toggle users notifications channel tags
   const toggleOneSignalUserTag = async (channelKey: string, value: boolean) => {
     if (!isApp.value) return
+    const OneSignal = await loadOneSignal()
+    if (!OneSignal) return
     await OneSignal.User.addTag(channelKey, String(value))
   }
 
@@ -172,6 +176,8 @@ export default function useOneSignal() {
 
   // function to set the salesforce_id in OneSignal as a user tag
   const setSalesForceId = async () => {
+    const OneSignal = await loadOneSignal()
+    if (!OneSignal) return
     const tags = await OneSignal.User.getTags()
 
     // if the salesforce_id is already set as a user tag, then return
@@ -195,6 +201,8 @@ export default function useOneSignal() {
 
   // function to set the OneSignal ID in Supabase profile
   const setOneSignalId = async () => {
+    const OneSignal = await loadOneSignal()
+    if (!OneSignal) return
     const currentUser = useCurrentUser()
     oneSignalId = await OneSignal.User.getOnesignalId()
 
@@ -209,6 +217,8 @@ export default function useOneSignal() {
 
   // function to set the OneSignal subscriptions in Supabase profile
   const setSubscriptions = async () => {
+    const OneSignal = await loadOneSignal()
+    if (!OneSignal) return
     const currentUser = useCurrentUser()
     // update Supabase profile with oneSignalSubscriptionId (push to array)
     const client = useSupabaseClient()
@@ -257,6 +267,8 @@ export default function useOneSignal() {
   // function to check the permissions for notifications
   const checkPermissions = async () => {
     if (isApp.value) {
+      const OneSignal = await loadOneSignal()
+      if (!OneSignal) return false
       return await OneSignal.Notifications.getPermissionAsync();
     } else {
       return false
@@ -348,6 +360,8 @@ export default function useOneSignal() {
 
   // function to initialize OneSignal
   async function initOneSignal() {
+    const OneSignal = await loadOneSignal()
+    if (!OneSignal) return
     const config = useRuntimeConfig()
     //await OneSignal.Debug.setLogLevel(6);
     await OneSignal.setConsentRequired(false)
@@ -381,13 +395,15 @@ export default function useOneSignal() {
 
   // function to trigger the OS permission request
   async function requestNotificationPermission() {
+    const OneSignal = await loadOneSignal()
+    if (!OneSignal) return
     await OneSignal.Notifications.canRequestPermission().then(async (canRequest) => {
       // if the user can request permission, request it, otherwise send them to the system settings to change it manually
       canRequest ? await OneSignal.Notifications.requestPermission(true).then(async (accepted: boolean) => {
         if (!accepted) {
           // they deny after being asked for permission
           // resync the setting tabs
-          await notificationPermissionSync(undefined)
+          await notificationPermissionSync()
         }
       }) : toSystemSettings()
     });
