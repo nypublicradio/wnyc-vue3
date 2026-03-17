@@ -51,7 +51,8 @@ import { capacitorIosNotificationSettings } from '@nypublicradio/capacitor-ios-n
 
 // Dynamic import for FirebaseAnalytics to avoid SSR errors
 const loadFirebaseAnalytics = async () => {
-  if (typeof window === 'undefined') return null
+  const isApp = useIsApp()
+  if (typeof window === 'undefined' || !isApp.value) return null
   try {
     const module = await import('@capacitor-firebase/analytics')
     return module.FirebaseAnalytics
@@ -901,7 +902,9 @@ export const saveFavorite = async (
     const source = media?.cmsSource
 
     // we only want gothamist items to populate the url
-    let theUrl = media?.url ?? media?.link
+    console.log("media", media)
+    let theUrl = media?.url || media?.link || stripApiSubdomain(media?.meta?.htmlUrl)
+    // TEMP FIX. need better solution because contednt that is overridden will not work.
     if (!theUrl.includes("gothamist.com")) {
       theUrl = null
     }
