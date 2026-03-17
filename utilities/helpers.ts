@@ -877,13 +877,19 @@ export const saveFavorite = async (
       await deleteFavorite(existingRecord[0], tableArg)
     }
     const source = media?.cmsSource
+
+    // we only want gothamist items to populate the url
+    let theUrl = media?.url ?? media?.link
+    if (!theUrl.includes("gothamist.com")) {
+      theUrl = null
+    }
     // format the media object to save
     // the fallbacks take into account if the user is selecting  an item that was fed by the CMS or Supabase
     const uid = user.value?.id
     const cmsSource = source
     const media_id = media?.media_id ?? media?.id
     const slug = thisSlug
-    const url = media?.url ?? media?.link
+    const url = theUrl
     const type = typeArg
     const reading_time = media?.reading_time ?? getReadingTime(media?.rawBody)
     const estimatedDuration = media?.estimatedDuration
@@ -973,11 +979,10 @@ export const getCssVar = (name: string, px = false) => {
 /* centralized function to route to a episode page */
 export const goToEpisodePage = (ep, params, log = true) => {
   const cmsSource = ep.cmsSource || cmsSources.PUBLISHER
-
   // For Simplecast episodes, use UUID in URL path since Simplecast API requires UUIDs
   // For other sources, use slug
-  const identifier = (cmsSource === cmsSources.SIMPLECAST && ep.uuid)
-    ? ep.uuid
+  const identifier = (cmsSource === cmsSources.SIMPLECAST && ep.meta?.simplecastId)
+    ? ep.meta?.simplecastId
     : (ep.meta?.slug ?? ep.slug)
 
   navigateTo({
@@ -1047,6 +1052,7 @@ export const goToEventPage = (story, log = true) => {
 }
 /* centralized function to route to a show page */
 export const goToShowPage = (show, params = null) => {
+  console.log("goToShowPage", show)
   navigateTo({
     path: `${mediaTypeRoutes[mediaTypes.SHOW]}${show.meta?.slug ?? show.slug}`,
     query: params,

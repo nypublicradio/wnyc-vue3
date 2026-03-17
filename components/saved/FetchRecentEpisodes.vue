@@ -59,6 +59,10 @@ const {
       //episodes.value = res.response._data.data
       //console.log("res.response._data.data = ", res.response._data.data)
       episodes.value = res.response._data.data
+      // missing show title added from show data
+      episodes.value.forEach((episode) => {
+        episode.showTitle = show.value.title
+      })
       pendingMore.value = false
     },
     onError(error) {
@@ -82,6 +86,7 @@ const {
   <div v-if="!pendingMore" :key="props.show.media_id">
     <!-- {{ podcastId }} -->
     <!-- <pre>{{ oldShow }}</pre> -->
+    <pre>{{ episodes }}</pre>
     <MediaCard
       v-for="episode in episodes"
       :key="episode.id"
