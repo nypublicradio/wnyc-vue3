@@ -13,7 +13,11 @@ import InputText from "primevue/inputtext"
 import Message from "primevue/message"
 import Password from "primevue/password"
 import { computed, reactive, ref } from "vue"
-import { useLoginSideBar, useForgotPasswordSideBar, useIsApp } from "~/composables/states"
+import {
+  useLoginSideBar,
+  useForgotPasswordSideBar,
+  useIsApp,
+} from "~/composables/states"
 
 const props = defineProps({
   client: {

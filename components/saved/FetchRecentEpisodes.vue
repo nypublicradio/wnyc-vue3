@@ -25,11 +25,7 @@ const config = useRuntimeConfig()
 const podcastId = ref(null)
 const episodes = ref(null)
 const pendingMore = ref(true)
-const {
-  data: show,
-  status,
-  error,
-} = useFetch(
+const { data: show, error } = useFetch(
   `${config.public.BFF_URL}/api/pages/wagtail/${props.show.slug}?showOnly=true`,
   {
     onResponse(res) {
@@ -44,11 +40,7 @@ const {
   }
 )
 
-const {
-  data,
-  status: scStatus,
-  error: scError,
-} = useFetch(
+const { error: scError } = useFetch(
   () =>
     `${config.public.BFF_URL}/api/v3/show/${
       podcastId.value
