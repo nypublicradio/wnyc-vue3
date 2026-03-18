@@ -6,6 +6,10 @@ import {
     useAppDownloadLink,
 } from "~/composables/states"
 
+// Fetching guard to prevent concurrent fetches (thundering herd)
+let isFetching = false
+let fetchPromise: Promise<void> | null = null
+
 // strip https://www.wnyc.org from the url for local routes
 const stripWNYCUrl = (url) => {
     if (url) {
@@ -113,32 +117,48 @@ export default async function useNavigationData () {
     const appDownloadLink = useAppDownloadLink()
     const isApp = useIsApp()
 
-    // Only fetch if we don't have data yet
+    // Only fetch if we don't have data yet and not currently fetching
     if (headerNavigationData.value.length === 0) {
-        try {
-            console.log('[Navigation] Fetching navigation data...')
-            
-            let nData, error, status
-            
-            // On server: use $fetch to avoid HTTP requests (prevents circular dependencies during SSR/health checks)
-            // On client: use useFetch for proper reactivity and caching
-            if (process.server) {
+        // If already fetching, wait for that fetch to complete (prevents thundering herd)
+        if (isFetching && fetchPromise) {
+            console.log('[Navigation] Already fetching, waiting for existing fetch...')
+            try {
+                // Add timeout to prevent waiting forever
+                await Promise.race([
+                    fetchPromise,
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Navigation fetch timeout')), 10000))
+                ])
+            } catch (err) {
+                console.warn('[Navigation] Timeout waiting for existing fetch:', err)
+            }
+        } else if (!isFetching) {
+            // Start fetch and set guard
+            isFetching = true
+            fetchPromise = (async () => {
                 try {
-                    const serverData = await $fetch('/api/navigation')
-                    nData = { value: serverData }
-                    error = { value: null }
-                    status = { value: 'success' }
-                    console.log('[Navigation] Server-side $fetch succeeded')
-                } catch (err) {
-                    console.error('[Navigation] Server-side $fetch failed:', err)
-                    nData = { value: null }
-                    error = { value: err }
-                    status = { value: 'error' }
-                }
-            } else {
-                // Client-side: use useFetch for proper hydration
-                const result = await useFetch('/api/navigation', {
-                    key: 'global-navigation-data',
+                    console.log('[Navigation] Fetching navigation data...')
+                    
+                    let nData, error, status
+                    
+                    // On server: use $fetch to avoid HTTP requests (prevents circular dependencies during SSR/health checks)
+                    // On client: use useFetch for proper reactivity and caching
+                    if (process.server) {
+                        try {
+                            const serverData = await $fetch('/api/navigation')
+                            nData = { value: serverData }
+                            error = { value: null }
+                            status = { value: 'success' }
+                            console.log('[Navigation] Server-side $fetch succeeded')
+                        } catch (err) {
+                            console.error('[Navigation] Server-side $fetch failed:', err)
+                            nData = { value: null }
+                            error = { value: err }
+                            status = { value: 'error' }
+                        }
+                    } else {
+                        // Client-side: use useFetch for proper hydration
+                        const result = await useFetch('/api/navigation', {
+                            key: 'global-navigation-data',
                 })
                 nData = result.data
                 error = result.error
@@ -227,13 +247,21 @@ export default async function useNavigationData () {
             footerLegalLinksData.value = legalLinkItems
             donateButtonData.value = finalDonateData
 
-        } catch (fetchError) {
-            console.error("Failed to fetch or process navigation data:", fetchError)
-            headerNavigationData.value = []
-            allNavigationData.value = []
-            footerNavigationData.value = []
-            footerLegalLinksData.value = []
-            donateButtonData.value = { buttonText: '', buttonLink: '' }
+                } catch (fetchError) {
+                    console.error("Failed to fetch or process navigation data:", fetchError)
+                    headerNavigationData.value = []
+                    allNavigationData.value = []
+                    footerNavigationData.value = []
+                    footerLegalLinksData.value = []
+                    donateButtonData.value = { buttonText: '', buttonLink: '' }
+                } finally {
+                    // Reset fetching guard
+                    isFetching = false
+                }
+            })()
+            
+            // Wait for the fetch to complete
+            await fetchPromise
         }
     }
 
