@@ -14,7 +14,7 @@ const {
   data: pagedata,
   status,
   error,
-} = useFetch(`${config.public.BFF_URL}/api/people/publisher/${personSlug}`)
+} = useFetch(`/api/people/publisher/${personSlug}`)
 
 watch(pagedata, (val) => {
   if (val) {

@@ -67,6 +67,29 @@ async function getNavigationData () {
 export default defineEventHandler(async (event) => {
     const res = event?.node?.res
     res.setHeader('Cache-Control', 'max-age=120, stale-while-revalidate')
-    const data = await getNavigationData()
-    return { data }
+    
+    try {
+        const data = await getNavigationData()
+        
+        // Log for debugging
+        console.log('[Server Navigation] Data fetched successfully:', {
+            hasWagtail: !!data.wagtailResponse,
+            hasDonate: !!data.donateResponse,
+            hasStations: !!data.stationsResponse,
+            hasShows: !!data.showsResponse,
+        })
+        
+        return { data }
+    } catch (error) {
+        console.error('[Server Navigation] Error in event handler:', error)
+        // Return a valid structure even on error
+        return {
+            data: {
+                wagtailResponse: null,
+                donateResponse: null,
+                stationsResponse: null,
+                showsResponse: null,
+            }
+        }
+    }
 })

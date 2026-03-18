@@ -15,14 +15,14 @@ const currentEpisode = useCurrentEpisode()
 const isApp = useIsApp()
 
 const { data: latestNewsUpdatesData, error: error2 } = useLazyFetch(
-  `${config.public.BFF_URL}/api/homepagelatestnewsupdates`
+  `/api/homepagelatestnewsupdates`
 )
 
 const {
   data: pagedata,
   error,
   status,
-} = useLazyFetch(`${config.public.BFF_URL}/api/homepagecuration`)
+} = useLazyFetch(`/api/homepagecuration`)
 
 definePageMeta({
   layout: "default",

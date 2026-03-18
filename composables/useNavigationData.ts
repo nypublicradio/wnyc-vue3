@@ -121,19 +121,46 @@ export default async function useNavigationData () {
         }))
 
         try {
-            // BFF
-            const { data: nData, error, status } = await useFetch(`${config.public.BFF_URL}/api/navigation`)
+            // Use relative URL for internal navigation API to avoid circular dependencies in SSR
+            // When BFF_URL points to the same instance (like in Fly review apps), using the full URL
+            // creates a circular dependency. Using a relative URL allows Nuxt to handle it internally.
+            const navigationUrl = '/api/navigation'
+            
+            console.log('[Navigation] Fetching from:', navigationUrl)
+            
+            const { data: nData, error, status } = await useFetch(navigationUrl, {
+                // Add retry logic and better error handling
+                retry: 1,
+                retryDelay: 500,
+            })
             fetchStatus = status
             fetchError = error
 
+            // Log for debugging in different environments
+            console.log('[Navigation] Fetch status:', status.value)
+            console.log('[Navigation] Has error:', !!error.value)
+            console.log('[Navigation] Has nData:', !!nData.value)
+            console.log('[Navigation] nData.value type:', typeof nData.value)
+            
+            if (nData.value) {
+                console.log('[Navigation] Has nData.data:', !!nData.value.data)
+            }
+
             // Check if there was a fetch error
             if (error.value) {
-                throw new Error(`Navigation fetch failed: ${error.value.message || error.value}`)
+                console.error('[Navigation] Fetch error:', error.value)
+                throw new Error(`Navigation fetch failed: ${JSON.stringify(error.value)}`)
             }
 
             // Check if data is available before accessing nested properties
-            if (!nData.value || !nData.value.data) {
-                throw new Error('Navigation data is null or missing data property')
+            if (!nData.value) {
+                console.error('[Navigation] nData.value is null or undefined')
+                throw new Error('Navigation response is null')
+            }
+
+            if (!nData.value.data) {
+                console.error('[Navigation] nData.value.data is missing. Full response:', JSON.stringify(nData.value))
+                throw new Error('Navigation data property is missing')
             }
 
             const bffData = nData.value.data

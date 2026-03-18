@@ -20,7 +20,7 @@ const loadMoreRef = ref(null)
 const isInitialObserver = ref(true)
 
 const { data: events, status, error } = useFetch(
-  `${config.public.BFF_URL}/api/events/list`,
+  `/api/events/list`,
   {
     //transform: transformEvents,
     onResponse () {

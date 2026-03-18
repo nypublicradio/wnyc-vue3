@@ -11,7 +11,7 @@ const storySource = "WNYC"
 const breadcrumbs = computed(() => [{ label: "Home", route: "/home" }])
 
 const { data: storyData, status, error } = useFetch(
-  `${config.public.BFF_URL}/api/story/${cmsSources.PUBLISHER}/${route.params.slug}`,
+  `/api/story/${cmsSources.PUBLISHER}/${route.params.slug}`,
   {
     onResponse({ response }) {
       const res = response._data

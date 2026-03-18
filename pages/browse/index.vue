@@ -11,7 +11,7 @@ const {
   data: shows,
   status,
   error,
-} = useLazyFetch(`${config.public.BFF_URL}/api/v3/shows`)
+} = useLazyFetch(`/api/v3/shows`)
 
 const router = useRouter()
 const searchFieldValue = ref("")
