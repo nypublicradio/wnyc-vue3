@@ -1,9 +1,5 @@
 // Dynamic import for OneSignal - only loads on client side to avoid SSR errors
 let OneSignal: any = null
-// function to dynamically load the OneSignal module
-const loadOneSignal = async () => {
-  if (typeof window === 'undefined') return null // Server-side guard
-  if (OneSignal) return OneSignal // Already loaded
 const loadOneSignal = async () => {
   if (typeof window === 'undefined') return null // Server-side guard
   if (OneSignal) return OneSignal // Already loaded
