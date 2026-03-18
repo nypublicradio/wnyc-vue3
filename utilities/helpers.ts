@@ -901,13 +901,8 @@ export const saveFavorite = async (
     }
     const source = media?.cmsSource
 
-    // we only want gothamist items to populate the url
-    console.log("media", media)
-    let theUrl = media?.url || media?.link || stripApiSubdomain(media?.meta?.htmlUrl)
-    // TEMP FIX. need better solution because contednt that is overridden will not work.
-    if (!theUrl.includes("gothamist.com")) {
-      theUrl = null
-    }
+    let theUrl = media?.url
+
     // format the media object to save
     // the fallbacks take into account if the user is selecting  an item that was fed by the CMS or Supabase
     const uid = user.value?.id
