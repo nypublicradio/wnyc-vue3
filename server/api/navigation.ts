@@ -19,6 +19,7 @@ async function getNavigationData () {
 
     try {
         // Fetch all data concurrently with individual error handling
+        // Use $fetch for internal API calls to avoid circular dependencies in SSR
         const [wagtail, donate, stations, shows] = await Promise.allSettled([
             axios.get(config.public.HEADER_NAVIGATION_API as string, {
                 headers: {
@@ -30,7 +31,8 @@ async function getNavigationData () {
                     'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
                 }
             }),
-            axios.get(`${config.public.BFF_URL}/api/streams`),
+            // Use $fetch for internal API call instead of axios to avoid circular dependency
+            $fetch('/api/streams').then(data => ({ data })),
             axios.get(`${config.public.AVIARY_BASE_API}curated_lists/20/`),
         ])
 
@@ -42,7 +44,7 @@ async function getNavigationData () {
             console.warn('SYSTEM_MESSAGES_API failed:', config.public.SYSTEM_MESSAGES_API, donate.reason?.message || donate.reason)
         }
         if (stations.status === 'rejected') {
-            console.warn('BFF streams API failed:', `${config.public.BFF_URL}/api/streams`, stations.reason?.message || stations.reason)
+            console.warn('Internal streams API failed:', '/api/streams', stations.reason?.message || stations.reason)
         }
         if (shows.status === 'rejected') {
             console.warn('BFF showsmenu API failed:', `${config.public.BFF_URL}/api/v3/shows`, shows.reason?.message || shows.reason)

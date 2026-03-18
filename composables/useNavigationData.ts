@@ -108,6 +108,10 @@ export default async function useNavigationData () {
     }))
     const fetchStatus = useState("navigationFetchStatus", () => 'idle')
     const fetchError = useState("navigationFetchError", () => null)
+    
+    // Get app download link outside conditional to ensure Nuxt context is available
+    const appDownloadLink = useAppDownloadLink()
+    const isApp = useIsApp()
 
     // Only fetch if we don't have data yet
     if (headerNavigationData.value.length === 0) {
@@ -158,9 +162,6 @@ export default async function useNavigationData () {
 
             const bffData = nData.value.data
 
-            // Get app download link for navigation
-            const appDownloadLink = useAppDownloadLink()
-
             // IMPORTANT: Create a deep clone to avoid modifying the imported `allMenuData` object directly.
             let workingHeaderNav = resolveUrlFunctions(allMenuData.map(item => ({ ...item })), appDownloadLink.value)
             // Normalize and merge Stations
@@ -191,7 +192,6 @@ export default async function useNavigationData () {
 
             workingHeaderNav = workingHeaderNav.filter((item) => item.inHeaderMenu !== false)
 
-            const isApp = useIsApp()
             const donateButtonLabel = isApp.value ? "WNYC App Donate Button" : "WNYC Donate Button"
             const donateBanner = bffData.donateResponse?.product_banners?.find(
                 (banner) => banner.value.title === donateButtonLabel
