@@ -9,7 +9,11 @@ const route = useRoute()
 const router = useRouter()
 const toast = useToast()
 
-const { data: episode, status, error } = useFetch(
+const {
+  data: episode,
+  status,
+  error,
+} = useFetch(
   () =>
     `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
   {
@@ -21,7 +25,9 @@ const { data: episode, status, error } = useFetch(
         content_group: "on_demand_episode",
         article_authors: res?.authors?.map((author) => author.name).join(","),
         article_publish_date: res.publicationDate,
-        article_updated_date: res.updatedDate ? res.updatedDate : res.publicationDate,
+        article_updated_date: res.updatedDate
+          ? res.updatedDate
+          : res.publicationDate,
         article_title: res.title,
       })
 
@@ -35,7 +41,8 @@ const { data: episode, status, error } = useFetch(
     onResponseError() {
       toast.add({
         severity: "error",
-        summary: "We are having a problem loading this episode. Please try again later.",
+        summary:
+          "We are having a problem loading this episode. Please try again later.",
         life: 6000,
         closable: true,
       })
@@ -58,10 +65,13 @@ const {
   status: showStatus,
   error: showError,
   execute: executeShowFetch,
-} = useLazyFetch(() => `${config.public.BFF_URL}/api/v2/show/${theSlug.value}`, {
-  immediate: false,
-  server: false,
-})
+} = useLazyFetch(
+  () => `${config.public.BFF_URL}/api/v2/show/${theSlug.value}`,
+  {
+    immediate: false,
+    server: false,
+  }
+)
 
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
