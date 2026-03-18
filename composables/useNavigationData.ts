@@ -123,9 +123,20 @@ export default async function useNavigationData () {
         try {
             // BFF
             const { data: nData, error, status } = await useFetch(`${config.public.BFF_URL}/api/navigation`)
-            const bffData = nData.value.data
             fetchStatus = status
             fetchError = error
+
+            // Check if there was a fetch error
+            if (error.value) {
+                throw new Error(`Navigation fetch failed: ${error.value.message || error.value}`)
+            }
+
+            // Check if data is available before accessing nested properties
+            if (!nData.value || !nData.value.data) {
+                throw new Error('Navigation data is null or missing data property')
+            }
+
+            const bffData = nData.value.data
 
             // Get app download link for navigation
             const appDownloadLink = useAppDownloadLink()
