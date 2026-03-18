@@ -1,5 +1,4 @@
 <script setup>
-import FollowIcon from "~/components/icons/FollowIcon.vue"
 const user = useCurrentUser()
 </script>
 <template>

@@ -901,7 +901,7 @@ export const saveFavorite = async (
     }
     const source = media?.cmsSource
 
-    let theUrl = media?.url
+    const theUrl = media?.url
 
     // format the media object to save
     // the fallbacks take into account if the user is selecting  an item that was fed by the CMS or Supabase
@@ -1072,7 +1072,6 @@ export const goToEventPage = (story, log = true) => {
 }
 /* centralized function to route to a show page */
 export const goToShowPage = (show, params = null) => {
-  console.log("goToShowPage", show)
   navigateTo({
     path: `${mediaTypeRoutes[mediaTypes.SHOW]}${show.meta?.slug ?? show.slug}`,
     query: params,

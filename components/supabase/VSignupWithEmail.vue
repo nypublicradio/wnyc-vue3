@@ -1,13 +1,23 @@
 <script setup>
 import VLoginWithEmail from "./VLoginWithEmail.vue"
 import { useVuelidate } from "@vuelidate/core"
-import { email, helpers, minLength, required, sameAs } from "@vuelidate/validators"
+import {
+  email,
+  helpers,
+  minLength,
+  required,
+  sameAs,
+} from "@vuelidate/validators"
 import Button from "primevue/button"
 import InputText from "primevue/inputtext"
 import Message from "primevue/message"
 import Password from "primevue/password"
 import { computed, reactive, ref } from "vue"
-import { useLoginSideBar, useForgotPasswordSideBar, useIsApp } from "~/composables/states"
+import {
+  useLoginSideBar,
+  useForgotPasswordSideBar,
+  useIsApp,
+} from "~/composables/states"
 
 const props = defineProps({
   client: {
@@ -91,7 +101,10 @@ const rules = computed(() => {
         "The email confirmation field is required ",
         required
       ),
-      sameAs: helpers.withMessage("Email addresses don't match", sameAs(formData.email)),
+      sameAs: helpers.withMessage(
+        "Email addresses don't match",
+        sameAs(formData.email)
+      ),
     },
     email: {
       email: helpers.withMessage("Invalid email format", email),
@@ -103,7 +116,10 @@ const rules = computed(() => {
     password: {
       hasAtleastOneNumber,
       minLength: minLength(8),
-      required: helpers.withMessage("This password field is required", required),
+      required: helpers.withMessage(
+        "This password field is required",
+        required
+      ),
     },
   }
 })
@@ -221,7 +237,8 @@ const submitForm = async () => {
                 name="confirm_email"
                 class="w-full"
                 :class="{
-                  'p-invalid': v$.confirmEmail.$error && v$.confirmEmail.$invalid,
+                  'p-invalid':
+                    v$.confirmEmail.$error && v$.confirmEmail.$invalid,
                 }"
                 placeholder="Confirm your email"
                 required

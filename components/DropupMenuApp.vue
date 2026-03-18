@@ -1,6 +1,5 @@
 <script setup>
 import { useSwipe } from "@vueuse/core"
-import VImage from "./VImage.vue"
 import { toggleNativePullToRefresh } from "~/utilities/helpers"
 
 const props = defineProps({
@@ -59,7 +58,7 @@ let isDraggingDown = false
 const visibleBottom = ref(false)
 
 // 2way binding to the currentUserProfile on the parent prop v-model
-const vModel = defineModel()
+const vModel = defineModel({ type: [String, Object, Number] })
 
 // prevents the body from scrolling when the dropdown is open
 function preventScrollOnTouch(event) {

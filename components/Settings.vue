@@ -25,11 +25,7 @@ import {
   masterNotificationChannelsArray,
 } from "~/composables/states.ts"
 import { Preferences } from "@capacitor/preferences"
-import {
-  localUserProfileKey,
-  appMenuOptions,
-  memberCenterLink,
-} from "~/composables/globals"
+import { localUserProfileKey, appMenuOptions } from "~/composables/globals"
 import { updateLiveStream } from "~/composables/data/liveStream"
 import useOneSignal from "~/composables/useOneSignal"
 import { useMembership } from "~/composables/useMembership"
