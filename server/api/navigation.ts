@@ -45,19 +45,6 @@ async function getNavigationData () {
             }),
         ])
 
-        // Log any failures for debugging
-        if (wagtail.status === 'rejected') {
-            console.warn('HEADER_NAVIGATION_API failed:', config.public.HEADER_NAVIGATION_API, wagtail.reason?.message || wagtail.reason)
-        }
-        if (donate.status === 'rejected') {
-            console.warn('SYSTEM_MESSAGES_API failed:', config.public.SYSTEM_MESSAGES_API, donate.reason?.message || donate.reason)
-        }
-        if (stations.status === 'rejected') {
-            console.warn('Internal streams API failed:', '/api/streams', stations.reason?.message || stations.reason)
-        }
-        if (shows.status === 'rejected') {
-            console.warn('BFF showsmenu API failed:', `${config.public.BFF_URL}/api/v3/shows`, shows.reason?.message || shows.reason)
-        }
         return {
             wagtailResponse: wagtail.status === 'fulfilled' ? wagtail.value.data : null,
             donateResponse: donate.status === 'fulfilled' ? donate.value.data : null,
@@ -81,18 +68,8 @@ export default defineEventHandler(async (event) => {
     
     try {
         const data = await getNavigationData()
-        
-        // Log for debugging
-        console.log('[Server Navigation] Data fetched successfully:', {
-            hasWagtail: !!data.wagtailResponse,
-            hasDonate: !!data.donateResponse,
-            hasStations: !!data.stationsResponse,
-            hasShows: !!data.showsResponse,
-        })
-        
         return { data }
     } catch (error) {
-        console.error('[Server Navigation] Error in event handler:', error)
         // Return a valid structure even on error
         return {
             data: {

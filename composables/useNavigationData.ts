@@ -121,7 +121,6 @@ export default async function useNavigationData () {
     if (headerNavigationData.value.length === 0) {
         // If already fetching, wait for that fetch to complete (prevents thundering herd)
         if (isFetching && fetchPromise) {
-            console.log('[Navigation] Already fetching, waiting for existing fetch...')
             try {
                 // Add timeout to prevent waiting forever
                 await Promise.race([
@@ -129,15 +128,13 @@ export default async function useNavigationData () {
                     new Promise((_, reject) => setTimeout(() => reject(new Error('Navigation fetch timeout')), 10000))
                 ])
             } catch (err) {
-                console.warn('[Navigation] Timeout waiting for existing fetch:', err)
+                // Timeout occurred, proceed with empty navigation
             }
         } else if (!isFetching) {
             // Start fetch and set guard
             isFetching = true
             fetchPromise = (async () => {
                 try {
-                    console.log('[Navigation] Fetching navigation data...')
-                    
                     let nData, error, status
                     
                     // On server: use $fetch to avoid HTTP requests (prevents circular dependencies during SSR/health checks)
@@ -148,9 +145,7 @@ export default async function useNavigationData () {
                             nData = { value: serverData }
                             error = { value: null }
                             status = { value: 'success' }
-                            console.log('[Navigation] Server-side $fetch succeeded')
                         } catch (err) {
-                            console.error('[Navigation] Server-side $fetch failed:', err)
                             nData = { value: null }
                             error = { value: err }
                             status = { value: 'error' }
@@ -163,17 +158,6 @@ export default async function useNavigationData () {
                 nData = result.data
                 error = result.error
                 status = result.status
-                console.log('[Navigation] Client-side useFetch succeeded')
-            }
-
-            // Log for debugging in different environments
-            console.log('[Navigation] Fetch status:', status.value)
-            console.log('[Navigation] Has error:', !!error.value)
-            console.log('[Navigation] Has nData:', !!nData.value)
-            console.log('[Navigation] nData.value type:', typeof nData.value)
-            
-            if (nData.value) {
-                console.log('[Navigation] Has nData.data:', !!nData.value.data)
             }
 
             fetchStatus.value = status.value
@@ -181,18 +165,15 @@ export default async function useNavigationData () {
 
             // Check if there was a fetch error
             if (error.value) {
-                console.error('[Navigation] Fetch error:', error.value)
                 throw new Error(`Navigation fetch failed: ${JSON.stringify(error.value)}`)
             }
 
             // Check if data is available before accessing nested properties
             if (!nData.value) {
-                console.error('[Navigation] nData.value is null or undefined')
                 throw new Error('Navigation response is null')
             }
 
             if (!nData.value.data) {
-                console.error('[Navigation] nData.value.data is missing. Full response:', JSON.stringify(nData.value))
                 throw new Error('Navigation data property is missing')
             }
 
