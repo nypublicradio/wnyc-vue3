@@ -54,7 +54,7 @@ export default function useOneSignal() {
   }
 
   // function to handle the click actions of the notifications
-  const handleAppNotificationUrlOpen = async (event) => {
+  const handleAppNotificationUrlOpen = (event) => {
     const url = event.result?.url
     const action = event.result?.actionId
     const settingSideBar = useSettingSideBar()
