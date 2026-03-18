@@ -3,6 +3,7 @@ import humps from 'humps'
 import { cmsSources, mediaTypeRoutes } from '~/composables/globals'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
 import { transformCuratedContent } from '~/utilities/curatedContent'
+import { mediaTypeRoutes } from '~/composables/globals'
 
 // Helper to obtain runtime config, with test override support.
 const __getConfig = () => {
@@ -29,7 +30,6 @@ const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean) => {
             'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
         }
     }
-
     try {
         const res = await axios(options)
         const resData = humps.camelizeKeys(res.data)

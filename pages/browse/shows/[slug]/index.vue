@@ -101,32 +101,48 @@ onUnmounted(() => {
     <template v-if="!error">
       <!-- <pre>{{ show }}</pre> -->
       <ShowHeader :show="show" />
+
+      <story-htlAd
+        class="md:hidden mt-4 mb-3"
+        layout="rectangle"
+        slotClass="htlad-wnyc_homepage_rectangle"
+        fineprint="WNYC is funded by sponsors and member donations"
+      />
       <!-- JUMP LINKS -->
-      <div
-        class="hidden md:flex flex-wrap justify-content-center align-items-center gap-3 my-5 px-3"
-      >
-        <template v-if="status === 'success'">
-          <Button
-            v-for="i in sectionAnchorData"
-            :key="i.id"
-            :label="i.label"
-            severity="secondary"
-            class="px-3 md:px-3 lg:px-4"
-            @click="scrollToSection(i.id)"
-          />
-        </template>
-        <template v-else>
-          <Skeleton
-            v-for="i in 5"
-            :key="`jump-link-${i}`"
-            height="2rem"
-            width="8rem"
-            borderRadius="1.75rem"
-            class="w-7rem md:w-8rem lg:w-11rem"
-          />
-        </template>
-      </div>
-      <section class="py-4">
+      <section v-if="sectionAnchorData" class="hidden md:block">
+        <div class="grid">
+          <div class="col-fixed hidden xxl:block w-20rem"></div>
+          <div class="col pr-2 lg:pr-4">
+            <div
+              class="flex flex-wrap justify-content-start align-items-center gap-3 my-5"
+            >
+              <template v-if="status === 'success'">
+                <Button
+                  v-for="i in sectionAnchorData"
+                  :key="i.id"
+                  :label="i.label"
+                  severity="secondary"
+                  class="px-3 md:px-3 lg:px-4"
+                  @click="scrollToSection(i.id)"
+                />
+              </template>
+              <template v-else>
+                <Skeleton
+                  v-for="i in 5"
+                  :key="`jump-link-${i}`"
+                  height="2rem"
+                  width="8rem"
+                  borderRadius="1.75rem"
+                  class="w-7rem md:w-8rem lg:w-11rem"
+                />
+              </template>
+            </div>
+          </div>
+          <!-- <div class="col-fixed hidden lg:block w-20rem"></div> -->
+        </div>
+      </section>
+
+      <section class="pb-4">
         <!-- <pre class="text-xs">{{ show?.body }}</pre> -->
         <div class="grid">
           <div class="col-fixed hidden xxl:block w-20rem"></div>

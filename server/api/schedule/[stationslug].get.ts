@@ -55,6 +55,7 @@ import { readFile } from 'fs/promises'
 import { join } from 'path'
 import { createHash } from 'crypto'
 import { zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz'
+import { mediaTypeRoutes } from '~/composables/globals'
 
 // S3 asset URL pattern to replace
 const S3_ASSET_URL_PATTERN = `https://s3.us-east-1.amazonaws.com/webstream-assets-${process.env.ENV}`
@@ -90,10 +91,10 @@ const normalizeSchedule = (scheduleData: any): any[] => {
     return scheduleData.episodes.map((episode: any, index: number) => {
         // Generate a unique ID for the schedule event
         const scheduleId = `ShowSchedule:${index + 1}`
-        
+
         // Get show details from the map if available
         const showDetails = showsMap.get(episode.showId)
-        
+
         // Generate parent URL - construct from show name if not available
         let parentUrl = ''
         if (showDetails?.name) {
@@ -104,7 +105,7 @@ const normalizeSchedule = (scheduleData: any): any[] => {
                 .replace(/\s+/g, '-')      // Replace spaces with hyphens
                 .replace(/-+/g, '-')       // Replace multiple hyphens with single
                 .replace(/^-|-$/g, '')     // Remove leading/trailing hyphens
-            parentUrl = `https://www.wnyc.org/shows/${slug}`
+            parentUrl = `https://www.wnyc.org${mediaTypeRoutes.show}${slug}`
         }
 
         return {
@@ -118,7 +119,7 @@ const normalizeSchedule = (scheduleData: any): any[] => {
                 parentUrl,
                 longDescription: episode.longDescription || '',
                 showId: episode.showId || null,
-                images: episode.images ||  [],
+                images: episode.images || [],
                 presenterIds: episode.presenterIds || [],
                 temporaryChanges: episode.temporaryChanges || false,
             }
@@ -129,7 +130,7 @@ const normalizeSchedule = (scheduleData: any): any[] => {
 // Recursively rewrite URLs in the data structure
 const rewriteAssetUrls = (data: any): any => {
     const rapidAssetUrl = process.env.RAPID_ASSET_URL
-    
+
     // If no RAPID_ASSET_URL is configured, return data unchanged
     if (!rapidAssetUrl) {
         return data
@@ -139,7 +140,7 @@ const rewriteAssetUrls = (data: any): any => {
     if (Array.isArray(data)) {
         return data.map(item => rewriteAssetUrls(item))
     }
-    
+
     // Handle objects
     if (data && typeof data === 'object') {
         const result: any = {}
@@ -154,7 +155,7 @@ const rewriteAssetUrls = (data: any): any => {
         }
         return result
     }
-    
+
     // Return primitives unchanged
     return data
 }
@@ -165,11 +166,11 @@ const shouldUseMockData = (): boolean => {
     if (process.env.USE_MOCK_SCHEDULE === 'true') {
         return true
     }
-    
+
     // Auto-detect: use mock data only in local development when S3 bucket is not configured
     const isLocalDevelopment = process.env.NODE_ENV === 'development'
     const hasS3Config = Boolean(process.env.S3_SCHEDULE_BUCKET)
-    
+
     return isLocalDevelopment && !hasS3Config
 }
 
@@ -179,7 +180,7 @@ const getScheduleFromLocalFile = async (stationSlug: string) => {
         const filePath = join(process.cwd(), 'server/data/schedules', `schedule-${stationSlug}.json`)
         const fileContent = await readFile(filePath, 'utf-8')
         const jsonData = JSON.parse(fileContent)
-        
+
         return humps.camelizeKeys(jsonData)
     } catch (error) {
         console.error('Error reading local schedule file:', error)
@@ -279,7 +280,7 @@ const filterNext24Hours = (scheduleData: any) => {
 
     const now = new Date()
     const next24Hours = new Date(now.getTime() + 24 * 60 * 60 * 1000)
-    
+
     const filteredEpisodes = scheduleData.episodes.filter((episode: any) => {
         const startTime = new Date(episode.startTime)
         const endTime = new Date(episode.endTime)
@@ -301,19 +302,19 @@ const filterByDate = (scheduleData: any, targetDate: string) => {
 
     // Parse the date string and create start/end of day in EST/EDT timezone
     const dateOnly = new Date(`${targetDate}T00:00:00`)
-    
+
     // Start of day in EST/EDT (00:00:00)
     const startOfDayEST = zonedTimeToUtc(
         new Date(dateOnly.getFullYear(), dateOnly.getMonth(), dateOnly.getDate(), 0, 0, 0, 0),
         WNYC_TIMEZONE
     )
-    
+
     // End of day in EST/EDT (23:59:59.999)
     const endOfDayEST = zonedTimeToUtc(
         new Date(dateOnly.getFullYear(), dateOnly.getMonth(), dateOnly.getDate(), 23, 59, 59, 999),
         WNYC_TIMEZONE
     )
-    
+
     const filteredEpisodes = scheduleData.episodes.filter((episode: any) => {
         const startTime = new Date(episode.startTime)
         const endTime = new Date(episode.endTime)
@@ -336,14 +337,14 @@ const getAvailableDateRange = (scheduleData: any): { minDate: Date, maxDate: Dat
     const dates = scheduleData.episodes.map((episode: any) => new Date(episode.startTime))
     const minDate = new Date(Math.min(...dates.map(d => d.getTime())))
     const maxDate = new Date(Math.max(...scheduleData.episodes.map((episode: any) => new Date(episode.endTime).getTime())))
-    
+
     return { minDate, maxDate }
 }
 
 // Validate that requested dates are within available data range
 const validateDateRange = (scheduleData: any, requestedDate: string | Date, endDate?: string | Date) => {
     const availableRange = getAvailableDateRange(scheduleData)
-    
+
     if (!availableRange) {
         throw createError({
             statusCode: 404,
@@ -352,16 +353,16 @@ const validateDateRange = (scheduleData: any, requestedDate: string | Date, endD
     }
 
     const { minDate, maxDate } = availableRange
-    
+
     // Parse and convert dates to EST/EDT timezone
     const requestedDateStr = typeof requestedDate === 'string' ? requestedDate : requestedDate.toISOString().split('T')[0]
     const dateOnly = new Date(`${requestedDateStr}T00:00:00`)
-    
+
     const requestedStart = zonedTimeToUtc(
         new Date(dateOnly.getFullYear(), dateOnly.getMonth(), dateOnly.getDate(), 0, 0, 0, 0),
         WNYC_TIMEZONE
     )
-    
+
     let requestedEnd: Date
     if (endDate) {
         const endDateStr = typeof endDate === 'string' ? endDate : endDate.toISOString().split('T')[0]
@@ -382,7 +383,7 @@ const validateDateRange = (scheduleData: any, requestedDate: string | Date, endD
         const zonedDate = utcToZonedTime(date, WNYC_TIMEZONE)
         return zonedDate.toISOString().split('T')[0]
     }
-    
+
     // For single date requests, validate the date is within range
     if (!endDate) {
         if (requestedStart < minDate || requestedStart > maxDate) {
@@ -415,14 +416,14 @@ const filterByDateRange = (scheduleData: any, startDate: string, endDate: string
         new Date(startDateOnly.getFullYear(), startDateOnly.getMonth(), startDateOnly.getDate(), 0, 0, 0, 0),
         WNYC_TIMEZONE
     )
-    
+
     // Parse end date and create end of day in EST/EDT
     const endDateOnly = new Date(`${endDate}T00:00:00`)
     const rangeEnd = zonedTimeToUtc(
         new Date(endDateOnly.getFullYear(), endDateOnly.getMonth(), endDateOnly.getDate(), 23, 59, 59, 999),
         WNYC_TIMEZONE
     )
-    
+
     const filteredEpisodes = scheduleData.episodes.filter((episode: any) => {
         const startTime = new Date(episode.startTime)
         const endTime = new Date(episode.endTime)
