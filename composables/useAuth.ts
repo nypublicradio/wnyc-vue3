@@ -1,4 +1,4 @@
-import { computed, readonly, nextTick } from 'vue';
+import { computed, nextTick } from 'vue';
 import { Preferences } from "@capacitor/preferences"
 interface User {
     id: string;
@@ -322,9 +322,9 @@ export const useAuth = () => {
 
     return {
         // State
-        authToken: readonly(authToken),
-        currentUser: readonly(currentUser),
-        refreshTokenValue: readonly(refreshTokenValue),
+        authToken,
+        currentUser,
+        refreshTokenValue,
         isAuthenticated,
 
         // Methods
