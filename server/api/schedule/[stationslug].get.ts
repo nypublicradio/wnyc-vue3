@@ -199,7 +199,7 @@ const getS3Client = () => {
 }
 
 // Function to stream S3 object to string
-const streamToString = async (stream: any): Promise<string> => {
+const streamToString = (stream: any): Promise<string> => {
     const chunks: Uint8Array[] = []
 
     return new Promise((resolve, reject) => {
@@ -479,7 +479,7 @@ const handleScheduleRequest = async (
                 try {
                     scheduleData = await getScheduleFromLocalFile(slug)
                 } catch (mockError) {
-                    console.error(`No schedule data available for ${slug} (neither S3 nor mock)`)
+                    console.error(`No schedule data available for ${slug} (neither S3 nor mock) ${mockError}`)
                     throw createError({
                         statusCode: 404,
                         statusMessage: `Schedule data not available for station: ${slug}`,

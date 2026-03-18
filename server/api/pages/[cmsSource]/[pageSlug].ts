@@ -3,7 +3,6 @@ import humps from 'humps'
 import { cmsSources, mediaTypeRoutes } from '~/composables/globals'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
 import { transformCuratedContent } from '~/utilities/curatedContent'
-import { mediaTypeRoutes } from '~/composables/globals'
 
 // Helper to obtain runtime config, with test override support.
 const __getConfig = () => {
