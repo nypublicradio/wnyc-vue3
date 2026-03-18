@@ -37,7 +37,7 @@ const fetchImageMimeType = async (imageUrl) => {
     try {
         const response = await axios.get(imageUrl, { responseType: 'arraybuffer' })
         return response.headers['content-type']
-    } catch (error) {
+    } catch {
         return 'image/jpeg'
     }
 }

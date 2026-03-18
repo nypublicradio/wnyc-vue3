@@ -454,6 +454,8 @@ export default function useOneSignal() {
   // function to log in and manage the user in OneSignal with supabase data
   async function OneSignalLogin() {
     if (!isApp.value) return
+    const OneSignal = await loadOneSignal()
+    if (!OneSignal) return
     const currentUser = useCurrentUser()
     const currentUserProfile = useCurrentUserProfile()
 
@@ -480,6 +482,8 @@ export default function useOneSignal() {
 
   // get current tags
   const getUserTags = async () => {
+    const OneSignal = await loadOneSignal()
+    if (!OneSignal) return null
     const currentUser = useCurrentUser()
     if (currentUser.value) {
       const tags = await OneSignal.User.getTags()
@@ -492,6 +496,8 @@ export default function useOneSignal() {
   // function to log out the user in OneSignal
   async function logout() {
     if (!isApp.value) return
+    const OneSignal = await loadOneSignal()
+    if (!OneSignal) return
     await OneSignal.logout()
   }
 

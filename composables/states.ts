@@ -1,5 +1,3 @@
-import { ref } from "vue"
-
 // notification channels array from the BFF server
 export const useMasterNotificationChannelsArray = () => useState<any[]>('masterNotificationChannelsArray', () => null)
 
