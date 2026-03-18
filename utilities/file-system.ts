@@ -174,6 +174,8 @@ export const updateFileSystem = async () => {
 
 // handle downloading a file to the desktop
 const downloadFileToDesktop = async (url: string, filename: string) => {
+    if (!import.meta.client) return
+    
     const globalToast = useGlobalToast()
     globalToast.value = {
         severity: "info",
