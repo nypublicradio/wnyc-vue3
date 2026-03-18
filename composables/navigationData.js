@@ -49,6 +49,14 @@ const allMenuData = [
         hasSubmenu: false,
         inHeaderMenu: true,
         inFooterMenu: false,
+        items: [
+            [
+                {
+                    label: "All Events",
+                    url: "/events"
+                },
+            ],
+        ],
     },
     {
         label: "Collections",

@@ -54,7 +54,8 @@ const onFocusOut = (e, index, length) => {
 </script>
 
 <template>
-  <div class="nav-sub-menu-holder">
+  <!-- only show the dropdown if more than 1 item -->
+  <div v-if="props.model?.length > 1" class="nav-sub-menu-holder">
     <div class="blank-spacer" tabindex="-1"></div>
     <div class="nav-sub-menu">
       <div v-if="props.model">
