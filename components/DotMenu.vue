@@ -49,7 +49,7 @@ const emit = defineEmits(["changeEmit"])
 </script>
 <template>
   <DropupMenu
-    v-model:data="dataRef"
+    v-model="dataRef"
     :options="props.menuItems"
     :label="props.label"
     :showTitle="props.showTitle"

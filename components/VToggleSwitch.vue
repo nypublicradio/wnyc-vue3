@@ -2,7 +2,7 @@
 import { ref, watchEffect } from "vue"
 
 const props = defineProps({
-  data: {
+  modelValue: {
     default: false,
     type: Boolean,
   },
@@ -24,15 +24,15 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(["click", "update:data", "change", "input", "focus", "blur"])
+const emit = defineEmits(["click", "update:modelValue", "change", "input", "focus", "blur"])
 
-const checked = ref(props.data)
+const checked = ref(props.modelValue)
 
 const noRef = ref(null)
 const yesRef = ref(null)
 
 watchEffect(() => {
-  checked.value = props.data
+  checked.value = props.modelValue
 })
 </script>
 
@@ -45,7 +45,7 @@ watchEffect(() => {
     <ToggleSwitch
       v-model="checked"
       :ariaLabel="`Toggle between ${props.yes} and ${props.no}`"
-      @update:modelValue="emit('update:data', checked)"
+      @update:modelValue="emit('update:modelValue', checked)"
       @click="emit('click', checked)"
       @change="emit('change', checked)"
       @focus="emit('focus', checked)"

@@ -470,7 +470,7 @@ watch(
         <VToggleSwitch
           yes="ON"
           no="OFF"
-          v-model:data="currentUserProfile.receive_general_notifications"
+          v-model="currentUserProfile.receive_general_notifications"
           @change="handleNotificationChange"
         />
       </SBox>
@@ -490,7 +490,7 @@ watch(
         <VToggleSwitch
           yes="ON"
           no="OFF"
-          v-model:data="
+          v-model="
             currentUserProfile.one_signal_notification_channels.find(
               (c) => c.key === channel.key
             ).value
@@ -543,7 +543,7 @@ watch(
         <VToggleSwitch
           yes="ON"
           no="OFF"
-          v-model:data="currentUserProfile.dark_mode"
+          v-model="currentUserProfile.dark_mode"
           @change="
             () => {
               setDarkMode(currentUserProfile.dark_mode)
