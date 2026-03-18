@@ -22,7 +22,7 @@ import {
   useAccountDeleteSideBar,
   useSettingSideBar,
   useGlobalToast,
-  masterNotificationChannelsArray,
+  useMasterNotificationChannelsArray,
 } from "~/composables/states.ts"
 import { Preferences } from "@capacitor/preferences"
 import { localUserProfileKey, appMenuOptions } from "~/composables/globals"
@@ -41,6 +41,7 @@ const isApp = useIsApp()
 const { isMobileBreakpoint } = useBreakpoints()
 const accountDeleteSideBar = useAccountDeleteSideBar()
 const settingSideBar = useSettingSideBar()
+const masterNotificationChannelsArray = useMasterNotificationChannelsArray()
 
 const allCurrentStations = useAllCurrentStations()
 const client = useSupabaseClient()

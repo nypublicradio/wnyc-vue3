@@ -20,7 +20,7 @@ import {
   useIsApp,
   useGlobalToast,
   useIsNetworkConnected,
-  masterNotificationChannelsArray,
+  useMasterNotificationChannelsArray,
   getMasterNotificationChannels
 } from "~/composables/states"
 import {
@@ -43,6 +43,7 @@ export default function useOneSignal() {
   let oneSignalId: string = null
 
   const isApp = useIsApp()
+  const masterNotificationChannelsArray = useMasterNotificationChannelsArray()
 
   // toggle users notifications channel tags
   const toggleOneSignalUserTag = async (channelKey: string, value: boolean) => {

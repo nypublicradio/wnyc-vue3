@@ -375,6 +375,7 @@ export const toSystemSettings = () => {
 
 // get device information
 export async function getFullDeviceInfo (): Promise<DeviceInfo | null> {
+  if (!import.meta.client) return null
   try {
     const info = await Device.getInfo()
     return info

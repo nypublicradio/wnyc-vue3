@@ -3,9 +3,6 @@ import { ref } from "vue"
 // notification channels array from the BFF server
 export const useMasterNotificationChannelsArray = () => useState<any[]>('masterNotificationChannelsArray', () => null)
 
-// Compatibility export for components that import masterNotificationChannelsArray directly
-export const masterNotificationChannelsArray = useMasterNotificationChannelsArray()
-
 export const getMasterNotificationChannels = async () => {
   const masterNotificationChannelsArray = useMasterNotificationChannelsArray()
   // get notification topics
