@@ -116,19 +116,35 @@ export default async function useNavigationData () {
     // Only fetch if we don't have data yet
     if (headerNavigationData.value.length === 0) {
         try {
-            // Use relative URL for internal navigation API to avoid circular dependencies in SSR
-            // When BFF_URL points to the same instance (like in Fly review apps), using the full URL
-            // creates a circular dependency. Using a relative URL allows Nuxt to handle it internally.
-            const navigationUrl = '/api/navigation'
+            console.log('[Navigation] Fetching navigation data...')
             
-            console.log('[Navigation] Fetching from:', navigationUrl)
+            let nData, error, status
             
-            // Add a unique key for proper SSR hydration
-            const { data: nData, error, status } = await useFetch(navigationUrl, {
-                key: 'global-navigation-data',
-                retry: 1,
-                retryDelay: 500,
-            })
+            // On server: use $fetch to avoid HTTP requests (prevents circular dependencies during SSR/health checks)
+            // On client: use useFetch for proper reactivity and caching
+            if (process.server) {
+                try {
+                    const serverData = await $fetch('/api/navigation')
+                    nData = { value: serverData }
+                    error = { value: null }
+                    status = { value: 'success' }
+                    console.log('[Navigation] Server-side $fetch succeeded')
+                } catch (err) {
+                    console.error('[Navigation] Server-side $fetch failed:', err)
+                    nData = { value: null }
+                    error = { value: err }
+                    status = { value: 'error' }
+                }
+            } else {
+                // Client-side: use useFetch for proper hydration
+                const result = await useFetch('/api/navigation', {
+                    key: 'global-navigation-data',
+                })
+                nData = result.data
+                error = result.error
+                status = result.status
+                console.log('[Navigation] Client-side useFetch succeeded')
+            }
 
             // Log for debugging in different environments
             console.log('[Navigation] Fetch status:', status.value)
