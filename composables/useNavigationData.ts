@@ -5,15 +5,6 @@ import {
     useIsApp,
     useAppDownloadLink,
 } from "~/composables/states"
-// Shared state variables (singleton pattern)
-let isInitialized = false
-let headerNavigationData = null
-let allNavigationData = null
-let footerNavigationData = null
-let footerLegalLinksData = null
-let donateButtonData = null
-let fetchStatus = null
-let fetchError = null
 
 // strip https://www.wnyc.org from the url for local routes
 const stripWNYCUrl = (url) => {
@@ -104,22 +95,22 @@ const normalizeShowsMenuData = (menuData, limit) => {
 }
 
 export default async function useNavigationData () {
-    // Initialize shared state only once
-    if (!isInitialized) {
-        isInitialized = true
+    const config = useRuntimeConfig()
 
-        const config = useRuntimeConfig()
+    // Define shared state (always run this to ensure state is available on both server and client)
+    const headerNavigationData = useState("headerNavigationData", () => [])
+    const allNavigationData = useState("allNavigationData", () => [])
+    const footerNavigationData = useState("footerNavigationData", () => [])
+    const footerLegalLinksData = useState("footerLegalLinksData", () => [])
+    const donateButtonData = useState<{ buttonText: string, buttonLink: string }>("donateButtonData", () => ({
+        buttonText: '',
+        buttonLink: ''
+    }))
+    const fetchStatus = useState("navigationFetchStatus", () => 'idle')
+    const fetchError = useState("navigationFetchError", () => null)
 
-        // Define shared state (singleton)
-        headerNavigationData = useState("headerNavigationData", () => [])
-        allNavigationData = useState("allNavigationData", () => [])
-        footerNavigationData = useState("footerNavigationData", () => [])
-        footerLegalLinksData = useState("footerLegalLinksData", () => [])
-        donateButtonData = useState<{ buttonText: string, buttonLink: string }>("donateButtonData", () => ({
-            buttonText: '',
-            buttonLink: ''
-        }))
-
+    // Only fetch if we don't have data yet
+    if (headerNavigationData.value.length === 0) {
         try {
             // Use relative URL for internal navigation API to avoid circular dependencies in SSR
             // When BFF_URL points to the same instance (like in Fly review apps), using the full URL
@@ -128,13 +119,12 @@ export default async function useNavigationData () {
             
             console.log('[Navigation] Fetching from:', navigationUrl)
             
+            // Add a unique key for proper SSR hydration
             const { data: nData, error, status } = await useFetch(navigationUrl, {
-                // Add retry logic and better error handling
+                key: 'global-navigation-data',
                 retry: 1,
                 retryDelay: 500,
             })
-            fetchStatus = status
-            fetchError = error
 
             // Log for debugging in different environments
             console.log('[Navigation] Fetch status:', status.value)
@@ -145,6 +135,9 @@ export default async function useNavigationData () {
             if (nData.value) {
                 console.log('[Navigation] Has nData.data:', !!nData.value.data)
             }
+
+            fetchStatus.value = status.value
+            fetchError.value = error.value
 
             // Check if there was a fetch error
             if (error.value) {
