@@ -1,6 +1,6 @@
 import axios from 'axios'
 import humps from 'humps'
-import { cmsSources } from '~/composables/globals'
+import { cmsSources, mediaTypeRoutes } from '~/composables/globals'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
 import { transformCuratedContent } from '~/utilities/curatedContent'
 
@@ -24,7 +24,7 @@ const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean) => {
     const options = {
         method: 'GET',
         url: `${config.public.AVIARY_BASE_API}pages/find/`,
-        params: { html_path: `/browse/shows/${pageSlug}/` },
+        params: { html_path: `${mediaTypeRoutes.show}${pageSlug}/` },
         headers: {
             'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
         }

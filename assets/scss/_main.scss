@@ -109,6 +109,11 @@ body {
       padding-bottom: 0px !important;
     }
   }
+  &.hide-footer {
+    footer {
+      display: none !important;
+    }
+  }
 }
 body.overlay-is-active {
   overflow: hidden;
