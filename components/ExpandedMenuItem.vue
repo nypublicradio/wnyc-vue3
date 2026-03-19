@@ -12,7 +12,7 @@ const emit = defineEmits(["emit-click"])
     <h2 class="menu-h2">{{ props.menuData.label }}</h2>
     <div class="flex flex-column gap-2 -ml-2">
       <NavButton
-        v-for="item in props.menuData.items[0]"
+        v-for="item in props.menuData.items?.[0]"
         :label="item.label"
         :route="item.url"
         :key="item.id"
