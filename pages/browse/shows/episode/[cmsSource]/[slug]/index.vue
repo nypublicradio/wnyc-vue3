@@ -9,10 +9,15 @@ const route = useRoute()
 const router = useRouter()
 const toast = useToast()
 
-const { data: episode, status, error } = useFetch(
+const {
+  data: episode,
+  status,
+  error,
+} = useFetch(
   () =>
     `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
   {
+    key: `index-episode-${route.params.cmsSource}-${route.params.slug}`,
     onResponse({ response }) {
       const res = response._data
       $analytics.sendPageView({
@@ -21,7 +26,9 @@ const { data: episode, status, error } = useFetch(
         content_group: "on_demand_episode",
         article_authors: res?.authors?.map((author) => author.name).join(","),
         article_publish_date: res.publicationDate,
-        article_updated_date: res.updatedDate ? res.updatedDate : res.publicationDate,
+        article_updated_date: res.updatedDate
+          ? res.updatedDate
+          : res.publicationDate,
         article_title: res.title,
       })
 
@@ -35,7 +42,8 @@ const { data: episode, status, error } = useFetch(
     onResponseError() {
       toast.add({
         severity: "error",
-        summary: "We are having a problem loading this episode. Please try again later.",
+        summary:
+          "We are having a problem loading this episode. Please try again later.",
         life: 6000,
         closable: true,
       })
@@ -44,7 +52,6 @@ const { data: episode, status, error } = useFetch(
 )
 
 const episodeData = computed(() => episode.value)
-
 const theSlug = computed(
   () =>
     episodeData.value?.showSlug ||
@@ -53,35 +60,31 @@ const theSlug = computed(
     episodeData.value?.headers?.brand?.slug
 )
 
+const { data: showSlug, error: showSlugError } = useLazyFetch(() =>
+  theSlug.value
+    ? `${config.public.BFF_URL}/api/v2/show/${theSlug.value}?slugOnly=true`
+    : null
+)
+
 const {
   data: show,
   status: showStatus,
   error: showError,
-  execute: executeShowFetch,
-} = useLazyFetch(() => `${config.public.BFF_URL}/api/v2/show/${theSlug.value}`, {
-  immediate: false,
-  server: false,
-})
+} = useLazyFetch(() =>
+  showSlug.value?.show?.slug
+    ? `${config.public.BFF_URL}/api/pages/wagtail/${showSlug.value?.show?.slug}?showOnly=true`
+    : null
+)
 
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Browse", route: "/browse" },
   {
-    label: show.value?.show?.title,
-    route: `/browse/shows/${show.value?.show?.slug}`,
+    label: showSlug.value?.show?.title,
+    route: `/browse/shows/${showSlug.value?.show?.slug}`,
   },
   { label: episodeData.value?.title },
 ])
-
-watch(
-  status,
-  () => {
-    if (status.value === "success" && theSlug.value) {
-      executeShowFetch()
-    }
-  },
-  { immediate: false }
-)
 </script>
 
 <template>
@@ -94,19 +97,14 @@ watch(
       </Head>
     </Html>
     <FetchError v-if="error" />
-    <FetchError v-else-if="showError" />
     <template v-else>
-      <section>
-        <div class="flex align-items-center mb-4">
-          <Breadcrumbs :items="breadcrumbs" />
-        </div>
+      <section class="flex align-items-center">
+        <Breadcrumbs :items="breadcrumbs" />
       </section>
-      <!-- <pre>{{ show }}</pre>
-    <pre>{{ episodeData }}</pre> -->
       <EpisodeTemplate
         :pending="status !== 'success'"
         :episodeData="episodeData"
-        :show="show?.show"
+        :show="show"
         :showPending="showStatus !== 'success'"
       >
         <template #bottom>
@@ -122,6 +120,9 @@ watch(
 </template>
 
 <style lang="scss">
+.episode-page {
+  min-height: 100vh;
+}
 .episode-page .segment-list .beforeHack {
   &::before {
     content: "";

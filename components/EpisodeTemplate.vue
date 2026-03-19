@@ -327,7 +327,7 @@ const getDotMenuItems = (bucketItem) => {
 </script>
 
 <template>
-  <section class="episode-template">
+  <section class="episode-template mt-0 md:mt-5">
     <div class="grid">
       <div class="col-fixed hidden xxl:block w-20rem"></div>
       <div v-if="!props.pending" class="col pr-2 lg:pr-4">
@@ -647,7 +647,7 @@ const getDotMenuItems = (bucketItem) => {
             :showAd="!props.show"
           />
         </div>
-        <div v-if="mainContentHeight" class="bottom-holder">
+        <div class="bottom-holder">
           <slot name="bottom" />
         </div>
       </div>
@@ -668,7 +668,7 @@ const getDotMenuItems = (bucketItem) => {
 </template>
 
 <style lang="scss">
-.episode-template .v-byline .flexible-link {
+.episode-template mt-0 md:mt-5 .v-byline .flexible-link {
   color: var(--p-text-color) !important;
   text-decoration: none;
 }

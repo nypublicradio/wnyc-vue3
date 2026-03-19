@@ -27,6 +27,7 @@ const {
   () =>
     `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
   {
+    key: `transcript-episode-${route.params.cmsSource}-${route.params.slug}`,
     onResponse({ response }) {
       const res = response._data
       $analytics.sendPageView({
@@ -118,15 +119,23 @@ const getEpisodeImage = () => {
 }
 
 const {
+  data: showSlug,
+  status: showSlugStatus,
+  error: showSlugError,
+} = useLazyFetch(() =>
+  theSlug.value
+    ? `${config.public.BFF_URL}/api/v2/show/${theSlug.value}?slugOnly=true`
+    : null
+)
+
+const {
   data: show,
+  status: showStatus,
   error: showError,
-  execute: executeShowFetch,
-} = useLazyFetch(
-  () => `${config.public.BFF_URL}/api/v2/show/${theSlug.value}`,
-  {
-    immediate: false,
-    server: false,
-  }
+} = useLazyFetch(() =>
+  showSlug.value?.show?.slug
+    ? `${config.public.BFF_URL}/api/pages/wagtail/${showSlug.value?.show?.slug}?showOnly=true`
+    : null
 )
 
 // episode image resize on scroll
@@ -148,8 +157,8 @@ const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Browse", route: "/browse" },
   {
-    label: show.value?.show?.title,
-    route: `/browse/shows/${show.value?.show?.slug}`,
+    label: showSlug.value?.show?.title,
+    route: `/browse/shows/${showSlug.value?.show?.slug}`,
   },
   { label: episodeData.value?.title, route: backToEpisodePath.value },
   { label: "Transcript" },
@@ -163,16 +172,6 @@ onUnmounted(() => {
   window.removeEventListener("scroll", debouncedScroll)
   clearTimeout(scrollTimeout)
 })
-
-watch(
-  status,
-  () => {
-    if (status.value === "success" && theSlug.value) {
-      executeShowFetch()
-    }
-  },
-  { immediate: false }
-)
 </script>
 
 <template>
@@ -198,7 +197,6 @@ watch(
       </transition>
     </section>
     <FetchError v-if="error" />
-    <FetchError v-if="showError" />
 
     <section class="pinned mt-0 lg:mt-6" :class="{ isApp: isApp }">
       <div class="grid">
@@ -234,7 +232,10 @@ watch(
               </div>
             </div>
           </div>
-          <div v-else class="flex flex-column align-items-start gap-4">
+          <div
+            v-else
+            class="flex flex-column align-items-start gap-4 mt-0 lg:mt-6"
+          >
             <Skeleton height="36px" width="168px" borderRadius="18px" />
             <div
               class="flex gap-2 align-items-start w-full"
