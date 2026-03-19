@@ -175,6 +175,23 @@ useHead({
   ],
 })
 
+useServerHead({
+  link: [
+    {
+      rel: "canonical",
+      href: `https://wnyc.org${route.path}`,
+    },
+  ],
+  title: "WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+  meta: [
+    {
+      name: "description",
+      content:
+        "WNYC is America's most listened-to public radio station and the producer of award-winning programs and podcasts like Radiolab, On the Media, and The Brian Lehrer Show.",
+    },
+  ],
+})
+
 watch(globalToast, (optionsObj) => {
   if (optionsObj) {
     toast.add(optionsObj)
@@ -197,11 +214,7 @@ watch(globalError, (error) => {
 <template>
   <Html lang="en">
     <Head>
-      <Link rel="canonical" :href="`https://wnyc.org${route.path}`" />
       <Link rel="stylesheet" :href="config.public.HTL_CSS" type="text/css" />
-      <Title>
-        WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News
-      </Title>
       <Meta
         name="description"
         content="WNYC is America's most listened-to public radio station and the producer of award-winning programs and podcasts like Radiolab, On the Media, and The Brian Lehrer Show."
