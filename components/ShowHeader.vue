@@ -15,10 +15,14 @@ import {
   useIsEpisodePlaying,
   useIsApp,
   useAppDownloadLink,
+  useCurrentEpisodeHolder,
+  useCurrentEpisode,
 } from "~/composables/states"
 //import { mediaTypeRoutes, mediaTypes } from "~/composables/globals"
 import useSleepTimer from "~/composables/useSleepTimer"
+import useLiveStream from "~/composables/data/liveStream"
 
+const { getStationBySlugAndPlayIt } = useLiveStream()
 const props = defineProps({
   show: {
     type: Object,
@@ -28,6 +32,8 @@ const props = defineProps({
 
 //const emit = defineEmits(["change", "click"]);
 const { show } = toRefs(props)
+const currentEpisodeHolder = useCurrentEpisodeHolder()
+const currentEpisode = useCurrentEpisode()
 
 // Computed properties derived from the show data
 const showImage = computed(
@@ -87,24 +93,14 @@ const firstEpisodeWithAudio = () => {
 }
 // handle the toggle play button at the top to play the most recent episode with audio and tracking
 const togglePlayMostRecentEpisode = () => {
-  // handle NPR show segments.
-  // if (show.value.cmsSource === cmsSources.NPR) {
-  //   const cmsSource = cmsSources.NPR
-  //   // route to the first episode with a url parameter
-  //   navigateTo({
-  //     path: `${mediaTypeRoutes[mediaTypes.EPISODE]}${cmsSource}/${
-  //       show.value.episodes.data[0].id
-  //     }`,
-  //     query: {
-  //       autoplay: true,
-  //     },
-  //   })
-  // } else {
-  const ep = firstEpisodeWithAudio()
-  if (ep) {
-    togglePlayEpisode(ep)
+  if (isCurrentlyLive.value) {
+    getStationBySlugAndPlayIt(currentEpisodeHolder.value.slug, true)
+  } else {
+    const ep = firstEpisodeWithAudio()
+    if (ep) {
+      togglePlayEpisode(ep)
+    }
   }
-  // }
 }
 
 // add item to favorites
@@ -119,6 +115,12 @@ const handleAddToFavorites = () => {
     isFavorited.value = !isFavorited.value
   }
 }
+const isCurrentlyLive = computed(() => {
+  return (
+    currentEpisodeHolder.value?.title === props.show.title ||
+    currentEpisode?.value?.title === props.show.title
+  )
+})
 </script>
 
 
@@ -155,6 +157,12 @@ const handleAddToFavorites = () => {
               v-if="show"
               class="flex flex-column justify-content-start gap-2"
             >
+              <transition name="zoom">
+                <LiveBadge
+                  v-if="isCurrentlyLive"
+                  class="mb-1 align-self-start"
+                />
+              </transition>
               <h2 class="line-height-1 text-2xl md:text-6xl">
                 {{ topperTitle }}
               </h2>
