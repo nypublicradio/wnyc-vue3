@@ -186,10 +186,10 @@ onMounted(() => {
                 :data="ep"
                 showPlayButton
                 is-horizontal
-                imgCol="w-7rem md:w-10rem"
-                :size="{ xs: [112, 112], md: [160, 160] }"
+                imgCol="w-7rem md:w-12rem"
+                :size="{ xs: [112, 112], md: [192, 192] }"
                 showTease
-                :showBg="false"
+                :showBg="true"
                 :showBgMobile="false"
                 @on-click="dynamicNavigation(ep)"
               />
@@ -201,9 +201,9 @@ onMounted(() => {
               :key="`sk1-${i}`"
               showPlayButton
               is-horizontal
-              imgCol="w-7rem md:w-10rem"
+              imgCol="w-7rem md:w-12rem"
               :size="[1, 1]"
-              :showBg="false"
+              :showBg="true"
               :showBgMobile="false"
               showTease
               class="my-5"

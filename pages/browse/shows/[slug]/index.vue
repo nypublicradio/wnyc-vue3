@@ -143,7 +143,7 @@ onUnmounted(() => {
       </section>
 
       <section class="pb-4">
-        <!-- <pre class="text-xs">{{ show?.body }}</pre> -->
+        <!-- <pre class="text-lg">{{ show }}</pre> -->
         <div class="grid">
           <div class="col-fixed hidden xxl:block w-20rem"></div>
           <div class="col pr-2 lg:pr-4">

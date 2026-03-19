@@ -27,6 +27,7 @@ const {
   () =>
     `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
   {
+    key: `transcript-episode-${route.params.cmsSource}-${route.params.slug}`,
     onResponse({ response }) {
       const res = response._data
       $analytics.sendPageView({
@@ -111,22 +112,30 @@ const getEpisodeImage = () => {
 
     return epImageIdentifier !== showImageIdentifier
       ? epImage
-      : episodeData.value?.gallery?.value?.slides?.[0]?.image || null
+      : gallery.value?.slides?.[0]?.image || null
   }
 
   return epImage
 }
 
 const {
+  data: showSlug,
+  status: showSlugStatus,
+  error: showSlugError,
+} = useLazyFetch(() =>
+  theSlug.value
+    ? `${config.public.BFF_URL}/api/v2/show/${theSlug.value}?slugOnly=true`
+    : null
+)
+
+const {
   data: show,
+  status: showStatus,
   error: showError,
-  execute: executeShowFetch,
-} = useLazyFetch(
-  () => `${config.public.BFF_URL}/api/v2/show/${theSlug.value}`,
-  {
-    immediate: false,
-    server: false,
-  }
+} = useLazyFetch(() =>
+  showSlug.value?.show?.slug
+    ? `${config.public.BFF_URL}/api/pages/wagtail/${showSlug.value?.show?.slug}?showOnly=true`
+    : null
 )
 
 // episode image resize on scroll
@@ -148,8 +157,8 @@ const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Browse", route: "/browse" },
   {
-    label: show.value?.show?.title,
-    route: `/browse/shows/${show.value?.show?.slug}`,
+    label: showSlug.value?.show?.title,
+    route: `/browse/shows/${showSlug.value?.show?.slug}`,
   },
   { label: episodeData.value?.title, route: backToEpisodePath.value },
   { label: "Transcript" },
@@ -163,16 +172,6 @@ onUnmounted(() => {
   window.removeEventListener("scroll", debouncedScroll)
   clearTimeout(scrollTimeout)
 })
-
-watch(
-  status,
-  () => {
-    if (status.value === "success" && theSlug.value) {
-      executeShowFetch()
-    }
-  },
-  { immediate: false }
-)
 </script>
 
 <template>
@@ -198,9 +197,8 @@ watch(
       </transition>
     </section>
     <FetchError v-if="error" />
-    <FetchError v-if="showError" />
 
-    <section class="pinned mt-0" :class="{ isApp: isApp }">
+    <section class="pinned mt-0 lg:mt-6" :class="{ isApp: isApp }">
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
@@ -213,7 +211,7 @@ watch(
                 @click="handleReturnToEpisode"
               />
               <div
-                class="flex align-items-center md:align-items-start gap-2 mt-4"
+                class="flex align-items-start gap-2 mt-4"
                 :class="{ 'align-items-center': isMinimized }"
               >
                 <VImage
@@ -228,20 +226,16 @@ watch(
                   :class="{ minimize: isMinimized }"
                 >
                 </VImage>
-                <!-- <h1 class="h2" :class="isMinimized ? 'mt-0' : 'mt-2'">
-                  {{ episodeData?.title }}
-                </h1> -->
-
-                <h1
-                  class="text-xl -mt-1 md:mt-0 line-height-1 md:line-height-2"
-                  :class="isMinimized ? 'mt-0 md:text-2xl' : 'mt-2 md:text-4xl'"
-                >
+                <h1 class="h2" :class="isMinimized ? 'mt-0' : 'mt-2'">
                   {{ episodeData?.title }}
                 </h1>
               </div>
             </div>
           </div>
-          <div v-else class="flex flex-column align-items-start gap-4 mt-6">
+          <div
+            v-else
+            class="flex flex-column align-items-start gap-4 mt-0 lg:mt-6"
+          >
             <Skeleton height="36px" width="168px" borderRadius="18px" />
             <div
               class="flex gap-2 align-items-start w-full"
@@ -298,7 +292,7 @@ watch(
           </div>
         </div>
         <div class="col-fixed hidden lg:block w-20rem">
-          <ShowSummary :show="show?.show" />
+          <ShowSummary :show="show" />
         </div>
       </div>
     </section>
