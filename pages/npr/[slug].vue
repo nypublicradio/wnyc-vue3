@@ -7,13 +7,12 @@ const config = useRuntimeConfig()
 const { $analytics } = useNuxtApp()
 
 const storySource = "NPR"
-//const breadcrumbs = computed(() => [{ label: "Home", route: "/home" }])
 
 const {
   data: storyData,
   status,
   error,
-} = useLazyFetch(`${config.public.BFF_URL}/api/npr/${route.params.slug}`, {
+} =  = await useFetch(`${config.public.BFF_URL}/api/npr/${route.params.slug}`, {
   onResponse({ response }) {
     // send GA page view
     const res = response._data
@@ -40,6 +39,15 @@ const {
   },
 })
 
+useHead({
+  link: [
+    {
+      rel: "canonical",
+      href: storyData.value?.link,
+    },
+  ],
+})
+
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   ...(storyData.value?.meta?.showSlug
@@ -53,6 +61,7 @@ const breadcrumbs = computed(() => [
     : []),
   { label: storyData.value?.title },
 ])
+
 </script>
 
 <template>
