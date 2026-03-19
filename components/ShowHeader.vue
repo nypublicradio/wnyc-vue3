@@ -91,6 +91,13 @@ const firstEpisodeWithAudio = () => {
     }
   })
 }
+// check if the show is currently live
+const isCurrentlyLive = computed(() => {
+  return (
+    currentEpisodeHolder.value?.title === props.show.title ||
+    currentEpisode?.value?.title === props.show.title
+  )
+})
 // handle the toggle play button at the top to play the most recent episode with audio and tracking
 const togglePlayMostRecentEpisode = () => {
   if (isCurrentlyLive.value) {
@@ -115,12 +122,6 @@ const handleAddToFavorites = () => {
     isFavorited.value = !isFavorited.value
   }
 }
-const isCurrentlyLive = computed(() => {
-  return (
-    currentEpisodeHolder.value?.title === props.show.title ||
-    currentEpisode?.value?.title === props.show.title
-  )
-})
 </script>
 
 
