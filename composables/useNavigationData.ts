@@ -98,8 +98,89 @@ const normalizeShowsMenuData = (menuData, limit) => {
     }))
 }
 
-export default async function useNavigationData () {
+// Normalize wagtail shows array -> { featuredShowsInMenu: [...] }
+function normalizeShowsResponseForMenu (shows: any[] | null) {
+    if (!shows) return null
+    const normalized = shows.map((show: any) => ({
+        id: show.id,
+        title: show.title,
+        image: show.image?.id ?? show.image,
+        type: show.content_type,
+        slug: show.url.split('/').filter(Boolean).pop(),
+        cmsSource: show.content_type
+    }))
+    return { featuredShowsInMenu: normalized }
+}
+
+/**
+ * Fetch navigation data directly from external APIs (for app/static mode)
+ * This replicates the server API logic for Capacitor builds
+ */
+async function fetchNavigationDataDirect() {
     const config = useRuntimeConfig()
+    const API_TIMEOUT = 5000
+
+    try {
+        const [wagtail, donate, stations, shows] = await Promise.allSettled([
+            $fetch(config.public.HEADER_NAVIGATION_API as string, {
+                headers: {
+                    'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+                },
+                timeout: API_TIMEOUT
+            }),
+            $fetch(config.public.SYSTEM_MESSAGES_API as string, {
+                headers: {
+                    'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+                },
+                timeout: API_TIMEOUT
+            }),
+            $fetch(`${config.public.BFF_URL}/api/streams`, {
+                timeout: API_TIMEOUT
+            }),
+            $fetch(`${config.public.AVIARY_BASE_API}curated_lists/20/`, {
+                timeout: API_TIMEOUT
+            }),
+        ])
+
+        return {
+            data: {
+                wagtailResponse: wagtail.status === 'fulfilled' ? wagtail.value : null,
+                donateResponse: donate.status === 'fulfilled' ? donate.value : null,
+                stationsResponse: stations.status === 'fulfilled' ? stations.value : null,
+                showsResponse: shows.status === 'fulfilled' ? normalizeShowsResponseForMenu(shows.value.list_items) : null,
+            }
+        }
+    } catch (fetchError) {
+        console.error("Failed to fetch navigation data directly:", fetchError)
+        return {
+            data: {
+                wagtailResponse: null,
+                donateResponse: null,
+                stationsResponse: null,
+                showsResponse: null,
+            }
+        }
+    }
+}
+
+/**
+ * Fetches and manages navigation data for the application.
+ * 
+ * This composable retrieves navigation menu data from the API and normalizes it for use
+ * throughout the application. It handles data for header navigation, footer navigation,
+ * and donate button content. Implements a fetching guard to prevent concurrent requests
+ * and supports both server-side and client-side rendering.
+ * 
+ * @returns {Promise<Object>} An object containing:
+ *   - headerNavigationData: Navigation items for the header menu
+ *   - allNavigationData: Complete navigation data structure
+ *   - footerNavigationData: Navigation items for the footer
+ *   - footerLegalLinksData: Legal links for the footer
+ *   - donateButtonData: Donate button text and link
+ *   - status: Fetch status ('idle', 'pending', 'success', or 'error')
+ *   - error: Any error that occurred during fetching
+ */
+export default async function useNavigationData () {
 
     // Define shared state (always run this to ensure state is available on both server and client)
     const headerNavigationData = useState("headerNavigationData", () => [])
@@ -137,9 +218,12 @@ export default async function useNavigationData () {
                 try {
                     let nData, error, status
                     
-                    // On server: use $fetch to avoid HTTP requests (prevents circular dependencies during SSR/health checks)
-                    // On client: use useFetch for proper reactivity and caching
+                    // Determine if we're running in static/app mode (Capacitor)
+                    // In static builds, there's no server API available, so we fetch directly
+                    const isStaticMode = import.meta.client && !import.meta.env.SSR
+                    
                     if (process.server) {
+                        // Server-side: use $fetch to avoid HTTP requests (prevents circular dependencies during SSR/health checks)
                         try {
                             const serverData = await $fetch('/api/navigation')
                             nData = { value: serverData }
@@ -150,15 +234,27 @@ export default async function useNavigationData () {
                             error = { value: err }
                             status = { value: 'error' }
                         }
+                    } else if (isStaticMode || isApp.value) {
+                        // App/Static mode: fetch directly from external APIs (no server endpoint available)
+                        try {
+                            const directData = await fetchNavigationDataDirect()
+                            nData = { value: directData }
+                            error = { value: null }
+                            status = { value: 'success' }
+                        } catch (err) {
+                            nData = { value: null }
+                            error = { value: err }
+                            status = { value: 'error' }
+                        }
                     } else {
-                        // Client-side: use useFetch for proper hydration
+                        // Client-side web mode: use useFetch for proper hydration
                         const result = await useFetch('/api/navigation', {
                             key: 'global-navigation-data',
-                })
-                nData = result.data
-                error = result.error
-                status = result.status
-            }
+                        })
+                        nData = result.data
+                        error = result.error
+                        status = result.status
+                    }
 
             fetchStatus.value = status.value
             fetchError.value = error.value
