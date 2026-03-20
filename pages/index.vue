@@ -3,7 +3,7 @@ import { useBrowserTopColorDarkMode } from "~/composables/globals.ts"
 
 useHead({
   bodyAttrs: {
-    class: "no-bottom-padding hide-bottom-menu solid-bg hide-footer",
+    class: "no-bottom-padding hide-bottom-menu hide-footer",
   },
 })
 

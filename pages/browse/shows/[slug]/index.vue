@@ -128,7 +128,7 @@ onUnmounted(() => {
               </template>
               <template v-else>
                 <Skeleton
-                  v-for="i in 5"
+                  v-for="i in 3"
                   :key="`jump-link-${i}`"
                   height="2rem"
                   width="8rem"
