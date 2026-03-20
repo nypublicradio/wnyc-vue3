@@ -111,12 +111,16 @@ watch(currentScheduleDate, () => {
 
 onMounted(() => {
   // Wait for allCurrentStations to be populated before fetching schedule data
-  const stopWatcher = watchEffect(() => {
-    if (allCurrentStations.value && allCurrentStations.value.length > 0) {
-      getAllScheduleData()
-      stopWatcher() // Stop watching once data is available
-    }
-  })
+  if (allCurrentStations.value && allCurrentStations.value.length > 0) {
+    getAllScheduleData()
+  } else {
+    const stopWatcher = watchEffect(() => {
+      if (allCurrentStations.value && allCurrentStations.value.length > 0) {
+        getAllScheduleData()
+        stopWatcher() // Stop watching once data is available
+      }
+    })
+  }
 })
 
 // handle the PDF download button
