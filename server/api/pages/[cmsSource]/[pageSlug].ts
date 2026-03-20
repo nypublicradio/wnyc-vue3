@@ -1,6 +1,6 @@
 import axios from 'axios'
 import humps from 'humps'
-import { cmsSources, mediaTypeRoutes } from '~/composables/globals'
+import { cmsSources } from '~/composables/globals'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
 import { transformCuratedContent } from '~/utilities/curatedContent'
 
@@ -24,16 +24,18 @@ const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean) => {
     const options = {
         method: 'GET',
         url: `${config.public.AVIARY_BASE_API}pages/find/`,
-        params: { html_path: `${mediaTypeRoutes.show}${pageSlug}/` },
+        params: { html_path: `/browse/shows/${pageSlug}/` },
         headers: {
             'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
         }
     }
+
     try {
         const res = await axios(options)
         const resData = humps.camelizeKeys(res.data)
         // Add cmsSource to the data so normalizeArticlePage knows which normalizer to use
         resData.cmsSource = cmsSources.WAGTAIL
+        //console.log("resData", resData?.body[0].value.list)
         // Transform curated content if it exists
         if (resData.body && Array.isArray(resData.body)) {
             // if isShowOnly is true, just return null and ignore the body
