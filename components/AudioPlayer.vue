@@ -54,7 +54,7 @@ const currentEpisodeProgress = useCurrentEpisodeProgress()
 const isNetworkConnected = useIsNetworkConnected()
 const deviceId = useDeviceId()
 const currentUser = useCurrentUserProfile()
-const globalToast = useGlobalToast()
+//const globalToast = useGlobalToast()
 
 const showPlayer = ref(false)
 const playerRef = ref(null)
@@ -254,7 +254,6 @@ const handleIsExpanded = (e) => {
 // function that handles the error event from the persistent player emit
 //I have to check for "e" it fires 2 times... once with the error and once without
 const handleError = async (e) => {
-  console.log("handleError: e = ", e)
   if (e) {
     await releasePlayer()
     // globalToast.value = {
