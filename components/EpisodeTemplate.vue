@@ -196,7 +196,9 @@ const togglePlayHere = (epData) => {
 
 const isFavorited = ref(false)
 watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(route.params.slug)
+  isFavorited.value = await checkIsFavorited(
+    props.episodeData?.meta?.slug || route.params.slug
+  )
 })
 
 // add item to favorites
@@ -328,7 +330,6 @@ const getDotMenuItems = (bucketItem) => {
 
 <template>
   <section class="episode-template">
-    <!-- <pre>{{ props.episodeData }}</pre> -->
     <div class="grid">
       <div class="col-fixed hidden xxl:block w-20rem"></div>
       <div v-if="!props.pending" class="col pr-2 lg:pr-4">

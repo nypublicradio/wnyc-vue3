@@ -29,7 +29,7 @@ const getDotMenuItems = () => {
   return [
     {
       label: "All",
-      icon: "pi pi-star-fill text-2xl",
+      icon: "pi pi-star-fill",
       command: () => {
         selectedFilterOption.value = filterOptions.value[0]
       },

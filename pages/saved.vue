@@ -128,7 +128,7 @@ onMounted(() => {
         />
       </Head>
     </Html>
-    <section class="flex align-items-center justify-content-between py-6">
+    <section class="flex align-items-center justify-content-between md:py-5">
       <h1>Saved</h1>
     </section>
     <div v-if="user">

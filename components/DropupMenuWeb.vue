@@ -183,5 +183,9 @@ defineExpose({
       color: var(--surface-950);
     }
   }
+  .custom-icon {
+    width: 28px;
+    height: 28px;
+  }
 }
 </style>
