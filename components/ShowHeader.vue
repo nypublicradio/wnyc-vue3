@@ -339,7 +339,6 @@ const handleAddToFavorites = () => {
 
 <style lang="scss" scoped>
 .show-header-holder {
-  //background-color: var(--p-surface-950);
   .show-header {
     .play-btn {
       width: 50px !important;
@@ -347,6 +346,17 @@ const handleAddToFavorites = () => {
       svg {
         width: 1.25rem;
         height: 1.25rem;
+        margin-left: 2px;
+      }
+    }
+  }
+  @include media("<md") {
+    .play-btn {
+      width: 50px !important;
+      height: 50px !important;
+      svg {
+        height: 18.11px;
+        width: 13.53px;
         margin-left: 2px;
       }
     }

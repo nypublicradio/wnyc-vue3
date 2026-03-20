@@ -9,32 +9,36 @@ const { $analytics } = useNuxtApp()
 const storySource = "NPR"
 //const breadcrumbs = computed(() => [{ label: "Home", route: "/home" }])
 
-const { data: storyData, status, error } = useLazyFetch(
-  `${config.public.BFF_URL}/api/npr/${route.params.slug}`,
-  {
-    onResponse({ response }) {
-      // send GA page view
-      const res = response._data
-      $analytics.sendPageView({
-        page_title: res?.title,
-        page_type: "article",
-        content_group: `${storySource}_article`,
-        article_authors: res?.authors?.map((author) => author.name).join(","),
-        article_publish_date: res?.publicationDate,
-        article_updated_date: res?.updatedDate ? res?.updatedDate : res?.publicationDate,
-        article_title: res?.title,
-      })
-    },
-    onResponseError() {
-      globalToast.value = {
-        severity: "error",
-        summary: "We are having a problem loading this article. Please try again later.",
-        life: 6000,
-        closable: true,
-      }
-    },
-  }
-)
+const {
+  data: storyData,
+  status,
+  error,
+} = useLazyFetch(`${config.public.BFF_URL}/api/npr/${route.params.slug}`, {
+  onResponse({ response }) {
+    // send GA page view
+    const res = response._data
+    $analytics.sendPageView({
+      page_title: res?.title,
+      page_type: "article",
+      content_group: `${storySource}_article`,
+      article_authors: res?.authors?.map((author) => author.name).join(","),
+      article_publish_date: res?.publicationDate,
+      article_updated_date: res?.updatedDate
+        ? res?.updatedDate
+        : res?.publicationDate,
+      article_title: res?.title,
+    })
+  },
+  onResponseError() {
+    globalToast.value = {
+      severity: "error",
+      summary:
+        "We are having a problem loading this article. Please try again later.",
+      life: 6000,
+      closable: true,
+    }
+  },
+})
 
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
@@ -56,7 +60,7 @@ const breadcrumbs = computed(() => [
         <Meta name="twitter:title" :content="`${storyData?.title} | WNYC`" />
       </Head>
     </Html>
-    <FetchError v-if="error || !storyData" />
+    <FetchError v-if="error" />
     <template v-else>
       <section class="flex align-items-center">
         <Breadcrumbs :items="breadcrumbs" />
