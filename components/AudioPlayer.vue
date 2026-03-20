@@ -22,7 +22,7 @@ import {
   useIsNetworkConnected,
   useDeviceId,
   useCurrentUserProfile,
-  useGlobalToast,
+  //useGlobalToast,
 } from "~/composables/states"
 import {
   trackAudioEvent,
