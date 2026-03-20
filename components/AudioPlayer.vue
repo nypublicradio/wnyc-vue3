@@ -22,7 +22,7 @@ import {
   useIsNetworkConnected,
   useDeviceId,
   useCurrentUserProfile,
-  useGlobalToast,
+  //useGlobalToast,
 } from "~/composables/states"
 import {
   trackAudioEvent,
@@ -34,7 +34,7 @@ import useManageScrollPosition from "~/composables/useManageScrollPosition"
 import { initMediaSession } from "~/utilities/media-session.js"
 
 // Initialize device platform on client-side only to avoid SSR errors
-const devicePlatform = ref('web')
+const devicePlatform = ref("web")
 if (process.client) {
   devicePlatform.value = Capacitor.getPlatform()
 }
@@ -54,7 +54,7 @@ const currentEpisodeProgress = useCurrentEpisodeProgress()
 const isNetworkConnected = useIsNetworkConnected()
 const deviceId = useDeviceId()
 const currentUser = useCurrentUserProfile()
-const globalToast = useGlobalToast()
+//const globalToast = useGlobalToast()
 
 const showPlayer = ref(false)
 const playerRef = ref(null)
@@ -181,14 +181,24 @@ const switchEpisode = async (val) => {
 // function that handles the skip to time with the plugin
 const handleSkipTo = (e) => {
   RemoteStreamer.seekTo({ position: e })
-  trackAudioEvent("skip", getMediaType.value, getTitle.value, getDescription.value)
+  trackAudioEvent(
+    "skip",
+    getMediaType.value,
+    getTitle.value,
+    getDescription.value
+  )
 }
 //
 const handleSeekTo = (e) => {
   // convert the percentage to the time
   const time = (e / 100) * currentEpisodeDuration.value
   RemoteStreamer.seekTo({ position: time })
-  trackAudioEvent("seek", getMediaType.value, getTitle.value, getDescription.value)
+  trackAudioEvent(
+    "seek",
+    getMediaType.value,
+    getTitle.value,
+    getDescription.value
+  )
 }
 
 // handle the toggle play button and tracking
@@ -199,9 +209,19 @@ const togglePlayHere = async (e) => {
     isEpisodePlaying.value = true
 
     if (isNewEpisode.value) {
-      trackAudioEvent("play", getMediaType.value, getTitle.value, getDescription.value)
+      trackAudioEvent(
+        "play",
+        getMediaType.value,
+        getTitle.value,
+        getDescription.value
+      )
     } else {
-      trackAudioEvent("resume", getMediaType.value, getTitle.value, getDescription.value)
+      trackAudioEvent(
+        "resume",
+        getMediaType.value,
+        getTitle.value,
+        getDescription.value
+      )
     }
     isNewEpisode.value = false
   } else if (!e && isEpisodePlaying.value) {
@@ -236,12 +256,13 @@ const handleIsExpanded = (e) => {
 const handleError = async (e) => {
   if (e) {
     await releasePlayer()
-    globalToast.value = {
-      severity: "error",
-      summary: "We are having a problem loading the audio. Please try again later.",
-      life: 6000,
-      closable: true,
-    }
+    // globalToast.value = {
+    //   severity: "error",
+    //   summary:
+    //     "We are having a problem loading the audio. Please try again later.",
+    //   life: 6000,
+    //   closable: true,
+    // }
 
     if (isEpisodePlaying.value) {
       playerRef.value.togglePlay()
@@ -358,7 +379,12 @@ onMounted(async () => {
   await RemoteStreamer.addListener("pause", () => {
     if (isEpisodePlaying.value) {
       isEpisodePlaying.value = false
-      trackAudioEvent("pause", getMediaType.value, getTitle.value, getDescription.value)
+      trackAudioEvent(
+        "pause",
+        getMediaType.value,
+        getTitle.value,
+        getDescription.value
+      )
     }
   })
 
@@ -377,7 +403,12 @@ onMounted(async () => {
     // this is work webview detecting the end of the audio
     if (e?.ended) {
       episodeEnded()
-      trackAudioEvent("ended", getMediaType.value, getTitle.value, getDescription.value)
+      trackAudioEvent(
+        "ended",
+        getMediaType.value,
+        getTitle.value,
+        getDescription.value
+      )
     }
   })
   await RemoteStreamer.addListener("ended", (e) => {
@@ -386,7 +417,12 @@ onMounted(async () => {
     currentEpisodeProgress.value = 0
     if (e.ended) {
       episodeEnded()
-      trackAudioEvent("ended", getMediaType.value, getTitle.value, getDescription.value)
+      trackAudioEvent(
+        "ended",
+        getMediaType.value,
+        getTitle.value,
+        getDescription.value
+      )
     }
   })
   // await RemoteStreamer.addListener("id3Metadata", (e) => {
