@@ -25,7 +25,7 @@ import useLiveStream from "~/composables/data/liveStream"
 import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
 import { useToast } from "primevue/usetoast"
-import { getGtmHeadConfig } from "~/utilities/gtm";
+import { getGtmHeadConfig } from "~/utilities/gtm"
 //import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
 import useOneSignal from "~/composables/useOneSignal"
 
@@ -57,12 +57,12 @@ if (process.client) {
   handleAppUrlOpen = oneSignal.handleAppUrlOpen
 }
 
-const isWeb = Capacitor.getPlatform() === 'web';
-isApp.value = !isWeb;
+const isWeb = Capacitor.getPlatform() === "web"
+isApp.value = !isWeb
 const gtmHeadConfig = getGtmHeadConfig({
   isWeb,
   gtmId: config.public.GTM_ID,
-});
+})
 
 // Initialize device info and app download link asynchronously
 const initializeDeviceInfo = async () => {
@@ -74,6 +74,7 @@ initializeDeviceInfo()
 useHead({
   htmlAttrs: {
     lang: "en",
+    class: isApp.value ? "app" : "browser",
   },
   script: [...gtmHeadConfig.script],
   noscript: [...gtmHeadConfig.noscript],
@@ -270,7 +271,6 @@ watch(globalError, (error) => {
   <Drawers class="z-2" />
   <DynamicDialog />
   <Toast position="top-center" successIcon="ci-check" warnIcon="ci-warn" />
-  <!-- <PullToRefresh v-if="isApp" /> -->
 
   <!-- Inline SVG filter for Safari compatibility - Safari doesn't support data URI SVG filters -->
   <svg

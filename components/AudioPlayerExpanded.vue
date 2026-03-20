@@ -521,7 +521,6 @@ const moreFromClick = () => {
         $bottomMenuHeight + $expandedFooterHeight + env(safe-area-inset-bottom) +
           2rem
       );
-
       .expanded-footer {
         background: var(--persistent-player-bg);
 
@@ -537,6 +536,10 @@ const moreFromClick = () => {
     }
 
     &.expanded {
+      &.browser {
+        // fixes android chrome ignoring the top safe area
+        padding-top: max(30px, env(safe-area-inset-top));
+      }
       .expanded-footer {
         bottom: env(safe-area-inset-bottom);
       }

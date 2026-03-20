@@ -114,7 +114,7 @@ const togglePlayMostRecentEpisode = () => {
 const handleAddToFavorites = () => {
   // helper func for adding to favorites, also handles account prompt if not logged in
   addToFavorites2({
-    item: show.value.show,
+    item: show.value,
     isFavorited: isFavorited.value,
     message: "Updated your followed shows.",
   })

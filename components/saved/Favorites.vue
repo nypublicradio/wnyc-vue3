@@ -29,7 +29,7 @@ const getDotMenuItems = () => {
   return [
     {
       label: "All",
-      icon: "pi pi-star-fill text-2xl",
+      icon: "pi pi-star-fill",
       command: () => {
         selectedFilterOption.value = filterOptions.value[0]
       },
@@ -83,32 +83,20 @@ const getDotMenuItems = () => {
       :excludeFilter="mediaTypes.SHOW"
     >
       <template #empty>
-        <div class="empty flex flex-column gap-3 text-center mt-8">
-          <h2>Favorites will appear here!</h2>
-          <div class="max-w-15rem m-auto">
-            <p class="line-height-3">
-              Use the <strong>favorite</strong> button
-              <StarIcon class="w-2rem -mb-3" />
-            </p>
-            <p class="line-height-3">
-              to save your favorite episodes, articles and more— so you can return to them
-              over and over.
-            </p>
-          </div>
-          <Button
-            label="Browse Shows"
-            aria-label="Browse Shows"
-            text
-            severity="secondary"
-            class="underline"
-            size="small"
-            @click="navigateTo('/browse')"
-          />
-        </div>
+        <saved-empty
+          icon="StarIcon"
+          linkText="Browse Shows"
+          linkRoute="/browse"
+        >
+          Use the <strong>favorite</strong> button to save your favorite
+          episodes, articles and more— so you can return to them over and over.
+        </saved-empty>
       </template>
     </saved-dynamic-list>
   </section>
-  <section v-else class="favorites">You must be logged in to see your favorites.</section>
+  <section v-else class="favorites">
+    You must be logged in to see your favorites.
+  </section>
 </template>
 
 <style lang="scss" scoped>

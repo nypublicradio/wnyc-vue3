@@ -51,10 +51,14 @@ html {
   overflow-x: hidden !important;
   overflow-y: auto !important;
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-  overscroll-behavior: none;
   height: 100%;
   /* Define the actual available width accounting for scrollbar */
   --full-width: 100%;
+  // &.app {
+  //   // prevent pull to refresh
+  //   overscroll-behavior: none;
+  // }
+  overscroll-behavior: auto;
 }
 
 body {
@@ -91,6 +95,9 @@ body {
   &.solid-bg {
     background: var(--solid-dark-bg-color);
   }
+  &.grey-bg {
+    background: var(--p-surface-25);
+  }
   main {
     transition: padding-top var(--p-transition-duration) ease;
     padding-bottom: calc(
@@ -100,6 +107,11 @@ body {
   &.no-bottom-padding {
     main {
       padding-bottom: 0px !important;
+    }
+  }
+  &.hide-footer {
+    footer {
+      display: none !important;
     }
   }
 }
@@ -611,7 +623,7 @@ html.style-mode-dark {
           color: var(--p-red-500);
           border: 2px solid var(--p-button-secondary-focus-ring-color);
           outline-color: var(--p-button-secondary-focus-ring-color);
-          border-radius: 10px;
+          border-radius: var(--p-border-radius-xl);
         }
       }
     }

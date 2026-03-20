@@ -3,7 +3,7 @@ import { getAndSetUserProfile } from "~/utilities/helpers"
 import { useAuth } from "~/composables/useAuth"
 useHead({
   bodyAttrs: {
-    class: "no-bottom-padding hide-bottom-menu background-gradient style-mode-dark",
+    class: "no-bottom-padding hide-bottom-menu",
   },
 })
 
@@ -23,28 +23,31 @@ watch(
       try {
         // Get the current Supabase session
         const { data: sessionData } = await supabase.auth.getSession()
-        
+
         if (sessionData.session) {
           // Convert Supabase session to JWT
-          const jwtResponse = await $fetch('/api/auth/session-to-jwt', {
-            method: 'POST',
+          const jwtResponse = await $fetch("/api/auth/session-to-jwt", {
+            method: "POST",
             body: {
               access_token: sessionData.session.access_token,
               refresh_token: sessionData.session.refresh_token,
-            }
+            },
           })
-          
+
           if (jwtResponse.success && jwtResponse.token) {
             // Set the JWT token in our auth system with refresh token
-            setAuthState(jwtResponse.token, jwtResponse.user, sessionData.session.refresh_token)
+            setAuthState(
+              jwtResponse.token,
+              jwtResponse.user,
+              sessionData.session.refresh_token
+            )
           }
         }
-        
         await nextTick()
         await getAndSetUserProfile()
         navigateTo("/home")
       } catch (error) {
-        console.error('JWT generation failed:', error)
+        console.error("JWT generation failed:", error)
         // Fall back to normal flow
         await nextTick()
         await getAndSetUserProfile()
@@ -65,7 +68,7 @@ watch(
 .loading-holder {
   display: flex;
   position: absolute;
-  height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  height: calc(40vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   width: 100%;
   left: 0;
   right: 0;

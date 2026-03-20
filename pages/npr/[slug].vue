@@ -42,11 +42,15 @@ const {
 
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
-  { label: "Browse", route: "/browse" },
-  {
-    label: storyData.value?.showTitle,
-    route: `/browse/shows/${storyData.value?.meta?.showSlug}`,
-  },
+  ...(storyData.value?.meta?.showSlug
+    ? [
+        { label: "Browse", route: "/browse" },
+        {
+          label: storyData.value?.showTitle,
+          route: `/browse/shows/${storyData.value?.meta?.showSlug}`,
+        },
+      ]
+    : []),
   { label: storyData.value?.title },
 ])
 </script>

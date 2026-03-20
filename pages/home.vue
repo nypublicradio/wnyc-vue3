@@ -43,7 +43,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
+  <div class="home">
     <Html lang="en">
       <Head>
         <Title
@@ -111,13 +111,16 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
-.home-top {
-  .latestNewsHolder {
-    width: 100%;
-    max-width: 100%;
+.home {
+  min-height: 100vh;
+  .home-top {
+    .latestNewsHolder {
+      width: 100%;
+      max-width: 100%;
 
-    @include media(">=lg") {
-      max-width: 300px !important;
+      @include media(">=lg") {
+        max-width: 300px !important;
+      }
     }
   }
 }

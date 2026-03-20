@@ -1,6 +1,13 @@
 <script setup>
 import { useSelectedSavedTab, useIsDarkMode } from "~/composables/states"
 import { getSavedMenuItems } from "~/composables/globals"
+
+useHead({
+  bodyAttrs: {
+    class: "grey-bg",
+  },
+})
+
 const route = useRoute()
 const router = useRouter()
 const routeSlug = ref(route.query.slug)
@@ -104,7 +111,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="saved-page">
+  <div class="saved-page thinContent">
     <Html lang="en">
       <Head>
         <Title
@@ -121,21 +128,11 @@ onMounted(() => {
         />
       </Head>
     </Html>
-    <section class="flex align-items-center justify-content-between">
+    <section class="flex align-items-center justify-content-between md:py-5">
       <h1>Saved</h1>
-      <!-- <Button
-        class="-mr-3 text-sm"
-        label="Add"
-        text
-        plain
-        icon="pi pi-plus"
-        iconPos="right"
-        size="large"
-      ></Button> -->
     </section>
     <div v-if="user">
-      <HorizontalScrollFeature class="items-holder my-3" :data="savedMenuItems">
-        <!-- <div class="flex w-full"> -->
+      <HorizontalScrollFeature class="items-holder mb-3" :data="savedMenuItems">
         <div
           v-for="(item, index) in savedMenuItems"
           class="item-holder item"
@@ -148,7 +145,9 @@ onMounted(() => {
               :label="item.label"
               :aria-label="`${item.label} button`"
               @click="selectMenuItem(item, index)"
-              :severity="selectedMenuItem.value === item.value ? 'primary' : 'secondary'"
+              :severity="
+                selectedMenuItem.value === item.value ? 'primary' : 'secondary'
+              "
             />
           </div>
         </div>
@@ -160,17 +159,21 @@ onMounted(() => {
       </div>
     </div>
     <div v-else>
-      <AccountPromptSideBar :styleMode="handleStyleMode" :bgColor="handleBgColor" />
+      <AccountPromptSideBar
+        :styleMode="handleStyleMode"
+        :bgColor="handleBgColor"
+      />
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .saved-page {
+  min-height: 95vh;
   .items-holder {
     .item-holder {
       .item-btn {
-        min-width: 130px;
+        min-width: 160px;
       }
 
       &.selected .item-btn {

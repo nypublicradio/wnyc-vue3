@@ -1,5 +1,4 @@
 <script setup>
-import FollowIcon from "~/components/icons/FollowIcon.vue"
 const user = useCurrentUser()
 </script>
 <template>
@@ -10,27 +9,14 @@ const user = useCurrentUser()
       headerTitle="Latest From My Followed Shows"
     >
       <template #empty>
-        <div class="empty flex flex-column gap-3 text-center mt-8">
-          <h2>Followed shows will appear here!</h2>
-          <div class="max-w-15rem m-auto">
-            <p class="line-height-3">
-              Use the <strong>follow</strong> button
-              <FollowIcon class="w-2rem -mb-2" />
-            </p>
-            <p class="line-height-3">
-              to follow your favorite shows — the latest episodes will appear here.
-            </p>
-          </div>
-          <Button
-            label="Browse Shows"
-            aria-label="Browse Shows"
-            text
-            severity="secondary"
-            class="underline"
-            size="small"
-            @click="navigateTo('/browse')"
-          />
-        </div>
+        <saved-empty
+          icon="FollowIcon"
+          linkText="Browse Shows"
+          linkRoute="/browse"
+        >
+          Use the <strong>follow</strong> button to follow your favorite shows
+          —the latest episodes will appear here.
+        </saved-empty>
       </template>
       <template #recent-episodes="slotProps">
         <saved-fetch-recent-episodes :show="slotProps.show" />
@@ -70,8 +56,12 @@ const user = useCurrentUser()
     }
     .v-image,
     .v-image-wrapper {
-      width: 40px !important;
-      height: 40px !important;
+      width: 84px !important;
+      height: 84px !important;
+      @include media("<md") {
+        width: 70px !important;
+        height: 70px !important;
+      }
     }
   }
 }

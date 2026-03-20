@@ -190,7 +190,6 @@ export function normalizePerson (person: Record<string, any>): Person {
 export async function normalizeWagtailPage (article: Record<string, any | undefined>): ArticlePage {
   if (typeof article === 'undefined')
     return null
-  //console.log("normalizeWagtailPage", article)
   return Object.assign({}, await normalizePage(article), {
     description: article.description,
     image: article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage ?? article.showArt,
@@ -324,6 +323,7 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
   const showImageUrl = article.showImageUrl || article.show_image_url
 
   return Object.assign({}, await normalizePage(article), {
+    tease: article.description, // OVERRIDE from the normalizePage
     uuid: simplecastId, // Preserve the Simplecast UUID
     showId, // Preserve the show UUID
     showSlug: showId, // Use showId as slug for Simplecast shows
@@ -440,8 +440,8 @@ export async function normalizeSimplecastPage (article: SimplecastArticle): Prom
   const image = getSimplecastImage(article)
   const audioUrl = article.audioFileUrl || article.enclosureUrl
   const bodyText = article.longDescription || article.description
-
   return Promise.resolve(Object.assign({}, normalizePage(article), {
+    tease: article.description, // OVERRIDE from the normalizePage
     uuid: simplecastId,
     showId,
     showSlug: showId,
@@ -464,7 +464,6 @@ export async function normalizeSimplecastPage (article: SimplecastArticle): Prom
       type: article.type || 'episode',
     },
     title: article.title,
-    tease: article.description,
     gallerySlides: undefined,
     legacyId: article.id,
     authors: undefined,

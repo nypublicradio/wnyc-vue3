@@ -51,7 +51,8 @@ import { capacitorIosNotificationSettings } from '@nypublicradio/capacitor-ios-n
 
 // Dynamic import for FirebaseAnalytics to avoid SSR errors
 const loadFirebaseAnalytics = async () => {
-  if (typeof window === 'undefined') return null
+  const isApp = useIsApp()
+  if (typeof window === 'undefined' || !isApp.value) return null
   try {
     const module = await import('@capacitor-firebase/analytics')
     return module.FirebaseAnalytics
@@ -899,13 +900,16 @@ export const saveFavorite = async (
       await deleteFavorite(existingRecord[0], tableArg)
     }
     const source = media?.cmsSource
+
+    const theUrl = media?.url
+
     // format the media object to save
     // the fallbacks take into account if the user is selecting  an item that was fed by the CMS or Supabase
     const uid = user.value?.id
     const cmsSource = source
     const media_id = media?.media_id ?? media?.id
     const slug = thisSlug
-    const url = media?.url ?? media?.link
+    const url = theUrl
     const type = typeArg
     const reading_time = media?.reading_time ?? getReadingTime(media?.rawBody)
     const estimatedDuration = media?.estimatedDuration
@@ -995,11 +999,10 @@ export const getCssVar = (name: string, px = false) => {
 /* centralized function to route to a episode page */
 export const goToEpisodePage = (ep, params, log = true) => {
   const cmsSource = ep.cmsSource || cmsSources.PUBLISHER
-
   // For Simplecast episodes, use UUID in URL path since Simplecast API requires UUIDs
   // For other sources, use slug
-  const identifier = (cmsSource === cmsSources.SIMPLECAST && ep.uuid)
-    ? ep.uuid
+  const identifier = (cmsSource === cmsSources.SIMPLECAST && ep.meta?.simplecastId)
+    ? ep.meta?.simplecastId
     : (ep.meta?.slug ?? ep.slug)
 
   navigateTo({
@@ -1446,3 +1449,11 @@ export const initializeStationList = (stations) => {
   return tempMenuData
 }
 
+// global function to toggle native pull to refresh
+export const toggleNativePullToRefresh = (enable: boolean) => {
+  if (enable) {
+    document.documentElement.style.overscrollBehavior = 'auto'
+  } else {
+    document.documentElement.style.overscrollBehavior = 'none'
+  }
+}

@@ -25,11 +25,7 @@ import {
   masterNotificationChannelsArray,
 } from "~/composables/states.ts"
 import { Preferences } from "@capacitor/preferences"
-import {
-  localUserProfileKey,
-  appMenuOptions,
-  memberCenterLink,
-} from "~/composables/globals"
+import { localUserProfileKey, appMenuOptions } from "~/composables/globals"
 import { updateLiveStream } from "~/composables/data/liveStream"
 import useOneSignal from "~/composables/useOneSignal"
 import { useMembership } from "~/composables/useMembership"
@@ -715,7 +711,7 @@ watch(
   .card {
     height: 100%;
     background: var(--s-box-background-color);
-    border-radius: 10px;
+    border-radius: var(--p-border-radius-xl);
     padding: 2rem 1.5rem;
     @include media("<md") {
       padding: 1rem 1.5rem;

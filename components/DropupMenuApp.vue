@@ -1,6 +1,6 @@
 <script setup>
 import { useSwipe } from "@vueuse/core"
-import VImage from "./VImage.vue"
+import { toggleNativePullToRefresh } from "~/utilities/helpers"
 
 const props = defineProps({
   options: {
@@ -58,7 +58,7 @@ let isDraggingDown = false
 const visibleBottom = ref(false)
 
 // 2way binding to the currentUserProfile on the parent prop v-model
-const vModel = defineModel()
+const vModel = defineModel({ type: [String, Object, Number] })
 
 // prevents the body from scrolling when the dropdown is open
 function preventScrollOnTouch(event) {
@@ -94,12 +94,14 @@ const setPanel = async () => {
   })
   //sets distanceThreshold based on the height of the panel
   distanceThreshold = panel.value.offsetHeight / distanceThresholdDivider
+  toggleNativePullToRefresh(false)
 }
 
 // when the dropdown is closed, unset the panel ref and removes body prevent touch scroll
 const unsetPanel = () => {
   panel.value = null
   removeBodyTouch()
+  toggleNativePullToRefresh(true)
 }
 
 // swipe setup
@@ -376,8 +378,8 @@ defineExpose({
       .p-menu-item {
         position: relative;
         .custom-icon {
-          width: 24px;
-          height: 24px;
+          width: 28px;
+          height: 28px;
           flex: none;
         }
         .p-menu-item-content {

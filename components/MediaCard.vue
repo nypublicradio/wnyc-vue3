@@ -914,11 +914,10 @@ $contentPaddingY: 1.25rem;
   }
   &.is-event {
     @include media("<md") {
-      .image {
-        display: none;
-      }
+      // center the 64x64 date bloc in the 112x112 image <md breakpoint
       .date-block {
-        position: relative !important;
+        top: 24px !important;
+        left: 24px !important;
       }
     }
   }

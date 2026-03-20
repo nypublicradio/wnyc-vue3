@@ -196,9 +196,6 @@ onMounted(() => {
             </template>
           </div>
           <div v-if="status === 'pending' || scStatus === 'pending'">
-            <div class="flex mb-5">
-              <Skeleton height="1.5rem" width="80px" borderRadius="4px" />
-            </div>
             <skeleton-media-card
               v-for="i in 10"
               :key="`sk1-${i}`"
@@ -209,7 +206,7 @@ onMounted(() => {
               :showBg="true"
               :showBgMobile="false"
               showTease
-              class="mb-5"
+              class="my-5"
             />
           </div>
           <!-- v-if="meta?.pagination?.count < meta?.totalCount" -->

@@ -8,7 +8,7 @@ import {
   useCurrentUserProfile,
   useAppDownloadLink,
 } from "~/composables/states.ts"
-
+import { useToast } from "primevue/usetoast"
 import { memberCenterLink } from "~/composables/globals.ts"
 
 const props = defineProps({
@@ -23,7 +23,7 @@ const isNetworkConnected = useIsNetworkConnected()
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
 const appDownloadLink = useAppDownloadLink()
-
+const toast = useToast()
 // handle when the logo is clicked
 const handleLogoClick = () => {
   trackClickEvent("Click Tracking - Header WNYC Logo", "Header", "WNYC Logo")
