@@ -152,6 +152,18 @@ async function fetchNavigationDataDirect() {
         }
     } catch (fetchError) {
         console.error("Failed to fetch navigation data directly:", fetchError)
+        // Send error to Sentry
+        if (import.meta.client) {
+            const { $sentry } = useNuxtApp()
+            $sentry?.captureException(fetchError, {
+                contexts: {
+                    fetchContext: {
+                        function: 'fetchNavigationDataDirect',
+                        apis: ['HEADER_NAVIGATION_API', 'SYSTEM_MESSAGES_API', 'BFF_URL', 'AVIARY_BASE_API']
+                    }
+                }
+            })
+        }
         return {
             data: {
                 wagtailResponse: null,
@@ -210,6 +222,18 @@ export default async function useNavigationData () {
                 ])
             } catch (err) {
                 // Timeout occurred, proceed with empty navigation
+                if (import.meta.client) {
+                    const { $sentry } = useNuxtApp()
+                    $sentry?.captureException(err, {
+                        contexts: {
+                            fetchContext: {
+                                function: 'useNavigationData',
+                                mode: import.meta.env.SSR ? 'ssr' : 'client',
+                                isApp: isApp.value
+                            }
+                        }
+                    })
+                }
             }
         } else if (!isFetching) {
             // Start fetch and set guard
@@ -326,6 +350,19 @@ export default async function useNavigationData () {
 
                 } catch (fetchError) {
                     console.error("Failed to fetch or process navigation data:", fetchError)
+                    // Send error to Sentry
+                    if (import.meta.client) {
+                        const { $sentry } = useNuxtApp()
+                        $sentry?.captureException(fetchError, {
+                            contexts: {
+                                navigationContext: {
+                                    function: 'useNavigationData',
+                                    mode: import.meta.env.SSR ? 'ssr' : 'client',
+                                    isApp: isApp.value
+                                }
+                            }
+                        })
+                    }
                     headerNavigationData.value = []
                     allNavigationData.value = []
                     footerNavigationData.value = []
