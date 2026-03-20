@@ -78,7 +78,10 @@ const formattedPrice = computed(() => {
 // handle event CTA URL
 const handleEventCta = () => {
   if (!eventCtaUrl.value) return
-  navigateTo(eventCtaUrl.value, { external: true })
+  navigateTo(eventCtaUrl.value, {
+    external: true,
+    open: { target: '_blank' }
+  })
 }
 
 const otherEvents = computed(() => {
@@ -116,8 +119,12 @@ const breadcrumbs = computed(() => [
             <div class="event-hero__layout">
               <div class="event-hero__header">
                 <div class="event-hero__datebox" v-if="eventDayNumber">
-                  <span class="event-hero__datebox-day">{{ eventDayNumber }}</span>
-                  <span class="event-hero__datebox-month">{{ eventDateShort }}</span>
+                  <span class="event-hero__datebox-day">{{
+                    eventDayNumber
+                  }}</span>
+                  <span class="event-hero__datebox-month">{{
+                    eventDateShort
+                  }}</span>
                 </div>
                 <div class="event-hero__titlegroup">
                   <h1
@@ -157,10 +164,30 @@ const breadcrumbs = computed(() => [
             </div>
           </template>
           <template v-else>
-            <Skeleton class="mb-2" height="18px" width="120px" borderRadius="8px" />
-            <Skeleton class="mb-3" height="48px" width="85%" borderRadius="16px" />
-            <Skeleton class="mb-2" height="16px" width="70%" borderRadius="8px" />
-            <Skeleton class="mb-2" height="16px" width="60%" borderRadius="8px" />
+            <Skeleton
+              class="mb-2"
+              height="18px"
+              width="120px"
+              borderRadius="8px"
+            />
+            <Skeleton
+              class="mb-3"
+              height="48px"
+              width="85%"
+              borderRadius="16px"
+            />
+            <Skeleton
+              class="mb-2"
+              height="16px"
+              width="70%"
+              borderRadius="8px"
+            />
+            <Skeleton
+              class="mb-2"
+              height="16px"
+              width="60%"
+              borderRadius="8px"
+            />
           </template>
         </div>
       </section>
@@ -223,7 +250,9 @@ const breadcrumbs = computed(() => [
 
               <div v-if="locationName" class="event-rail__section">
                 <h3>Location</h3>
-                <p v-if="venueName" class="event-rail__value">{{ venueName }}</p>
+                <p v-if="venueName" class="event-rail__value">
+                  {{ venueName }}
+                </p>
                 <p v-if="eventLocation" class="event-rail__address">
                   {{ eventLocation }}
                 </p>
