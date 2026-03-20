@@ -291,7 +291,7 @@ onUnmounted(() => {
           </div>
         </div>
         <div class="col-fixed hidden lg:block w-20rem">
-          <ShowSummary :show="show?.show" />
+          <ShowSummary :show="show" />
         </div>
       </div>
     </section>
