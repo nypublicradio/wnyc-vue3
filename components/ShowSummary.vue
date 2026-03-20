@@ -16,7 +16,6 @@ const { show } = toRefs(props)
 const { getEpisodeFallBackImage } = useFallbackImages()
 
 // Use computed properties to maintain reactivity
-
 const showImage = computed(
   () =>
     show.value?.image ||
@@ -60,9 +59,9 @@ const handleShowClick = () => {
     <VStreamfield
       :streamfieldBlocks="aboutContent"
       :article="
-        !aboutContent
-          ? { body: props.show?.tease || props.show?.description }
-          : null
+        aboutContent.length > 0
+          ? null
+          : { body: show?.tease || show?.description }
       "
     />
     <story-htlAd

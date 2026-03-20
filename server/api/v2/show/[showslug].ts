@@ -94,7 +94,7 @@ const getEpisodes = async (slug: string, showImage: string, type?: string, pageS
 }
 
 // gets the publisher show data
-const getShow = async (slug: string) => {
+const getShow = async (slug: string, isSlugOnly?: boolean) => {
     // Check if this is a Simplecast UUID
     const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug)
 
@@ -119,15 +119,20 @@ const getShow = async (slug: string) => {
             const res = await axios(option)
             const showData = humps.camelizeKeys(res.data)
             return {
-                id: showData.id,
                 title: showData.title,
                 slug: showData.site.subdomain || showData.slug || slug,
-                description: showData.description,
-                tease: showData.description,
-                image: showData.imageUrl ? { url: showData.imageUrl, template: templatizeImageUrl(showData.imageUrl) } : undefined,
                 cmsSource: cmsSources.SIMPLECAST,
-                type: mediaTypes.SHOW,
-                url: showData.href || showData.websiteUrl,
+                ...(!isSlugOnly
+                    ? [
+                        {
+                            id: showData.id,
+                            description: showData.description,
+                            tease: showData.description,
+                            image: showData.imageUrl ? { url: showData.imageUrl, template: templatizeImageUrl(showData.imageUrl) } : undefined,
+                            type: mediaTypes.SHOW,
+                            url: showData.href || showData.websiteUrl,
+                        }
+                    ] : []),
             }
         } catch (e: any) {
             console.error('[Simplecast Show] Error fetching show:', e?.response?.status, e?.response?.statusText, e?.message)
@@ -202,10 +207,15 @@ export default defineEventHandler(async (event) => {
     const query = getQuery(event)
     const page: number | undefined = Array.isArray(query.page) ? query.page[0] : query.page
     const pageSize: string | undefined = query.pageSize?.toString() ?? '10'
+
+    const slugOnly: string | undefined = query.slugOnly as string | undefined
+
+    const isSlugOnly = slugOnly === 'true'
+
     if (slug) {
         let episodes
         // Get show details
-        const show = await getShow(slug)
+        const show = await getShow(slug, isSlugOnly)
 
         if (!show) {
             return null

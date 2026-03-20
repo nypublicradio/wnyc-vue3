@@ -64,7 +64,7 @@ const breadcrumbs = computed(() => [
         <Meta name="twitter:title" :content="`${storyData?.title} | WNYC`" />
       </Head>
     </Html>
-    <FetchError v-if="error || !storyData" />
+    <FetchError v-if="error" />
     <template v-else>
       <section class="flex align-items-center">
         <Breadcrumbs :items="breadcrumbs" />

@@ -88,7 +88,7 @@ const getSimplecastEpisodes = async (podcastId: string, offset = 0, limit = 10) 
             showTitle = episodes[0].podcast.title
             showImageUrl = episodes[0].podcast.imageUrl
         }
-
+        //console.log('episodes', episodes[2])
         // Normalize each episode using the existing normalizer
         const normalizedEpisodes = await Promise.all(
             episodes.map(async (episode: any) => {
@@ -104,7 +104,7 @@ const getSimplecastEpisodes = async (podcastId: string, offset = 0, limit = 10) 
                 return await normalizeSimplecastListItem(enhancedEpisode)
             })
         )
-
+        //console.log('normalizedEpisodes', normalizedEpisodes)
         // Calculate pagination metadata
         // Note: Simplecast doesn't return total count in the response,
         // so we can only provide limited pagination info

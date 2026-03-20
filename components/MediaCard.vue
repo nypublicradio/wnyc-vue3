@@ -634,7 +634,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
             >
               <div class="w-full md:w-auto">
                 <EventButton
-                  :file="props.data?.name"
+                  v-if="eventData?.eventCtaUrl"
                   class="z-2"
                   @on-click="handleClick"
                   buttonClass="px-5 md:px-3"

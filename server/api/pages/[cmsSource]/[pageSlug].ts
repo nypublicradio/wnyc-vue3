@@ -29,7 +29,6 @@ const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean) => {
             'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
         }
     }
-
     try {
         const res = await axios(options)
         const resData = humps.camelizeKeys(res.data)
