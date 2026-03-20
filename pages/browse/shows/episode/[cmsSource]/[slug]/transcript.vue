@@ -118,21 +118,13 @@ const getEpisodeImage = () => {
   return epImage
 }
 
-const {
-  data: showSlug,
-  status: showSlugStatus,
-  error: showSlugError,
-} = useLazyFetch(() =>
+const { data: showSlug } = useLazyFetch(() =>
   theSlug.value
     ? `${config.public.BFF_URL}/api/v2/show/${theSlug.value}?slugOnly=true`
     : null
 )
 
-const {
-  data: show,
-  status: showStatus,
-  error: showError,
-} = useLazyFetch(() =>
+const { data: show } = useLazyFetch(() =>
   showSlug.value?.show?.slug
     ? `${config.public.BFF_URL}/api/pages/wagtail/${showSlug.value?.show?.slug}?showOnly=true`
     : null
