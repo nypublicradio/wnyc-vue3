@@ -4,7 +4,6 @@ import { useTopStories } from "~/composables/useTopStories"
 const { topStories } = useTopStories()
 
 const route = useRoute()
-const config = useRuntimeConfig()
 
 const storySource = "WNYC"
 

@@ -10,19 +10,18 @@ useHead({
   },
 })
 
-const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
 const isApp = useIsApp()
 
 const { data: latestNewsUpdatesData, error: error2 } = useLazyFetch(
-  `/api/homepagelatestnewsupdates`
+  '/api/homepagelatestnewsupdates'
 )
 
 const {
   data: pagedata,
   error,
   status,
-} = useLazyFetch(`/api/homepagecuration`)
+} = useLazyFetch('/api/homepagecuration')
 
 definePageMeta({
   layout: "default",

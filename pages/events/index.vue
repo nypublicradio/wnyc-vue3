@@ -31,7 +31,18 @@ const { data: events, status, error } = useFetch(
         content_group: "events",
       })
     },
-    onResponseError() {
+    onResponseError({ error }) {
+      // Send error to Sentry
+      const { $sentry } = useNuxtApp()
+      $sentry?.captureException(error, {
+        contexts: {
+          eventContext: {
+            function: 'useFetch',
+            endpoint: '/api/events/list',
+            action: 'initial_load'
+          }
+        }
+      })
       toast.add({
         severity: "error",
         summary: "We are having a problem loading these events. Please try again later.",
@@ -84,6 +95,18 @@ const loadMore = async () => {
     eventList.value = [...eventList.value, ...moreEvents.events]
   } catch (e) {
     pendingMore.value = false
+    // Send error to Sentry
+    const { $sentry } = useNuxtApp()
+    $sentry?.captureException(e, {
+      contexts: {
+        eventContext: {
+          function: 'loadMore',
+          endpoint: `${config.public.BFF_URL}/api/events/list`,
+          offset: nextOffset,
+          limit: limit.value
+        }
+      }
+    })
     toast.add({
       severity: "error",
       summary: "We are having a problem loading more events. Please try again later.",
