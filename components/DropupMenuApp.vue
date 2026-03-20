@@ -378,8 +378,8 @@ defineExpose({
       .p-menu-item {
         position: relative;
         .custom-icon {
-          width: 24px;
-          height: 24px;
+          width: 28px;
+          height: 28px;
           flex: none;
         }
         .p-menu-item-content {

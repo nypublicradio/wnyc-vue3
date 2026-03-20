@@ -111,8 +111,6 @@ watch(
           <Breadcrumbs :items="breadcrumbs" />
         </div>
       </section>
-      <!-- <pre>{{ show }}</pre>
-    <pre>{{ episodeData }}</pre> -->
       <EpisodeTemplate
         :pending="status !== 'success'"
         :episodeData="episodeData"

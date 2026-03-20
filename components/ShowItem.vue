@@ -98,7 +98,7 @@ const getDotMenuItems = (bucketItem) => {
 
 <template>
   <div
-    class="browse-item flex justify-content-between align-items-center p-ripple cursor-pointer"
+    class="show-item flex justify-content-between align-items-center p-ripple cursor-pointer"
     :class="props.rootClass"
     v-ripple
     v-if="props.data"
@@ -164,8 +164,3 @@ const getDotMenuItems = (bucketItem) => {
     <skeleton-show-item />
   </div>
 </template>
-
-<style lang="scss" scoped>
-.browse-item {
-}
-</style>
