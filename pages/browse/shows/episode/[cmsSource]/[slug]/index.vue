@@ -60,17 +60,13 @@ const theSlug = computed(
     episodeData.value?.headers?.brand?.slug
 )
 
-const { data: showSlug, error: showSlugError } = useLazyFetch(() =>
+const { data: showSlug } = useLazyFetch(() =>
   theSlug.value
     ? `${config.public.BFF_URL}/api/v2/show/${theSlug.value}?slugOnly=true`
     : null
 )
 
-const {
-  data: show,
-  status: showStatus,
-  error: showError,
-} = useLazyFetch(() =>
+const { data: show, status: showStatus } = useLazyFetch(() =>
   showSlug.value?.show?.slug
     ? `${config.public.BFF_URL}/api/pages/wagtail/${showSlug.value?.show?.slug}?showOnly=true`
     : null
