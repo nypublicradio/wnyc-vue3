@@ -29,7 +29,7 @@ const { saveScrollPosition, restoreScrollPosition } = useManageScrollPosition()
 const settingsSideBarBrowserRef = ref(null)
 
 let swipe = null
-
+// initialize swipe event on the settings sidebar browser
 const initSettingsSideBarBrowserSwipe = () => {
   // PrimeVue components like Drawer expose their root DOM element via the `.container` property on the instance.
   const target = settingsSideBarBrowserRef.value?.container
@@ -45,7 +45,7 @@ const initSettingsSideBarBrowserSwipe = () => {
     },
   })
 }
-
+// destroy swipe event
 const destroySettingsSideBarBrowserSwipe = () => {
   if (swipe) {
     swipe.stop()
