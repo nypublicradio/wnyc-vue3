@@ -12,7 +12,9 @@ import {
   useSleepTimerSideBar,
 } from "~/composables/states"
 import useManageScrollPosition from "~/composables/useManageScrollPosition"
-
+import { useSwipe } from "@vueuse/core"
+import { useBreakpoints } from "~/composables/useBreakpoints"
+const { breakpoint } = useBreakpoints()
 const settingsSideBar = useSettingSideBar()
 const settingsSideBarBrowser = useSettingsSideBarBrowser()
 const loginSideBar = useLoginSideBar()
@@ -23,11 +25,50 @@ const accountPromptSideBar = useAccountPromptSideBar()
 const accountDeleteSideBar = useAccountDeleteSideBar()
 const sleepTimerSideBar = useSleepTimerSideBar()
 const { saveScrollPosition, restoreScrollPosition } = useManageScrollPosition()
+
+const settingsSideBarBrowserRef = ref(null)
+
+let swipe = null
+
+const initSettingsSideBarBrowserSwipe = () => {
+  // PrimeVue components like Drawer expose their root DOM element via the `.container` property on the instance.
+  const target = settingsSideBarBrowserRef.value?.container
+
+  // swipe setup
+  swipe = useSwipe(target, {
+    passive: true,
+    threshold: 50, // Increased threshold for a less sensitive, more intentful swipe
+    onSwipeEnd(e, direction) {
+      if (direction === "right") {
+        settingsSideBarBrowser.value = false
+      }
+    },
+  })
+}
+
+const destroySettingsSideBarBrowserSwipe = () => {
+  if (swipe) {
+    swipe.stop()
+    swipe = null
+  }
+}
+
+watch(settingsSideBarBrowser, async (newVal) => {
+  if (newVal) {
+    if (breakpoint("<lg")) {
+      await nextTick()
+      initSettingsSideBarBrowserSwipe()
+    }
+  } else {
+    destroySettingsSideBarBrowserSwipe()
+  }
+})
 </script>
 
 <template>
   <div class="sidebars">
     <Drawer
+      ref="settingsSideBarBrowserRef"
       v-model:visible="settingsSideBarBrowser"
       :baseZIndex="10000"
       position="right"
