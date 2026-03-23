@@ -122,6 +122,13 @@ const handleAddToFavorites = () => {
     isFavorited.value = !isFavorited.value
   }
 }
+
+const isThisShowPlaying = computed(() => {
+  return (
+    isEpisodePlaying.value &&
+    currentEpisode.value?.showTitle === props.show.title
+  )
+})
 </script>
 
 
@@ -187,7 +194,7 @@ const handleAddToFavorites = () => {
                   @click="togglePlayMostRecentEpisode"
                 >
                   <template #icon>
-                    <PauseIcon v-if="isEpisodePlaying" />
+                    <PauseIcon v-if="isThisShowPlaying" />
                     <PlayIcon v-else />
                   </template>
                 </Button>
@@ -291,7 +298,7 @@ const handleAddToFavorites = () => {
             @click="togglePlayMostRecentEpisode"
           >
             <template #icon>
-              <PauseIcon v-if="isEpisodePlaying" />
+              <PauseIcon v-if="isThisShowPlaying" />
               <PlayIcon v-else />
             </template>
           </Button>
