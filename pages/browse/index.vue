@@ -4,14 +4,14 @@ import { useFuse } from "@vueuse/integrations/useFuse"
 import { goToShowPage } from "~/utilities/helpers"
 import { useBreakpoints } from "~/composables/useBreakpoints"
 import { useIsApp } from "~/composables/states"
-
+const config = useRuntimeConfig()
 const isApp = useIsApp()
 const route = useRoute()
 const {
   data: shows,
   status,
   error,
-} = useLazyFetch('/api/v3/shows')
+} = useLazyFetch(`/api/v3/shows`)
 
 const router = useRouter()
 const searchFieldValue = ref("")
