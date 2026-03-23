@@ -954,13 +954,11 @@ export const saveRecentlyPlayed = (media: object, typeArg = media.type) => {
 export const prepForPlayer = (item) => {
   const fileValue = item.file?.includes("blob:")
     ? item.file : item.audio || item.hls
-
-  const theImage = item.headers?.brand?.logoImage ??
-    item.headers?.brand?.logoImage ??
-    item.showImage ??
-    item.image ??
+  const theImage = item.headers?.brand?.logoImage?.url ||
+    item.headers?.brand?.logoImage ||
+    item.showImage ||
+    item.image ||
     item.listingImage
-
   return {
     ...item,
     file: fileValue,
