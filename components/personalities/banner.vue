@@ -37,6 +37,15 @@ const bannerData = [
     text: "/personalities/otm-text.webp",
     to: `${mediaTypeRoutes.show}on-the-media`,
   },
+  {
+    id: "nycnow",
+    name: "NYC Now",
+    photo: "/personalities/nycnow.webp",
+    bg: "/personalities/nycnow-bg.webp",
+    bgSm: "/personalities/nycnow-bg-sm.webp",
+    text: "/personalities/nycnow-text.webp",
+    to: `${mediaTypeRoutes.show}nyc-now`,
+  },
 ]
 
 // gsap looping animation cross fade code
@@ -185,6 +194,9 @@ onUnmounted(() => {
               right: calc(15.48vw - 115px);
             }
             &.aoi {
+              right: calc(15.48vw - 130px);
+            }
+            &.nycnow {
               right: calc(15.48vw - 130px);
             }
           }
