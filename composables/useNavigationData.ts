@@ -73,6 +73,10 @@ const normalizeWagtailMenuData = (menuData = []) => {
 
 // normalize for menu function for station data
 const normalizeStationsMenuData = (menuData = []) => {
+    if (!menuData || !Array.isArray(menuData)) {
+        console.warn('[normalizeStationsMenuData] menuData is not an array:', menuData)
+        return []
+    }
     return menuData.map((item) => ({
         label: item.station,
         url: `/live?slug=${item.slug}`,
@@ -302,9 +306,13 @@ export default async function useNavigationData () {
             // IMPORTANT: Create a deep clone to avoid modifying the imported `allMenuData` object directly.
             let workingHeaderNav = resolveUrlFunctions(allMenuData.map(item => ({ ...item })), appDownloadLink.value)
             // Normalize and merge Stations
+            console.log('[useNavigationData] stationsResponse:', bffData.stationsResponse)
             const stationsItems = normalizeStationsMenuData(bffData.stationsResponse)
+            console.log('[useNavigationData] normalized stationsItems:', stationsItems)
+            console.log('[useNavigationData] workingHeaderNav[0]:', workingHeaderNav[0])
             if (workingHeaderNav[0]?.items?.[0]) {
                 workingHeaderNav[0].items[0].splice(0, 0, ...stationsItems)
+                console.log('[useNavigationData] After splice, workingHeaderNav[0].items[0]:', workingHeaderNav[0].items[0])
             }
 
             // Normalize and merge Shows
