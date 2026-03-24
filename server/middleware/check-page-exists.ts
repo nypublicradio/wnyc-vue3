@@ -17,7 +17,17 @@ export default defineEventHandler(async (event) => {
     path.includes('.') || // Files with extensions
     path === '/' || // Home page
     path === '/home' || // Common home page alias
-    path.startsWith('/__') // Nuxt internals
+    path.startsWith('/__') || // Nuxt internals
+    // Client-only routes that don't exist in CMS
+    path === '/live' ||
+    path === '/dashboard' ||
+    path === '/forgot-password' ||
+    path === '/signup' ||
+    path === '/saved' ||
+    path === '/login' ||
+    path === '/confirm' ||
+    path === '/mobile' ||
+    path === '/preview'
   ) {
     return
   }

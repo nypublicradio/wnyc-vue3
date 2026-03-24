@@ -71,6 +71,7 @@ services:
       - SIMPLECAST_URL=$SIMPLECAST_URL
       - SIMPLECAST_API_KEY=$SIMPLECAST_API_KEY
       - FEATURED_SHOWS_PAGE_ID=$FEATURED_SHOWS_PAGE_ID
+      - NUXT_SSR=$NUXT_SSR
     ports:
       - 3000:3000
     restart: "unless-stopped"
