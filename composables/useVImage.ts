@@ -100,6 +100,8 @@ export function useVImage () {
             NPRIMAGEDOMAINSOURCES.some(domain => url.includes(domain))
         ) {
             imgUrl = resizeNprImageUrl(url, w, q, format)
+        } else if (typeof url === "object") {
+            imgUrl = url?.file || url?.url || url
         } else {
             imgUrl = url
         }

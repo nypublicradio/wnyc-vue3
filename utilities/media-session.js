@@ -30,7 +30,7 @@ const generateMediaSessionArtworkArray = async (image) => {
     imageSizes.forEach(size => {
         arr.push({
             src: imageSolver(image, { w: size, h: size, q: 80 }),
-            sizes: `${size}x${size}`,
+            sizes: `${ size }x${ size }`,
             type: format
         })
     })
@@ -45,12 +45,11 @@ export const initMediaSession = async (episode/* , skipTime = PLAYER_SKIP_TIME *
     const isNetworkConnected = useIsNetworkConnected()
     const isLiveStream = useIsLiveStream()
     const isApp = useIsApp()
-
     currentEpisode = episode
 
     // if this episode has a directory image, that means it has been downloaded, so to use the downloaded im age in the media session, otherwise use the image from the API response as normal
     // the "player_image" is generated from the prepForPlayer helper function
-    const artworkImageArray = currentEpisode?.directoryImage?.uri & !isNetworkConnected.value ? [{ src: currentEpisode.directoryImage.uri }] : await generateMediaSessionArtworkArray(currentEpisode.player_image?.template || currentEpisode.image?.template || FALLBACKIMAGE)
+    const artworkImageArray = currentEpisode?.directoryImage?.uri && !isNetworkConnected.value ? [{ src: currentEpisode.directoryImage.uri }] : await generateMediaSessionArtworkArray(currentEpisode.player_image?.template || currentEpisode.player_image || currentEpisode.image?.template || currentEpisode.image || FALLBACKIMAGE)
 
     if (isApp.value) {
 
