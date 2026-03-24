@@ -16,7 +16,7 @@ const fetchMimeType = async (imageUrl) => {
     try {
         const response = await axios(imageUrl, { method: 'HEAD' }) // Use 'HEAD' to avoid downloading the image
         return response.headers["content-type"] || defaultMimeType
-    } catch (error) {
+    } catch {
         return defaultMimeType
     }
 }
