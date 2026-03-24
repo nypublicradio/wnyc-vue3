@@ -142,7 +142,7 @@ const allMenuData = [
                 },
                 {
                     label: "Get the App",
-                    url: () => useAppDownloadLink().value
+                    url: "__USE_APP_DOWNLOAD_LINK__"
                 },
                 {
                     label: "Careers",
@@ -220,9 +220,7 @@ const allMenuData = [
                     label: "Log out",
                     class: "logout",
                     url: "/home",
-                    command: () => {
-                        logOutUser()
-                    },
+                    command: "__LOGOUT_COMMAND__",
                 },
             ],
         ],

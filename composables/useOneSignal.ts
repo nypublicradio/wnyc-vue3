@@ -20,7 +20,7 @@ import {
   useIsApp,
   useGlobalToast,
   useIsNetworkConnected,
-  masterNotificationChannelsArray,
+  useMasterNotificationChannelsArray,
   getMasterNotificationChannels
 } from "~/composables/states"
 import {
@@ -43,6 +43,7 @@ export default function useOneSignal() {
   let oneSignalId: string = null
 
   const isApp = useIsApp()
+  const masterNotificationChannelsArray = useMasterNotificationChannelsArray()
 
   // toggle users notifications channel tags
   const toggleOneSignalUserTag = async (channelKey: string, value: boolean) => {
@@ -53,7 +54,7 @@ export default function useOneSignal() {
   }
 
   // function to handle the click actions of the notifications
-  const handleAppNotificationUrlOpen = async (event) => {
+  const handleAppNotificationUrlOpen = (event) => {
     const url = event.result?.url
     const action = event.result?.actionId
     const settingSideBar = useSettingSideBar()
@@ -453,6 +454,8 @@ export default function useOneSignal() {
   // function to log in and manage the user in OneSignal with supabase data
   async function OneSignalLogin() {
     if (!isApp.value) return
+    const OneSignal = await loadOneSignal()
+    if (!OneSignal) return
     const currentUser = useCurrentUser()
     const currentUserProfile = useCurrentUserProfile()
 
@@ -479,6 +482,8 @@ export default function useOneSignal() {
 
   // get current tags
   const getUserTags = async () => {
+    const OneSignal = await loadOneSignal()
+    if (!OneSignal) return null
     const currentUser = useCurrentUser()
     if (currentUser.value) {
       const tags = await OneSignal.User.getTags()
@@ -491,6 +496,8 @@ export default function useOneSignal() {
   // function to log out the user in OneSignal
   async function logout() {
     if (!isApp.value) return
+    const OneSignal = await loadOneSignal()
+    if (!OneSignal) return
     await OneSignal.logout()
   }
 

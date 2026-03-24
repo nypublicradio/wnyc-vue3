@@ -36,7 +36,15 @@ export default defineNuxtPlugin((nuxtApp) => {
       'NetworkError when attempting to fetch resource.',
       'Load failed',
     ],
-    tracePropagationTargets: ['cms.demo.nypr.digital', 'api.demo.nypr.digital', 'cms.prod.nypr.digital', 'api.prod.nypr.digital', 'api.wnyc.org', 'www.wnyc.org'],
+    // Only add Sentry tracing headers to our own domains that support it
+    // External CMS/API domains don't allow sentry-trace header in CORS
+    tracePropagationTargets: [
+      'demo.wnyc.org',
+      'www.wnyc.org',
+      'native-app.wnyc.org',
+      'demo.native-app.wnyc.org',
+      'local.dev.nypr.digital',
+    ],
     maxValueLength: 1000,
     trackComponents: true,
     timeout: 2000,

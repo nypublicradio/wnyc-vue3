@@ -50,7 +50,7 @@ const isApp = useIsApp()
 
 // Only initialize OneSignal on client-side to avoid SSR errors
 let initOneSignal: any, notificationPermissionSync: any, handleAppUrlOpen: any
-if (process.client) {
+if (import.meta.client) {
   const oneSignal = useOneSignal()
   initOneSignal = oneSignal.initOneSignal
   notificationPermissionSync = oneSignal.notificationPermissionSync

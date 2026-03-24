@@ -37,7 +37,7 @@ const fetchImageMimeType = async (imageUrl) => {
     try {
         const response = await axios.get(imageUrl, { responseType: 'arraybuffer' })
         return response.headers['content-type']
-    } catch (error) {
+    } catch {
         return 'image/jpeg'
     }
 }
@@ -174,6 +174,8 @@ export const updateFileSystem = async () => {
 
 // handle downloading a file to the desktop
 const downloadFileToDesktop = async (url: string, filename: string) => {
+    if (!import.meta.client) return
+    
     const globalToast = useGlobalToast()
     globalToast.value = {
         severity: "info",
@@ -540,5 +542,4 @@ export const formatFileSize = (bytes: number, decimals = 2) => {
 
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
 }
-
 
