@@ -13,6 +13,7 @@ import {
   useSleepTimerRunning,
   useIsApp,
 } from "~/composables/states"
+import { mediaTypeRoutes } from "~/composables/globals"
 import useSleepTimer from "~/composables/useSleepTimer"
 import { fetchAndStoreMp3, isAlreadyDownloaded } from "~/utilities/file-system"
 
@@ -282,16 +283,42 @@ const onMenuChange = (e) => {
 }
 
 // handles the click on the bottom fixed footer
-const moreFromClick = () => {
+const moreFromClick = async () => {
   const title = currentEpisode.value.showTitle || currentEpisode.value.title
-  const slug = currentEpisode.value.showSlug || currentEpisode.value.show
+  const slug =
+    currentEpisode.value.showSlug ||
+    currentEpisode.value.meta?.showSlug ||
+    currentEpisode.value.showId ||
+    currentEpisode.value.show
+  let finalSlug = slug
+  // detect if the slug is a uuid
+  const isUuid =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug)
+  if (isUuid) {
+    try {
+      const showSlug = await $fetch(
+        `${config.public.BFF_URL}/api/v2/show/${slug}?slugOnly=true`
+      )
+      finalSlug = showSlug.show.slug
+    } catch (error) {
+      globalToast.value = {
+        severity: "error",
+        summary:
+          "We are having a problem loading the show page. Please try again later.",
+        life: 6000,
+        closable: true,
+      }
+      console.error(`Error fetching show details in moreFromClick: ${error}`)
+      return
+    }
+  }
   trackClickEvent(
     `Click Tracking - Expanded Audio Player More from ${title}`,
     "Expanded Audio Player",
     title
   )
   emit("close-panel")
-  navigateTo(`/browse/shows/${slug}`)
+  navigateTo(`${mediaTypeRoutes.show}${finalSlug}`)
 }
 </script>
 
@@ -486,7 +513,12 @@ const moreFromClick = () => {
     </div>
     <div
       ref="expandedFooterRef"
-      v-if="currentEpisode.showSlug || currentEpisode.show"
+      v-if="
+        !isLiveStream &&
+        (currentEpisode.showSlug ||
+          currentEpisode.meta?.showSlug ||
+          currentEpisode.show)
+      "
       class="expanded-footer"
     >
       <section class="pb-2">
