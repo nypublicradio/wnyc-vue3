@@ -242,11 +242,7 @@ export default async function useNavigationData () {
                 try {
                     let nData, error, status
                     
-                    // Determine if we're running in static/app mode (Capacitor)
-                    // In static builds, there's no server API available, so we fetch directly
-                    const isStaticMode = import.meta.client && !import.meta.env.SSR
-                    
-                    if (process.server) {
+                    if (import.meta.server) {
                         // Server-side: use $fetch to avoid HTTP requests (prevents circular dependencies during SSR/health checks)
                         try {
                             const serverData = await $fetch('/api/navigation')
@@ -258,8 +254,8 @@ export default async function useNavigationData () {
                             error = { value: err }
                             status = { value: 'error' }
                         }
-                    } else if (isStaticMode || isApp.value) {
-                        // App/Static mode: fetch directly from external APIs (no server endpoint available)
+                    } else if (isApp.value) {
+                        // App mode (Capacitor): fetch directly from external APIs (no server endpoint available)
                         try {
                             const directData = await fetchNavigationDataDirect()
                             nData = { value: directData }

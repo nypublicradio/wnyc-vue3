@@ -69,12 +69,9 @@ export default defineNuxtConfig({
       // Ignore client-only routes that don't work with SSR
       ignore: [
         '/dashboard',
-        '/live',
-        '/archives/collections',
         '/forgot-password',
         '/signup',
         '/saved',
-        '/browse/browse-topic',
         '/login',
         '/confirm',
         '/mobile',

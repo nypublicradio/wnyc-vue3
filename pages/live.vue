@@ -98,7 +98,7 @@ onUnmounted(() => {
     <Html lang="en">
       <Head>
         <Title
-          >Listen Live | WNYC | New York Public Radio, Podcasts, Live Streaming - MTV
+          >Listen Live | WNYC | New York Public Radio, Podcasts, Live Streaming
           Radio, News</Title
         >
         <Meta
