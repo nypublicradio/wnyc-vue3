@@ -288,6 +288,7 @@ const moreFromClick = async () => {
   const slug =
     currentEpisode.value.showSlug ||
     currentEpisode.value.meta?.showSlug ||
+    currentEpisode.value.showId ||
     currentEpisode.value.show
   let finalSlug = slug
   // detect if the slug is a uuid
@@ -513,9 +514,10 @@ const moreFromClick = async () => {
     <div
       ref="expandedFooterRef"
       v-if="
-        currentEpisode.showSlug ||
-        currentEpisode.meta?.showSlug ||
-        currentEpisode.show
+        !isLiveStream &&
+        (currentEpisode.showSlug ||
+          currentEpisode.meta?.showSlug ||
+          currentEpisode.show)
       "
       class="expanded-footer"
     >
