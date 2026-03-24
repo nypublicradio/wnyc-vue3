@@ -2,6 +2,11 @@
 @import './transitions';
 @import './cssvars';
 @import './v-cssvars/_cssvars';
+@import './typography-classes';
+
+.truncate {
+  @include truncate();
+}
 
 /* Utility for full-width elements that respect scrollbar */
 .full-width {
