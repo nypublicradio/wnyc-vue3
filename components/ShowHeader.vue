@@ -17,6 +17,7 @@ import {
   useAppDownloadLink,
   useCurrentEpisodeHolder,
   useCurrentEpisode,
+  useIsLiveStream,
 } from "~/composables/states"
 //import { mediaTypeRoutes, mediaTypes } from "~/composables/globals"
 import useSleepTimer from "~/composables/useSleepTimer"
@@ -67,6 +68,7 @@ const appDownloadLink = useAppDownloadLink()
 const isApp = useIsApp()
 const user = useCurrentUser()
 const isEpisodePlaying = useIsEpisodePlaying()
+const isLiveStream = useIsLiveStream()
 const { getEpisodeFallBackImage } = useFallbackImages()
 const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
 
@@ -91,6 +93,21 @@ const firstEpisodeWithAudio = () => {
     }
   })
 }
+// computed properties to identify what is currently loaded
+const isLoadedEpisode = computed(() => {
+  return (
+    !isLiveStream.value && currentEpisode.value?.showTitle === props.show.title
+  )
+})
+
+const isLoadedLiveStream = computed(() => {
+  return (
+    isLiveStream.value &&
+    (currentEpisodeHolder.value?.title === props.show.title ||
+      currentEpisode.value?.title === props.show.title)
+  )
+})
+
 // check if the show is currently live
 const isCurrentlyLive = computed(() => {
   return (
@@ -100,7 +117,11 @@ const isCurrentlyLive = computed(() => {
 })
 // handle the toggle play button at the top to play the most recent episode with audio and tracking
 const togglePlayMostRecentEpisode = () => {
-  if (isCurrentlyLive.value) {
+  if (isLoadedEpisode.value) {
+    togglePlayEpisode(currentEpisode.value)
+  } else if (isLoadedLiveStream.value) {
+    getStationBySlugAndPlayIt(currentEpisodeHolder.value.slug, true)
+  } else if (isCurrentlyLive.value) {
     getStationBySlugAndPlayIt(currentEpisodeHolder.value.slug, true)
   } else {
     const ep = firstEpisodeWithAudio()
@@ -109,6 +130,14 @@ const togglePlayMostRecentEpisode = () => {
     }
   }
 }
+
+// watch(
+//   currentEpisodeHolder,
+//   () => {
+//     currentEpisodeHolder.value.title = "All Of It with Alison Stewart"
+//   },
+//   { once: true }
+// )
 
 // add item to favorites
 const handleAddToFavorites = () => {
@@ -126,7 +155,7 @@ const handleAddToFavorites = () => {
 const isThisShowPlaying = computed(() => {
   return (
     isEpisodePlaying.value &&
-    currentEpisode.value?.showTitle === props.show.title
+    (isLoadedEpisode.value || isLoadedLiveStream.value)
   )
 })
 </script>
