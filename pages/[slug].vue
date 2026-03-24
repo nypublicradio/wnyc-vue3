@@ -15,6 +15,13 @@ const isPreview = Boolean(route.query.preview)
 
 let page
 if (isPreview) {
+  if (!previewData.value || !previewData.value.data) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'Preview data not found',
+      fatal: true,
+    })
+  }
   page = previewData.value.data
 } else {
   // Fetch page data - middleware has already checked existence and set 404 if needed

@@ -293,6 +293,7 @@ export function capitalizeFirstLetter (str) {
  * helper function to change the global font size
  */
 export function setFontSize (size: string) {
+  if (!import.meta.client) return
   document.documentElement.style.fontSize = size
 }
 
@@ -300,6 +301,7 @@ export function setFontSize (size: string) {
  * helper function to toggle darkmode of the status bar
  */
 export async function setStatusDarkMode (bool: boolean) {
+  if (!import.meta.client) return
   await nextTick()
   const isApp = useIsApp()
   if (isApp.value) {
@@ -315,6 +317,7 @@ export async function setStatusDarkMode (bool: boolean) {
  * helper function to toggle darkmode
  */
 export async function setDarkMode (bool: boolean) {
+  if (!import.meta.client) return
   // TEMP, no dark ode for browser yet
   const isApp = useIsApp()
   const dmBool = isApp.value ? bool : false
@@ -339,6 +342,7 @@ export const getTextSizePixel = (label) => {
 
 // detect system theme preference
 export const detectSystemDarkMode = () => {
+  if (!import.meta.client) return false
   // TEMP, no dark mode for browser yet
   if (!useIsApp().value) return false
   return Boolean(
@@ -371,6 +375,7 @@ export const toSystemSettings = () => {
 
 // get device information
 export async function getFullDeviceInfo (): Promise<DeviceInfo | null> {
+  if (!import.meta.client) return null
   try {
     const info = await Device.getInfo()
     return info
@@ -736,11 +741,13 @@ export const getAndSetUserProfile = async () => {
         .match({ id: user.data.session.user.id })
 
       // Set Firebase Analytics user ID on client side only
-      const FirebaseAnalytics = await loadFirebaseAnalytics()
-      if (FirebaseAnalytics && currentUser.value) {
-        await FirebaseAnalytics.setUserId({
-          userId: currentUser.value.id,
-        })
+      if (import.meta.client && currentUser.value) {
+        const FirebaseAnalytics = await loadFirebaseAnalytics()
+        if (FirebaseAnalytics) {
+          await FirebaseAnalytics.setUserId({
+            userId: currentUser.value.id,
+          })
+        }
       }
     }
 
@@ -811,11 +818,13 @@ export const getAndSetUserProfile = async () => {
         await getProfile()
 
         //init Firebase Analytics
-        const FirebaseAnalytics = await loadFirebaseAnalytics()
-        if (FirebaseAnalytics && currentUser.value) {
-          await FirebaseAnalytics.setUserId({
-            userId: currentUser.value.id,
-          })
+        if (import.meta.client && currentUser.value) {
+          const FirebaseAnalytics = await loadFirebaseAnalytics()
+          if (FirebaseAnalytics) {
+            await FirebaseAnalytics.setUserId({
+              userId: currentUser.value.id,
+            })
+          }
         }
 
         // get the device id if it's an app and not a browser
@@ -991,6 +1000,7 @@ export const togglePlayEpisode = (media, type = mediaTypes.EPISODE) => {
 
 // css var helper to get the css var value or as pixel value
 export const getCssVar = (name: string, px = false) => {
+  if (!import.meta.client) return px ? '0px' : 0
   const val = getComputedStyle(document.documentElement).getPropertyValue(name)
 
   return px ? val : Number(parseInt(val))

@@ -5,7 +5,6 @@ import axios from 'axios'
 import { RemoteStreamer } from "@nypublicradio/capacitor-remote-streamer"
 import { useVImage } from "~/composables/useVImage"
 
-const { imageSolver } = useVImage()
 let currentEpisode = null
 
 const defaultMimeType = 'image/jpeg'
@@ -16,13 +15,14 @@ const fetchMimeType = async (imageUrl) => {
     try {
         const response = await axios(imageUrl, { method: 'HEAD' }) // Use 'HEAD' to avoid downloading the image
         return response.headers["content-type"] || defaultMimeType
-    } catch (error) {
+    } catch {
         return defaultMimeType
     }
 }
 
 // generate an array of artwork objects with different sizes and using an axios call to get the image type
 const generateMediaSessionArtworkArray = async (image) => {
+    const { imageSolver } = useVImage()
     const arr = []
 
     //have to get the format for publisher images
@@ -39,7 +39,9 @@ const generateMediaSessionArtworkArray = async (image) => {
 
 // initialize the media session with the episode data
 export const initMediaSession = async (episode/* , skipTime = PLAYER_SKIP_TIME */) => {
+    if (!import.meta.client) return
     if (!episode) return
+    
     const isNetworkConnected = useIsNetworkConnected()
     const isLiveStream = useIsLiveStream()
     const isApp = useIsApp()
