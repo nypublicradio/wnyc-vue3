@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { getYear } from '~/utilities/helpers'
-import { useCurrentEpisode } from '~/composables/states'
-import { allSocialData } from '~/composables/navigationData.js'
+import { getYear } from "~/utilities/helpers"
+import { useCurrentEpisode } from "~/composables/states"
+import { allSocialData } from "~/composables/navigationData.js"
 
-const emit = defineEmits<(e: 'submit', value: any) => void>()
+const emit = defineEmits<(e: "submit", value: any) => void>()
 
 const config = useRuntimeConfig()
 
@@ -13,25 +13,25 @@ const isSubmitting = ref(false)
 const submissionStatus = ref(null)
 
 // function for submitting the newsletter form
-const submitForm = email => {
+const submitForm = (email) => {
   isSubmitting.value = true
   submissionStatus.value = null
   $fetch(config.public.NEWSLETTER_API, {
-    method: 'POST',
+    method: "POST",
     body: {
-      source: 'wnyc_footer',
+      source: "wnyc_footer",
       list: config.public.NEWSLETTER_MULTI_LIST_IDS,
-      email
-    }
+      email,
+    },
   })
     .then(() => {
-      submissionStatus.value = 'success'
-      emit('submit', 'success')
+      submissionStatus.value = "success"
+      emit("submit", "success")
     })
     .catch(() => {
-      submissionStatus.value = 'error'
+      submissionStatus.value = "error"
       isSubmitting.value = false
-      emit('submit', 'error')
+      emit("submit", "error")
     })
 }
 </script>
@@ -105,7 +105,9 @@ const submitForm = email => {
         <NyprLogosBracket />
         <div class="flex align-items-center gap-3">
           <p class="flex-none">WNYC is supported by</p>
-          <JLGreene class="w-7rem text-color-fill" />
+          <VFlexibleLink raw to="https://jlgreene.org/" target="_blank">
+            <JLGreene class="w-7rem text-color-fill" />
+          </VFlexibleLink>
         </div>
       </div>
       <Divider class="mt-4" />
@@ -142,11 +144,11 @@ const submitForm = email => {
       .menu-holder {
         min-width: 170px;
 
-        @include media('>xxl') {
+        @include media(">xxl") {
           min-width: 200px;
         }
 
-        @include media('<sm') {
+        @include media("<sm") {
           min-width: 150px;
         }
       }
