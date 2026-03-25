@@ -79,16 +79,16 @@ onUnmounted(() => {
     <Html lang="en">
       <Head>
         <Title
-          >{{ show?.show?.title }} | WNYC | New York Public Radio, Podcasts,
-          Live Streaming Radio, News</Title
+          >{{ show?.title }} | WNYC | New York Public Radio, Podcasts, Live
+          Streaming Radio, News</Title
         >
         <Meta
           name="og:title"
-          :content="`${show?.show?.title} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`"
+          :content="`${show?.title} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`"
         />
         <Meta
           name="twitter:title"
-          :content="`${show?.show?.title} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`"
+          :content="`${show?.title} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`"
         />
       </Head>
     </Html>
