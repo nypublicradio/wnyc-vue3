@@ -3,7 +3,7 @@ import { getAndSetUserProfile } from "~/utilities/helpers"
 import { useAuth } from "~/composables/useAuth"
 useHead({
   bodyAttrs: {
-    class: "no-bottom-padding hide-bottom-menu",
+    class: "no-bottom-padding hide-bottom-menu hide-footer",
   },
 })
 
@@ -59,29 +59,34 @@ watch(
 )
 </script>
 <template>
-  <section class="loading-holder">
-    <WnycLoader class="loader-anim" />
-  </section>
+  <div class="confirm-page">
+    <section class="loading-holder">
+      <WnycLoader class="loader-anim" />
+    </section>
+  </div>
 </template>
 
 <style lang="scss" scoped>
-.loading-holder {
-  display: flex;
-  position: absolute;
-  height: calc(40vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-  width: 100%;
-  left: 0;
-  right: 0;
-
-  .loader-anim {
+.confirm-page {
+  height: 100vh;
+  .loading-holder {
+    display: flex;
     position: absolute;
-    top: 0;
-    bottom: 0;
+    height: calc(40vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    width: 100%;
     left: 0;
     right: 0;
-    margin: auto;
-    width: 100px;
-    height: 50px;
+
+    .loader-anim {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+      width: 100px;
+      height: 50px;
+    }
   }
 }
 </style>
