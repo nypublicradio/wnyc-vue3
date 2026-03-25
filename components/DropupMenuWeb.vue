@@ -1,5 +1,4 @@
 <script setup>
-import VImage from "./VImage.vue"
 const props = defineProps({
   options: {
     type: Array,
@@ -40,7 +39,7 @@ const emit = defineEmits(["change", "swipe-down"])
 const popover = ref(null)
 
 // 2way binding to the currentUserProfile on the parent prop v-model
-const vModel = defineModel()
+const vModel = defineModel({ type: [String, Object, Number] })
 
 // clicks the popover to close it
 const closeMenu = () => {
