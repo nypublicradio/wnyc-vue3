@@ -86,11 +86,11 @@ const allMenuData = [
                 },
                 {
                     label: "Archives",
-                    url: "/archives/collections"
+                    url: "/browse/shows/wnyc-archives"
                 },
                 {
-                    label: "100 Years",
-                    url: "/100"
+                    label: "Giveaways",
+                    url: "/giveaways"
                 },
                 {
                     label: "Diversity (DEI)",
@@ -122,7 +122,7 @@ const allMenuData = [
                 },
                 {
                     label: "Community",
-                    url: "/community"
+                    url: "https://nypublicradio.org/community-advisory-board/ "
                 },
             ],
         ],
@@ -235,12 +235,18 @@ const allSocialData = [
         id: "3",
         icon: "pi pi-instagram",
     },
-    {
-        label: "X",
-        url: "https://x.com/wnyc",
-        id: "1",
-        icon: "pi pi-twitter",
-    },
+    // {
+    //     label: "X",
+    //     url: "https://x.com/wnyc",
+    //     id: "1",
+    //     icon: "pi pi-twitter",
+    // },
+    // {
+    //     label: "Bluesky",
+    //     url: "https://bsky.app/profile/wnyc.org",
+    //     id: "5",
+    //     icon: "pi pi-bluesky",
+    // },
     {
         label: "YouTube",
         url: "https://www.youtube.com/@WnycOrg",
