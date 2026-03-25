@@ -305,8 +305,8 @@ export default async function useNavigationData () {
 
                     // Normalize and merge Shows
                     const showsItems = normalizeShowsMenuData(bffData.showsResponse, 5)
-                    if (workingHeaderNav[1]?.items?.[0]) {
-                        workingHeaderNav[1].items[0].splice(0, 0, ...showsItems)
+                    if (workingHeaderNav[2]?.items?.[0]) {
+                        workingHeaderNav[2].items[0].splice(0, 0, ...showsItems)
                     }
 
                     // Create the 'allNavigationData' state *before* header-specific modifications
@@ -314,7 +314,7 @@ export default async function useNavigationData () {
                     const workingAllNav = resolveUrlFunctions(workingHeaderNav.map(item => ({ ...item })), appDownloadLink.value)
                     // Normalize and merge Wagtail Primary Navigation
                     const primaryNavItems = normalizeWagtailMenuData(bffData.wagtailResponse?.primary_navigation)
-                    workingHeaderNav.splice(2, 0, ...primaryNavItems)
+                    workingHeaderNav.splice(3, 0, ...primaryNavItems)
 
                     const collectionsMenuItem = workingAllNav.find((item) => item.label === "Collections")
                     if (collectionsMenuItem?.items) {
