@@ -66,7 +66,9 @@ const submitForm = (email) => {
                 <p class="line-height-3 text-xs">
                   Sign up for for a weekly, behind-the-scenes update from the
                   people behind your favorite shows.
-                  <VFlexibleLink to="/newsletter">See More </VFlexibleLink>
+                  <VFlexibleLink to="https://cloud.lists.wnyc.org/Preferences"
+                    >See More
+                  </VFlexibleLink>
                 </p>
                 <email-collector-form
                   class="form mt-5"

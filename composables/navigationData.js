@@ -23,6 +23,23 @@ const allMenuData = [
         ],
     },
     {
+        label: "Daily Schedule",
+        url: "/live",
+        id: "8",
+        icon: "",
+        hasSubmenu: false,
+        inHeaderMenu: true,
+        inFooterMenu: false,
+        items: [
+            [
+                {
+                    label: "Schedule",
+                    url: "/live"
+                },
+            ],
+        ],
+    },
+    {
         label: "Browse All Shows",
         url: "/browse?all=false",
         id: "1",
