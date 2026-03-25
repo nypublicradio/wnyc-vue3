@@ -375,6 +375,8 @@ const handleHasAudio = computed(() => {
 
 // handle event code here - make event data available for template access
 const eventData = ref(isEvent ? useEventData(reactiveData) : null)
+// console.log("eventData", eventData.value)
+// console.log("reactiveData", reactiveData.value)
 </script>
 
 <template>

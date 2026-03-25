@@ -379,9 +379,9 @@ defineExpose({
         position: relative;
         .custom-icon,
         .pi {
-          width: 16px;
-          height: 16px;
-          font-size: 16px;
+          width: 24px !important;
+          height: 24px !important;
+          font-size: 24px !important;
           flex: none;
         }
         .p-menu-item-content {
