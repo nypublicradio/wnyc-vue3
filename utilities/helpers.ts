@@ -232,6 +232,7 @@ export function howLongAgo (date) {
  * to get the desired date format for the header
  */
 export function getDate (data = null, formatString = "EEE, MMM do") {
+  console.log("data", data)
   const date = data?.updatedDate || data?.publicationDate
   if (date) {
     const currentDate = new Date()
