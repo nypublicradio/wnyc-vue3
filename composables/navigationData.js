@@ -1,5 +1,3 @@
-import { logOutUser } from "~/utilities/helpers"
-import { useAppDownloadLink } from "~/composables/states"
 import { memberCenterLink } from "~/composables/globals"
 
 const allMenuData = [
