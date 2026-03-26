@@ -60,7 +60,7 @@ const { data: fetchedShowInfo } = useLazyFetch(() =>
     ? `${config.public.BFF_URL}/api/v2/show/${showId.value}?slugOnly=true`
     : null
 )
-
+// finds the show slug from the headers links with the item type of show, then checks the show-slug-lookup-table for a redirect
 const getUpdatedShowSlug = () => {
   const showSlug = episodeData.value?.headers?.links?.find(
     (link) => link.itemType === "show"
