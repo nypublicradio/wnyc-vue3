@@ -105,6 +105,7 @@ const breadcrumbs = computed(() => [
       <section class="flex align-items-center">
         <Breadcrumbs :items="breadcrumbs" />
       </section>
+      <!-- <pre>{{ episodeData }}</pre> -->
       <EpisodeTemplate
         :pending="status !== 'success'"
         :episodeData="episodeData"

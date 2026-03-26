@@ -1189,6 +1189,7 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
         break
       case mediaTypes.EPISODE:
       case mediaTypes.SEGMENT:
+      case mediaTypes.FULL:
         goToEpisodePage(item, null, isSaveHistory)
         break
       case mediaTypes.STORY:
