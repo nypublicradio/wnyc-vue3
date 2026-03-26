@@ -52,6 +52,7 @@ export const mediaTypes = {
     SHOW: 'show',
     EVENT: 'event',
     EPISODE: 'episode',
+    FULL: 'full',
     SEGMENT: 'segment',
     STORY: 'story',
     ARTICLE_PAGE: 'article_page',

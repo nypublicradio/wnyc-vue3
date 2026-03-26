@@ -215,7 +215,8 @@ export async function normalizeWagtailPage (article: Record<string, any | undefi
     sponsoredContent: article.sponsoredContent,
     relatedLinks: article.relatedLinks,
     tags: article.tags,
-    url: article.url,
+    //url: article.url,
+    url: null,
     section: { name: article.ancestry?.[0].title, slug: article.ancestry?.[0].slug },
     body: article.body,
     rawBody: getWagtailRawBody(article.body),
@@ -459,6 +460,7 @@ export async function normalizeSimplecastPage (article: SimplecastArticle): Prom
     meta: {
       firstPublishedAt: article.publishedAt && new Date(article.publishedAt),
       slug: article.slug,
+      simplecastId,
       type: article.type || 'episode',
     },
     title: article.title,
@@ -476,7 +478,8 @@ export async function normalizeSimplecastPage (article: SimplecastArticle): Prom
     sponsoredContent: undefined,
     relatedLinks: undefined,
     tags: getSimplecastTags(article),
-    url: article.episodeUrl,
+    //url: article.episodeUrl,
+    url: null,
     section: undefined,
     body: bodyText,
     rawBody: bodyText,
@@ -562,7 +565,8 @@ export async function normalizePublisherPage (article: Record<string, any | unde
     sponsoredContent: undefined, //Does this exist in publisher?
     relatedLinks: undefined, //Does this exist in publisher?
     tags: article.attributes?.tags, // This may need tweaking
-    url: article.attributes.url,
+    //url: article.attributes.url,
+    url: null,
     section: undefined, //Does this exist in publisher?
     body: article.attributes.body,
     rawBody: article.attributes.body,
