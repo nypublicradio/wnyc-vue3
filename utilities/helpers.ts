@@ -1073,10 +1073,10 @@ export const goToEventPage = (story, log = true) => {
   navigateTo({
     path: `${mediaTypeRoutes[mediaTypes.EVENT]}${story.meta?.slug ?? story.slug ?? story.id}`,
   })
-  //}
-  if (log) {
-    saveRecentlyPlayed(story)
-  }
+  // we are not saving events to recently played as of 3/26/2026
+  // if (log) {
+  //   saveRecentlyPlayed(story)
+  // }
 }
 /* centralized function to route to a show page */
 export const goToShowPage = (show, params = null) => {
