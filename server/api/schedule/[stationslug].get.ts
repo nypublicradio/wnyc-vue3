@@ -105,6 +105,7 @@ const normalizeSchedule = (scheduleData: any): any[] => {
                 .replace(/\s+/g, '-')      // Replace spaces with hyphens
                 .replace(/-+/g, '-')       // Replace multiple hyphens with single
                 .replace(/^-|-$/g, '')     // Remove leading/trailing hyphens
+                .replace(/\bthe-\b/g, '')   // Remove "the" to match legacy slug format
             parentUrl = `https://www.wnyc.org${mediaTypeRoutes.show}${slug}`
         }
 
