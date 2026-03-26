@@ -50,25 +50,33 @@ const {
     },
   }
 )
-
 const episodeData = computed(() => episode.value)
-const theSlug = computed(
-  () =>
-    episodeData.value?.showSlug ||
-    episodeData.value?.showId ||
-    episodeData.value?.show?.slug ||
-    episodeData.value?.headers?.brand?.slug
+const showId = computed(
+  () => episodeData.value?.showSlug || episodeData.value?.showId || null
 )
-
-const { data: showSlug } = useLazyFetch(() =>
-  theSlug.value
-    ? `${config.public.BFF_URL}/api/v2/show/${theSlug.value}?slugOnly=true`
+const { data: fetchedShowInfo } = useLazyFetch(() =>
+  showId.value
+    ? `${config.public.BFF_URL}/api/v2/show/${showId.value}?slugOnly=true`
     : null
 )
+// if we do have a showId (simplecast), we can use it to fetch the show info
+// otherwise (old favorited publisher), we can use the show slug from the episode data
+const showInfo = computed(() => {
+  if (showId.value) {
+    return fetchedShowInfo.value
+  }
+  return {
+    show: {
+      slug:
+        episodeData.value?.show?.slug ||
+        episodeData.value?.headers?.brand?.slug,
+    },
+  }
+})
 
 const { data: show, status: showStatus } = useLazyFetch(() =>
-  showSlug.value?.show?.slug
-    ? `${config.public.BFF_URL}/api/pages/wagtail/${showSlug.value?.show?.slug}?showOnly=true`
+  showInfo.value?.show?.slug
+    ? `${config.public.BFF_URL}/api/pages/wagtail/${showInfo.value?.show?.slug}?showOnly=true`
     : null
 )
 
@@ -76,8 +84,8 @@ const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Browse", route: "/browse" },
   {
-    label: showSlug.value?.show?.title,
-    route: `/browse/shows/${showSlug.value?.show?.slug}`,
+    label: show.value?.title,
+    route: `/browse/shows/${show.value?.meta?.slug}`,
   },
   { label: episodeData.value?.title },
 ])

@@ -172,7 +172,7 @@ onMounted(() => {
     <section class="py-4">
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
-        <div class="col pr-2 lg:pr-4">
+        <div class="col min-w-0 pr-2 lg:pr-4">
           <div class="flex flex-column gap-5">
             <h2 class="md:text-xl">All Episodes</h2>
             <template v-for="ep in episodes" :key="ep.id">
@@ -214,15 +214,15 @@ onMounted(() => {
             ref="loadMoreRef"
             spinner
             size="40px"
-            class="mt-8 flex justify-content-center"
+            class="mt-8 justify-content-center"
           />
-          <BackToTopButton />
         </div>
         <div class="col-fixed hidden lg:block w-20rem">
           <ShowSummary :show="show" />
         </div>
       </div>
     </section>
+    <BackToTopButton />
   </div>
 </template>
 
