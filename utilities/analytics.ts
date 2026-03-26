@@ -22,11 +22,17 @@ export interface ClickEventOptions {
   deviceId?: unknown
 }
 
+/**
+ * Returns the best available analytics user identifier for the current event.
+ */
 export const getAnalyticsUserId = (
   currentUserId?: string | null,
   deviceId?: unknown
 ) => currentUserId ?? deviceId
 
+/**
+ * Builds the shared GA4 page view payload.
+ */
 export const buildPageViewEventParams = ({
   currentUserId,
   deviceId,
@@ -40,6 +46,9 @@ export const buildPageViewEventParams = ({
   ...params,
 })
 
+/**
+ * Builds the shared GA4 audio event payload.
+ */
 export const buildAudioEventParams = ({
   audioType,
   audioTitle,
@@ -53,6 +62,9 @@ export const buildAudioEventParams = ({
   user_id: getAnalyticsUserId(currentUserId, deviceId),
 })
 
+/**
+ * Builds the shared GA4 click tracking payload.
+ */
 export const buildClickEventParams = ({
   category,
   component,

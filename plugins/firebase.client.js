@@ -2,6 +2,9 @@ import { initializeApp } from 'firebase/app'
 import { getAnalytics } from 'firebase/analytics'
 import { Capacitor } from "@capacitor/core"
 
+/**
+ * Builds the Firebase config for the current platform from runtime config.
+ */
 export const buildFirebaseConfig = (platform, publicConfig) => {
     let appId = null
     let apiKey = null
