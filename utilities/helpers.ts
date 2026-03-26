@@ -38,6 +38,10 @@ import { Share } from "@capacitor/share"
 import { Clipboard } from "@capacitor/clipboard"
 import { initDeviceId } from "~/utilities/device-id.js"
 import { deleteDirectory } from "~/utilities/file-system"
+import {
+  buildAudioEventParams,
+  buildClickEventParams,
+} from "~/utilities/analytics"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 import {
   AppTrackingTransparency,
@@ -188,12 +192,13 @@ export const trackAudioEvent = (eventName, audioType, audioTitle, audioShow) => 
   const { $analytics } = useNuxtApp()
   const currentUser = useCurrentUser()
   const deviceId = useDeviceId()
-  $analytics.sendEvent(eventName, {
-    audio_type: audioType,
-    audio_title: audioTitle,
-    audio_show: audioShow,
-    user_id: currentUser.value?.id ?? deviceId.value,
-  })
+  $analytics.sendEvent(eventName, buildAudioEventParams({
+    audioType,
+    audioTitle,
+    audioShow,
+    currentUserId: currentUser.value?.id,
+    deviceId: deviceId.value,
+  }))
 }
 
 // function that tracks click events to google analytics
@@ -201,12 +206,13 @@ export const trackClickEvent = (category, component, label) => {
   const { $analytics } = useNuxtApp()
   const currentUser = useCurrentUser()
   const deviceId = useDeviceId()
-  $analytics.sendEvent("click_tracking", {
-    event_category: category,
+  $analytics.sendEvent("click_tracking", buildClickEventParams({
+    category,
     component,
-    event_label: label,
-    user_id: currentUser.value?.id ?? deviceId.value,
-  })
+    label,
+    currentUserId: currentUser.value?.id,
+    deviceId: deviceId.value,
+  }))
 }
 
 /**
@@ -1387,7 +1393,7 @@ export const refreshData = async (refreshUser = false) => {
   // update the schedule data
   // watch on the live.vue handles this schedule data
 
-  // update currentEpisode LIVE STREAM data and prep for player and media session IF it is or has been played and the expanded player and media session are open 
+  // update currentEpisode LIVE STREAM data and prep for player and media session IF it is or has been played and the expanded player and media session are open
   if (currentEpisode.value && isLiveStream.value) {
     currentEpisode.value = prepForPlayer(currentEpisodeHolder.value)
     //update media session
