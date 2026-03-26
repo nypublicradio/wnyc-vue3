@@ -1088,7 +1088,7 @@ export const goToNprPage = (story, log = true) => {
 }
 
 /* centralized function to route to a event page */
-export const goToEventPage = (story, log = true) => {
+export const goToEventPage = (story/* , log = true */) => {
 
   navigateTo({
     path: `${mediaTypeRoutes[mediaTypes.EVENT]}${story.meta?.slug ?? story.slug ?? story.id}`,
