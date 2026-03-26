@@ -2,6 +2,7 @@
 import { useToast } from "primevue/usetoast"
 import { togglePlayEpisode } from "~/utilities/helpers"
 import { useTopStories } from "~/composables/useTopStories"
+import { redirects, isolateSlug } from "~/utilities/show-slug-lookup-table"
 const { getFilteredTopStories } = useTopStories()
 const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
@@ -59,17 +60,28 @@ const { data: fetchedShowInfo } = useLazyFetch(() =>
     ? `${config.public.BFF_URL}/api/v2/show/${showId.value}?slugOnly=true`
     : null
 )
+
+const getUpdatedShowSlug = () => {
+  const showSlug = episodeData.value?.headers?.links?.find(
+    (link) => link.itemType === "show"
+  )?.slug
+
+  const redirect = redirects.find(
+    (redirect) => isolateSlug(redirect.from) === showSlug
+  )
+
+  return redirect ? isolateSlug(redirect.to) : null
+}
 // if we do have a showId (simplecast), we can use it to fetch the show info
 // otherwise (old favorited publisher), we can use the show slug from the episode data
+// but we also have to use the show-slug-lookup-table to get the correct show slug
 const showInfo = computed(() => {
   if (showId.value) {
     return fetchedShowInfo.value
   }
   return {
     show: {
-      slug:
-        episodeData.value?.show?.slug ||
-        episodeData.value?.headers?.brand?.slug,
+      slug: getUpdatedShowSlug() || episodeData.value?.show?.slug,
     },
   }
 })
@@ -105,7 +117,6 @@ const breadcrumbs = computed(() => [
       <section class="flex align-items-center">
         <Breadcrumbs :items="breadcrumbs" />
       </section>
-      <!-- <pre>{{ episodeData }}</pre> -->
       <EpisodeTemplate
         :pending="status !== 'success'"
         :episodeData="episodeData"
