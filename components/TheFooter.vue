@@ -79,9 +79,7 @@ const submitForm = (email) => {
                   By submitting your information, you're agreeing to receive
                   communications from New York Public Radio in accordance with
                   our
-                  <VFlexibleLink to="https://www.wnyc.org/terms/">
-                    Terms </VFlexibleLink
-                  >.
+                  <VFlexibleLink to="/terms"> Terms </VFlexibleLink>.
                 </email-collector-form>
               </div>
             </div>
@@ -105,12 +103,6 @@ const submitForm = (email) => {
         class="grid grid-nogutter gap-5 justify-content-between align-items-center mt-7"
       >
         <NyprLogosBracket />
-        <div class="flex align-items-center gap-3">
-          <p class="flex-none">WNYC is supported by</p>
-          <VFlexibleLink raw to="https://jlgreene.org/" target="_blank">
-            <JLGreene class="w-7rem text-color-fill" />
-          </VFlexibleLink>
-        </div>
       </div>
       <Divider class="mt-4" />
       <div
