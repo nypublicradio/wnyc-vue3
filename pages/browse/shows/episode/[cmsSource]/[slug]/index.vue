@@ -3,6 +3,7 @@ import { useToast } from "primevue/usetoast"
 import { togglePlayEpisode } from "~/utilities/helpers"
 import { useTopStories } from "~/composables/useTopStories"
 const { getFilteredTopStories } = useTopStories()
+const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
@@ -17,6 +18,27 @@ const {
     `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
   {
     key: `index-episode-${route.params.cmsSource}-${route.params.slug}`,
+    onResponse({ response }) {
+      const res = response._data
+      $analytics.sendPageView({
+        page_title: res.title,
+        page_type: "episode_page",
+        content_group: "on_demand_episode",
+        article_authors: res?.authors?.map((author) => author.name).join(","),
+        article_publish_date: res.publicationDate,
+        article_updated_date: res.updatedDate
+          ? res.updatedDate
+          : res.publicationDate,
+        article_title: res.title,
+      })
+
+      // check route param autoplay exists and if so, play the first segment
+      if (route.query.autoplay === "true") {
+        togglePlayEpisode(res.audio[0])
+        // remove the autoplay query param
+        router.replace({ query: { ...route.query, autoplay: null } })
+      }
+    },
     onResponseError() {
       toast.add({
         severity: "error",
@@ -28,49 +50,33 @@ const {
     },
   }
 )
-
-onMounted(() => {
-  if (!episode.value) return
-  const { $analytics } = useNuxtApp()
-  $analytics.sendPageView({
-    page_title: episode.value.title,
-    page_type: "episode_page",
-    content_group: "on_demand_episode",
-    article_authors: episode.value?.authors
-      ?.map((author) => author.name)
-      .join(","),
-    article_publish_date: episode.value.publicationDate,
-    article_updated_date: episode.value.updatedDate
-      ? episode.value.updatedDate
-      : episode.value.publicationDate,
-    article_title: episode.value.title,
-  })
-
-  // check route param autoplay exists and if so, play the first segment
-  if (route.query.autoplay === "true") {
-    togglePlayEpisode(episode.value.audio[0])
-    // remove the autoplay query param
-    router.replace({ query: { ...route.query, autoplay: null } })
+const episodeData = computed(() => episode.value)
+const showId = computed(
+  () => episodeData.value?.showSlug || episodeData.value?.showId || null
+)
+const { data: fetchedShowInfo } = useLazyFetch(() =>
+  showId.value
+    ? `${config.public.BFF_URL}/api/v2/show/${showId.value}?slugOnly=true`
+    : null
+)
+// if we do have a showId (simplecast), we can use it to fetch the show info
+// otherwise (old favorited publisher), we can use the show slug from the episode data
+const showInfo = computed(() => {
+  if (showId.value) {
+    return fetchedShowInfo.value
+  }
+  return {
+    show: {
+      slug:
+        episodeData.value?.show?.slug ||
+        episodeData.value?.headers?.brand?.slug,
+    },
   }
 })
 
-const theSlug = computed(
-  () =>
-    episode.value?.showSlug ||
-    episode.value?.showId ||
-    episode.value?.show?.slug ||
-    episode.value?.headers?.brand?.slug
-)
-
-const { data: showSlug } = useFetch(() =>
-  theSlug.value
-    ? `${config.public.BFF_URL}/api/v2/show/${theSlug.value}?slugOnly=true`
-    : null
-)
-
-const { data: show, status: showStatus } = useFetch(() =>
-  showSlug.value?.show?.slug
-    ? `${config.public.BFF_URL}/api/pages/wagtail/${showSlug.value?.show?.slug}?showOnly=true`
+const { data: show, status: showStatus } = useLazyFetch(() =>
+  showInfo.value?.show?.slug
+    ? `${config.public.BFF_URL}/api/pages/wagtail/${showInfo.value?.show?.slug}?showOnly=true`
     : null
 )
 
@@ -78,23 +84,22 @@ const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Browse", route: "/browse" },
   {
-    label: showSlug.value?.show?.title,
-    route: `/browse/shows/${showSlug.value?.show?.slug}`,
+    label: show.value?.title,
+    route: `/browse/shows/${show.value?.meta?.slug}`,
   },
-  { label: episode.value?.title },
+  { label: episodeData.value?.title },
 ])
-
-useHead(() => ({
-  title: `${episode.value?.title} | WNYC`,
-  meta: [
-    { name: "og:title", content: `${episode.value?.title} | WNYC` },
-    { name: "twitter:title", content: `${episode.value?.title} | WNYC` },
-  ],
-}))
 </script>
 
 <template>
   <div class="episode-page">
+    <Html lang="en">
+      <Head>
+        <Title>{{ episodeData?.title }} | WNYC</Title>
+        <Meta name="og:title" :content="`${episodeData?.title} | WNYC`" />
+        <Meta name="twitter:title" :content="`${episodeData?.title} | WNYC`" />
+      </Head>
+    </Html>
     <FetchError v-if="error" />
     <template v-else>
       <section class="flex align-items-center">
@@ -102,14 +107,14 @@ useHead(() => ({
       </section>
       <EpisodeTemplate
         :pending="status !== 'success'"
-        :episodeData="episode"
+        :episodeData="episodeData"
         :show="show"
-        :showPending="showStatus === 'pending'"
+        :showPending="showStatus !== 'success'"
       >
         <template #bottom>
           <Divider class="mt-8 mb-5" />
           <h2 class="mb-3">Top Stories From Gothamist</h2>
-          <TopStories :articles="getFilteredTopStories(episode)" />
+          <TopStories :articles="getFilteredTopStories(episodeData)" />
         </template>
       </EpisodeTemplate>
 
