@@ -123,16 +123,9 @@ export const getOrg = (data) => {
   }
 }
 
-// returns the time since the episode was published, but checks for updated_date first
-export const whenTime = (data) => {
-  const res = data?.updatedDate
-    ? howLongAgo(data?.updatedDate)
-    : data?.publicationDate
-      ? howLongAgo(data?.publicationDate)
-      : data?.publishAt
-        ? howLongAgo(data?.publishAt)
-        : howLongAgo(data?.firstPublishedAt)
-  return res
+// returns the time since the episode was published
+export const whenTime = (date) => {
+  return howLongAgo(date)
 }
 
 // format ISO timestamp to return only the time
@@ -232,8 +225,8 @@ export function howLongAgo (date) {
  * to get the desired date format for the header
  */
 export function getDate (data = null, formatString = "EEE, MMM do") {
-  console.log("data", data)
-  const date = data?.updatedDate || data?.publicationDate
+  // checks FIRST for meta.firstPublishedAt that is stored in the Supabase DB meta column when saving and history.
+  const date = data?.meta?.firstPublishedAt || data?.updatedDate || data?.publicationDate
   if (date) {
     const currentDate = new Date()
     const inputDate = new Date(date)
@@ -245,7 +238,7 @@ export function getDate (data = null, formatString = "EEE, MMM do") {
       currentDate.getDate() === inputDate.getDate()
 
     if (isSameDay) {
-      return whenTime(data)
+      return whenTime(date)
     }
 
     // Add year to format string if it's not the current year
@@ -930,6 +923,12 @@ export const saveFavorite = async (
     const meta = media?.meta
     const audio = media?.audio ?? media?.hls
     const showTitle = media?.showTitle ?? media?.headers?.brand?.title ?? media?.station
+
+    // add firstPublishedAt if missing from meta
+    if (!meta?.firstPublishedAt) {
+      meta.firstPublishedAt = media?.updatedDate || media?.publicationDate
+    }
+
     const itemToSave: SavedItem = {
       uid,
       type,
