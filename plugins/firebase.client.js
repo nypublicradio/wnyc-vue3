@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { getAnalytics } from 'firebase/analytics'
+import { initializeAnalytics } from 'firebase/analytics'
 import { Capacitor } from "@capacitor/core"
 
 /**
@@ -36,10 +36,19 @@ export const buildFirebaseConfig = (platform, publicConfig) => {
     }
 }
 
+/**
+ * Builds the Firebase Analytics settings for the web client.
+ */
+export const buildFirebaseAnalyticsSettings = () => ({
+    config: {
+        send_page_view: false,
+    },
+})
+
 export default defineNuxtPlugin(async () => {
     const config = useRuntimeConfig()
     const platform = await Capacitor.getPlatform()
     const firebaseConfig = buildFirebaseConfig(platform, config.public)
     const app = initializeApp(firebaseConfig)
-    getAnalytics(app)
+    initializeAnalytics(app, buildFirebaseAnalyticsSettings())
 })

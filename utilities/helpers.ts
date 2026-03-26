@@ -1010,6 +1010,12 @@ export const getCssVar = (name: string, px = false) => {
   return px ? val : Number(parseInt(val))
 }
 // ROUTING
+export const shouldOpenStoryInNewTab = (platform, storyLink, cmsSource) =>
+  platform === "web" && Boolean(storyLink) && cmsSource === cmsSources.WAGTAIL
+
+export const shouldTrackOutgoingGothamistClick = (storyLink) =>
+  Boolean(storyLink) && storyLink.includes("gothamist.com")
+
 /* centralized function to route to a episode page */
 export const goToEpisodePage = (ep, params, log = true) => {
   const cmsSource = ep.cmsSource || cmsSources.PUBLISHER
@@ -1043,7 +1049,14 @@ export const goToLivePage = (ep, params, log = true) => {
 /* centralized function to route to a story page */
 export const goToStoryPage = (story, params, log = true) => {
   const theLink = story.url || story.link || stripApiSubdomain(story.meta?.htmlUrl)
-  if (Capacitor.getPlatform() === "web" && theLink && story.cmsSource === cmsSources.WAGTAIL) {
+  if (shouldOpenStoryInNewTab(Capacitor.getPlatform(), theLink, story.cmsSource)) {
+    if (shouldTrackOutgoingGothamistClick(theLink)) {
+      trackClickEvent(
+        "Click Tracking - Outgoing Gothamist Story",
+        "Story",
+        story.title ?? theLink
+      )
+    }
     // open in new tab if web and wagtail source (Gothamist)
     window.open(theLink, "_blank")
   } else {

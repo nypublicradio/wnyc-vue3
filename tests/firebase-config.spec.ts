@@ -33,7 +33,7 @@ describe('firebase config', () => {
   })
 
   it('selects platform specific app ids and api keys', async () => {
-    const { buildFirebaseConfig } = await import('~/plugins/firebase.client')
+    const { buildFirebaseAnalyticsSettings, buildFirebaseConfig } = await import('~/plugins/firebase.client')
     const config = buildFirebaseConfig('android', {
       FB_MEASUREMENT_ID: 'G-HR1Q2F6S29',
       FB_API_KEY_WEB: 'web-key',
@@ -51,5 +51,10 @@ describe('firebase config', () => {
     expect(config.apiKey).toBe('android-key')
     expect(config.appId).toBe('android-app-id')
     expect(config.measurementId).toBe('G-HR1Q2F6S29')
+    expect(buildFirebaseAnalyticsSettings()).toEqual({
+      config: {
+        send_page_view: false,
+      },
+    })
   })
 })
