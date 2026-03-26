@@ -67,7 +67,7 @@ describe('analytics payload builders', () => {
 describe('analytics plugin API', () => {
   it('sends anonymous page views immediately', async () => {
     const { createAnalyticsApi } = await import('~/plugins/analytics.client')
-    const logEvent = vi.fn().mockResolvedValue(undefined)
+    const logEvent = vi.fn().mockResolvedValue()
     const analytics = createAnalyticsApi({
       getCurrentUserId: () => null,
       getDeviceId: () => 'device-123',
@@ -96,7 +96,7 @@ describe('analytics plugin API', () => {
 
   it('forwards arbitrary analytics events', async () => {
     const { createAnalyticsApi } = await import('~/plugins/analytics.client')
-    const logEvent = vi.fn().mockResolvedValue(undefined)
+    const logEvent = vi.fn().mockResolvedValue()
     const analytics = createAnalyticsApi({
       getCurrentUserId: () => 'user-123',
       getDeviceId: () => 'device-123',
