@@ -20,7 +20,7 @@ const stripWNYCUrl = (url) => {
 }
 
 // strip https://www.wnyc.org/browse/shows/ from the url for local routes
-const stripShowUrl = (url) => {
+export const stripShowUrl = (url) => {
     if (url) {
         const strippedUrl = url.replace('https://www.wnyc.org/browse/shows/', '')
         return strippedUrl
