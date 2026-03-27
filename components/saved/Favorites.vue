@@ -1,6 +1,7 @@
 <script setup>
-import PlayIcon from "~/components/icons/PlayIcon.vue"
+import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
 import ReadIcon from "~/components/icons/ReadIcon.vue"
+import StarIcon from "~/components/icons/StarIcon.vue"
 const user = useCurrentUser()
 const filterOptions = ref([
   { label: "All", value: null },
@@ -29,14 +30,14 @@ const getDotMenuItems = () => {
   return [
     {
       label: "All",
-      icon: "pi pi-star-fill",
+      customIcon: StarIcon,
       command: () => {
         selectedFilterOption.value = filterOptions.value[0]
       },
     },
     {
       label: "Episodes",
-      customIcon: PlayIcon,
+      customIcon: MoreEpisodesIcon,
       command: () => {
         selectedFilterOption.value = filterOptions.value[1]
       },
