@@ -1,3 +1,8 @@
+// isolates the slug from the end of a url
+export const isolateSlug = (slug: string) => {
+    return slug.split("/").pop()
+}
+
 export const redirects = [
     { from: '/browse/shows/10-things-scare-me', to: '/browse/shows/10-things-that-scare-me' },
     { from: '/browse/shows/dopequeens', to: '/browse/shows/2-dope-queens' },
