@@ -38,10 +38,6 @@ import { Share } from "@capacitor/share"
 import { Clipboard } from "@capacitor/clipboard"
 import { initDeviceId } from "~/utilities/device-id.js"
 import { deleteDirectory } from "~/utilities/file-system"
-import {
-  buildAudioEventParams,
-  buildClickEventParams,
-} from "~/utilities/analytics"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 import {
   AppTrackingTransparency,
@@ -185,13 +181,12 @@ export const trackAudioEvent = (eventName, audioType, audioTitle, audioShow) => 
   const { $analytics } = useNuxtApp()
   const currentUser = useCurrentUser()
   const deviceId = useDeviceId()
-  $analytics.sendEvent(eventName, buildAudioEventParams({
-    audioType,
-    audioTitle,
-    audioShow,
-    currentUserId: currentUser.value?.id,
-    deviceId: deviceId.value,
-  }))
+  $analytics.sendEvent(eventName, {
+    audio_type: audioType,
+    audio_title: audioTitle,
+    audio_show: audioShow,
+    user_id: currentUser.value?.id ?? deviceId.value,
+  })
 }
 
 // function that tracks click events to google analytics
@@ -199,13 +194,12 @@ export const trackClickEvent = (category, component, label) => {
   const { $analytics } = useNuxtApp()
   const currentUser = useCurrentUser()
   const deviceId = useDeviceId()
-  $analytics.sendEvent("click_tracking", buildClickEventParams({
-    category,
+  $analytics.sendEvent("click_tracking", {
+    event_category: category,
     component,
-    label,
-    currentUserId: currentUser.value?.id,
-    deviceId: deviceId.value,
-  }))
+    event_label: label,
+    user_id: currentUser.value?.id ?? deviceId.value,
+  })
 }
 
 /**
@@ -997,7 +991,6 @@ export const togglePlayEpisode = (media, type = mediaTypes.EPISODE) => {
   if (currentEpisode.value?.id !== media.id) {
     currentEpisode.value = prepForPlayer(media)
     saveRecentlyPlayed(media, type)
-    return
   }
 
   togglePlayTrigger.value = !togglePlayTrigger.value
@@ -1011,12 +1004,6 @@ export const getCssVar = (name: string, px = false) => {
   return px ? val : Number(parseInt(val))
 }
 // ROUTING
-export const shouldOpenStoryInNewTab = (platform, storyLink, cmsSource) =>
-  platform === "web" && Boolean(storyLink) && cmsSource === cmsSources.WAGTAIL
-
-export const shouldTrackOutgoingGothamistClick = (storyLink) =>
-  Boolean(storyLink) && storyLink.includes("gothamist.com")
-
 /* centralized function to route to a episode page */
 export const goToEpisodePage = (ep, params, log = true) => {
   const cmsSource = ep.cmsSource || cmsSources.PUBLISHER
@@ -1050,14 +1037,7 @@ export const goToLivePage = (ep, params, log = true) => {
 /* centralized function to route to a story page */
 export const goToStoryPage = (story, params, log = true) => {
   const theLink = story.url || story.link || stripApiSubdomain(story.meta?.htmlUrl)
-  if (shouldOpenStoryInNewTab(Capacitor.getPlatform(), theLink, story.cmsSource)) {
-    if (shouldTrackOutgoingGothamistClick(theLink)) {
-      trackClickEvent(
-        "Click Tracking - Outgoing Gothamist Story",
-        "Story",
-        story.title ?? theLink
-      )
-    }
+  if (Capacitor.getPlatform() === "web" && theLink && story.cmsSource === cmsSources.WAGTAIL) {
     // open in new tab if web and wagtail source (Gothamist)
     window.open(theLink, "_blank")
   } else {
@@ -1408,7 +1388,7 @@ export const refreshData = async (refreshUser = false) => {
   // update the schedule data
   // watch on the live.vue handles this schedule data
 
-  // update currentEpisode LIVE STREAM data and prep for player and media session IF it is or has been played and the expanded player and media session are open
+  // update currentEpisode LIVE STREAM data and prep for player and media session IF it is or has been played and the expanded player and media session are open 
   if (currentEpisode.value && isLiveStream.value) {
     currentEpisode.value = prepForPlayer(currentEpisodeHolder.value)
     //update media session
