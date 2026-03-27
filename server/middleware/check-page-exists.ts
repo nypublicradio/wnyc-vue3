@@ -10,14 +10,30 @@ export default defineEventHandler(async (event) => {
 
   // Only check for dynamic page routes
   // Skip API routes, static assets, and special routes
+  // Skip CMS look-up for client-only Nuxt routes.
+  // These aren't in the CMS so the fetch would return 404, which cascades into
+  // the Nginx @wagtail fallback (appends a trailing slash + leaks port 8080).
+  const clientOnlyRoutes = [
+    '/',
+    '/home',
+    '/saved',
+    '/login',
+    '/signup',
+    '/forgot-password',
+    '/dashboard',
+    '/mobile',
+    '/live',
+  ]
+
   if (
     path.startsWith('/api/') ||
     path.startsWith('/_nuxt/') ||
     path.startsWith('/sw.js') ||
+    path.startsWith('/__') || // Nuxt internals
     path.includes('.') || // Files with extensions
-    path === '/' || // Home page
-    path === '/home' || // Common home page alias
-    path.startsWith('/__') // Nuxt internals
+    path.startsWith('/confirm') || // email confirmation flow
+    path.startsWith('/preview') || // preview pages
+    clientOnlyRoutes.includes(path)
   ) {
     return
   }
