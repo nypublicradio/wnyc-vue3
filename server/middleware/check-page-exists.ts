@@ -1,4 +1,4 @@
-import { defineEventHandler, getRequestURL } from 'h3'
+import { defineEventHandler, getRequestURL, setResponseStatus } from 'h3'
 
 /**
  * Nitro middleware to check if dynamic pages exist before rendering
@@ -8,20 +8,33 @@ export default defineEventHandler(async (event) => {
   const url = getRequestURL(event)
   const path = url.pathname
 
-  // Skip API routes, static assets, and Nuxt internals
+  // Only check for dynamic page routes
+  // Skip API routes, static assets, and special routes
+  // Skip CMS look-up for client-only Nuxt routes.
+  // These aren't in the CMS so the fetch would return 404, which cascades into
+  // the Nginx @wagtail fallback (appends a trailing slash + leaks port 8080).
+  const clientOnlyRoutes = [
+    '/',
+    '/home',
+    '/saved',
+    '/login',
+    '/signup',
+    '/forgot-password',
+    '/dashboard',
+    '/mobile',
+    '/live',
+  ]
+
   if (
     path.startsWith('/api/') ||
     path.startsWith('/_nuxt/') ||
-    path.startsWith('/__') ||
-    path.endsWith('_payload.json') ||
-    path === '/' ||
-    path === '/home'
+    path.startsWith('/sw.js') ||
+    path.startsWith('/__') || // Nuxt internals
+    path.includes('.') || // Files with extensions
+    path.startsWith('/confirm') || // email confirmation flow
+    path.startsWith('/preview') || // preview pages
+    clientOnlyRoutes.includes(path)
   ) {
-    return
-  }
-
-  // Skip file-extension paths — let Nitro serve fonts, assets, _payload.json, etc. normally
-  if (path.includes('.')) {
     return
   }
 
@@ -31,14 +44,13 @@ export default defineEventHandler(async (event) => {
     await $fetch(`${config.public.AVIARY_BASE_API}pages/find/`, {
       query: { html_path: path },
       headers: {
-        'X-CMS-Site': config.public.cmsSite,
+        'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443',
       },
     })
   } catch (error: any) {
     if (error?.statusCode === 404) {
-      // Throw a real 404 so NGINX intercepts it and proxies to Wagtail,
-      // which handles CMS-defined redirects before falling through to @missing.
-      throw createError({ statusCode: 404, statusMessage: 'Page Not Found' })
+      setResponseStatus(event, 404, 'Page Not Found')
+      return
     }
     throw error
   }
