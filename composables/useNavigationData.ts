@@ -10,10 +10,19 @@ import {
 let isFetching = false
 let fetchPromise: Promise<void> | null = null
 
-// strip any wnyc.org domain from the url for local routes
+// strip https://www.wnyc.org from the url for local routes
 const stripWNYCUrl = (url) => {
     if (url) {
-        const strippedUrl = url.replace(/https?:\/\/(?:[a-zA-Z0-9-]+\.)*wnyc\.org/i, '')
+        const strippedUrl = url.replace('https://www.wnyc.org', '')
+        return strippedUrl
+    }
+    return url
+}
+
+// strip https://www.wnyc.org/browse/shows/ from the url for local routes
+const stripShowUrl = (url) => {
+    if (url) {
+        const strippedUrl = url.replace('https://www.wnyc.org/browse/shows/', '')
         return strippedUrl
     }
     return url
@@ -305,8 +314,8 @@ export default async function useNavigationData () {
 
                     // Normalize and merge Shows
                     const showsItems = normalizeShowsMenuData(bffData.showsResponse, 5)
-                    if (workingHeaderNav[2]?.items?.[0]) {
-                        workingHeaderNav[2].items[0].splice(0, 0, ...showsItems)
+                    if (workingHeaderNav[1]?.items?.[0]) {
+                        workingHeaderNav[1].items[0].splice(0, 0, ...showsItems)
                     }
 
                     // Create the 'allNavigationData' state *before* header-specific modifications
@@ -314,7 +323,7 @@ export default async function useNavigationData () {
                     const workingAllNav = resolveUrlFunctions(workingHeaderNav.map(item => ({ ...item })), appDownloadLink.value)
                     // Normalize and merge Wagtail Primary Navigation
                     const primaryNavItems = normalizeWagtailMenuData(bffData.wagtailResponse?.primary_navigation)
-                    workingHeaderNav.splice(3, 0, ...primaryNavItems)
+                    workingHeaderNav.splice(2, 0, ...primaryNavItems)
 
                     const collectionsMenuItem = workingAllNav.find((item) => item.label === "Collections")
                     if (collectionsMenuItem?.items) {
