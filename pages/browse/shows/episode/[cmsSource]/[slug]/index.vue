@@ -13,7 +13,7 @@ const {
   data: episode,
   status,
   error,
-} = useFetch(
+} = await useFetch(
   () =>
     `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
   {
@@ -81,17 +81,20 @@ const breadcrumbs = computed(() => [
   },
   { label: episodeData.value?.title },
 ])
+title = `${episodeData.value?.title} | WNYC`
+description = episodeData.value?.description
+useHead({
+  title,
+})
+useSeoMeta({
+  title,
+  description,
+})
+
 </script>
 
 <template>
   <div class="episode-page">
-    <Html lang="en">
-      <Head>
-        <Title>{{ episodeData?.title }} | WNYC</Title>
-        <Meta name="og:title" :content="`${episodeData?.title} | WNYC`" />
-        <Meta name="twitter:title" :content="`${episodeData?.title} | WNYC`" />
-      </Head>
-    </Html>
     <FetchError v-if="error" />
     <template v-else>
       <section class="flex align-items-center">

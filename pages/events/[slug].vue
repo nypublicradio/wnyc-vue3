@@ -2,7 +2,7 @@
 import { useToast } from "primevue/usetoast"
 import { useTopStories } from "~/composables/useTopStories"
 import { EVENT_BADGE_STYLES, useEventData } from "~/composables/useEventData"
-import { dynamicNavigation } from "~/utilities/helpers"
+import { dynamicNavigation, getFirstSentence } from "~/utilities/helpers"
 
 const { getFilteredTopStories } = useTopStories()
 const { $analytics } = useNuxtApp()
@@ -10,7 +10,7 @@ const config = useRuntimeConfig()
 const route = useRoute()
 const toast = useToast()
 
-const { data: event, status, error } = useFetch(
+const { data: event, status, error } = await useFetch(
   `${config.public.BFF_URL}/api/events/${route.params.slug}`,
   {
     onResponse({ response }) {
@@ -43,6 +43,7 @@ const { data: moreEvents } = useFetch(
 )
 
 const title = computed(() => eventData.value?.title)
+const description = computed(() => getFirstSentence(eventData.value?.description))
 const {
   dayNumber: eventDayNumber,
   monthLabel: eventDateShort,
@@ -95,17 +96,29 @@ const breadcrumbs = computed(() => [
   { label: "Events", route: "/events" },
   { label: title.value || "Event" },
 ])
+
+useHead({
+  title: `${eventData.value?.title} | WNYC`,
+})
+if (eventData.value?.preventSearchIndexing) {
+  useHead({
+    meta: [
+      {
+        name: "robots",
+        content: "noindex",
+      }
+    ]
+  })
+}
+
+useSeoMeta({
+  title: `${eventData.value?.title} | WNYC`,
+  description: getFirstSentence(eventData.value?.description),
+})
 </script>
 
 <template>
   <div class="event-page">
-    <Html lang="en">
-      <Head>
-        <Title>{{ title }} | WNYC</Title>
-        <Meta name="og:title" :content="`${title} | WNYC`" />
-        <Meta name="twitter:title" :content="`${title} | WNYC`" />
-      </Head>
-    </Html>
     <FetchError v-if="error" />
     <template v-else>
       <section>

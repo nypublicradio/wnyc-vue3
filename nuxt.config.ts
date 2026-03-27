@@ -99,6 +99,9 @@ export default defineNuxtConfig({
     layoutTransition: true,
     head: {
       title: "WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+      htmlAttrs: {
+        lang: 'en',
+      },
       meta: [
         {
           name: "viewport",
@@ -108,8 +111,6 @@ export default defineNuxtConfig({
         {
           charset: "utf-8"
         }
-        // { name: 'msapplication-TileColor', content: '#ffffff' },
-        // { name: 'theme-color', content: '#ffffff' }
       ],
       link: [
         {

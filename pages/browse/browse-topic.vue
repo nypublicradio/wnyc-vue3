@@ -34,25 +34,18 @@ onMounted(() => {
 onUnmounted(() => {
   categoryData.value = null
 })
+
+const title = "Browse Topics | WNYC"
+useHead({
+  title,
+})
+useSeoMeta({
+  title,
+})
+
 </script>
 <template>
   <div class="browse-topic-page">
-    <Html lang="en">
-      <Head>
-        <Title
-          >Browse Topics | WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
-          News</Title
-        >
-        <Meta
-          name="og:title"
-          content="Browse Topics | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-        <Meta
-          name="twitter:title"
-          content="Browse Topics | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-      </Head>
-    </Html>
     <section class="">
       <div class="flex align-items-center">
         <Button

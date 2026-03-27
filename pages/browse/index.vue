@@ -91,26 +91,18 @@ watch(
   },
   { once: true }
 )
+const title = "Browse Shows | WNYC"
+useHead({
+  title,
+})
+useSeoMeta({
+  title,
+})
+
 </script>
 
 <template>
   <div class="browse-page">
-    <Html lang="en">
-      <Head>
-        <Title
-          >Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming
-          Radio, News</Title
-        >
-        <Meta
-          name="og:title"
-          content="Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-        <Meta
-          name="twitter:title"
-          content="Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-      </Head>
-    </Html>
     <div class="search z-2" :class="{ 'is-app': isApp }">
       <section class="thinContent">
         <h1 class="hidden md:block mb-3 md:mb-4">Browse All Shows</h1>

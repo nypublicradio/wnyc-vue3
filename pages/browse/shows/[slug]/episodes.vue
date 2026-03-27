@@ -24,7 +24,7 @@ const {
   data: show,
   status,
   error,
-} = useFetch(
+} = await useFetch(
   `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}?showOnly=true`,
   {
     onResponse(res) {
@@ -140,27 +140,28 @@ onMounted(() => {
     content_group: "app_tab",
   })
 })
+
+const title = computed(() => `${show.value?.title} | WNYC`)
+description = computed(() => `${show.value?.title}`)
+useHead({
+  title,
+  link: [
+    {
+      rel: "canonical",
+      href: `${config.public.BASE_URL}/browse/shows/${route.params.slug}/episodes`,
+    },
+  ],
+})
+useSeoMeta({
+  title,
+  description,
+})
+
 </script>
 
 <template>
   <div class="show-episodes-page pb-7">
     <section>
-      <Html lang="en">
-        <Head>
-          <Title
-            >Browse Shows | WNYC | New York Public Radio, Podcasts, Live
-            Streaming Radio, News</Title
-          >
-          <Meta
-            name="og:title"
-            content="Browse Show Episodes | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-          />
-          <Meta
-            name="twitter:title"
-            content="Browse Show Episodes | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-          />
-        </Head>
-      </Html>
       <div class="flex align-items-center">
         <Breadcrumbs :items="breadcrumbs" />
       </div>

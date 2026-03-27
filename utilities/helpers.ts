@@ -1485,7 +1485,14 @@ export const toggleNativePullToRefresh = (enable: boolean) => {
     document.documentElement.style.overscrollBehavior = 'none'
   }
 }
+
 // isolates the slug from the end of a url
 export const isolateSlug = (slug: string) => {
   return slug.split("/").pop()
+}
+
+export const getFirstSentence = (text: string): string => {
+  if (!text) return ''
+  const sentences = text.match(/(.*?[.?!])/)
+  return sentences ? sentences[0] : text
 }

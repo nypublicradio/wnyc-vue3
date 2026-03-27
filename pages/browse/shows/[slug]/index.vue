@@ -1,5 +1,5 @@
 <script setup>
-import { checkIsFavorited, slugify } from "~/utilities/helpers"
+import { checkIsFavorited, slugify, getFirstSentence } from "~/utilities/helpers"
 import { useIsApp } from "~/composables/states"
 
 const config = useRuntimeConfig()
@@ -12,7 +12,7 @@ const {
   data: show,
   status,
   error,
-} = useFetch(
+} = await useFetch(
   `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`,
   {
     onResponse(res) {
@@ -72,26 +72,23 @@ onMounted(() => {
 onUnmounted(() => {
   stop()
 })
+
+const title = `${show.value?.title} | WNYC`
+})
+const description = getFirstSentence(show.value?.summary)
+
+useHead({
+  title,
+})
+useSeoMeta({
+  title,
+  description,
+})
 </script>
+
 
 <template>
   <div class="shows-page pb-7" :class="{ 'is-app': isApp }">
-    <Html lang="en">
-      <Head>
-        <Title
-          >{{ show?.title }} | WNYC | New York Public Radio, Podcasts, Live
-          Streaming Radio, News</Title
-        >
-        <Meta
-          name="og:title"
-          :content="`${show?.title} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`"
-        />
-        <Meta
-          name="twitter:title"
-          :content="`${show?.title} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`"
-        />
-      </Head>
-    </Html>
     <section>
       <div class="flex align-items-center">
         <Breadcrumbs :items="breadcrumbs" />

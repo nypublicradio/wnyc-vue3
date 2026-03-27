@@ -4,10 +4,18 @@ import { useCurrentEpisode, useIsApp } from "~/composables/states"
 // const { topStories } = useTopStories()
 import { brandCards } from "~/composables/globals.ts"
 
+
+const title = "WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
+const description = "WNYC is America's most listened-to public radio station and the producer of award-winning programs and podcasts like Radiolab, On the Media, and The Brian Lehrer Show."
 useHead({
+  title,
   bodyAttrs: {
     class: "no-bottom-padding",
   },
+})
+useSeoMeta({
+  title,
+  description,
 })
 
 const config = useRuntimeConfig()
@@ -44,23 +52,6 @@ onMounted(() => {
 
 <template>
   <div class="home">
-    <Html lang="en">
-      <Head>
-        <Title
-          >WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
-          News</Title
-        >
-        <Meta
-          name="og:title"
-          content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-        <Meta
-          name="twitter:title"
-          content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-      </Head>
-    </Html>
-
     <section class="mb-4 pt-0 md:my-4 md:pt-4">
       <div class="home-top grid grid-nogutter gap-4">
         <LiveFeature class="col-12 lg:col -mx-4 md:mx-0 w-screen md:w-full" />
