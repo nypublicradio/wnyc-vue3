@@ -1,0 +1,42 @@
+const redirects = [
+    { from: '/browse/shows/10-things-scare-me', to: '/browse/shows/10-things-that-scare-me' },
+    { from: '/browse/shows/dopequeens', to: '/browse/shows/2-dope-queens' },
+    { from: '/browse/shows/atc', to: '/browse/shows/all-things-considered' },
+    { from: '/browse/shows/bl', to: '/browse/shows/brian-lehrer-show' },
+    { from: '/browse/shows/the-brian-lehrer-show', to: '/browse/shows/brian-lehrer-show' },
+    { from: '/browse/shows/bl-daily-politics-podcast', to: '/browse/shows/brian-lehrer-a-daily-politics-podcast' },
+    { from: '/browse/shows/the-latest-episodes-from-caught', to: '/browse/shows/caught' },
+    { from: '/browse/shows/documentaryweek', to: '/browse/shows/documentary-of-the-week' },
+    { from: '/browse/shows/experiment', to: '/browse/shows/the-experiment-wnyc' },
+    { from: '/browse/shows/fishko', to: '/browse/shows/fishko-files' },
+    { from: '/browse/shows/freshair', to: '/browse/shows/fresh-air' },
+    { from: '/browse/shows/latenight', to: '/browse/shows/late-night-whenever' },
+    { from: '/browse/shows/lies', to: '/browse/shows/lies-wnyc' },
+    { from: '/browse/shows/radiolabmoreperfect', to: '/browse/shows/more-perfect' },
+    { from: '/browse/shows/me', to: '/browse/shows/morning-edition' },
+    { from: '/browse/shows/newsounds', to: '/browse/shows/new-sounds' },
+    { from: '/browse/shows/tnyradiohour', to: '/browse/shows/new-yorker-radio-hour' },
+    { from: '/browse/shows/notetoself', to: '/browse/shows/note-to-self' },
+    { from: '/browse/shows/anxiety', to: '/browse/shows/notes-from-america' },
+    { from: '/browse/shows/otm', to: '/browse/shows/on-the-media' },
+    { from: '/browse/shows/onlyhuman', to: '/browse/shows/only-human' },
+    { from: '/browse/shows/classical-music-happy-hour', to: '/browse/shows/our-common-nature' },
+    { from: '/browse/shows/our-common-nature-podcast', to: '/browse/shows/our-common-nature' },
+    { from: '/browse/shows/pieceofwork', to: '/browse/shows/a-piece-of-work' },
+    { from: '/browse/shows/theseason', to: '/browse/shows/the-season' },
+    { from: '/browse/shows/whiteguys', to: '/browse/shows/sooo-many-white-guys' },
+    { from: '/browse/shows/stonewall-fifty', to: '/browse/shows/the-sound-of-pride-stonewall-at-50' },
+    { from: '/browse/shows/takeaway', to: '/browse/shows/the-takeaway' },
+    { from: '/browse/shows/ted', to: '/browse/shows/ted-radio-hour' },
+    { from: '/browse/shows/radiolab-kids', to: '/browse/shows/terrestrials' },
+    { from: '/browse/shows/neighborhood', to: '/browse/shows/there-goes-the-neighborhood' },
+    { from: '/browse/shows/fleas', to: '/browse/shows/this-podcast-has-fleas' },
+    { from: '/browse/shows/trumpinc', to: '/browse/shows/trump-inc' },
+    { from: '/browse/shows/universe-art', to: '/browse/shows/universe-of-art' },
+]
+
+export default defineEventHandler((event) => {
+    // Cache for 24 hours (86400 seconds) in the client's browser/app
+    setResponseHeader(event, 'Cache-Control', 'public, max-age=86400, stale-while-revalidate=3600')
+    return redirects
+})
