@@ -27,6 +27,13 @@ filter_prod: &filter_prod
     tags:
       only: /^v[0-9]+\.[0-9]+\.[0-9]+.*$/
 
+filter_web-prod: &filter_web-prod
+  filters:
+    branches:
+      only: main-org
+    tags:
+      only: web-prod
+
 workflows:
   test-and-deploy:
     jobs:
@@ -60,6 +67,20 @@ workflows:
           name: Deploy (prod)
           context: "AWS Deploy"
           env: "prod"
+          repo: "wnyc-vue3"
+          service: "wnyc-vue3"
+          cluster: "wnyc-vue3"
+          cpu: 1024
+          memory: 2048
+          use_firelens: true
+          requires:
+            - test
+            - test_nginx
+      - nypr-deploy/build_and_deploy:
+          <<: *filter_web-prod
+          name: Deploy (web-prod)
+          context: "AWS Deploy"
+          env: "web-prod"
           repo: "wnyc-vue3"
           service: "wnyc-vue3"
           cluster: "wnyc-vue3"
