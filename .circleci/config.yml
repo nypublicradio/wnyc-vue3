@@ -80,10 +80,10 @@ workflows:
           <<: *filter_web-prod
           name: Deploy (web-prod)
           context: "AWS Deploy"
-          env: "web_prod"
+          env: "prod"
           repo: "wnyc-vue3"
-          service: "wnyc-vue3"
-          cluster: "wnyc-vue3"
+          service: "wnyc-vue3-web"
+          cluster: "wnyc-vue3-web"
           cpu: 1024
           memory: 2048
           use_firelens: true
