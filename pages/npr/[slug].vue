@@ -12,7 +12,7 @@ const {
   data: storyData,
   status,
   error,
-} =  = await useFetch(`${config.public.BFF_URL}/api/npr/${route.params.slug}`, {
+} = await useFetch(`${config.public.BFF_URL}/api/npr/${route.params.slug}`, {
   onResponse({ response }) {
     // send GA page view
     const res = response._data
@@ -39,7 +39,10 @@ const {
   },
 })
 
+const title = `${storyData.value?.title} | WNYC`
+const description = storyData.value?.description
 useHead({
+  title,
   link: [
     {
       rel: "canonical",
@@ -47,6 +50,11 @@ useHead({
     },
   ],
 })
+useSeoMeta({
+  title,
+  description,
+})
+
 
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
@@ -66,13 +74,6 @@ const breadcrumbs = computed(() => [
 
 <template>
   <div class="npr-story-page">
-    <Html lang="en">
-      <Head>
-        <Title>{{ storyData?.title }} | WNYC</Title>
-        <Meta name="og:title" :content="`${storyData?.title} | WNYC`" />
-        <Meta name="twitter:title" :content="`${storyData?.title} | WNYC`" />
-      </Head>
-    </Html>
     <FetchError v-if="error" />
     <template v-else>
       <section class="flex align-items-center">

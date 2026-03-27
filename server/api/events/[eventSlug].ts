@@ -21,6 +21,7 @@ const eventFields = [
     'event_url',
     'body',
     'tags',
+    'prevent_search_indexing',
 ].join(',')
 
 /**
