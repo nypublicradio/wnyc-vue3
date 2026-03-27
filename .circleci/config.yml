@@ -80,7 +80,7 @@ workflows:
           <<: *filter_web-prod
           name: Deploy (web-prod)
           context: "AWS Deploy"
-          env: "web-prod"
+          env: "web_prod"
           repo: "wnyc-vue3"
           service: "wnyc-vue3"
           cluster: "wnyc-vue3"
