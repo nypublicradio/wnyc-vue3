@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
     const redirect = redirects?.find(r => r.from === url)
     if (redirect) {
         const newLocation = urlParams ? redirect.to + urlParams : redirect.to
-        return sendRedirect(event, newLocation, 301)
+        await sendRedirect(event, newLocation, 301)
     }
 })
 
