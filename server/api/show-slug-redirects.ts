@@ -1,9 +1,4 @@
-// isolates the slug from the end of a url
-export const isolateSlug = (slug: string) => {
-    return slug.split("/").pop()
-}
-
-export const redirects = [
+const redirects = [
     { from: '/browse/shows/10-things-scare-me', to: '/browse/shows/10-things-that-scare-me' },
     { from: '/browse/shows/dopequeens', to: '/browse/shows/2-dope-queens' },
     { from: '/browse/shows/atc', to: '/browse/shows/all-things-considered' },
@@ -39,3 +34,9 @@ export const redirects = [
     { from: '/browse/shows/trumpinc', to: '/browse/shows/trump-inc' },
     { from: '/browse/shows/universe-art', to: '/browse/shows/universe-of-art' },
 ]
+
+export default defineEventHandler((event) => {
+    // Cache for 24 hours (86400 seconds) in the client's browser/app
+    setResponseHeader(event, 'Cache-Control', 'public, max-age=86400, stale-while-revalidate=3600')
+    return redirects
+})
