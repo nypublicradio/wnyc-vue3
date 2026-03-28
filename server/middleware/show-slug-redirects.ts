@@ -1,25 +1,21 @@
-import { redirects } from '~/utilities/show-slug-lookup-table'
+export default defineEventHandler(async (event) => {
+    // Prevent circular request: this middleware intercepts all routes including the API route below
+    if (event.path.startsWith('/api/show-slug-redirects')) return
 
-export default fromNodeMiddleware((req, res, next) => {
-    const url = req.url.split('?')[0]
+    const url = event.path.split('?')[0]
     let urlParams = null
-    if (req.url.includes('?')) {
-        urlParams = `?${req.url.split('?')[1]}`
+    if (event.path.includes('?')) {
+        urlParams = `?${event.path.split('?')[1]}`
     }
 
-    const redirect = redirects.find(r => r.from === url)
+    // Fetch redirect table from server API so updates are picked up without a new app build
+    const redirects = await $fetch('/api/show-slug-redirects') as { from: string; to: string }[]
+
+    const redirect = redirects?.find(r => r.from === url)
     if (redirect) {
-        let newLocation
-        if (urlParams) {
-            newLocation = redirect.to + urlParams
-        } else {
-            newLocation = redirect.to
-        }
-        res.writeHead(301, {
-            Location: newLocation
-        })
-        res.end()
-    } else {
-        next()
+        const newLocation = urlParams ? redirect.to + urlParams : redirect.to
+        return sendRedirect(event, newLocation, 301)
     }
 })
+
+
