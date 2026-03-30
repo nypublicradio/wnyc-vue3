@@ -431,7 +431,7 @@ export default function useLiveStream () {
     } else {
       // Log error when station is not found
       console.error(`Station with slug "${querySlug}" not found in available stations.`)
-      
+
       // Show user-friendly error message
       const globalToast = useGlobalToast()
       globalToast.value = {
@@ -440,7 +440,7 @@ export default function useLiveStream () {
         life: 5000,
         closable: true,
       }
-      
+
       // Fallback to default station (first station or current episode holder)
       if (currentEpisodeHolder.value) {
         switchStation(currentEpisodeHolder.value, false)
