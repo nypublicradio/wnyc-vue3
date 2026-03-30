@@ -14,7 +14,6 @@
  * 
  * S3 Object Key Format: schedule-{STATIONSLUG}.json
  * Example: schedule-WNYC.json
- * 
  * Local Mock Data Path: server/data/schedules/schedule-{STATIONSLUG}.json
  * 
  * Query Parameters:
