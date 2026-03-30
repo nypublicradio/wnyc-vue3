@@ -1,5 +1,9 @@
 <script setup>
-import { trackClickEvent, formatDate, getCustomStationLabel } from "~/utilities/helpers"
+import {
+  trackClickEvent,
+  formatDate,
+  getCustomStationLabel,
+} from "~/utilities/helpers"
 import { useBreakpoints } from "~/composables/useBreakpoints"
 import { stripShowUrl } from "~/composables/useNavigationData"
 import useLiveStream from "~/composables/data/liveStream"
@@ -11,7 +15,11 @@ import {
 } from "~/composables/states"
 import { useDebounceFn } from "@vueuse/core"
 
-import { scheduleLocalNotification, getEntryTitle } from "~/utilities/local-notifications"
+import {
+  scheduleLocalNotification,
+  getEntryTitle,
+} from "~/utilities/local-notifications"
+import VFlexibleLink from "./VFlexibleLink.vue"
 
 const {
   getTheTime,
@@ -143,6 +151,14 @@ const moreFromClick = (entry) => {
   navigateTo(`/browse/shows/${slug}`)
 }
 
+// handles the click on the show title
+const showTitleClick = (entry) => {
+  const title = entry.attributes.parentTitle
+  const slug = stripShowUrl(entry.attributes.parentUrl)
+  trackClickEvent(`Click Tracking - Show Title - ${title}`, "Schedule", title)
+  navigateTo(`/browse/shows/${slug}`)
+}
+
 // determine if the entry is the current episode and if the first entry should be featured (New Sounds (q2) and the holiday channel are excluded)
 const handleCurrentEpisode = (entry, index) => {
   const badSlugs = ["q2", "wqxr-holiday-channel-on-wnyc"]
@@ -190,7 +206,9 @@ const handleScheduleNavigationButtonLabel = (date) => {
         <div>&nbsp;</div>
       </TabList>
       <hr class="w-full mt-5 opacity-40" />
-      <div class="date-tools flex justify-content-between align-items-center my-4">
+      <div
+        class="date-tools flex justify-content-between align-items-center my-4"
+      >
         <Button
           severity="secondary"
           variant="text"
@@ -205,7 +223,9 @@ const handleScheduleNavigationButtonLabel = (date) => {
               : 'day-change-btn link'
           "
         ></Button>
-        <div class="today flex flex-column gap-0 align-items-center text-center">
+        <div
+          class="today flex flex-column gap-0 align-items-center text-center"
+        >
           <span class="day font-bold text-lg">{{
             formatDate(currentScheduleDate, "EEEE")
           }}</span>
@@ -249,19 +269,33 @@ const handleScheduleNavigationButtonLabel = (date) => {
                   : ''
               "
             >
-              <div class="active-content flex flex-column justify-content-between">
+              <div
+                class="active-content flex flex-column justify-content-between"
+              >
                 <div>
                   <p class="time">
                     {{
-                      getTheTime(entry.attributes.start, entry.attributes.end, entryIndex)
+                      getTheTime(
+                        entry.attributes.start,
+                        entry.attributes.end,
+                        entryIndex
+                      )
                     }}
                   </p>
-                  <h2 class="title truncate t2lines">
-                    {{ getEntryTitle(entry) }}
-                  </h2>
+                  <Button
+                    @click="showTitleClick(entry)"
+                    severity="secondary"
+                    variant="link"
+                    class="title-link -mt-2"
+                  >
+                    <h2 class="title truncate t2lines">
+                      {{ getEntryTitle(entry) }}
+                    </h2>
+                  </Button>
                   <HtmlConvert
                     v-if="
-                      entry.station.episodeBody && handleCurrentEpisode(entry, entryIndex)
+                      entry.station.episodeBody &&
+                      handleCurrentEpisode(entry, entryIndex)
                     "
                     :htmlContent="entry.station.episodeBody"
                     class="desc truncate t3lines mt-1"
@@ -293,7 +327,8 @@ const handleScheduleNavigationButtonLabel = (date) => {
                     entry.station.onTodaysShowImage
                   "
                   :alt="
-                    entry.station.onTodaysShowImageAltText || 'on today\'s show image'
+                    entry.station.onTodaysShowImageAltText ||
+                    'on today\'s show image'
                   "
                   :size="{ xs: [208, 208] }"
                   :allowVerticalEffect="true"
@@ -358,7 +393,12 @@ const handleScheduleNavigationButtonLabel = (date) => {
       >
         <div class="flex gap-3">
           <div class="flex flex-column gap-2">
-            <Skeleton class="opacity-50" height="14px" width="64px" borderRadius="4px" />
+            <Skeleton
+              class="opacity-50"
+              height="14px"
+              width="64px"
+              borderRadius="4px"
+            />
             <Skeleton height="22px" width="174px" borderRadius="4px" />
           </div>
         </div>
@@ -511,6 +551,17 @@ html {
 
     .active-content {
       min-height: 0; // Allow flex shrinking
+    }
+    .title-link {
+      margin-left: -0.8rem;
+      * {
+        transition: color var(--p-transition-duration);
+      }
+      &:hover {
+        * {
+          color: var(--link-button-hover-color);
+        }
+      }
     }
     .more-from {
       margin-left: -0.8rem;
