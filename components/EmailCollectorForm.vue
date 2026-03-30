@@ -1,55 +1,55 @@
 <script setup lang="ts">
-import { watch } from 'vue'
+import { watch } from "vue"
 
 const props = defineProps({
   showNoThanks: {
     type: Boolean,
-    default: false
+    default: false,
   },
   dark: {
     type: Boolean,
-    default: false
+    default: false,
   },
   outlined: {
     type: Boolean,
-    default: false
+    default: false,
   },
   isSubmitting: {
     type: Boolean,
-    default: false
+    default: false,
   },
   altDesign: {
     type: Boolean,
-    default: false
+    default: false,
   },
   submissionStatus: {
     type: String,
-    default: null
+    default: null,
   },
   submitButtonText: {
     type: String,
-    default: 'Sign up'
+    default: "Sign up",
   },
   submitButtonIcon: {
     type: String,
-    default: null
+    default: null,
   },
   thanksMessage: {
     type: String,
-    default: 'Thank you for signing up!'
-  }
+    default: "Thank you for signing up!",
+  },
 })
 
-const emit = defineEmits(['submit', 'noThanksClick'])
+const emit = defineEmits(["submit", "noThanksClick"])
 
-const email = ref('')
+const email = ref("")
 const checked = ref(true)
 const submitButtonRef = ref(null)
 
 const emailErrorText = ref(null)
 
 // function to check if the email is a valid format and to set the error text
-function validateEmail () {
+function validateEmail() {
   // See also isValidEmail in useNewsletterSignup.ts
   // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#basic_validation
   const validRegex =
@@ -58,7 +58,7 @@ function validateEmail () {
   if (validRegex.test(email.value)) {
     return true
   } else {
-    emailErrorText.value = 'Please enter a valid email address.'
+    emailErrorText.value = "Please enter a valid email address."
     return false
   }
 }
@@ -69,11 +69,11 @@ watch(
   () => {
     emailErrorText.value = null
     switch (props.submissionStatus) {
-      case 'success':
+      case "success":
         break
-      case 'error':
+      case "error":
         emailErrorText.value =
-          'Sorry, there was an error with your submission. Please try again!'
+          "Sorry, there was an error with your submission. Please try again!"
         break
       default:
     }
@@ -81,8 +81,8 @@ watch(
 )
 
 // submit the email value through the emit if the email is valid
-function submitForm () {
-  if (validateEmail()) emit('submit', email.value)
+function submitForm() {
+  if (validateEmail()) emit("submit", email.value)
 }
 </script>
 
@@ -108,7 +108,7 @@ function submitForm () {
                 :class="[
                   { 'p-invalid': emailErrorText },
                   { 'alt-design': altDesign },
-                  { dark }
+                  { dark },
                 ]"
                 type="email"
                 placeholder="your@email.com"
@@ -148,18 +148,19 @@ function submitForm () {
               >{{ emailErrorText }}</small
             >
           </Transition>
-          <div class="field-checkbox mt-3 mb-0">
-            <Checkbox
-              v-model="checked"
-              aria-label="Toggle agreement to the terms"
-              :disabled="isSubmitting"
-              :binary="true"
-              @click="!checked"
-            />
-            <label for="binary">
-              <slot />
-            </label>
-          </div>
+          <ClientOnly>
+            <div class="field-checkbox mt-3 mb-0">
+              <Checkbox
+                v-model="checked"
+                aria-label="Toggle agreement to the terms"
+                :disabled="isSubmitting"
+                :binary="true"
+              />
+              <label for="binary">
+                <slot />
+              </label>
+            </div>
+          </ClientOnly>
         </div>
         <div v-if="showNoThanks" class="flex justify-content-start">
           <div>
@@ -208,7 +209,7 @@ function submitForm () {
   margin-top: 8px;
   text-decoration: underline;
 
-  @include media('<md') {
+  @include media("<md") {
     margin-top: -1rem;
   }
 }
