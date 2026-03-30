@@ -57,13 +57,6 @@ watchEffect(async () => {
   isFavorited.value = await checkIsFavorited(props.data.slug)
 })
 
-const handleIsLiveIndicator = computed(() => {
-  return (
-    currentEpisodeHolder.value?.title === props.data.title ||
-    currentEpisode?.value?.title === props.data.title
-  )
-})
-
 // check if the show is currently live
 const isCurrentlyLive = computed(() => {
   return (
