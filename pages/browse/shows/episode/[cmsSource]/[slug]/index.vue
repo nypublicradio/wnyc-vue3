@@ -1,6 +1,6 @@
 <script setup>
 import { useToast } from "primevue/usetoast"
-import { togglePlayEpisode } from "~/utilities/helpers"
+import { togglePlayEpisode, getFirstSentence, stripHtmlTags } from "~/utilities/helpers"
 import { useTopStories } from "~/composables/useTopStories"
 const { getFilteredTopStories } = useTopStories()
 const { $analytics } = useNuxtApp()
@@ -82,15 +82,15 @@ const breadcrumbs = computed(() => [
   { label: episodeData.value?.title },
 ])
 title = `${episodeData.value?.title} | WNYC`
-description = episodeData.value?.description
+tease = episodeData.value?.tease ?? getFirstSentence(stripHtmlTags(episodeData.value?.tease))
+description = episodeData.value?.description ?? getFirstSentence(stripHtmlTags(episodeData.value?.description))
 useHead({
   title,
 })
 useSeoMeta({
   title,
-  description,
+  description: tease ?? description,
 })
-
 </script>
 
 <template>

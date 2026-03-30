@@ -74,7 +74,6 @@ onUnmounted(() => {
 })
 
 const title = `${show.value?.title} | WNYC`
-})
 const description = getFirstSentence(show.value?.summary)
 
 useHead({
