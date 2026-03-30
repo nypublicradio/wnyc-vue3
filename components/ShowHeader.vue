@@ -8,6 +8,7 @@ import {
   togglePlayEpisode,
   hasAudio,
   addToFavorites2,
+  isolateSlug,
 } from "~/utilities/helpers"
 import { useFallbackImages } from "~/composables/useFallbackImages"
 import {
@@ -111,8 +112,8 @@ const isLoadedLiveStream = computed(() => {
 // check if the show is currently live
 const isCurrentlyLive = computed(() => {
   return (
-    currentEpisodeHolder.value?.title === props.show.title ||
-    currentEpisode?.value?.title === props.show.title
+    isolateSlug(currentEpisodeHolder.value?.detailsLink) ===
+    props.show.meta.slug
   )
 })
 // handle the toggle play button at the top to play the most recent episode with audio and tracking
