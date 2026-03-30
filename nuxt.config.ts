@@ -202,7 +202,7 @@ export default defineNuxtConfig({
     simplecastApiKey: process.env.SIMPLECAST_API_KEY,
     featuredShowsPageId: process.env.FEATURED_SHOWS_PAGE_ID,
     public: {
-      cmsSiteWnyc: process.env.CMS_SITE_WNYC ?? 'demo.wnyc.org:443',
+      cmsSiteWnyc: process.env.CMS_SITE ?? 'demo.wnyc.org:443',
       cmsSiteGothamist: process.env.CMS_SITE_GOTHAMIST ?? 'demo.gothamist.com:443',
       SENTRY_DSN: process.env["SENTRY_DSN"],
       SENTRY_ENV: process.env.SENTRY_ENV ?? "development",
