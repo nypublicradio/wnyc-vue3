@@ -1,5 +1,3 @@
-import { logOutUser } from "~/utilities/helpers"
-import { useAppDownloadLink } from "~/composables/states"
 import { memberCenterLink } from "~/composables/globals"
 
 const allMenuData = [
@@ -19,6 +17,23 @@ const allMenuData = [
                 },
                 {
                     label: "Daily Schedule",
+                    url: "/live"
+                },
+            ],
+        ],
+    },
+    {
+        label: "Daily Schedule",
+        url: "/live",
+        id: "8",
+        icon: "",
+        hasSubmenu: false,
+        inHeaderMenu: true,
+        inFooterMenu: false,
+        items: [
+            [
+                {
+                    label: "Schedule",
                     url: "/live"
                 },
             ],
@@ -86,11 +101,11 @@ const allMenuData = [
                 },
                 {
                     label: "Archives",
-                    url: "/archives/collections"
+                    url: "/browse/shows/wnyc-archives"
                 },
                 {
-                    label: "100 Years",
-                    url: "/100"
+                    label: "Giveaways",
+                    url: "/giveaways"
                 },
                 {
                     label: "Diversity (DEI)",
@@ -122,7 +137,7 @@ const allMenuData = [
                 },
                 {
                     label: "Community",
-                    url: "/community"
+                    url: "https://nypublicradio.org/community-advisory-board/ "
                 },
             ],
         ],
@@ -142,7 +157,7 @@ const allMenuData = [
                 },
                 {
                     label: "Get the App",
-                    url: () => useAppDownloadLink().value
+                    url: "__USE_APP_DOWNLOAD_LINK__"
                 },
                 {
                     label: "Careers",
@@ -220,9 +235,7 @@ const allMenuData = [
                     label: "Log out",
                     class: "logout",
                     url: "/home",
-                    command: () => {
-                        logOutUser()
-                    },
+                    command: "__LOGOUT_COMMAND__",
                 },
             ],
         ],
@@ -237,12 +250,18 @@ const allSocialData = [
         id: "3",
         icon: "pi pi-instagram",
     },
-    {
-        label: "X",
-        url: "https://x.com/wnyc",
-        id: "1",
-        icon: "pi pi-twitter",
-    },
+    // {
+    //     label: "X",
+    //     url: "https://x.com/wnyc",
+    //     id: "1",
+    //     icon: "pi pi-twitter",
+    // },
+    // {
+    //     label: "Bluesky",
+    //     url: "https://bsky.app/profile/wnyc.org",
+    //     id: "5",
+    //     icon: "pi pi-bluesky",
+    // },
     {
         label: "YouTube",
         url: "https://www.youtube.com/@WnycOrg",

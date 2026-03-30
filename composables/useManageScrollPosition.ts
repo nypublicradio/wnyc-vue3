@@ -4,6 +4,7 @@ export default function useManageScrollPosition() {
 
     // save the users current scroll position
     const saveScrollPosition = (delay = 600) => {
+        if (!import.meta.client) return
         scrollPosition.value = window.scrollY
         // prevent the user from scrolling while the modal is open
         setTimeout(() => {
@@ -12,6 +13,7 @@ export default function useManageScrollPosition() {
     }
     // restore the user to their saved scroll position
     const restoreScrollPosition = () => {
+        if (!import.meta.client) return
         document.body.classList.remove("p-overflow-hidden")
         if (scrollPosition.value > 0) {
             window.scrollTo(0, parseInt(scrollPosition.value))

@@ -1,6 +1,8 @@
 <template>
   <div class="nypr-logos-bracket flex">
-    <logo-nypr />
+    <VFlexibleLink raw to="https://www.nypublicradio.org/" target="_blank">
+      <logo-nypr />
+    </VFlexibleLink>
     <div class="bracket bracket-line" />
 
     <VFlexibleLink raw to="/home" target="_blank">

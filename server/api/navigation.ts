@@ -19,34 +19,32 @@ async function getNavigationData () {
 
     try {
         // Fetch all data concurrently with individual error handling
+        // Use aggressive timeouts to prevent health check failures during slow API responses
+        const API_TIMEOUT = 5000 // 5 second timeout for external APIs
+        
         const [wagtail, donate, stations, shows] = await Promise.allSettled([
             axios.get(config.public.HEADER_NAVIGATION_API as string, {
                 headers: {
                     'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
-                }
+                },
+                timeout: API_TIMEOUT
             }),
             axios.get(config.public.SYSTEM_MESSAGES_API as string, {
                 headers: {
                     'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
-                }
+                },
+                timeout: API_TIMEOUT
             }),
-            axios.get(`${config.public.BFF_URL}/api/streams`),
-            axios.get(`${config.public.AVIARY_BASE_API}curated_lists/20/`),
+            // Use $fetch for internal API call instead of axios to avoid circular dependency
+            Promise.race([
+                $fetch('/api/streams').then(data => ({ data })),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), API_TIMEOUT))
+            ]),
+            axios.get(`${config.public.AVIARY_BASE_API}curated_lists/20/`, {
+                timeout: API_TIMEOUT
+            }),
         ])
 
-        // Log any failures for debugging
-        if (wagtail.status === 'rejected') {
-            console.warn('HEADER_NAVIGATION_API failed:', config.public.HEADER_NAVIGATION_API, wagtail.reason?.message || wagtail.reason)
-        }
-        if (donate.status === 'rejected') {
-            console.warn('SYSTEM_MESSAGES_API failed:', config.public.SYSTEM_MESSAGES_API, donate.reason?.message || donate.reason)
-        }
-        if (stations.status === 'rejected') {
-            console.warn('BFF streams API failed:', `${config.public.BFF_URL}/api/streams`, stations.reason?.message || stations.reason)
-        }
-        if (shows.status === 'rejected') {
-            console.warn('BFF showsmenu API failed:', `${config.public.BFF_URL}/api/v3/shows`, shows.reason?.message || shows.reason)
-        }
         return {
             wagtailResponse: wagtail.status === 'fulfilled' ? wagtail.value.data : null,
             donateResponse: donate.status === 'fulfilled' ? donate.value.data : null,
@@ -67,6 +65,19 @@ async function getNavigationData () {
 export default defineEventHandler(async (event) => {
     const res = event?.node?.res
     res.setHeader('Cache-Control', 'max-age=120, stale-while-revalidate')
-    const data = await getNavigationData()
-    return { data }
+    
+    try {
+        const data = await getNavigationData()
+        return { data }
+    } catch (error) {
+        // Return a valid structure even on error
+        return {
+            data: {
+                wagtailResponse: null,
+                donateResponse: null,
+                stationsResponse: null,
+                showsResponse: null,
+            }
+        }
+    }
 })

@@ -1,9 +1,8 @@
-import { ref } from "vue"
-
 // notification channels array from the BFF server
-export const masterNotificationChannelsArray = ref(null)
+export const useMasterNotificationChannelsArray = () => useState<any[]>('masterNotificationChannelsArray', () => null)
 
 export const getMasterNotificationChannels = async () => {
+  const masterNotificationChannelsArray = useMasterNotificationChannelsArray()
   // get notification topics
   const client = useSupabaseClient()
   const { data } = await client
@@ -25,7 +24,7 @@ const localUserProfileDefault: object = {
     autodownload: false,
     default_live_stream: "WNYC 93.9 FM",
     receive_general_notifications: false,
-    one_signal_notification_channels: masterNotificationChannelsArray,
+    one_signal_notification_channels: null, // Will be populated from useMasterNotificationChannelsArray
     text_size: "Normal",
     dark_mode: false,
     sleep_timer: 90,
