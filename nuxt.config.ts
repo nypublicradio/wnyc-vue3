@@ -196,7 +196,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     // Server-only runtime values (read at runtime by Nitro)
-    cmsSite: process.env.CMS_SITE || 'demo.wnyc.org:443',
+    cmsSite: process.env.CMS_SITE ?? 'demo.wnyc.org:443',
     aviaryBaseApi: process.env.AVIARY_BASE_API,
     simplecastUrl: process.env.SIMPLECAST_URL ?? 'https://api.simplecast.com',
     simplecastApiKey: process.env.SIMPLECAST_API_KEY,
