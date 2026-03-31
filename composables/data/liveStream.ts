@@ -16,8 +16,10 @@ import { clearTimeout, setTimeout } from "worker-timers"
 export async function updateLiveStream (slug: string, save = true) {
   const config = useRuntimeConfig()
   //BFF - Uses Schedule API internally
+
   try {
-    const fetchData = await $fetch(`${config.public.BFF_URL}/api/whatson/${slug}`)
+    const fetchData = await $fetch(`${config.public.BFF_URL}/api/streams?slug=${slug}`)
+
     const currentEpisodeHolder = useCurrentEpisodeHolder()
     currentEpisodeHolder.value = fetchData
     if (save) {
