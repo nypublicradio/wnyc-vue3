@@ -144,6 +144,7 @@ const getLivestreams = async (slug?: string | null) => {
                     }
                 }
             } catch (err: any) {
+                console.error('Error in scheduleUrl fetch:', err)
                 return null
             }
         }))
