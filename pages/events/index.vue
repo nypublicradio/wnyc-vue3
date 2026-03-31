@@ -104,17 +104,19 @@ const breadcrumbs = computed(() => [
 ])
 
 const greeneSpaceUrl = "https://thegreenespace.org"
+
+const title = "Events | WNYC"
+useHead({
+  title,
+})
+useSeoMeta({
+  title,
+})
+
 </script>
 
 <template>
   <div class="event-page event-list-page">
-    <Html lang="en">
-      <Head>
-        <Title>Events | WNYC</Title>
-        <!-- <Meta name="og:title" :content="`${eventData?.title} | WNYC`" />
-        <Meta name="twitter:title" :content="`${eventData?.title} | WNYC`" /> -->
-      </Head>
-    </Html>
     <section>
       <div class="flex align-items-center">
         <Breadcrumbs :items="breadcrumbs" />
