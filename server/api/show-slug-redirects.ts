@@ -10,6 +10,7 @@ const redirects = [
     { from: '/browse/shows/experiment', to: '/browse/shows/the-experiment-wnyc' },
     { from: '/browse/shows/fishko', to: '/browse/shows/fishko-files' },
     { from: '/browse/shows/freshair', to: '/browse/shows/fresh-air' },
+    { from: '/browse/shows/fresh-air-with-terry-gross', to: '/browse/shows/fresh-air' },
     { from: '/browse/shows/latenight', to: '/browse/shows/late-night-whenever' },
     { from: '/browse/shows/lies', to: '/browse/shows/lies-wnyc' },
     { from: '/browse/shows/radiolabmoreperfect', to: '/browse/shows/more-perfect' },
@@ -33,11 +34,7 @@ const redirects = [
     { from: '/browse/shows/fleas', to: '/browse/shows/this-podcast-has-fleas' },
     { from: '/browse/shows/trumpinc', to: '/browse/shows/trump-inc' },
     { from: '/browse/shows/universe-art', to: '/browse/shows/universe-of-art' },
-    { from: '/getlit', to: '/get-lit' },
-    { from: '/publicsong', to: '/psp' },
-    { from: '/publicsongproject', to: '/psp' },
-    { from: '/story/2026-public-song-project', to: '/psp' },
-    { from: '/poetry', to: '/story/month-good-poetry-good-neighbors' },
+    { from: '/browse/shows/the-moth', to: 'https://themoth.org/' },
 ]
 
 export default defineEventHandler((event) => {
