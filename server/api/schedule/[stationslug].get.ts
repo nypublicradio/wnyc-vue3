@@ -57,7 +57,7 @@ import { zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz'
 import { mediaTypeRoutes } from '~/composables/globals'
 
 // S3 asset URL pattern to replace
-const S3_ASSET_URL_PATTERN = `https://s3.us-east-1.amazonaws.com/webstream-assets-${process.env.ENV}`
+const S3_ASSET_URL_PATTERN = 'https://s3.us-east-1.amazonaws.com/webstream-assets-prod'
 
 // Timezone for WNYC (America/New_York - handles both EST and EDT)
 const WNYC_TIMEZONE = 'America/New_York'
