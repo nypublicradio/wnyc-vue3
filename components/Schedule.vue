@@ -19,7 +19,6 @@ import {
   scheduleLocalNotification,
   getEntryTitle,
 } from "~/utilities/local-notifications"
-import VFlexibleLink from "./VFlexibleLink.vue"
 
 const {
   getTheTime,
