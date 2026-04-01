@@ -22,15 +22,6 @@ const isInitialObserver = ref(true)
 const { data: events, status, error } = useFetch(
   `${config.public.BFF_URL}/api/events/list`,
   {
-    //transform: transformEvents,
-    onResponse () {
-
-      $analytics.sendPageView({
-        page_title: "Events Page",
-        page_type: "events_page",
-        content_group: "events",
-      })
-    },
     onResponseError() {
       toast.add({
         severity: "error",
@@ -41,6 +32,14 @@ const { data: events, status, error } = useFetch(
     },
   }
 )
+
+onMounted(() => {
+  $analytics.sendPageView({
+    page_title: "Events Page",
+    page_type: "events_page",
+    content_group: "events",
+  })
+})
 
 watch(events, (newEvents) => {
   if (newEvents) {
