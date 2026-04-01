@@ -35,6 +35,23 @@ const redirects = [
     { from: '/browse/shows/trumpinc', to: '/browse/shows/trump-inc' },
     { from: '/browse/shows/universe-art', to: '/browse/shows/universe-of-art' },
     { from: '/browse/shows/the-moth', to: 'https://themoth.org/' },
+    { from: '/browse/shows/world', to: 'https://theworld.org/' },
+    { from: '/browse/shows/throughline', to: 'https://www.npr.org/podcasts/510333/throughline' },
+    { from: '/browse/shows/american-life', to: 'https://www.thisamericanlife.org/' },
+    { from: '/browse/shows/splendid-table', to: 'https://www.splendidtable.org/' },
+    { from: '/browse/shows/spooked', to: 'https://spookedpodcast.org/' },
+    { from: '/browse/shows/snapjudgment', to: 'https://snapjudgment.org/' },
+    { from: '/browse/shows/shorts', to: 'https://www.symphonyspace.org/selected-shorts/episodes/unexpected-guests' },
+    { from: '/browse/shows/reveal', to: 'https://revealnews.org/' },
+    { from: '/browse/shows/q', to: 'https://www.cbc.ca/arts/q' },
+    { from: '/browse/shows/pulse', to: 'https://whyy.org/programs/the-pulse/' },
+    { from: '/browse/shows/planet-money', to: 'https://www.npr.org/sections/money/127413729/planet-money/' },
+    { from: '/browse/shows/news-hour', to: 'https://www.pbs.org/newshour/' },
+    { from: '/browse/shows/iqus2', to: 'https://opentodebate.org/' },
+    { from: '/browse/shows/moth-radio-hour', to: 'https://themoth.org/' },
+    { from: '/browse/shows/marketplace', to: 'https://www.marketplace.org/' },
+    { from: '/browse/shows/left-right-and-center', to: 'https://www.kcrw.com/shows/left-right-center/all-episodes' },
+    { from: '/browse/shows/le-show', to: 'https://www.wwno.org/le-show' },
 ]
 
 export default defineEventHandler((event) => {
