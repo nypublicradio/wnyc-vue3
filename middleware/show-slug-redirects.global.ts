@@ -11,8 +11,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
         const redirect = cachedRedirects?.find((r) => r.from === url)
 
         if (redirect) {
-            const urlParams = Object.keys(to.query).length ? '?' + new URLSearchParams(to.query as Record<string, string>).toString() : ''
-            const newLocation = redirect.to + urlParams
+            const urlParams = Object.keys(to.query).length ? `?${new URLSearchParams(to.query as Record<string, string>).toString()}` : ''
+            const newLocation = `${redirect.to}${urlParams}`
 
             if (newLocation.startsWith('http')) {
                 if (import.meta.client) {
@@ -28,4 +28,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
     } catch (e) {
         console.error('Failed to process show slug redirect in middleware:', e)
     }
+    
+    return undefined
 })
