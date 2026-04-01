@@ -997,6 +997,7 @@ export const togglePlayEpisode = (media, type = mediaTypes.EPISODE) => {
   if (currentEpisode.value?.id !== media.id) {
     currentEpisode.value = prepForPlayer(media)
     saveRecentlyPlayed(media, type)
+    return
   }
 
   togglePlayTrigger.value = !togglePlayTrigger.value
