@@ -62,7 +62,7 @@ const getWagtailEventBySlug = async (slug: string) => {
                 limit: 1,
             },
             headers: {
-                'X-CMS-Site': config.public.cmsSite || 'demo.wnyc.org:443'
+                'X-CMS-Site': config.public.cmsSite
             }
         }
         const res = await axios(option)
