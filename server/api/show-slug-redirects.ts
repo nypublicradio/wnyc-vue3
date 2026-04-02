@@ -47,6 +47,7 @@ const redirects = [
     { from: '/browse/shows/shorts', to: 'https://www.symphonyspace.org/selected-shorts/episodes/unexpected-guests' },
     { from: '/browse/shows/reveal', to: 'https://revealnews.org/' },
     { from: '/browse/shows/q', to: 'https://www.cbc.ca/arts/q' },
+    { from: '/browse/shows/q-from-cbc', to: 'https://www.cbc.ca/arts/q' },
     { from: '/browse/shows/pulse', to: 'https://whyy.org/programs/the-pulse/' },
     { from: '/browse/shows/planet-money', to: 'https://www.npr.org/sections/money/127413729/planet-money/' },
     { from: '/browse/shows/news-hour', to: 'https://www.pbs.org/newshour/' },
