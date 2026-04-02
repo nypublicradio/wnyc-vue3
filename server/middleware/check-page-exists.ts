@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
     await $fetch(`${config.public.AVIARY_BASE_API}pages/find/`, {
       query: { html_path: path },
       headers: {
-        'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443',
+        'X-CMS-Site': config.public.cmsSite,
       },
     })
   } catch (error: any) {

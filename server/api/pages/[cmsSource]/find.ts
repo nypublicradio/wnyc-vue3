@@ -24,7 +24,7 @@ const resolveCmsSite = (config: ReturnType<typeof __getConfig>, override?: strin
   if (override) {
     return override
   }
-  return config.cmsSite || 'demo.wnyc.org:443'
+  return config.public.cmsSite
 }
 
 export default defineEventHandler(async (event) => {
