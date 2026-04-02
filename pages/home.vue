@@ -77,9 +77,7 @@ onMounted(() => {
       </div>
       <!-- <VImage src="/fallback-ep.png" /> -->
     </section>
-    <!-- <pre>{{ pagedata?.new_home_template.curatedContent }}</pre> -->
     <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
-    <!-- <pre>{{ pagedata?.new_home_template.curatedContent[0] }}</pre> -->
     <section v-if="status === 'success'">
       <VStreamfield
         :streamfieldBlocks="pagedata?.new_home_template?.curatedContent"
