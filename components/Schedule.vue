@@ -5,6 +5,7 @@ import {
   getCustomStationLabel,
 } from "~/utilities/helpers"
 import { useBreakpoints } from "~/composables/useBreakpoints"
+import { stripShowUrl } from "~/composables/useNavigationData"
 import useLiveStream from "~/composables/data/liveStream"
 import {
   useAllCurrentStations,
@@ -137,12 +138,14 @@ const handleScheduleDownload = () => {
   )
 }
 
-// handles the click on the bottom fixed footer
-const moreFromClick = (entry) => {
+// handles the click on the show title
+const toShowPageClick = (entry, current = false) => {
   const title = entry.attributes.parentTitle
-  const slug = entry.slug
+  const slug = stripShowUrl(entry.attributes.parentUrl)
   trackClickEvent(
-    `Click Tracking - Schedule current show More from ${title}`,
+    `Click Tracking - ${
+      current ? "current live show " : "Show Title"
+    } - ${title}`,
     "Schedule",
     title
   )
@@ -255,8 +258,13 @@ const handleScheduleNavigationButtonLabel = (date) => {
               class="schedule-entry flex justify-content-between align-items-stretch gap-3 style-mode-light light-mode"
               :class="
                 handleCurrentEpisode(entry, entryIndex)
-                  ? 'selected -ml-3 -mr-3 xl:mr-0'
+                  ? 'selected -ml-3 -mr-3 xl:mr-0 cursor-pointer'
                   : ''
+              "
+              @click="
+                handleCurrentEpisode(entry, entryIndex)
+                  ? toShowPageClick(entry, true)
+                  : null
               "
             >
               <div
@@ -272,9 +280,16 @@ const handleScheduleNavigationButtonLabel = (date) => {
                       )
                     }}
                   </p>
-                  <h2 class="title truncate t2lines">
-                    {{ getEntryTitle(entry) }}
-                  </h2>
+                  <Button
+                    @click="toShowPageClick(entry)"
+                    severity="secondary"
+                    variant="link"
+                    class="title-link -mt-2"
+                  >
+                    <h2 class="title truncate t2lines">
+                      {{ getEntryTitle(entry) }}
+                    </h2>
+                  </Button>
                   <HtmlConvert
                     v-if="
                       entry.station.episodeBody &&
@@ -283,16 +298,6 @@ const handleScheduleNavigationButtonLabel = (date) => {
                     :htmlContent="entry.station.episodeBody"
                     class="desc truncate t3lines mt-1"
                     no-blocks
-                  />
-                </div>
-                <div v-if="handleCurrentEpisode(entry, entryIndex)">
-                  <!-- <pre>{{ entry }}</pre> -->
-                  <Button
-                    severity="secondary"
-                    variant="link"
-                    class="hidden more-from link text-left text-xs md:text-base"
-                    @click="moreFromClick(entry)"
-                    :label="`More from ${entry.attributes.parentTitle}`"
                   />
                 </div>
               </div>
@@ -534,6 +539,18 @@ html {
 
     .active-content {
       min-height: 0; // Allow flex shrinking
+    }
+    .title-link {
+      margin-left: -0.8rem;
+      * {
+        transition: color var(--p-transition-duration);
+      }
+      &:hover {
+        * {
+          color: var(--link-button-hover-color);
+          text-decoration: underline;
+        }
+      }
     }
     .more-from {
       margin-left: -0.8rem;

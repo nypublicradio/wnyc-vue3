@@ -19,6 +19,15 @@ const stripWNYCUrl = (url) => {
     return url
 }
 
+// strip https://www.wnyc.org/browse/shows/ from the url for local routes
+export const stripShowUrl = (url) => {
+    if (url) {
+        const strippedUrl = url.replace('https://www.wnyc.org/browse/shows/', '')
+        return strippedUrl
+    }
+    return url
+}
+
 // Helper function to resolve URL functions in navigation items
 const resolveUrlFunctions = (items, appDownloadLink = '') => {
     return items.map(item => {
