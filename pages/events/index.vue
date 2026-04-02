@@ -1,4 +1,5 @@
 <script setup lang="js">
+import { useHead } from '@unhead/vue'
 import { useToast } from "primevue/usetoast"
 import { useTopStories } from "~/composables/useTopStories"
 import { useIntersectionObserver } from "@vueuse/core"
