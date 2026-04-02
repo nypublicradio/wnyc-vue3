@@ -15,7 +15,7 @@ const getNewHomeTemplate = async () => {
 		method: 'GET',
 		url: `${config.public.AVIARY_BASE_API}pages/${pageId}`,
 		headers: {
-			'X-CMS-Site': config.public.CMS_SITE ?? 'demo.wnyc.org:443'
+			'X-CMS-Site': config.public.cmsSite
 		}
 	}
 	try {

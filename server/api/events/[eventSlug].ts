@@ -32,7 +32,7 @@ const getWagtailEventById = async (eventId: string) => {
             method: 'GET',
             url: `${config.public.AVIARY_BASE_API}pages/${eventId}/`,
             headers: {
-                'X-CMS-Site': config.public.cmsSite ?? 'demo.wnyc.org:443'
+                'X-CMS-Site': config.public.cmsSite
             }
         }
         const res = await axios(option)
