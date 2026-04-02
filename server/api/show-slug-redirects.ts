@@ -52,6 +52,16 @@ const redirects = [
     { from: '/browse/shows/marketplace', to: 'https://www.marketplace.org/' },
     { from: '/browse/shows/left-right-and-center', to: 'https://www.kcrw.com/shows/left-right-center/all-episodes' },
     { from: '/browse/shows/le-show', to: 'https://www.wwno.org/le-show' },
+    { from: '/browse/shows/latino-usa', to: 'https://www.latinousa.org/' },
+    { from: '/browse/shows/jazz-loft', to: 'https://www.wnyc.org/' },
+    { from: '/browse/shows/hypothesis', to: 'https://hypothesispodcast.podbean.com/' },
+    { from: '/browse/shows/freakonomics-radio', to: 'https://freakonomics.com/' },
+    { from: '/browse/shows/how-i-built-this', to: 'https://wondery.com/shows/how-i-built-this/?_branch_match_id=1428821510339979692&utm_source=npr&utm_medium=web&_branch_referrer=H4sIAAAAAAAAA8soKSkottLXL8%2FPS0ktqtRLLCjQy8nMy9aPtHAprSzwLbXIS7KvK0pNSy0qysxLj08qyi8vTi2ydc4oys9NBQCwvcy7PgAAAA%3D%3D' },
+    { from: '/browse/shows/new-york-capitol-press-room', to: 'https://capitolpressroom.org/' },
+    { from: '/browse/shows/capitol-connection', to: 'https://www.wamc.org/show/the-capitol-connection' },
+    { from: '/browse/shows/bullseye', to: 'https://www.npr.org/podcasts/510309/bullseye' },
+    { from: '/browse/shows/bbc-world-service', to: 'https://www.bbc.com/audio/play/live/bbc_world_service' },
+    { from: '/browse/shows/bbc-newshour', to: 'https://www.bbc.com/audio/brand/p002vsnk' },
 ]
 
 export default defineEventHandler((event) => {
