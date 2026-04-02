@@ -72,6 +72,7 @@ jobs:
             SPRINGBOARD_KEY=${{ secrets.SPRINGBOARD_KEY }}
             SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
             SIMPLECAST_API_KEY=${{ secrets.SIMPLECAST_API_KEY }}
+            RAPID_ASSET_URL=${{ vars.RAPID_ASSET_URL }}
           build_args: |
             ENV=review
             AVIARY_BASE_API=${{ vars.AVIARY_BASE_API }}
