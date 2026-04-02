@@ -55,7 +55,8 @@ jobs:
         with:
           secrets: |
             ENV=review
-            AVIARY_BASE_API=${{ vars.AVIARY_BASE_API }}            
+            AVIARY_BASE_API=${{ vars.AVIARY_BASE_API }}
+            CMS_SITE=${{ vars.CMS_SITE }}
             NPR_CDS_API_KEY=${{ secrets.NPR_CDS_API_KEY }}
             PUBLISHER_BASE_API=${{ vars.PUBLISHER_BASE_API }}
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
