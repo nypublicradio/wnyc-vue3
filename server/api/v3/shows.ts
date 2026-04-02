@@ -27,7 +27,7 @@ export const getShows = async () => {
                 order: 'title',
             },
             headers: {
-                'X-CMS-Site': process.env.CMS_SITE,
+                'X-CMS-Site': config.public.cmsSite ?? 'demo.wnyc.org:443',
             },
             timeout: 15000, // 15 second timeout
         }
