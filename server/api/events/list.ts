@@ -21,7 +21,7 @@ const getWagtailEvents = async (query: Record<string, any>) => {
                 offset: query.offset || 0,
             },
             headers: {
-                'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+                'X-CMS-Site': config.public.cmsSite
             }
         }
 

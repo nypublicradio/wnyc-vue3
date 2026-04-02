@@ -18,7 +18,7 @@ const getWagtailStaffData = async (staffSlug: string, offset: number) => {
             offset,
         },
         headers: {
-            'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+            'X-CMS-Site': config.public.cmsSite
         }
     };
     const res = await axios(options);

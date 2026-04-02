@@ -21,17 +21,23 @@ async function getNavigationData () {
         // Fetch all data concurrently with individual error handling
         // Use aggressive timeouts to prevent health check failures during slow API responses
         const API_TIMEOUT = 5000 // 5 second timeout for external APIs
+        let allShows = null
+        if (process.env.ENV === 'prod') {
+            allShows = 90
+        } else {
+            allShows = 20
+        }
         
         const [wagtail, donate, stations, shows] = await Promise.allSettled([
             axios.get(config.public.HEADER_NAVIGATION_API as string, {
                 headers: {
-                    'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+                    'X-CMS-Site': process.env.CMS_SITE,
                 },
                 timeout: API_TIMEOUT
             }),
             axios.get(config.public.SYSTEM_MESSAGES_API as string, {
                 headers: {
-                    'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+                    'X-CMS-Site': process.env.CMS_SITE,
                 },
                 timeout: API_TIMEOUT
             }),
@@ -40,7 +46,10 @@ async function getNavigationData () {
                 $fetch('/api/streams').then(data => ({ data })),
                 new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), API_TIMEOUT))
             ]),
-            axios.get(`${config.public.AVIARY_BASE_API}curated_lists/20/`, {
+            axios.get(`${config.public.AVIARY_BASE_API}curated_lists/${allShows}/`, {
+                headers: {
+                    'X-CMS-Site': process.env.CMS_SITE,
+                },
                 timeout: API_TIMEOUT
             }),
         ])
