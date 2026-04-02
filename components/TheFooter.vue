@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { getYear } from '~/utilities/helpers'
-import { useCurrentEpisode } from '~/composables/states'
-import { allSocialData } from '~/composables/navigationData.js'
+import { getYear } from "~/utilities/helpers"
+import { useCurrentEpisode } from "~/composables/states"
+import { allSocialData } from "~/composables/navigationData.js"
 
-const emit = defineEmits<(e: 'submit', value: any) => void>()
+const emit = defineEmits<(e: "submit", value: any) => void>()
 
 const config = useRuntimeConfig()
 
@@ -13,25 +13,25 @@ const isSubmitting = ref(false)
 const submissionStatus = ref(null)
 
 // function for submitting the newsletter form
-const submitForm = email => {
+const submitForm = (email) => {
   isSubmitting.value = true
   submissionStatus.value = null
   $fetch(config.public.NEWSLETTER_API, {
-    method: 'POST',
+    method: "POST",
     body: {
-      source: 'wnyc_footer',
+      source: "wnyc_footer",
       list: config.public.NEWSLETTER_MULTI_LIST_IDS,
-      email
-    }
+      email,
+    },
   })
     .then(() => {
-      submissionStatus.value = 'success'
-      emit('submit', 'success')
+      submissionStatus.value = "success"
+      emit("submit", "success")
     })
     .catch(() => {
-      submissionStatus.value = 'error'
+      submissionStatus.value = "error"
       isSubmitting.value = false
-      emit('submit', 'error')
+      emit("submit", "error")
     })
 }
 </script>
@@ -66,7 +66,9 @@ const submitForm = email => {
                 <p class="line-height-3 text-xs">
                   Sign up for for a weekly, behind-the-scenes update from the
                   people behind your favorite shows.
-                  <VFlexibleLink to="/newsletter">See More </VFlexibleLink>
+                  <VFlexibleLink to="https://cloud.lists.wnyc.org/Preferences"
+                    >See More
+                  </VFlexibleLink>
                 </p>
                 <email-collector-form
                   class="form mt-5"
@@ -77,9 +79,7 @@ const submitForm = email => {
                   By submitting your information, you're agreeing to receive
                   communications from New York Public Radio in accordance with
                   our
-                  <VFlexibleLink to="https://www.wnyc.org/terms/">
-                    Terms </VFlexibleLink
-                  >.
+                  <VFlexibleLink to="/terms"> Terms </VFlexibleLink>.
                 </email-collector-form>
               </div>
             </div>
@@ -103,10 +103,6 @@ const submitForm = email => {
         class="grid grid-nogutter gap-5 justify-content-between align-items-center mt-7"
       >
         <NyprLogosBracket />
-        <div class="flex align-items-center gap-3">
-          <p class="flex-none">WNYC is supported by</p>
-          <JLGreene class="w-7rem text-color-fill" />
-        </div>
       </div>
       <Divider class="mt-4" />
       <div
@@ -142,11 +138,11 @@ const submitForm = email => {
       .menu-holder {
         min-width: 170px;
 
-        @include media('>xxl') {
+        @include media(">xxl") {
           min-width: 200px;
         }
 
-        @include media('<sm') {
+        @include media("<sm") {
           min-width: 150px;
         }
       }
