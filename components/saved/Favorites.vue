@@ -5,7 +5,16 @@ import StarIcon from "~/components/icons/StarIcon.vue"
 const user = useCurrentUser()
 const filterOptions = ref([
   { label: "All", value: null },
-  { label: "Episodes", value: [mediaTypes.EPISODE, mediaTypes.SEGMENTS] },
+  {
+    label: "Episodes",
+    value: [
+      mediaTypes.EPISODE,
+      mediaTypes.SEGMENTS,
+      mediaTypes.SIMPLECAST,
+      mediaTypes.FULL,
+      mediaTypes.NPR_EPISODE,
+    ],
+  },
   // { label: "Segments", value: mediaTypes.SEGMENT },
   {
     label: "Articles",
