@@ -55,7 +55,8 @@ jobs:
         with:
           secrets: |
             ENV=review
-            AVIARY_BASE_API=${{ vars.AVIARY_BASE_API }}            
+            AVIARY_BASE_API=${{ vars.AVIARY_BASE_API }}
+            CMS_SITE=${{ vars.CMS_SITE }}
             NPR_CDS_API_KEY=${{ secrets.NPR_CDS_API_KEY }}
             PUBLISHER_BASE_API=${{ vars.PUBLISHER_BASE_API }}
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -71,6 +72,7 @@ jobs:
             SPRINGBOARD_KEY=${{ secrets.SPRINGBOARD_KEY }}
             SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
             SIMPLECAST_API_KEY=${{ secrets.SIMPLECAST_API_KEY }}
+            RAPID_ASSET_URL=${{ vars.RAPID_ASSET_URL }}
           build_args: |
             ENV=review
             AVIARY_BASE_API=${{ vars.AVIARY_BASE_API }}
@@ -113,6 +115,7 @@ jobs:
             SIMPLECAST_URL=${{ vars.SIMPLECAST_URL }}
             FEATURED_SHOWS_PAGE_ID=${{ vars.FEATURED_SHOWS_PAGE_ID }}
             NUXT_SSR=true
+            CMS_SITE=${{ vars.CMS_SITE }}
       - name: Delete GitHub Environment
         if: github.event.action == 'closed'
         uses: actions/github-script@v7
