@@ -67,7 +67,7 @@ export const getFeaturedShows = async (allShows: ReturnType<typeof normalizeWagt
             method: 'GET',
             url: `${config.public.AVIARY_BASE_API}curated_lists/${config.featuredShowsPageId}`,
             headers: {
-                'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+                'X-CMS-Site': config.public.cmsSite ?? 'demo.wnyc.org:443'
             },
             timeout: 10000, // 10 second timeout
         }
