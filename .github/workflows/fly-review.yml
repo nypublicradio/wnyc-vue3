@@ -113,6 +113,7 @@ jobs:
             SIMPLECAST_URL=${{ vars.SIMPLECAST_URL }}
             FEATURED_SHOWS_PAGE_ID=${{ vars.FEATURED_SHOWS_PAGE_ID }}
             NUXT_SSR=true
+            CMS_SITE=${{ vars.CMS_SITE }}
       - name: Delete GitHub Environment
         if: github.event.action == 'closed'
         uses: actions/github-script@v7
