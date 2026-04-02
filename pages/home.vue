@@ -82,7 +82,7 @@ onMounted(() => {
     <!-- <pre>{{ pagedata?.new_home_template.curatedContent[0] }}</pre> -->
     <section v-if="status === 'success'">
       <VStreamfield
-        :streamfieldBlocks="pagedata?.new_home_template.curatedContent"
+        :streamfieldBlocks="pagedata?.new_home_template?.curatedContent"
       />
     </section>
     <section v-else>
