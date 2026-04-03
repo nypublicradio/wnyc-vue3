@@ -1,45 +1,59 @@
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
 import { useCurrentUser } from '~/composables/states'
+import { buildPageViewEventParams } from '~/utilities/analytics'
 
-export default defineNuxtPlugin(() => {
-  // event to use when sending gtag events
+/**
+ * Creates the shared analytics API used by the app and tests.
+ */
+export const createAnalyticsApi = ({
+  getCurrentUserId,
+  getDeviceId,
+  getLocationHref,
+  getDocumentTitle,
+  logEvent,
+}) => {
+  /**
+   * Forwards arbitrary analytics events to Firebase.
+   */
   const sendEvent = async (eventName, eventParams) => {
-    await FirebaseAnalytics.logEvent({
+    await logEvent({
       name: eventName,
       params: eventParams,
-    });
+    })
   }
-  // gtag event for reporting on page views
-  const sendPageView = (params) => {
-    const currentUser = useCurrentUser()
-    const deviceId = useDeviceId()
 
-    if (!currentUser.value) {
-      watch(currentUser, (newValue) => {
-        if (newValue) {
-          sendEvent('page_view', {
-            page_location: document.location.href,
-            page_title: document.title,
-            user_id: newValue.id ?? deviceId.value,
-            ...params
-          })
-        }
-      })
-    } else {
-      sendEvent('page_view', {
-        page_location: document.location.href,
-        page_title: document.title,
-        user_id: currentUser.value?.id ?? deviceId.value,
-        ...params
-      })
-    }
+  /**
+   * Sends a page view immediately using the best available user identifier.
+   */
+  const sendPageView = (params) =>
+    sendEvent('page_view', buildPageViewEventParams({
+      currentUserId: getCurrentUserId(),
+      deviceId: getDeviceId(),
+      locationHref: getLocationHref(),
+      title: getDocumentTitle(),
+      params,
+    }))
+
+  return {
+    sendEvent,
+    sendPageView,
   }
+}
+
+export default defineNuxtPlugin(() => {
+  const currentUser = useCurrentUser()
+  const deviceId = useDeviceId()
+  const analytics = createAnalyticsApi({
+    getCurrentUserId: () => currentUser.value?.id,
+    getDeviceId: () => deviceId.value,
+    getLocationHref: () => document.location.href,
+    getDocumentTitle: () => document.title,
+    logEvent: FirebaseAnalytics.logEvent,
+  })
+
   return {
     provide: {
-      analytics: {
-        sendEvent,
-        sendPageView
-      }
+      analytics,
     }
   }
 })
