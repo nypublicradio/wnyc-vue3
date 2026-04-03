@@ -25,10 +25,9 @@ export const getShows = async () => {
                 fields: 'show_art,show_logo',
                 //fields: 'description,topper_display_title,linked_data_source,show_art,show_logo,topper_background,body,about_module,can_download_episodes,can_embed_episodes,in_page_navigation',
                 order: 'title',
-                site: 'demo.wnyc.org',
             },
             headers: {
-                'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+                'X-CMS-Site': config.public.cmsSite,
             },
             timeout: 15000, // 15 second timeout
         }
@@ -68,7 +67,7 @@ export const getFeaturedShows = async (allShows: ReturnType<typeof normalizeWagt
             method: 'GET',
             url: `${config.public.AVIARY_BASE_API}curated_lists/${config.featuredShowsPageId}`,
             headers: {
-                'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+                'X-CMS-Site': config.public.cmsSite
             },
             timeout: 10000, // 10 second timeout
         }

@@ -19,6 +19,15 @@ const stripWNYCUrl = (url) => {
     return url
 }
 
+// strip https://www.wnyc.org/browse/shows/ from the url for local routes
+export const stripShowUrl = (url) => {
+    if (url) {
+        const strippedUrl = url.replace('https://www.wnyc.org/browse/shows/', '')
+        return strippedUrl
+    }
+    return url
+}
+
 // Helper function to resolve URL functions in navigation items
 const resolveUrlFunctions = (items, appDownloadLink = '') => {
     return items.map(item => {
@@ -121,23 +130,32 @@ async function fetchNavigationDataDirect () {
     const API_TIMEOUT = 5000
 
     try {
+        let allShows = null
+        if (process.env.ENV === 'prod') {
+            allShows = 90
+        } else {
+            allShows = 20
+        }
         const [wagtail, donate, stations, shows] = await Promise.allSettled([
             $fetch(config.public.HEADER_NAVIGATION_API as string, {
                 headers: {
-                    'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+                    'X-CMS-Site': config.public.cmsSite
                 },
                 timeout: API_TIMEOUT
             }),
             $fetch(config.public.SYSTEM_MESSAGES_API as string, {
                 headers: {
-                    'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+                    'X-CMS-Site': config.public.cmsSite
                 },
                 timeout: API_TIMEOUT
             }),
             $fetch(`${config.public.BFF_URL}/api/streams`, {
                 timeout: API_TIMEOUT
             }),
-            $fetch(`${config.public.AVIARY_BASE_API}curated_lists/20/`, {
+            $fetch(`${config.public.AVIARY_BASE_API}curated_lists/${allShows}/`, {
+                headers: {
+                    'X-CMS-Site': config.public.cmsSite
+                },
                 timeout: API_TIMEOUT
             }),
         ])
