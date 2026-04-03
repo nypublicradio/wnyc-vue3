@@ -64,7 +64,7 @@ const getCurrentEpisodeFromSchedule = (scheduleData: any) => {
 }
 
 // currently a combination between the whatson API and the schedule API to populate the live stream data
-const getLivestreams = async () => {
+const getLivestreams = async (slug?: string | null) => {
     try {
         // calls v1 api to access source_tags
         const streams_v1_url = `${config.public.PUBLISHER_BASE_API}/v1/list/streams/`
@@ -72,8 +72,14 @@ const getLivestreams = async () => {
         // filters/selects the streams that include the new-wnyc-app source_tag
         const res_v1_filtered = res_v1.data.results.filter((item) => item.source_tags.includes('new-wnyc-app'))
 
+        // If a slug was requested, narrow the list to just that stream
+        const streamsToFetch = slug
+            ? res_v1_filtered.filter((stream: any) => stream.slug === slug)
+            : res_v1_filtered
+
         // Fetch schedule data for each stream
-        const resData = await Promise.all(res_v1_filtered.map(async (stream: any) => {
+        const resData = await Promise.all(streamsToFetch.map(async (stream: any) => {
+
             const { templatizePublisherImageUrl } = useVImage()
             try {
                 const slug = stream.slug
@@ -138,13 +144,16 @@ const getLivestreams = async () => {
                     }
                 }
             } catch (err: any) {
+                console.error('Error in scheduleUrl fetch:', err)
                 return null
             }
         }))
 
         // Filter out any null results from failed fetches
         const validResults = resData.filter(Boolean)
-        return humps.camelizeKeys(validResults)
+        const camelized = humps.camelizeKeys(validResults)
+        // If a specific slug was requested, return the single object instead of an array
+        return slug ? (camelized[0] ?? null) : camelized
     } catch (e) {
         console.error('Error in getLivestreams:', e)
     }
@@ -158,6 +167,7 @@ const getLivestreams = async () => {
 export default defineEventHandler(async (event) => {
     const res = event?.node?.res
     res.setHeader('Cache-Control', 'max-age=120, stale-while-revalidate')
-    const streams = await getLivestreams()
+    const slug = getQuery(event).slug as string | undefined
+    const streams = await getLivestreams(slug)
     return streams
 })

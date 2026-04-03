@@ -5,10 +5,7 @@ import {
   addToFavorites2,
   isolateSlug,
 } from "~/utilities/helpers"
-import {
-  useCurrentEpisodeHolder,
-  useCurrentEpisode,
-} from "~/composables/states"
+import { useCurrentEpisodeHolder } from "~/composables/states"
 
 const emit = defineEmits(["on-click", "on-delete-favorite"])
 
@@ -49,7 +46,6 @@ const props = defineProps({
 
 const user = useCurrentUser()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
-const currentEpisode = useCurrentEpisode()
 
 // check if item is already favorited
 const isFavorited = ref(false)

@@ -7,6 +7,8 @@ export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig()
 
   Sentry.init({
+    // set normalizeDepth to 0 to prevent Sentry from stripping out data from the event
+    normalizeDepth: 0,
     app: [vueApp],
     dsn: config.public.SENTRY_DSN,
     integrations: [
