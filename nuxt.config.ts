@@ -2,7 +2,14 @@ import { sentryVitePlugin } from "@sentry/vite-plugin"
 import MyPreset from "./assets/wnyc-theme.js"
 
 export default defineNuxtConfig({
-  modules: [
+  modules: process.env.NUXT_SSR === 'true' ?[
+    "@nuxtjs/supabase",
+    "@nuxtjs/device",
+    "@nuxt/image",
+    "@hypernym/nuxt-gsap",
+    "@vueuse/nuxt",
+    "@primevue/nuxt-module",
+  ] : [
     "@nuxtjs/supabase",
     "@nuxtjs/ionic",
     "@nuxtjs/device",
