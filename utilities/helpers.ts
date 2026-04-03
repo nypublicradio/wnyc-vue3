@@ -293,7 +293,9 @@ export function capitalizeFirstLetter (str) {
  * helper function to change the global font size
  */
 export function setFontSize (size: string) {
-  if (!import.meta.client) return
+  const isApp = useIsApp()
+  // no font size for browser yet
+  if (!import.meta.client || !isApp.value) return
   document.documentElement.style.fontSize = size
 }
 
