@@ -16,8 +16,10 @@ import { clearTimeout, setTimeout } from "worker-timers"
 export async function updateLiveStream (slug: string, save = true) {
   const config = useRuntimeConfig()
   //BFF - Uses Schedule API internally
+
   try {
-    const fetchData = await $fetch(`${config.public.BFF_URL}/api/whatson/${slug}`)
+    const fetchData = await $fetch(`${config.public.BFF_URL}/api/streams?slug=${slug}`)
+
     const currentEpisodeHolder = useCurrentEpisodeHolder()
     currentEpisodeHolder.value = fetchData
     if (save) {
@@ -431,7 +433,7 @@ export default function useLiveStream () {
     } else {
       // Log error when station is not found
       console.error(`Station with slug "${querySlug}" not found in available stations.`)
-      
+
       // Show user-friendly error message
       const globalToast = useGlobalToast()
       globalToast.value = {
@@ -440,7 +442,7 @@ export default function useLiveStream () {
         life: 5000,
         closable: true,
       }
-      
+
       // Fallback to default station (first station or current episode holder)
       if (currentEpisodeHolder.value) {
         switchStation(currentEpisodeHolder.value, false)
