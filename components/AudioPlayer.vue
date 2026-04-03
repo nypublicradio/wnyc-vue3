@@ -59,6 +59,7 @@ const currentUser = useCurrentUserProfile()
 const showPlayer = ref(false)
 const playerRef = ref(null)
 const isBuffering = ref(false)
+const suppressTransitionErrorsUntil = ref(0)
 
 const route = useRoute()
 
@@ -152,8 +153,10 @@ const muteToggle = () => {
 
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
 const switchEpisode = async (val) => {
+  const wasPlayingBeforeSwitch = isEpisodePlaying.value
   isNewEpisode.value = true
   showPlayer.value = false
+  suppressTransitionErrorsUntil.value = wasPlayingBeforeSwitch ? Date.now() + 5000 : 0
 
   await releasePlayer()
 
@@ -208,14 +211,7 @@ const togglePlayHere = async (e) => {
     //await enableBackgroundMode()
     isEpisodePlaying.value = true
 
-    if (isNewEpisode.value) {
-      trackAudioEvent(
-        "play",
-        getMediaType.value,
-        getTitle.value,
-        getDescription.value
-      )
-    } else {
+    if (!isNewEpisode.value) {
       trackAudioEvent(
         "resume",
         getMediaType.value,
@@ -255,6 +251,10 @@ const handleIsExpanded = (e) => {
 //I have to check for "e" it fires 2 times... once with the error and once without
 const handleError = async (e) => {
   if (e) {
+    if (Date.now() < suppressTransitionErrorsUntil.value) {
+      return
+    }
+
     await releasePlayer()
     // globalToast.value = {
     //   severity: "error",
@@ -373,6 +373,18 @@ onMounted(async () => {
   await RemoteStreamer.addListener("play", () => {
     isEpisodePlaying.value = true
     isStreamLoading.value = false
+    suppressTransitionErrorsUntil.value = 0
+
+    if (isNewEpisode.value) {
+      trackAudioEvent(
+        "play",
+        getMediaType.value,
+        getTitle.value,
+        getDescription.value
+      )
+      isNewEpisode.value = false
+    }
+
     currentEpisodeDuration.value = currentEpisode.value.duration
   })
 
