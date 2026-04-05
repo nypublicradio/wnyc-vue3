@@ -1016,6 +1016,7 @@ export const getCssVar = (name: string, px = false) => {
 export const shouldOpenStoryInNewTab = (platform, storyLink, cmsSource) =>
   platform === "web" && Boolean(storyLink) && cmsSource === cmsSources.WAGTAIL
 
+// returns true if the story link is from gothamist.com
 export const shouldTrackOutgoingGothamistClick = (storyLink) =>
   Boolean(storyLink) && storyLink.includes("gothamist.com")
 
