@@ -35,6 +35,8 @@ const finalSrcFallback = computed(() => {
 
 // Loading state for the image
 const imageLoaded = ref(false)
+// Whether the image src failed to load (triggers fallback)
+const imageErrored = ref(false)
 
 // emit image loaded event
 const emit = defineEmits(["is-image-loaded"])
@@ -74,11 +76,25 @@ const handleImageLoad = () => {
   imageLoaded.value = true
 }
 
-// Reset loading state when image source changes
+// Handle image error - swap to fallback src
+const handleImageError = () => {
+  if (!imageErrored.value) {
+    imageErrored.value = true
+    imageLoaded.value = false
+  }
+}
+
+// The src actually passed down to the sub-component
+const effectiveSrc = computed(() => {
+  return imageErrored.value ? finalSrcFallback.value : imageTemplate.value
+})
+
+// Reset loading/error state when image source changes
 watch(
   () => imageTemplate.value,
   () => {
     imageLoaded.value = false
+    imageErrored.value = false
   }
 )
 
@@ -135,14 +151,15 @@ const dynamicComponent = computed(() => {
     <!-- Image component positioned absolutely when loading -->
     <component
       :is="dynamicComponent"
-      :key="`${cmsSource}-${imageTemplate}`"
+      :key="`${cmsSource}-${effectiveSrc}`"
       v-bind="{ ...$props, ...$attrs }"
-      :src="imageTemplate"
+      :src="effectiveSrc"
       :width="props.width || imageWidth"
       :height="props.height || imageHeight"
       :ratio="props.ratio || imageRatio"
       :class="{ 'image-loading': !imageLoaded, 'image-loaded': imageLoaded }"
       @image-load="handleImageLoad"
+      @image-error="handleImageError"
     >
       <template v-for="(value, name) in $slots" #[name]="data">
         <slot :name="name" v-bind="data"></slot>

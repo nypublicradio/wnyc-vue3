@@ -129,6 +129,7 @@ const emit = defineEmits([
   "image-click",
   "image-enlarge-click",
   "image-load",
+  "image-error",
   "enlarge-image-load",
 ])
 
@@ -303,6 +304,7 @@ onMounted(async () => {
           :loading="loading"
           :srcset="srcset"
           @load="emit('image-load')"
+          @error="emit('image-error')"
         />
         <slot class="slot caption" name="caption"></slot>
         <slot class="slot gallery" name="gallery"></slot>

@@ -146,6 +146,7 @@ const emit = defineEmits([
   "image-click",
   "image-enlarge-click",
   "image-load",
+  "image-error",
   "enlarge-image-load",
 ])
 
@@ -286,7 +287,7 @@ const handleProvider = computed(() => {
           :loading="props.loading"
           :modifiers="props.modifiers"
           @load="handleImageLoad"
-          @error="handleImageLoad"
+          @error="emit('image-error')"
         />
         <slot class="slot caption" name="caption"></slot>
         <slot class="slot gallery" name="gallery"></slot>
