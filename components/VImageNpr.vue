@@ -1,5 +1,4 @@
 <script setup>
-import VFlexibleLink from "./VFlexibleLink.vue"
 import Button from "primevue/button"
 import Dialog from "primevue/dialog"
 import ProgressSpinner from "primevue/progressspinner"
@@ -300,8 +299,6 @@ onMounted(async () => {
             :height="props.height"
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
             :loading="props.loading"
-            decoding="async"
-            :ismap="false"
           />
         </div>
         <img
@@ -318,8 +315,6 @@ onMounted(async () => {
           :alt="props.isDecorative ? '' : props.alt"
           :loading="loading"
           :srcset="srcset"
-          decoding="async"
-          :ismap="false"
           @load="emit('image-load')"
         />
         <slot class="slot caption" name="caption"></slot>

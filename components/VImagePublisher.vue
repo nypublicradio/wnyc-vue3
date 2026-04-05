@@ -1,5 +1,4 @@
 <script setup>
-import VFlexibleLink from "./VFlexibleLink.vue"
 import Button from "primevue/button"
 import Image from "primevue/image"
 import ProgressSpinner from "primevue/progressspinner"
@@ -357,8 +356,6 @@ onMounted(async () => {
           :style="[isVertical ? `width:auto;` : '']"
           :alt="props.isDecorative ? '' : props.alt"
           :loading="props.loading"
-          decoding="async"
-          :ismap="false"
           @keypress="emit('keypress', $event.target.value)"
           @load="emit('image-load')"
         />

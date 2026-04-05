@@ -284,8 +284,6 @@ const handleProvider = computed(() => {
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
             :modifiers="props.modifiers"
             :loading="props.loading"
-            decoding="async"
-            :ismap="false"
           />
         </div>
         <nuxt-img
@@ -308,8 +306,6 @@ const handleProvider = computed(() => {
           :quality="String(props.quality)"
           :loading="props.loading"
           :modifiers="props.modifiers"
-          decoding="async"
-          :ismap="false"
           @load="handleImageLoad"
           @error="handleImageLoad"
         />

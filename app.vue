@@ -11,7 +11,6 @@ import { App } from "@capacitor/app"
 import type { URLOpenListenerEvent } from "@capacitor/app"
 import {
   useIsApp,
-  useCurrentUserProfile,
   useGlobalToast,
   useIsNetworkConnected,
   useFullDeviceInfo,
@@ -40,7 +39,6 @@ const toast = useToast()
 
 const route = useRoute()
 const config = useRuntimeConfig()
-const currentUserProfile = useCurrentUserProfile()
 const browserTopColor = useBrowserTopColor()
 const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const globalToast = useGlobalToast()

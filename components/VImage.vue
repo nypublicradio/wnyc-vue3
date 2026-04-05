@@ -8,6 +8,10 @@ import { useFallbackImages } from "~/composables/useFallbackImages"
 // Cache components to avoid recreation
 const componentCache = new Map()
 
+defineOptions({
+  inheritAttrs: false
+})
+
 const props = defineProps({
   /** Image source - can be a string URL or object containing image data */
   src: {
@@ -131,7 +135,11 @@ const dynamicComponent = computed(() => {
 </script>
 
 <template>
-  <div class="v-image-wrapper">
+  <div
+    class="v-image-wrapper"
+    :class="$attrs.class"
+    :style="$attrs.style"
+  >
     <!-- Image component positioned absolutely when loading -->
     <component
       :is="dynamicComponent"

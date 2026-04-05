@@ -17,12 +17,12 @@ export default defineNuxtPlugin((nuxtApp) => {
         //   console.error(..._args)
         // }
     }
-    
+
     // Filter out the noisy Vue compilerOptions warning that Sentry and Ionic modules can sometimes trigger
     nuxtApp.vueApp.config.warnHandler = (msg, vm, trace) => {
-        if (msg && msg.includes('compilerOptions config option is only respected')) {
-            return;
+        if (msg?.includes('compilerOptions config option is only respected')) {
+            return
         }
-        console.warn(`[Vue warn]: ${msg}\n`, trace);
+        console.warn(`[Vue warn]: ${ msg }\n`, trace)
     }
 })
