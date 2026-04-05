@@ -17,6 +17,28 @@ const episodes = ref(null)
 const pendingMore = ref(true)
 const updatedSlug = ref(props.show.slug)
 
+// fetch is executed when fetchShow is called, and when updatedSlug is populated
+const {
+  data: showInfo,
+  error,
+  execute: fetchShow,
+} = useFetch(
+  () =>
+    `${config.public.BFF_URL}/api/pages/wagtail/${updatedSlug.value}?showOnly=true`,
+  {
+    onResponse(res) {
+      //console.log("res.response._data = ", res.response._data)
+      const pId = res.response._data.linkedDataSource?.[0]?.value?.id
+      if (pId) {
+        podcastId.value = pId
+      } else {
+        pendingMore.value = false
+      }
+    },
+    immediate: false,
+  }
+)
+
 // Check if the show slug needs to be updated due to a redirect
 const checkRedirectAndFetch = async () => {
   try {
@@ -32,7 +54,7 @@ const checkRedirectAndFetch = async () => {
 
     const redirect = cachedRedirects.value?.find(
       (r) =>
-        r.from.endsWith("/" + props.show.slug) || r.from === props.show.slug
+        r.from.endsWith(`/${props.show.slug}`) || r.from === props.show.slug
     )
 
     if (redirect) {
@@ -55,27 +77,6 @@ const checkRedirectAndFetch = async () => {
 // Call the function on setup
 checkRedirectAndFetch()
 
-// fetch is executed when fetchShow is called, and when updatedSlug is populated
-const {
-  data: show,
-  error,
-  execute: fetchShow,
-} = useFetch(
-  () =>
-    `${config.public.BFF_URL}/api/pages/wagtail/${updatedSlug.value}?showOnly=true`,
-  {
-    onResponse(res) {
-      //console.log("res.response._data = ", res.response._data)
-      const pId = res.response._data.linkedDataSource?.[0]?.value?.id
-      if (pId) {
-        podcastId.value = pId
-      } else {
-        pendingMore.value = false
-      }
-    },
-    immediate: false,
-  }
-)
 // watching for the podcastId to change to fetch episodes
 const { error: scError } = useFetch(
   () =>
@@ -90,7 +91,7 @@ const { error: scError } = useFetch(
       episodes.value = res.response._data.data
       // missing show title added from show data
       episodes.value.forEach((episode) => {
-        episode.showTitle = show.value.title
+        episode.showTitle = showInfo.value.title
       })
       pendingMore.value = false
     },
