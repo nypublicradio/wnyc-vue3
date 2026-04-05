@@ -48,7 +48,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       'local.dev.nypr.digital',
     ],
     maxValueLength: 1000,
-    trackComponents: true,
+    trackComponents: false, // disabled to prevent compilerOptions Vue warning loop
     timeout: 2000,
     hooks: ['activate', 'mount', 'update'],
     logErrors: true,

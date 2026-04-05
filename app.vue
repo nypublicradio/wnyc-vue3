@@ -16,6 +16,7 @@ import {
   useIsNetworkConnected,
   useFullDeviceInfo,
   useAppDownloadLink,
+  useIsDarkMode,
 } from "~/composables/states"
 import {
   useBrowserTopColor,
@@ -47,6 +48,7 @@ const isNetworkConnected = useIsNetworkConnected()
 const fullDeviceInfo = useFullDeviceInfo()
 const appDownloadLink = useAppDownloadLink()
 const isApp = useIsApp()
+const isDarkMode = useIsDarkMode()
 
 // Only initialize OneSignal on client-side to avoid SSR errors
 let initOneSignal: any, notificationPermissionSync: any, handleAppUrlOpen: any
@@ -69,6 +71,7 @@ const initializeDeviceInfo = async () => {
   fullDeviceInfo.value = await getFullDeviceInfo()
   appDownloadLink.value = await getAppDownloadLink()
 }
+
 initializeDeviceInfo()
 
 useHead({
@@ -76,8 +79,8 @@ useHead({
     lang: "en",
     class: isApp.value ? "app" : "browser",
   },
-  script: [...gtmHeadConfig.script],
-  noscript: [...gtmHeadConfig.noscript],
+  script: [...gtmHeadConfig.script] as any,
+  noscript: [...gtmHeadConfig.noscript] as any,
 
   bodyAttrs: {},
 })
@@ -155,7 +158,8 @@ onMounted(async () => {
   // }
 
   // Ads
-  window.htlbid = window.htlbid || {}
+  ;(window as any).htlbid = (window as any).htlbid || {}
+  const htlbid = (window as any).htlbid
   htlbid.cmd = htlbid.cmd || []
   htlbid.cmd.push(() => {
     htlbid.layout("universal") // Leave as 'universal' or add custom layout
@@ -177,7 +181,7 @@ useHead({
 
 watch(globalToast, (optionsObj) => {
   if (optionsObj) {
-    toast.add(optionsObj)
+    toast.add(optionsObj as any)
   }
 })
 
@@ -245,19 +249,11 @@ watch(globalError, (error) => {
       />
       <Meta
         name="theme-color"
-        :content="
-          currentUserProfile?.dark_mode
-            ? browserTopColorDarkMode
-            : browserTopColor
-        "
+        :content="isDarkMode ? browserTopColorDarkMode : browserTopColor"
       />
       <Meta
         name="msapplication-TileColor"
-        :content="
-          currentUserProfile?.dark_mode
-            ? browserTopColorDarkMode
-            : browserTopColor
-        "
+        :content="isDarkMode ? browserTopColorDarkMode : browserTopColor"
       />
     </Head>
   </Html>

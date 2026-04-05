@@ -12,18 +12,21 @@ const {
   data: show,
   status,
   error,
-} = useFetch(
+} = await useFetch(
   `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`,
   {
+    key: route.fullPath,
     onResponse(res) {
-      sectionAnchorData.value = res.response._data.inPageNavigation.map(
-        (item) => {
-          return {
-            label: item.value.linkText,
-            id: slugify(item.value.targetId || item.value.linkText),
+      if (res.response._data?.inPageNavigation) {
+        sectionAnchorData.value = res.response._data.inPageNavigation.map(
+          (item) => {
+            return {
+              label: item.value.linkText,
+              id: slugify(item.value.targetId || item.value.linkText),
+            }
           }
-        }
-      )
+        )
+      }
     },
   }
 )

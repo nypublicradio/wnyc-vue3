@@ -121,6 +121,27 @@ const props = defineProps({
     type: [String, Number, Object],
   },
   /**
+   * fallback image url
+   */
+  srcFallback: {
+    default: null,
+    type: String,
+  },
+  /**
+   * list of display densities to generate sizes for in the srcset (from VImage context or passed attributes)
+   */
+  srcset: {
+    default: null,
+    type: [String, Array],
+  },
+  /**
+   * size property passed from VImage wrapper
+   */
+  size: {
+    default: null,
+    type: [Array, Object],
+  },
+  /**
    * address to navigate to when the image is clicked
    */
   to: {
@@ -244,7 +265,7 @@ const handleProvider = computed(() => {
       :to="props.to"
       :aria-hidden="props.isDecorative ? true : false"
       :tabindex="props.isDecorative ? -1 : 0"
-      style="width: auto; height: inherit"
+      class="v-image-flexible-link"
       @click="props.to ? emit('image-click', props.to) : null"
     >
       <div
@@ -263,6 +284,8 @@ const handleProvider = computed(() => {
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
             :modifiers="props.modifiers"
             :loading="props.loading"
+            decoding="async"
+            :ismap="false"
           />
         </div>
         <nuxt-img
@@ -285,6 +308,8 @@ const handleProvider = computed(() => {
           :quality="String(props.quality)"
           :loading="props.loading"
           :modifiers="props.modifiers"
+          decoding="async"
+          :ismap="false"
           @load="handleImageLoad"
           @error="handleImageLoad"
         />
@@ -354,6 +379,11 @@ const handleProvider = computed(() => {
 </template>
 
 <style lang="scss" scoped>
+.v-image-flexible-link {
+  width: auto;
+  height: inherit;
+}
+
 .v-image {
   line-height: 0;
   position: relative;

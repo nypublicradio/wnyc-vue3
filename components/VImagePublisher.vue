@@ -96,6 +96,20 @@ const props = defineProps({
     default: null,
     type: String,
   },
+  /**
+   * fallback image url
+   */
+  srcFallback: {
+    default: null,
+    type: String,
+  },
+  /**
+   * size property passed from VImage wrapper
+   */
+  size: {
+    default: null,
+    type: [Array, Object],
+  },
   /** * List of display densities to generate sizes for in the srcset */
   srcset: {
     default() {
@@ -264,7 +278,7 @@ onMounted(async () => {
       :to="props.to"
       :aria-hidden="props.isDecorative ? true : false"
       :tabindex="props.isDecorative ? -1 : 0"
-      style="width: 100%; height: inherit"
+      class="v-image-flexible-link"
       @click="props.to ? emit('image-click', props.to) : null"
     >
       <div
@@ -278,6 +292,8 @@ onMounted(async () => {
             :height="getDimensions().height"
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
             :loading="props.loading"
+            decoding="async"
+            :ismap="false"
           />
         </div>
         <template v-if="allowPreview">
@@ -341,6 +357,8 @@ onMounted(async () => {
           :style="[isVertical ? `width:auto;` : '']"
           :alt="props.isDecorative ? '' : props.alt"
           :loading="props.loading"
+          decoding="async"
+          :ismap="false"
           @keypress="emit('keypress', $event.target.value)"
           @load="emit('image-load')"
         />
@@ -353,6 +371,11 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
+.v-image-flexible-link {
+  width: 100%;
+  height: inherit;
+}
+
 .v-image-publisher {
   height: inherit;
   .v-image-publisher-holder {

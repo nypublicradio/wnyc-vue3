@@ -97,15 +97,15 @@ const firstEpisodeWithAudio = () => {
 // computed properties to identify what is currently loaded
 const isLoadedEpisode = computed(() => {
   return (
-    !isLiveStream.value && currentEpisode.value?.showTitle === props.show.title
+    !isLiveStream.value && currentEpisode.value?.showTitle === props.show?.title
   )
 })
 
 const isLoadedLiveStream = computed(() => {
   return (
     isLiveStream.value &&
-    (currentEpisodeHolder.value?.title === props.show.title ||
-      currentEpisode.value?.title === props.show.title)
+    (currentEpisodeHolder.value?.title === props.show?.title ||
+      currentEpisode.value?.title === props.show?.title)
   )
 })
 

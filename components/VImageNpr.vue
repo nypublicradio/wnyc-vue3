@@ -103,6 +103,20 @@ const props = defineProps({
     default: null,
     type: String,
   },
+  /**
+   * fallback image url
+   */
+  srcFallback: {
+    default: null,
+    type: String,
+  },
+  /**
+   * size property passed from VImage wrapper
+   */
+  size: {
+    default: null,
+    type: [Array, Object],
+  },
   /** * List of display densities to generate sizes for in the srcset */
   srcset: {
     default() {
@@ -269,7 +283,7 @@ onMounted(async () => {
       :to="props.to"
       :aria-hidden="props.isDecorative ? true : false"
       :tabindex="props.isDecorative ? -1 : 0"
-      style="width: auto; height: inherit"
+      class="v-image-flexible-link"
       @click="props.to ? emit('image-click', props.to) : null"
     >
       <div
@@ -286,6 +300,8 @@ onMounted(async () => {
             :height="props.height"
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
             :loading="props.loading"
+            decoding="async"
+            :ismap="false"
           />
         </div>
         <img
@@ -302,6 +318,8 @@ onMounted(async () => {
           :alt="props.isDecorative ? '' : props.alt"
           :loading="loading"
           :srcset="srcset"
+          decoding="async"
+          :ismap="false"
           @load="emit('image-load')"
         />
         <slot class="slot caption" name="caption"></slot>
@@ -369,6 +387,11 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
+.v-image-flexible-link {
+  width: auto;
+  height: inherit;
+}
+
 .v-image-npr {
   line-height: 0;
   position: relative;
