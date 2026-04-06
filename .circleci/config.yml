@@ -308,6 +308,7 @@ executors:
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASS
+    resource_class: xlarge
     environment: 
       JOBS: 2
   macosg2:
