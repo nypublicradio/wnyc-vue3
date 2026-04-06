@@ -150,7 +150,7 @@ export default defineNuxtConfig({
         ],
       },
     },
-/*     plugins: [
+    plugins: [
       process.env.SENTRY_ENV === "development"
         ? null
         : sentryVitePlugin({
@@ -162,13 +162,13 @@ export default defineNuxtConfig({
           project: "wnyc-vue3",
           authToken: process.env.SENTRY_AUTH_TOKEN,
         }),
-    ], */
+    ],
   },
 
-/*   sourcemap: {
+  sourcemap: {
     client: true,
     server: true,
-  }, */
+  },
 
   components: ["~/components", "~/components/icons", "~/components/logos"],
 
