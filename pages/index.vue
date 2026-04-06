@@ -30,6 +30,13 @@ useHead({
   ],
 })
 
+// Redirect to /home immediately (works on both server and client)
+// Server-side: sends a 302 redirect so /home loads with full SSR data
+// Client-side (app mode): navigates after mount for the loader animation
+if (import.meta.server) {
+  navigateTo("/home", { redirectCode: 302 })
+}
+
 onMounted(() => {
   setTimeout(() => {
     navigateTo("/home")
