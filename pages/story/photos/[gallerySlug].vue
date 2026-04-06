@@ -22,16 +22,17 @@ onMounted(() => {
     content_group: "app_tab",
   })
 })
+
+useHead(() => ({
+  title: `${shareTitle.value} | WNYC`,
+  meta: [
+    { name: "og:title", content: `${shareTitle.value} | WNYC` },
+    { name: "twitter:title", content: `${shareTitle.value} | WNYC` },
+  ],
+}))
 </script>
 <template>
   <div class="gallery-page">
-    <Html lang="en">
-      <Head>
-        <Title>{{ shareTitle }} | WNYC</Title>
-        <Meta name="og:title" :content="`${shareTitle} | WNYC`" />
-        <Meta name="twitter:title" :content="`${shareTitle} | WNYC`" />
-      </Head>
-    </Html>
     <section class="header flex align-items-center justify-content-between">
       <div class="flex align-items-center">
         <Button
@@ -41,7 +42,9 @@ onMounted(() => {
           text
           severity="secondary"
           aria-label="back to previous page"
-          @click="navigateTo(`/story/${route.query.article}?src=${route.query.src}`)"
+          @click="
+            navigateTo(`/story/${route.query.article}?src=${route.query.src}`)
+          "
           label="Return"
         />
       </div>
@@ -163,7 +166,9 @@ onMounted(() => {
         text
         severity="secondary"
         aria-label="back to previous page"
-        @click="navigateTo(`/story/${route.query.article}?src=${route.query.src}`)"
+        @click="
+          navigateTo(`/story/${route.query.article}?src=${route.query.src}`)
+        "
         label="Return"
       />
     </section>

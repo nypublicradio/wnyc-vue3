@@ -1,7 +1,7 @@
 <script setup>
 import { cmsSources } from "~/composables/globals"
 import { useTopStories } from "~/composables/useTopStories"
-const { topStories } = useTopStories()
+const { topStories } = await useTopStories()
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -10,7 +10,11 @@ const storySource = "WNYC"
 
 const breadcrumbs = computed(() => [{ label: "Home", route: "/home" }])
 
-const { data: storyData, status, error } = useFetch(
+const {
+  data: storyData,
+  status,
+  error,
+} = useFetch(
   `${config.public.BFF_URL}/api/story/${cmsSources.PUBLISHER}/${route.params.slug}`,
   {
     onResponse({ response }) {
@@ -23,32 +27,35 @@ const { data: storyData, status, error } = useFetch(
         content_group: `${storySource}_article`,
         article_authors: res?.authors?.map((author) => author.name).join(","),
         article_publish_date: res?.publicationDate,
-        article_updated_date: res?.updatedDate ? res?.updatedDate : res?.publicationDate,
+        article_updated_date: res?.updatedDate
+          ? res?.updatedDate
+          : res?.publicationDate,
         article_title: res?.title,
       })
     },
     onResponseError() {
       globalToast.value = {
         severity: "error",
-        summary: "We are having a problem loading this story. Please try again later.",
+        summary:
+          "We are having a problem loading this story. Please try again later.",
         life: 6000,
         closable: true,
       }
     },
   }
 )
+
+useHead(() => ({
+  title: `${storyData.value?.title} | WNYC`,
+  meta: [
+    { name: "og:title", content: `${storyData.value?.title} | WNYC` },
+    { name: "twitter:title", content: `${storyData.value?.title} | WNYC` },
+  ],
+}))
 </script>
 
 <template>
   <div class="story-page">
-    <Html lang="en">
-      <Head>
-        <Title>{{ storyData?.title }} | WNYC</Title>
-        <Meta name="og:title" :content="`${storyData?.title} | WNYC`" />
-        <Meta name="twitter:title" :content="`${storyData?.title} | WNYC`" />
-      </Head>
-    </Html>
-
     <FetchError v-if="error || !storyData" />
     <template v-else>
       <section>

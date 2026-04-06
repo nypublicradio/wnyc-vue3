@@ -5,8 +5,13 @@ import { useCurrentEpisode, useIsApp } from "~/composables/states"
 import { brandCards } from "~/composables/globals.ts"
 
 useHead({
+  title: 'WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News',
+  meta: [
+    { name: 'og:title', content: 'WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News' },
+    { name: 'twitter:title', content: 'WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News' },
+  ],
   bodyAttrs: {
-    class: "no-bottom-padding",
+    class: 'no-bottom-padding',
   },
 })
 
@@ -14,7 +19,7 @@ const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
 const isApp = useIsApp()
 
-const { data: latestNewsUpdatesData, error: error2 } = useLazyFetch(
+const { data: latestNewsUpdatesData, error: error2 } = await useFetch(
   `${config.public.BFF_URL}/api/homepagelatestnewsupdates`
 )
 
@@ -22,7 +27,7 @@ const {
   data: pagedata,
   error,
   status,
-} = useLazyFetch(`${config.public.BFF_URL}/api/homepagecuration`)
+} = await useFetch(`${config.public.BFF_URL}/api/homepagecuration`)
 
 definePageMeta({
   layout: "default",
@@ -44,22 +49,6 @@ onMounted(() => {
 
 <template>
   <div class="home">
-    <Html lang="en">
-      <Head>
-        <Title
-          >WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
-          News</Title
-        >
-        <Meta
-          name="og:title"
-          content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-        <Meta
-          name="twitter:title"
-          content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-      </Head>
-    </Html>
 
     <section class="mb-4 pt-0 md:my-4 md:pt-4">
       <div class="home-top grid grid-nogutter gap-4">

@@ -8,7 +8,6 @@ const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
 const authorName = ref(null)
-const pageTitle = ref(null)
 const { getUserFallBackImage } = useFallbackImages()
 const staffSlug = route.params.slug
 const newPageData = ref(null)
@@ -21,7 +20,6 @@ const {
 watch(pagedata, (val) => {
   if (val) {
     authorName.value = `${pagedata.value?.authorData[0]?.firstName} ${pagedata.value?.authorData[0]?.lastName}`
-    pageTitle.value = `Articles by ${authorName.value} | Gothamist`
     // set fallback image based on dark or light mode
     if (pagedata.value && !pagedata.value.authorData.photoID) {
       pagedata.value.authorData.photoID = getUserFallBackImage()
@@ -98,12 +96,19 @@ const loadMore = async () => {
   }
 }
 
-useHead({
-  title: pageTitle.value,
-})
-useServerHead({
-  meta: [{ property: "og:title", content: pageTitle.value }],
-})
+useHead(() => ({
+  title: `${authorName.value} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`,
+  meta: [
+    {
+      name: "og:title",
+      content: `${authorName.value} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`,
+    },
+    {
+      name: "twitter:title",
+      content: `${authorName.value} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`,
+    },
+  ],
+}))
 // route back functionality
 const routeBack = () => {
   trackClickEvent("Staff", "Staff page", "route back")
@@ -119,22 +124,6 @@ watch(loadMoreRefVisible, (val) => {
 
 <template>
   <section class="staff-page">
-    <Html lang="en">
-      <Head>
-        <Title
-          >{{ authorName }} | WNYC | New York Public Radio, Podcasts, Live
-          Streaming Radio, News</Title
-        >
-        <Meta
-          name="og:title"
-          :content="`${authorName} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`"
-        />
-        <Meta
-          name="twitter:title"
-          :content="`${authorName} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`"
-        />
-      </Head>
-    </Html>
     <div>
       <Button
         class="back-btn text-color -ml-3"

@@ -6,14 +6,15 @@ const route = useRoute()
 const config = useRuntimeConfig()
 const { breakpoint } = useBreakpoints()
 const isMobile = computed(() => breakpoint("<md"))
-const { data: categoryData, status, error } = useFetch(
-  `${config.public.BFF_URL}/api/browse/browse-topic/getTopicData`,
-  {
-    params: {
-      topic: route.query.topic,
-    },
-  }
-)
+const {
+  data: categoryData,
+  status,
+  error,
+} = useFetch(`${config.public.BFF_URL}/api/browse/browse-topic/getTopicData`, {
+  params: {
+    topic: route.query.topic,
+  },
+})
 // navigate back to home and track it
 const backHome = () => {
   navigateTo("/browse")
@@ -34,25 +35,26 @@ onMounted(() => {
 onUnmounted(() => {
   categoryData.value = null
 })
+
+useHead({
+  title:
+    "Browse Topics | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+  meta: [
+    {
+      name: "og:title",
+      content:
+        "Browse Topics | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+    },
+    {
+      name: "twitter:title",
+      content:
+        "Browse Topics | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+    },
+  ],
+})
 </script>
 <template>
   <div class="browse-topic-page">
-    <Html lang="en">
-      <Head>
-        <Title
-          >Browse Topics | WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
-          News</Title
-        >
-        <Meta
-          name="og:title"
-          content="Browse Topics | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-        <Meta
-          name="twitter:title"
-          content="Browse Topics | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-      </Head>
-    </Html>
     <section class="">
       <div class="flex align-items-center">
         <Button

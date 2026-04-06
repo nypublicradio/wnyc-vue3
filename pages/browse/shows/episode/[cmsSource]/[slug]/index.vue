@@ -2,7 +2,7 @@
 import { useToast } from "primevue/usetoast"
 import { togglePlayEpisode } from "~/utilities/helpers"
 import { useTopStories } from "~/composables/useTopStories"
-const { getFilteredTopStories } = useTopStories()
+const { getFilteredTopStories } = await useTopStories()
 const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -60,13 +60,13 @@ const theSlug = computed(
     episodeData.value?.headers?.brand?.slug
 )
 
-const { data: showSlug } = useLazyFetch(() =>
+const { data: showSlug } = await useFetch(() =>
   theSlug.value
     ? `${config.public.BFF_URL}/api/v2/show/${theSlug.value}?slugOnly=true`
     : null
 )
 
-const { data: show, status: showStatus } = useLazyFetch(() =>
+const { data: show, status: showStatus } = await useFetch(() =>
   showSlug.value?.show?.slug
     ? `${config.public.BFF_URL}/api/pages/wagtail/${showSlug.value?.show?.slug}?showOnly=true`
     : null
@@ -81,17 +81,18 @@ const breadcrumbs = computed(() => [
   },
   { label: episodeData.value?.title },
 ])
+
+useHead(() => ({
+  title: `${episodeData.value?.title} | WNYC`,
+  meta: [
+    { name: "og:title", content: `${episodeData.value?.title} | WNYC` },
+    { name: "twitter:title", content: `${episodeData.value?.title} | WNYC` },
+  ],
+}))
 </script>
 
 <template>
   <div class="episode-page">
-    <Html lang="en">
-      <Head>
-        <Title>{{ episodeData?.title }} | WNYC</Title>
-        <Meta name="og:title" :content="`${episodeData?.title} | WNYC`" />
-        <Meta name="twitter:title" :content="`${episodeData?.title} | WNYC`" />
-      </Head>
-    </Html>
     <FetchError v-if="error" />
     <template v-else>
       <section class="flex align-items-center">

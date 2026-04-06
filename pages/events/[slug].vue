@@ -4,7 +4,7 @@ import { useTopStories } from "~/composables/useTopStories"
 import { EVENT_BADGE_STYLES, useEventData } from "~/composables/useEventData"
 import { dynamicNavigation } from "~/utilities/helpers"
 
-const { getFilteredTopStories } = useTopStories()
+const { getFilteredTopStories } = await useTopStories()
 const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -95,17 +95,18 @@ const breadcrumbs = computed(() => [
   { label: "Events", route: "/events" },
   { label: title.value || "Event" },
 ])
+
+useHead(() => ({
+  title: `${title.value} | WNYC`,
+  meta: [
+    { name: 'og:title', content: `${title.value} | WNYC` },
+    { name: 'twitter:title', content: `${title.value} | WNYC` },
+  ],
+}))
 </script>
 
 <template>
   <div class="event-page">
-    <Html lang="en">
-      <Head>
-        <Title>{{ title }} | WNYC</Title>
-        <Meta name="og:title" :content="`${title} | WNYC`" />
-        <Meta name="twitter:title" :content="`${title} | WNYC`" />
-      </Head>
-    </Html>
     <FetchError v-if="error" />
     <template v-else>
       <section>

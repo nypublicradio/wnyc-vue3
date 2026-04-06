@@ -61,6 +61,20 @@ const {
   }
 )
 const episodeData = computed(() => episode.value)
+
+useHead(() => ({
+  title: `${episodeData.value?.title} Transcript | WNYC`,
+  meta: [
+    {
+      name: "og:title",
+      content: `${episodeData.value?.title} Transcript | WNYC`,
+    },
+    {
+      name: "twitter:title",
+      content: `${episodeData.value?.title} Transcript | WNYC`,
+    },
+  ],
+}))
 const theSlug = computed(
   () =>
     episodeData.value?.showSlug ||
@@ -118,13 +132,13 @@ const getEpisodeImage = () => {
   return epImage
 }
 
-const { data: showSlug } = useLazyFetch(() =>
+const { data: showSlug } = await useFetch(() =>
   theSlug.value
     ? `${config.public.BFF_URL}/api/v2/show/${theSlug.value}?slugOnly=true`
     : null
 )
 
-const { data: show } = useLazyFetch(() =>
+const { data: show } = await useFetch(() =>
   showSlug.value?.show?.slug
     ? `${config.public.BFF_URL}/api/pages/wagtail/${showSlug.value?.show?.slug}?showOnly=true`
     : null
@@ -168,19 +182,6 @@ onUnmounted(() => {
 
 <template>
   <div class="episode-page">
-    <Html lang="en">
-      <Head>
-        <Title>{{ episodeData?.title }} Transcript | WNYC</Title>
-        <Meta
-          name="og:title"
-          :content="`${episodeData?.title} Transcript | WNYC`"
-        />
-        <Meta
-          name="twitter:title"
-          :content="`${episodeData?.title} Transcript | WNYC`"
-        />
-      </Head>
-    </Html>
     <section>
       <transition name="fade">
         <div v-if="status === 'success'" class="flex align-items-center mb-4">
