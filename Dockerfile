@@ -96,7 +96,9 @@ RUN npm ci
 RUN npm install sass
 
 COPY . .
-RUN npm run build
+ENV NUXT_TELEMETRY_DISABLED=1
+RUN timeout 300 npm run build; \
+    test -f .output/server/index.mjs || exit 1
 
 FROM node:18.18.2-slim AS app
 
