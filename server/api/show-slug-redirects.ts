@@ -21,7 +21,6 @@ const redirects = [
     { from: '/browse/shows/anxiety', to: '/browse/shows/notes-from-america' },
     { from: '/browse/shows/otm', to: '/browse/shows/on-the-media' },
     { from: '/browse/shows/onlyhuman', to: '/browse/shows/only-human' },
-    { from: '/browse/shows/classical-music-happy-hour', to: '/browse/shows/our-common-nature' },
     { from: '/browse/shows/our-common-nature-podcast', to: '/browse/shows/our-common-nature' },
     { from: '/browse/shows/pieceofwork', to: '/browse/shows/a-piece-of-work' },
     { from: '/browse/shows/theseason', to: '/browse/shows/the-season' },
