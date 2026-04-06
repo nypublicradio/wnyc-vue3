@@ -34,8 +34,7 @@ const ctaImageSize = Object.fromEntries(
     :to="link"
     v-if="image && link"
     raw
-    class="block m-auto"
-    style="max-width: 610px"
+    class="block m-auto cta-block-width"
   >
     <VImage
       :src="image"
@@ -47,3 +46,9 @@ const ctaImageSize = Object.fromEntries(
     />
   </VFlexibleLink>
 </template>
+
+<style scoped>
+.cta-block-width {
+  max-width: 610px;
+}
+</style>
