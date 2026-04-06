@@ -1,5 +1,4 @@
 <script setup>
-import VFlexibleLink from "./VFlexibleLink.vue"
 import Button from "primevue/button"
 import Dialog from "primevue/dialog"
 import ProgressSpinner from "primevue/progressspinner"
@@ -268,7 +267,7 @@ onMounted(async () => {
 
   // Check if the native <img> is already loaded (e.g. cached after SSR hydration)
   const img = refThisImg.value?.querySelector?.("img.native-image")
-  if (img && img.complete && img.naturalHeight !== 0) {
+  if (img?.complete && img.naturalHeight !== 0) {
     emit("image-load")
   }
 })
