@@ -3,6 +3,20 @@ import { useSelectedSavedTab, useIsDarkMode } from "~/composables/states"
 import { getSavedMenuItems } from "~/composables/globals"
 
 useHead({
+  title:
+    "Saved | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+  meta: [
+    {
+      name: "og:title",
+      content:
+        "Saved | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+    },
+    {
+      name: "twitter:title",
+      content:
+        "Saved | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+    },
+  ],
   bodyAttrs: {
     class: "grey-bg",
   },
@@ -112,22 +126,6 @@ onMounted(() => {
 
 <template>
   <div class="saved-page thinContent">
-    <Html lang="en">
-      <Head>
-        <Title
-          >Saved | WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
-          News</Title
-        >
-        <Meta
-          name="og:title"
-          content="Saved | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-        <Meta
-          name="twitter:title"
-          content="Saved | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-      </Head>
-    </Html>
     <section class="flex align-items-center justify-content-between md:py-5">
       <h1>Saved</h1>
     </section>

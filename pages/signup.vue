@@ -3,6 +3,23 @@ definePageMeta({
   middleware: ["check-logged-in"],
   pageTransition: false, // Disable page transition
 })
+
+useHead({
+  title:
+    "Sign up | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+  meta: [
+    {
+      name: "og:title",
+      content:
+        "Sign up | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+    },
+    {
+      name: "twitter:title",
+      content:
+        "Sign up | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+    },
+  ],
+})
 onMounted(() => {
   // send GA page view
   const { $analytics } = useNuxtApp()
@@ -16,21 +33,6 @@ onMounted(() => {
 
 <template>
   <div class="signup-page">
-    <Html lang="en">
-      <Head>
-        <Title>
-          Sign up | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News
-        </Title>
-        <Meta
-          name="og:title"
-          content="Sign up | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-        <Meta
-          name="twitter:title"
-          content="Sign up | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-      </Head>
-    </Html>
     <section class="grid m-auto pb-0 lg:pr-0 pt-0">
       <Signup isRoute class="col-12 lg:col-6" />
       <LoginSignupSideContent class="hidden col-6 lg:flex" />

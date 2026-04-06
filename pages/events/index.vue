@@ -4,7 +4,7 @@ import { useTopStories } from "~/composables/useTopStories"
 import { useIntersectionObserver } from "@vueuse/core"
 import { allSocialData } from "~/composables/navigationData.js"
 import { dynamicNavigation } from "~/utilities/helpers"
-const { getFilteredTopStories, topStories } = useTopStories()
+const { getFilteredTopStories, topStories } = await useTopStories()
 const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const toast = useToast()
@@ -104,17 +104,14 @@ const breadcrumbs = computed(() => [
 ])
 
 const greeneSpaceUrl = "https://thegreenespace.org"
+
+useHead({
+  title: 'Events | WNYC',
+})
 </script>
 
 <template>
   <div class="event-page event-list-page">
-    <Html lang="en">
-      <Head>
-        <Title>Events | WNYC</Title>
-        <!-- <Meta name="og:title" :content="`${eventData?.title} | WNYC`" />
-        <Meta name="twitter:title" :content="`${eventData?.title} | WNYC`" /> -->
-      </Head>
-    </Html>
     <section>
       <div class="flex align-items-center">
         <Breadcrumbs :items="breadcrumbs" />

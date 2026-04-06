@@ -11,7 +11,7 @@ const {
   data: shows,
   status,
   error,
-} = useLazyFetch(`${config.public.BFF_URL}/api/v3/shows`)
+} = await useFetch(`${config.public.BFF_URL}/api/v3/shows`)
 
 const router = useRouter()
 const searchFieldValue = ref("")
@@ -91,26 +91,27 @@ watch(
   },
   { once: true }
 )
+
+useHead({
+  title:
+    "Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+  meta: [
+    {
+      name: "og:title",
+      content:
+        "Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+    },
+    {
+      name: "twitter:title",
+      content:
+        "Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+    },
+  ],
+})
 </script>
 
 <template>
   <div class="browse-page">
-    <Html lang="en">
-      <Head>
-        <Title
-          >Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming
-          Radio, News</Title
-        >
-        <Meta
-          name="og:title"
-          content="Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-        <Meta
-          name="twitter:title"
-          content="Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-      </Head>
-    </Html>
     <div class="search z-2" :class="{ 'is-app': isApp }">
       <section class="thinContent">
         <h1 class="hidden md:block mb-3 md:mb-4">Browse All Shows</h1>

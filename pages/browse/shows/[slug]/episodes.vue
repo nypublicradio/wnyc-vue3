@@ -140,27 +140,28 @@ onMounted(() => {
     content_group: "app_tab",
   })
 })
+
+useHead({
+  title:
+    "Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+  meta: [
+    {
+      name: "og:title",
+      content:
+        "Browse Show Episodes | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+    },
+    {
+      name: "twitter:title",
+      content:
+        "Browse Show Episodes | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+    },
+  ],
+})
 </script>
 
 <template>
   <div class="show-episodes-page pb-7">
     <section>
-      <Html lang="en">
-        <Head>
-          <Title
-            >Browse Shows | WNYC | New York Public Radio, Podcasts, Live
-            Streaming Radio, News</Title
-          >
-          <Meta
-            name="og:title"
-            content="Browse Show Episodes | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-          />
-          <Meta
-            name="twitter:title"
-            content="Browse Show Episodes | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-          />
-        </Head>
-      </Html>
       <div class="flex align-items-center">
         <Breadcrumbs :items="breadcrumbs" />
       </div>

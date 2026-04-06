@@ -72,26 +72,24 @@ onMounted(() => {
 onUnmounted(() => {
   stop()
 })
+
+useHead(() => ({
+  title: `${show.value?.title} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`,
+  meta: [
+    {
+      name: "og:title",
+      content: `${show.value?.title} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`,
+    },
+    {
+      name: "twitter:title",
+      content: `${show.value?.title} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`,
+    },
+  ],
+}))
 </script>
 
 <template>
   <div class="shows-page pb-7" :class="{ 'is-app': isApp }">
-    <Html lang="en">
-      <Head>
-        <Title
-          >{{ show?.title }} | WNYC | New York Public Radio, Podcasts, Live
-          Streaming Radio, News</Title
-        >
-        <Meta
-          name="og:title"
-          :content="`${show?.title} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`"
-        />
-        <Meta
-          name="twitter:title"
-          :content="`${show?.title} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`"
-        />
-      </Head>
-    </Html>
     <section>
       <div class="flex align-items-center">
         <Breadcrumbs :items="breadcrumbs" />

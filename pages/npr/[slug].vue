@@ -1,6 +1,6 @@
 <script setup>
 import { useTopStories } from "~/composables/useTopStories"
-const { topStories } = useTopStories()
+const { topStories } = await useTopStories()
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -13,7 +13,7 @@ const {
   data: storyData,
   status,
   error,
-} = useLazyFetch(`${config.public.BFF_URL}/api/npr/${route.params.slug}`, {
+} = await useFetch(`${config.public.BFF_URL}/api/npr/${route.params.slug}`, {
   onResponse({ response }) {
     // send GA page view
     const res = response._data
@@ -53,17 +53,18 @@ const breadcrumbs = computed(() => [
     : []),
   { label: storyData.value?.title },
 ])
+
+useHead(() => ({
+  title: `${storyData.value?.title} | WNYC`,
+  meta: [
+    { name: "og:title", content: `${storyData.value?.title} | WNYC` },
+    { name: "twitter:title", content: `${storyData.value?.title} | WNYC` },
+  ],
+}))
 </script>
 
 <template>
   <div class="npr-story-page">
-    <Html lang="en">
-      <Head>
-        <Title>{{ storyData?.title }} | WNYC</Title>
-        <Meta name="og:title" :content="`${storyData?.title} | WNYC`" />
-        <Meta name="twitter:title" :content="`${storyData?.title} | WNYC`" />
-      </Head>
-    </Html>
     <FetchError v-if="error" />
     <template v-else>
       <section class="flex align-items-center">

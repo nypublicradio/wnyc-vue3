@@ -7,7 +7,6 @@ const router = useRouter()
 const config = useRuntimeConfig()
 const { getEpisodeFallBackImage, getUserFallBackImage } = useFallbackImages()
 const personName = ref(null)
-const pageTitle = ref(null)
 const personSlug = route.params.slug
 //const newPageData = ref(null)
 const {
@@ -19,7 +18,6 @@ const {
 watch(pagedata, (val) => {
   if (val) {
     personName.value = pagedata?.value.name
-    pageTitle.value = `Articles by ${personName.value} | Gothamist`
     // set fallback image based on dark or light mode
     if (pagedata.value && !pagedata.value.photoID) {
       pagedata.value.photoID = getUserFallBackImage()
@@ -42,12 +40,19 @@ watch(
   { once: true }
 )
 
-useHead({
-  title: pageTitle.value,
-})
-useServerHead({
-  meta: [{ property: "og:title", content: pageTitle.value }],
-})
+useHead(() => ({
+  title: `${personName.value} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`,
+  meta: [
+    {
+      name: "og:title",
+      content: `${personName.value} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`,
+    },
+    {
+      name: "twitter:title",
+      content: `${personName.value} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`,
+    },
+  ],
+}))
 
 // handle route back
 const routeBack = () => {
@@ -58,22 +63,6 @@ const routeBack = () => {
 
 <template>
   <section class="person-page">
-    <Html lang="en">
-      <Head>
-        <Title
-          >{{ personName }} | WNYC | New York Public Radio, Podcasts, Live
-          Streaming Radio, News</Title
-        >
-        <Meta
-          name="og:title"
-          :content="`${personName} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`"
-        />
-        <Meta
-          name="twitter:title"
-          :content="`${personName}}] | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`"
-        />
-      </Head>
-    </Html>
     <div>
       <Button
         class="back-btn text-color -ml-3"
