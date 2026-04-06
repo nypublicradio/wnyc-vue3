@@ -35,9 +35,13 @@ const breakpointOrder = {
     'xxxl': 7
 }
 
+// SSR-safe default breakpoint (lg = desktop, most web visitors)
+const SSR_DEFAULT_BREAKPOINT = 'lg'
+const SSR_DEFAULT_WIDTH = 1024
+
 // Global shared state and resize handler
-const globalBreakpoint = ref('')
-const globalWindowWidth = ref(0)
+const globalBreakpoint = ref(import.meta.server ? SSR_DEFAULT_BREAKPOINT : '')
+const globalWindowWidth = ref(import.meta.server ? SSR_DEFAULT_WIDTH : 0)
 let listenerCount = 0
 let isInitialized = false
 
@@ -168,6 +172,14 @@ const cleanupBreakpoints = () => {
  */
 export function useBreakpoints () {
     const isMobileBreakpoint = computed(() => breakpoint("<md"))
+
+    // Initialize with SSR defaults on client before mount to prevent hydration mismatch.
+    // The actual window measurement happens in onMounted.
+    if (import.meta.client && !isInitialized && !globalBreakpoint.value) {
+        globalBreakpoint.value = SSR_DEFAULT_BREAKPOINT
+        globalWindowWidth.value = SSR_DEFAULT_WIDTH
+    }
+
     onMounted(() => {
         listenerCount++
         initializeBreakpoints()

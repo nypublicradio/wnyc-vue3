@@ -1,12 +1,20 @@
 <script setup>
 import { cmsSources } from "~/composables/globals.ts"
-import { computed, defineAsyncComponent, markRaw, ref, watch } from "vue"
+import { computed, ref, watch } from "vue"
 import { useVImageDimensions } from "~/composables/useVImageDimensions"
 import { useVImage } from "~/composables/useVImage"
 import { useFallbackImages } from "~/composables/useFallbackImages"
+import VImagePublisher from "./VImagePublisher.vue"
+import VImageNpr from "./VImageNpr.vue"
+import VImageWagtail from "./VImageWagtail.vue"
 
-// Cache components to avoid recreation
-const componentCache = new Map()
+// Static component map — no module-level mutable state, SSR-safe
+const componentMap = {
+  [cmsSources.PUBLISHER]: VImagePublisher,
+  [cmsSources.NPR]: VImageNpr,
+  [cmsSources.WAGTAIL]: VImageWagtail,
+  [cmsSources.SIMPLECAST]: VImageWagtail,
+}
 
 const props = defineProps({
   /** Image source - can be a string URL or object containing image data */
@@ -88,45 +96,10 @@ const loaderDimensions = computed(() => {
   return `aspect-ratio: ${imageRatio.value[0]} / ${imageRatio.value[1]}; width:100%; height:100%; max-width:${imageRatio.value[0]}px; max-height:${imageRatio.value[1]}px;`
 })
 
-// determines what component to load based on the item type
+// Determines which component to render based on the CMS source — simple lookup, SSR-safe
 const dynamicComponent = computed(() => {
   if (!cmsSource.value) return null
-
-  const source = cmsSource.value
-
-  // Check if we already have this component cached
-  if (componentCache.has(source)) {
-    return componentCache.get(source)
-  }
-
-  // Get the import function based on CMS source
-  const getComponentImport = () => {
-    switch (source) {
-      case cmsSources.PUBLISHER:
-        return () => import("./VImagePublisher.vue")
-      case cmsSources.NPR:
-        return () => import("./VImageNpr.vue")
-      case cmsSources.WAGTAIL:
-        return () => import("./VImageWagtail.vue")
-      case cmsSources.SIMPLECAST:
-        return () => import("./VImageWagtail.vue")
-      default:
-        return () => import("./VImageWagtail.vue")
-    }
-  }
-
-  const component = markRaw(
-    defineAsyncComponent({
-      loader: getComponentImport(),
-      onError: (err) => {
-        console.error(`Failed to load component: ${err.message}`)
-      },
-    })
-  )
-
-  // Store in cache for next time
-  componentCache.set(source, component)
-  return component
+  return componentMap[cmsSource.value] ?? VImageWagtail
 })
 </script>
 
@@ -135,12 +108,11 @@ const dynamicComponent = computed(() => {
     <!-- Image component positioned absolutely when loading -->
     <component
       :is="dynamicComponent"
-      :key="`${cmsSource}-${imageTemplate}`"
       v-bind="{ ...$props, ...$attrs }"
       :src="imageTemplate"
-      :width="props.width || imageWidth"
-      :height="props.height || imageHeight"
-      :ratio="props.ratio || imageRatio"
+      :width="imageWidth"
+      :height="imageHeight"
+      :ratio="imageRatio"
       :class="{ 'image-loading': !imageLoaded, 'image-loaded': imageLoaded }"
       @image-load="handleImageLoad"
     >
@@ -155,7 +127,9 @@ const dynamicComponent = computed(() => {
       class="image-loader-container"
       :style="loaderDimensions"
     >
-      <WnycLoader class="image-loader-anim" size="1rem" bg spinner />
+      <ClientOnly>
+        <WnycLoader class="image-loader-anim" size="1rem" bg spinner />
+      </ClientOnly>
     </div>
   </div>
 </template>

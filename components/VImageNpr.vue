@@ -133,8 +133,10 @@ const emit = defineEmits([
 ])
 
 const refThisImg = ref(null)
-const thisWidth = ref(null)
+// SSR-safe default: use props.width if available, otherwise a sensible default
+const thisWidth = ref(props.width || 600)
 const theSrc = computed(() => {
+  if (!props.src) return ""
   return props.src
     .replace("{width}", props.width)
     .replace("{quality}", props.quality)
@@ -142,6 +144,7 @@ const theSrc = computed(() => {
 })
 
 const theSrcFull = computed(() => {
+  if (!props.src) return ""
   return props.src
     .replace(
       "s={width}",
@@ -208,8 +211,7 @@ const getDimensions = () => {
         : props.width,
     }
   } else {
-    //console.log('thisWidth.value =  ', thisWidth.value)
-    let theWidth = thisWidth.value
+    let theWidth = thisWidth.value || props.width || 600
     if (props.maxWidth && props.maxWidth < theWidth) {
       theWidth = props.maxWidth
     }
@@ -323,46 +325,48 @@ onMounted(async () => {
               ></Button>
             </slot>
           </div>
-          <Dialog
-            v-model:visible="loadingEnlargedImage"
-            modal
-            dismissable-mask
-            :draggable="false"
-            header=" "
-            :style="{ width: '95vw' }"
-          >
-            <nuxt-img
-              :format="props.format"
-              :provider="handleProvider"
-              class="enlarged-image"
-              :src="theSrcFull"
-              style="width: 100%; height: auto"
-              :alt="props.isDecorative ? '' : props.alt"
-              loading="eager"
-              :quality="70"
-              :width="computedEnlargeWidth"
-              :height="computedEnlargeHeight"
-              @load="enlargeLoad($event.target)"
-            />
-            <template #closeicon
-              ><slot class="slot close-icon" name="closeicon"></slot
-            ></template>
-          </Dialog>
-          <Teleport to="body">
-            <ProgressSpinner
-              v-if="loadingEnlargedImage && !loadedEnlargedImage"
-              style="
-                z-index: 1102;
-                position: fixed;
-                top: 0;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                margin: auto;
-              "
-              stroke-width="6"
-            />
-          </Teleport>
+          <ClientOnly>
+            <Dialog
+              v-model:visible="loadingEnlargedImage"
+              modal
+              dismissable-mask
+              :draggable="false"
+              header=" "
+              :style="{ width: '95vw' }"
+            >
+              <nuxt-img
+                :format="props.format"
+                :provider="handleProvider"
+                class="enlarged-image"
+                :src="theSrcFull"
+                style="width: 100%; height: auto"
+                :alt="props.isDecorative ? '' : props.alt"
+                loading="eager"
+                :quality="70"
+                :width="computedEnlargeWidth"
+                :height="computedEnlargeHeight"
+                @load="enlargeLoad($event.target)"
+              />
+              <template #closeicon
+                ><slot class="slot close-icon" name="closeicon"></slot
+              ></template>
+            </Dialog>
+            <Teleport to="body">
+              <ProgressSpinner
+                v-if="loadingEnlargedImage && !loadedEnlargedImage"
+                style="
+                  z-index: 1102;
+                  position: fixed;
+                  top: 0;
+                  bottom: 0;
+                  left: 0;
+                  right: 0;
+                  margin: auto;
+                "
+                stroke-width="6"
+              />
+            </Teleport>
+          </ClientOnly>
         </template>
       </div>
     </VFlexibleLink>
