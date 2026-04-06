@@ -4,6 +4,8 @@ import Dialog from "primevue/dialog"
 import ProgressSpinner from "primevue/progressspinner"
 import { useFallbackImages } from "~/composables/useFallbackImages"
 
+defineOptions({ inheritAttrs: false })
+
 const { getEpisodeFallBackImage } = useFallbackImages()
 
 const props = defineProps({
@@ -246,7 +248,7 @@ const handleProvider = computed(() => {
       :to="props.to"
       :aria-hidden="props.isDecorative ? true : false"
       :tabindex="props.isDecorative ? -1 : 0"
-      style="width: auto; height: inherit"
+      class="v-image-link"
       @click="props.to ? emit('image-click', props.to) : null"
     >
       <div
@@ -358,6 +360,10 @@ const handleProvider = computed(() => {
 </template>
 
 <style lang="scss" scoped>
+.v-image-link {
+  width: auto;
+  height: inherit;
+}
 .v-image {
   line-height: 0;
   position: relative;
