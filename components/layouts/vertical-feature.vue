@@ -41,12 +41,11 @@ const rectSizes = {
   lg: [885, 590],
   xl: [664, 443],
 }
-const leftCol = ref(props.isThin ? "col-12 md:col-8" : "lg:col-6")
-const rightCol = ref(props.isThin ? "col-12" : "lg:col-6")
+// Compute isSquare synchronously during setup so it runs during SSR
+// (onBeforeMount does NOT run on the server, causing hydration mismatches)
 const isSquare = ref(false)
-
-onBeforeMount(() => {
-  const featureItem = reactiveItems.value[0]
+const featureItem = reactiveItems.value?.[0]
+if (featureItem) {
   const imgHeight = Number(
     featureItem.imageFullHeight || featureItem.image?.height
   )
@@ -56,7 +55,6 @@ onBeforeMount(() => {
   if (featureItem.cmsSource === mediaTypes.SIMPLECAST) {
     isSquare.value = true
   } else if (
-    featureItem &&
     imgHeight &&
     imgWidth &&
     !isNaN(imgHeight) &&
@@ -64,10 +62,24 @@ onBeforeMount(() => {
     imgHeight !== 0
   ) {
     isSquare.value = imgHeight === imgWidth
-  } else {
-    isSquare.value = false
   }
-})
+}
+
+// Initialize leftCol/rightCol with values consistent with isSquare
+const leftCol = ref(
+  props.isThin
+    ? "col-12 md:col-8"
+    : isSquare.value
+    ? "lg:col-5"
+    : "lg:col-5 xl:col-6"
+)
+const rightCol = ref(
+  props.isThin
+    ? "col-12 lg:col-12"
+    : isSquare.value
+    ? "lg:col-7"
+    : "lg:col-7 xl:col-6"
+)
 
 watch(isSquare, (newVal) => {
   leftCol.value = props.isThin
