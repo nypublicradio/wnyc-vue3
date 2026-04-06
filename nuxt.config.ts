@@ -4,7 +4,7 @@ import MyPreset from "./assets/wnyc-theme.js"
 export default defineNuxtConfig({
   modules: [
     "@nuxtjs/supabase",
-    "@nuxtjs/ionic",
+    ...(process.env.NUXT_SSR === "true" ? [] : ["@nuxtjs/ionic"]),
     "@nuxtjs/device",
     "@nuxt/image",
     "@hypernym/nuxt-gsap",
@@ -196,7 +196,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     // Server-only runtime values (read at runtime by Nitro)
-    
+
     aviaryBaseApi: process.env.AVIARY_BASE_API,
     simplecastUrl: process.env.SIMPLECAST_URL ?? 'https://api.simplecast.com',
     simplecastApiKey: process.env.SIMPLECAST_API_KEY,
