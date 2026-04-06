@@ -89,6 +89,7 @@ const loadMore = async () => {
       life: 6000,
       closable: true,
     })
+    console.error("Error loading more events:", e)
   }
 }
 

@@ -41,7 +41,9 @@ const emit = defineEmits(["on-click"])
           <PipeData>
             <template #left>{{ props.sourceLabel }}</template>
             <template #right>
-              <span class="nobreak">{{ howLongAgo(props.newsData?.newsdate) }}</span>
+              <ClientOnly>
+                <span class="nobreak">{{ howLongAgo(props.newsData?.newsdate) }}</span>
+              </ClientOnly>
             </template>
           </PipeData>
           <PlayButton
