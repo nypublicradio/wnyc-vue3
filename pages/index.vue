@@ -1,11 +1,5 @@
-<script setup async>
+<script setup>
 import { useBrowserTopColorDarkMode } from "~/composables/globals.ts"
-
-useHead({
-  bodyAttrs: {
-    class: "no-bottom-padding hide-bottom-menu hide-footer",
-  },
-})
 
 definePageMeta({
   layout: "default",
@@ -15,6 +9,27 @@ definePageMeta({
 const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const route = useRoute()
 
+useHead({
+  title: "WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+  bodyAttrs: {
+    class: "no-bottom-padding hide-bottom-menu hide-footer",
+  },
+  meta: [
+    {
+      name: "og:title",
+      content:
+        "WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+    },
+    {
+      name: "twitter:title",
+      content:
+        "WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+    },
+    { name: "theme-color", content: browserTopColorDarkMode },
+    { name: "msapplication-TileColor", content: browserTopColorDarkMode },
+  ],
+})
+
 onMounted(() => {
   setTimeout(() => {
     navigateTo("/home")
@@ -23,28 +38,6 @@ onMounted(() => {
 </script>
 <template>
   <div class="index">
-    <Html>
-      <Head>
-        <Title
-          >WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
-          News</Title
-        >
-        <Meta
-          name="og:title"
-          content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-        <Meta
-          name="twitter:title"
-          content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-        <!-- force browser top color dark -->
-        <Meta name="theme-color" :content="browserTopColorDarkMode" />
-        <Meta
-          name="msapplication-TileColor"
-          :content="browserTopColorDarkMode"
-        />
-      </Head>
-    </Html>
     <div class="page" :class="[`${String(route.name)}`]">
       <Transition name="fade">
         <section class="loading-holder">
