@@ -156,7 +156,7 @@ const childProps = computed(() => {
   p.src = imageTemplate.value
   p.width = imageWidth.value
   p.height = imageHeight.value
-  p.ratio = props.ratio || imageRatio.value
+  p.ratio = props.ratio?.length ? props.ratio : imageRatio.value
 
   return p
 })

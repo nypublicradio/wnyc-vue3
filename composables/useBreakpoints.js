@@ -40,8 +40,9 @@ const SSR_DEFAULT_BREAKPOINT = 'lg'
 const SSR_DEFAULT_WIDTH = 1024
 
 // Global shared state and resize handler
-const globalBreakpoint = ref(import.meta.server ? SSR_DEFAULT_BREAKPOINT : '')
-const globalWindowWidth = ref(import.meta.server ? SSR_DEFAULT_WIDTH : 0)
+// Initialize with SSR defaults on both server and client to prevent hydration mismatches
+const globalBreakpoint = ref(SSR_DEFAULT_BREAKPOINT)
+const globalWindowWidth = ref(SSR_DEFAULT_WIDTH)
 let listenerCount = 0
 let isInitialized = false
 
@@ -173,16 +174,20 @@ const cleanupBreakpoints = () => {
 export function useBreakpoints () {
     const isMobileBreakpoint = computed(() => breakpoint("<md"))
 
-    // Initialize with SSR defaults on client before mount to prevent hydration mismatch.
-    // The actual window measurement happens in onMounted.
-    if (import.meta.client && !isInitialized && !globalBreakpoint.value) {
-        globalBreakpoint.value = SSR_DEFAULT_BREAKPOINT
-        globalWindowWidth.value = SSR_DEFAULT_WIDTH
-    }
-
     onMounted(() => {
         listenerCount++
-        initializeBreakpoints()
+        if (import.meta.client) {
+            // Defer breakpoint measurement until after hydration completes
+            // to prevent mismatches when Suspense boundaries resolve async components
+            const nuxtApp = useNuxtApp()
+            if (nuxtApp.isHydrating) {
+                nuxtApp.hook('app:suspense:resolve', () => {
+                    initializeBreakpoints()
+                })
+            } else {
+                initializeBreakpoints()
+            }
+        }
     })
 
     onUnmounted(() => {
