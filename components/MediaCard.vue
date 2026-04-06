@@ -486,7 +486,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                       }}
                     </template>
                     <template #right v-if="!props.hideDate">
-                      {{ getDate(props.data) }}
+                      <ClientOnly>{{ getDate(props.data) }}</ClientOnly>
                     </template>
                   </PipeData>
 

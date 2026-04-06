@@ -19,15 +19,19 @@ const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
 const isApp = useIsApp()
 
-const { data: latestNewsUpdatesData, error: error2 } = await useFetch(
-  `${config.public.BFF_URL}/api/homepagelatestnewsupdates`
-)
-
-const {
-  data: pagedata,
-  error,
-  status,
-} = await useFetch(`${config.public.BFF_URL}/api/homepagecuration`)
+const [
+  { data: latestNewsUpdatesData, error: error2 },
+  { data: pagedata, error, status, refresh },
+] = await Promise.all([
+  useFetch(`${config.public.BFF_URL}/api/homepagelatestnewsupdates`, {
+    retry: 2,
+    retryDelay: 500,
+  }),
+  useFetch(`${config.public.BFF_URL}/api/homepagecuration`, {
+    retry: 2,
+    retryDelay: 500,
+  }),
+])
 
 definePageMeta({
   layout: "default",
@@ -37,6 +41,10 @@ definePageMeta({
 })
 
 onMounted(() => {
+  // retry fetch if server-side fetch failed
+  if (status.value === 'error' || !pagedata.value) {
+    refresh()
+  }
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
