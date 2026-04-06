@@ -165,10 +165,10 @@ export default defineNuxtConfig({
     ],
   },
 
-  sourcemap: {
+/*   sourcemap: {
     client: true,
     server: true,
-  },
+  }, */
 
   components: ["~/components", "~/components/icons", "~/components/logos"],
 
