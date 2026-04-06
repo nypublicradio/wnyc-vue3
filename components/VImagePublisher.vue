@@ -6,6 +6,8 @@ import ProgressSpinner from "primevue/progressspinner"
 import { computed, nextTick, onBeforeMount, onMounted, ref } from "vue"
 import { useVImage } from "~/composables/useVImage"
 
+defineOptions({ inheritAttrs: false })
+
 /** * Responsive image component, generates a srcset with multiple image sizes for different display densities. */
 
 const props = defineProps({
@@ -261,6 +263,12 @@ onMounted(async () => {
       : typeof window === "undefined"
       ? props.defaultWidth
       : window.innerWidth
+
+  // Check if the native <img> is already loaded (e.g. cached after SSR hydration)
+  const img = refThisImg.value?.querySelector?.("img.native-image")
+  if (img && img.complete && img.naturalHeight !== 0) {
+    emit("image-load")
+  }
 })
 </script>
 
@@ -271,7 +279,7 @@ onMounted(async () => {
       :to="props.to"
       :aria-hidden="props.isDecorative ? true : false"
       :tabindex="props.isDecorative ? -1 : 0"
-      style="width: 100%; height: inherit"
+      class="v-image-link"
       @click="props.to ? emit('image-click', props.to) : null"
     >
       <div
@@ -362,6 +370,10 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
+.v-image-link {
+  width: 100%;
+  height: inherit;
+}
 .v-image-publisher {
   height: inherit;
   .v-image-publisher-holder {

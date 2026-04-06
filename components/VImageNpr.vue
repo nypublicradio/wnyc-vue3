@@ -5,6 +5,8 @@ import Dialog from "primevue/dialog"
 import ProgressSpinner from "primevue/progressspinner"
 import { computed, ref } from "vue"
 
+defineOptions({ inheritAttrs: false })
+
 const props = defineProps({
   /**
    * allow the user to click on the enlarge button to open a dialogue with full sized image */
@@ -263,6 +265,12 @@ onMounted(async () => {
       : typeof window === "undefined"
       ? props.defaultWidth
       : window.innerWidth
+
+  // Check if the native <img> is already loaded (e.g. cached after SSR hydration)
+  const img = refThisImg.value?.querySelector?.("img.native-image")
+  if (img && img.complete && img.naturalHeight !== 0) {
+    emit("image-load")
+  }
 })
 </script>
 
@@ -273,7 +281,7 @@ onMounted(async () => {
       :to="props.to"
       :aria-hidden="props.isDecorative ? true : false"
       :tabindex="props.isDecorative ? -1 : 0"
-      style="width: auto; height: inherit"
+      class="v-image-link"
       @click="props.to ? emit('image-click', props.to) : null"
     >
       <div
@@ -379,6 +387,10 @@ onMounted(async () => {
   line-height: 0;
   position: relative;
   height: inherit;
+  .v-image-link {
+    width: auto;
+    height: inherit;
+  }
   .v-image-holder {
     position: relative;
     overflow: hidden;
