@@ -4,6 +4,10 @@ import Dialog from "primevue/dialog"
 import ProgressSpinner from "primevue/progressspinner"
 import { useFallbackImages } from "~/composables/useFallbackImages"
 
+defineOptions({
+  inheritAttrs: false,
+})
+
 const { getEpisodeFallBackImage } = useFallbackImages()
 
 const props = defineProps({
@@ -186,12 +190,14 @@ const computedWidth = computed(() => {
     : props.width
 })
 const computedEnlargeWidth = computed(() => {
+  if (import.meta.server) return props.maxWidth
   const modalFramePaddingOffset = 84
   return window.innerWidth * window.devicePixelRatio > props.maxWidth
     ? props.maxWidth
     : (window.innerWidth - modalFramePaddingOffset) * window.devicePixelRatio
 })
 const computedEnlargeHeight = computed(() => {
+  if (import.meta.server) return props.maxHeight
   const originalWidth = props.maxWidth
   const originalHeight = props.maxHeight
   const newWidth = computedEnlargeWidth.value / window.devicePixelRatio
@@ -284,6 +290,7 @@ const handleProvider = computed(() => {
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
             :modifiers="props.modifiers"
             :loading="props.loading"
+            decoding="auto"
           />
         </div>
         <nuxt-img
@@ -306,6 +313,7 @@ const handleProvider = computed(() => {
           :quality="String(props.quality)"
           :loading="props.loading"
           :modifiers="props.modifiers"
+          decoding="auto"
           @load="handleImageLoad"
           @error="handleImageLoad"
         />
@@ -346,6 +354,7 @@ const handleProvider = computed(() => {
               :width="computedEnlargeWidth"
               :height="computedEnlargeHeight"
               :modifiers="props.modifiers"
+              decoding="auto"
               @load="enlargeLoad($event.target)"
             />
             <template #closeicon

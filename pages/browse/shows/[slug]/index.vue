@@ -102,7 +102,6 @@ onUnmounted(() => {
       <FetchError v-if="error" />
     </section>
     <template v-if="!error">
-      <!-- <pre>{{ show }}</pre> -->
       <ShowHeader :show="show" />
 
       <story-htlAd

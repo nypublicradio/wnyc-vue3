@@ -4,6 +4,10 @@ import Dialog from "primevue/dialog"
 import ProgressSpinner from "primevue/progressspinner"
 import { computed, ref } from "vue"
 
+defineOptions({
+  inheritAttrs: false,
+})
+
 const props = defineProps({
   /**
    * allow the user to click on the enlarge button to open a dialogue with full sized image */
@@ -179,12 +183,14 @@ const computedWidth = computed(() => {
     : props.width
 })
 const computedEnlargeWidth = computed(() => {
+  if (import.meta.server) return props.maxWidth
   const modalFramePaddingOffset = 84
   return window.innerWidth * window.devicePixelRatio > props.maxWidth
     ? props.maxWidth
     : (window.innerWidth - modalFramePaddingOffset) * window.devicePixelRatio
 })
 const computedEnlargeHeight = computed(() => {
+  if (import.meta.server) return props.maxHeight
   const originalWidth = props.maxWidth
   const originalHeight = props.maxHeight
   const newWidth = computedEnlargeWidth.value / window.devicePixelRatio
@@ -299,6 +305,7 @@ onMounted(async () => {
             :height="props.height"
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
             :loading="props.loading"
+            decoding="auto"
           />
         </div>
         <img
@@ -315,6 +322,7 @@ onMounted(async () => {
           :alt="props.isDecorative ? '' : props.alt"
           :loading="loading"
           :srcset="srcset"
+          decoding="auto"
           @load="emit('image-load')"
         />
         <slot class="slot caption" name="caption"></slot>
@@ -353,6 +361,7 @@ onMounted(async () => {
               :quality="70"
               :width="computedEnlargeWidth"
               :height="computedEnlargeHeight"
+              decoding="auto"
               @load="enlargeLoad($event.target)"
             />
             <template #closeicon

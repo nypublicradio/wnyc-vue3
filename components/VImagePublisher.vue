@@ -5,6 +5,10 @@ import ProgressSpinner from "primevue/progressspinner"
 import { computed, nextTick, onBeforeMount, onMounted, ref } from "vue"
 import { useVImage } from "~/composables/useVImage"
 
+defineOptions({
+  inheritAttrs: false,
+})
+
 /** * Responsive image component, generates a srcset with multiple image sizes for different display densities. */
 
 const props = defineProps({
@@ -291,8 +295,7 @@ onMounted(async () => {
             :height="getDimensions().height"
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
             :loading="props.loading"
-            decoding="async"
-            :ismap="false"
+            decoding="auto"
           />
         </div>
         <template v-if="allowPreview">
@@ -356,6 +359,7 @@ onMounted(async () => {
           :style="[isVertical ? `width:auto;` : '']"
           :alt="props.isDecorative ? '' : props.alt"
           :loading="props.loading"
+          decoding="auto"
           @keypress="emit('keypress', $event.target.value)"
           @load="emit('image-load')"
         />

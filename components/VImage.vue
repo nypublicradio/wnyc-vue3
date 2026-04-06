@@ -1,6 +1,6 @@
 <script setup>
 import { cmsSources } from "~/composables/globals.ts"
-import { computed, defineAsyncComponent, markRaw, ref, watch } from "vue"
+import { computed, defineAsyncComponent, markRaw, ref, useAttrs, watch } from "vue"
 import { useVImageDimensions } from "~/composables/useVImageDimensions"
 import { useVImage } from "~/composables/useVImage"
 import { useFallbackImages } from "~/composables/useFallbackImages"
@@ -9,7 +9,7 @@ import { useFallbackImages } from "~/composables/useFallbackImages"
 const componentCache = new Map()
 
 defineOptions({
-  inheritAttrs: false
+  inheritAttrs: false,
 })
 
 const props = defineProps({
@@ -49,10 +49,6 @@ watch(imageLoaded, (newVal) => {
   }
 })
 
-const shouldShowLoader = computed(() => {
-  return !imageLoaded.value
-})
-
 // Use the simplified image dimensions composable
 const { width: imageWidth, height: imageHeight } = useVImageDimensions({
   size: props.size,
@@ -90,6 +86,35 @@ watch(
 const loaderDimensions = computed(() => {
   // Use aspect-ratio and width: 100% to make it responsive like the images
   return `aspect-ratio: ${imageRatio.value[0]} / ${imageRatio.value[1]}; width:100%; height:100%; max-width:${imageRatio.value[0]}px; max-height:${imageRatio.value[1]}px;`
+})
+
+/**
+ * Known props that VImage child components (Wagtail/Npr/Publisher) accept.
+ * We only forward these from $attrs to prevent unknown HTML attributes
+ * (like `ismap`, `srcset` as a string, etc.) from leaking through to
+ * <nuxt-img> or <img> via their useAttrs()/v-bind="$attrs" patterns,
+ * which causes SSR hydration mismatches.
+ */
+const knownChildProps = new Set([
+  'allowPreview', 'allowVerticalEffect', 'alt', 'density', 'format',
+  'height', 'isDecorative', 'loading', 'maxHeight', 'maxWidth',
+  'modifiers', 'provider', 'quality', 'ratio', 'sizes', 'src',
+  'srcFallback', 'srcset', 'srcSq', 'size', 'to',
+  'verticalBgGrayscale', 'width', 'defaultWidth', 'flatQuality',
+  'heightToken', 'qualityToken', 'widthToken',
+])
+
+const attrs = useAttrs()
+
+const filteredAttrs = computed(() => {
+  const result = {}
+  for (const key in attrs) {
+    // Pass through known image props, skip class/style (handled on wrapper), skip unknown HTML attrs
+    if (knownChildProps.has(key)) {
+      result[key] = attrs[key]
+    }
+  }
+  return result
 })
 
 // determines what component to load based on the item type
@@ -140,15 +165,15 @@ const dynamicComponent = computed(() => {
     :class="$attrs.class"
     :style="$attrs.style"
   >
-    <!-- Image component positioned absolutely when loading -->
+    <!-- Image component - only pass known image props, not arbitrary HTML attrs -->
     <component
       :is="dynamicComponent"
       :key="`${cmsSource}-${imageTemplate}`"
-      v-bind="{ ...$props, ...$attrs }"
+      v-bind="{ ...$props, ...filteredAttrs }"
       :src="imageTemplate"
-      :width="props.width || imageWidth"
-      :height="props.height || imageHeight"
-      :ratio="props.ratio || imageRatio"
+      :width="imageWidth"
+      :height="imageHeight"
+      :ratio="imageRatio"
       :class="{ 'image-loading': !imageLoaded, 'image-loaded': imageLoaded }"
       @image-load="handleImageLoad"
     >
@@ -157,14 +182,19 @@ const dynamicComponent = computed(() => {
       </template>
     </component>
 
-    <!-- Loader container that holds space -->
-    <div
-      v-if="shouldShowLoader"
-      class="image-loader-container"
-      :style="loaderDimensions"
-    >
-      <WnycLoader class="image-loader-anim" size="1rem" bg spinner />
-    </div>
+    <!-- Loader: wrapped in ClientOnly because images can't fire @load on the
+         server, so the loader is always present in SSR HTML but removed
+         immediately on client mount — guaranteed hydration children mismatch.
+         In Capacitor/SPA mode, ClientOnly is a no-op. -->
+    <ClientOnly>
+      <div
+        v-if="!imageLoaded"
+        class="image-loader-container"
+        :style="loaderDimensions"
+      >
+        <WnycLoader class="image-loader-anim" size="1rem" bg spinner />
+      </div>
+    </ClientOnly>
   </div>
 </template>
 
