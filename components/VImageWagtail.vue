@@ -307,47 +307,49 @@ const handleProvider = computed(() => {
               ></Button>
             </slot>
           </div>
-          <Dialog
-            v-model:visible="loadingEnlargedImage"
-            modal
-            dismissable-mask
-            :draggable="false"
-            header=" "
-            :style="{ width: '95vw' }"
-          >
-            <nuxt-img
-              :format="props.format"
-              :provider="handleProvider"
-              class="enlarged-image"
-              :src="computedSrc"
-              style="width: 100%; height: auto"
-              :alt="props.isDecorative ? '' : props.alt"
-              loading="eager"
-              :quality="70"
-              :width="computedEnlargeWidth"
-              :height="computedEnlargeHeight"
-              :modifiers="props.modifiers"
-              @load="enlargeLoad($event.target)"
-            />
-            <template #closeicon
-              ><slot class="slot close-icon" name="closeicon"></slot
-            ></template>
-          </Dialog>
-          <Teleport to="body">
-            <ProgressSpinner
-              v-if="loadingEnlargedImage && !loadedEnlargedImage"
-              style="
-                z-index: 1102;
-                position: fixed;
-                top: 0;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                margin: auto;
-              "
-              stroke-width="6"
-            />
-          </Teleport>
+          <ClientOnly>
+            <Dialog
+              v-model:visible="loadingEnlargedImage"
+              modal
+              dismissable-mask
+              :draggable="false"
+              header=" "
+              :style="{ width: '95vw' }"
+            >
+              <nuxt-img
+                :format="props.format"
+                :provider="handleProvider"
+                class="enlarged-image"
+                :src="computedSrc"
+                style="width: 100%; height: auto"
+                :alt="props.isDecorative ? '' : props.alt"
+                loading="eager"
+                :quality="70"
+                :width="computedEnlargeWidth"
+                :height="computedEnlargeHeight"
+                :modifiers="props.modifiers"
+                @load="enlargeLoad($event.target)"
+              />
+              <template #closeicon
+                ><slot class="slot close-icon" name="closeicon"></slot
+              ></template>
+            </Dialog>
+            <Teleport to="body">
+              <ProgressSpinner
+                v-if="loadingEnlargedImage && !loadedEnlargedImage"
+                style="
+                  z-index: 1102;
+                  position: fixed;
+                  top: 0;
+                  bottom: 0;
+                  left: 0;
+                  right: 0;
+                  margin: auto;
+                "
+                stroke-width="6"
+              />
+            </Teleport>
+          </ClientOnly>
         </template>
       </div>
     </VFlexibleLink>
