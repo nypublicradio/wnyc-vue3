@@ -123,15 +123,16 @@ const getShow = async (slug: string, isSlugOnly?: boolean) => {
                 slug: showData.site.subdomain || showData.slug || slug,
                 cmsSource: cmsSources.SIMPLECAST,
                 ...(!isSlugOnly
-                    ? {
-                        id: showData.id,
-                        description: showData.description,
-                        tease: showData.description,
-                        image: showData.imageUrl ? { url: showData.imageUrl, template: templatizeImageUrl(showData.imageUrl) } : undefined,
-                        type: mediaTypes.SHOW,
-                        url: showData.href || showData.websiteUrl,
-                    }
-                    : {}),
+                    ? [
+                        {
+                            id: showData.id,
+                            description: showData.description,
+                            tease: showData.description,
+                            image: showData.imageUrl ? { url: showData.imageUrl, template: templatizeImageUrl(showData.imageUrl) } : undefined,
+                            type: mediaTypes.SHOW,
+                            url: showData.href || showData.websiteUrl,
+                        }
+                    ] : []),
             }
         } catch (e: any) {
             console.error('[Simplecast Show] Error fetching show:', e?.response?.status, e?.response?.statusText, e?.message)
@@ -140,14 +141,8 @@ const getShow = async (slug: string, isSlugOnly?: boolean) => {
     }
 
     // Check for NPR shows
-    let nprShows: any[] | null = []
-    try {
-        nprShows = await nyprDb.getNPRShowBySlug(slug)
-    } catch (e: any) {
-        console.error('[NPR Show] Error checking NPR shows for slug:', slug, e?.message)
-    }
-    
-    if (nprShows && nprShows.length > 0) {
+    const nprShows = await nyprDb.getNPRShowBySlug(slug)
+    if (nprShows.length > 0) {
         const fetchedShows = await Promise.all(nprShows.map(async (show) => {
             const options = {
                 method: 'GET',
@@ -173,38 +168,33 @@ const getShow = async (slug: string, isSlugOnly?: boolean) => {
         }))
         return fetchedShows[0]
     } else {
-        try {
-            const option = {
-                method: 'GET',
-                url: `${config.public.PUBLISHER_BASE_API}v1/list/shows-for-app/`, // used to be v1/list/shows-for-app/'
+        const option = {
+            method: 'GET',
+            url: `${config.public.PUBLISHER_BASE_API}v1/list/shows-for-app/`, // used to be v1/list/shows-for-app/'
 
-            }
-            const res = await axios(option)
-            const resData = humps.camelizeKeys(res.data).results
-            //console.log('=======resData', resData);
-            // Find the show from the list of shows
-            const show = resData.find((s: any) => {
-                return s.slug === slug
-            })
+        }
+        const res = await axios(option)
+        const resData = humps.camelizeKeys(res.data).results
+        //console.log('=======resData', resData);
+        // Find the show from the list of shows
+        const show = resData.find((s) => {
+            return s.slug === slug
+        })
 
-            if (!show) {
-                console.error('[Publisher Show] Show not found for slug:', slug)
-                return null
-            }
-
-            if (show.image) {
-                const imgTemplate = show.image.url.includes('raw') ? show.image.url.replace('/raw/', '/%s/%s/%s/%s/') : templatizeImageUrl(show.image.url)
-                show.image.template = imgTemplate
-            }
-
-            show.cmsSource = cmsSources.PUBLISHER
-            show.type = mediaTypes.SHOW
-            show.url = show.url ?? `${config.public.WNYC_SHOW_SHARE_BASE_URL}${show.slug}`
-            return show
-        } catch (e: any) {
-            console.error('[Publisher Show] Error fetching show for slug:', slug, e?.message)
+        if (!show) {
+            console.error('[Publisher Show] Show not found for slug:', slug)
             return null
         }
+
+        if (show.image) {
+            const imgTemplate = show.image.url.includes('raw') ? show.image.url.replace('/raw/', '/%s/%s/%s/%s/') : templatizeImageUrl(show.image.url)
+            show.image.template = imgTemplate
+        }
+
+        show.cmsSource = cmsSources.PUBLISHER
+        show.type = mediaTypes.SHOW
+        show.url = show.url ?? `${config.public.WNYC_SHOW_SHARE_BASE_URL}${show.slug}`
+        return show
     }
 }
 
