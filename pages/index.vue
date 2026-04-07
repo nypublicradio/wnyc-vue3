@@ -14,20 +14,6 @@ useHead({
   bodyAttrs: {
     class: "no-bottom-padding hide-bottom-menu hide-footer",
   },
-  meta: [
-    {
-      name: "og:title",
-      content:
-        "WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
-    },
-    {
-      name: "twitter:title",
-      content:
-        "WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
-    },
-    { name: "theme-color", content: browserTopColorDarkMode },
-    { name: "msapplication-TileColor", content: browserTopColorDarkMode },
-  ],
 })
 
 // Redirect to /home immediately (works on both server and client)

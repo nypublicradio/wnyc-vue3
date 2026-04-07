@@ -186,6 +186,51 @@ watch(globalError, (error) => {
     })
   }
 })
+
+const title = "WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
+const description = "WNYC is America's most listened-to public radio station and the producer of award-winning programs and podcasts like Radiolab, On the Media, and The Brian Lehrer Show."
+const keywords = "wnyc, podcasts, npr, new york, WNYC Studios, arts, culture, classical, music, news, public, radio"
+const canonicalUrl = `https://www.wnyc.org${route.fullPath}`
+const ogImage = {
+  url: "https://media.wnyc.org/i/1200/1200/c/80/1/wnyc_square_logo.png",
+  alt: "WNYC",
+  width: 1200,
+  height: 600,
+}
+const themeColor = currentUserProfile?.dark_mode
+  ? browserTopColorDarkMode
+  : browserTopColor
+useHead({
+  title,
+  meta: [
+    { charset: "utf-8" },
+    { name: "viewport", content: "viewport-fit=cover, width=device-width, initial-scale=1, maximum-scale=1" },
+    { name: "robots", content: "index, follow" },
+  ],
+  link: [
+    { rel: "canonical", href: canonicalUrl },
+  ],
+})
+useSeoMeta({
+  title,
+  description,
+  keywords,
+  ogDescription: description,
+  ogImage: ogImage.url,
+  ogImageAlt: ogImage.alt,
+  ogImageHeight: ogImage.height,
+  ogImageWidth: ogImage.width,
+  ogSiteName: title,
+  ogTitle: title,
+  ogType: "website",
+  ogUrl: canonicalUrl,
+  twitterCard: "summary_large_image",
+  twitterImage: ogImage.url,
+  twitterSite: "@WNYC",
+  themeColor,
+  msapplicationTileColor: themeColor,
+})
+
 </script>
 
 <template>
