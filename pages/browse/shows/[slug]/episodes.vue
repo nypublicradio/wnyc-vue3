@@ -108,7 +108,9 @@ const loadMore = () => {
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
 watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(route.params.slug)
+  if (import.meta.client) {
+    isFavorited.value = await checkIsFavorited(route.params.slug)
+  }
 })
 
 // Watch for show data changes to update episodes and pagination
