@@ -97,13 +97,22 @@ const breadcrumbs = computed(() => [
   { label: title.value || "Event" },
 ])
 
-useHead(() => ({
-  title: `${title.value} | WNYC`,
-  meta: [
-    { name: 'og:title', content: `${title.value} | WNYC` },
-    { name: 'twitter:title', content: `${title.value} | WNYC` },
-  ],
-}))
+const pageTitle = `${eventData.value?.title} | WNYC`
+const description = getFirstSentence(eventData.value?.description)
+useHead({
+  title: pageTitle,
+})
+if (eventData.value?.preventSearchIndexing) {
+  useHead({
+    meta: [{name: "robots", content: "noindex" }],
+  })
+}
+useSeoMeta({
+  title: pageTitle,
+  ogTitle: pageTitle,
+  description: description,
+  ogDescription: description,
+})
 </script>
 
 <template>
