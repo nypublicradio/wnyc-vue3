@@ -26,7 +26,9 @@ const isApp = useIsApp()
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
 watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(route.params.slug)
+  if (import.meta.client) {
+    isFavorited.value = await checkIsFavorited(route.params.slug)
+  }
 })
 
 // scrolls to the selected section from the jump link buttons
@@ -84,7 +86,7 @@ useHead(() => ({
       </div>
       <FetchError v-if="status === 'error'" />
     </section>
-    <template v-if="status === 'success'">
+    <template v-if="!error">
       <!-- <pre>{{ show }}</pre> -->
       <ShowHeader :show="show" />
 
@@ -134,8 +136,27 @@ useHead(() => ({
         <div class="grid">
           <div class="col-fixed hidden xxl:block w-20rem"></div>
           <div class="col pr-2 lg:pr-4">
-            <div class="flex flex-column gap-5">
+            <div v-if="status === 'success'" class="flex flex-column gap-5">
               <VStreamfield :streamfieldBlocks="show?.body" />
+            </div>
+            <div v-if="status !== 'success'">
+              <div
+                class="flex justify-content-between align-items-center mb-5 mt-2"
+              >
+                <Skeleton height="18px" width="80px" borderRadius="4px" />
+                <Skeleton height="18px" width="80px" borderRadius="4px" />
+              </div>
+              <skeleton-media-card
+                v-for="i in 10"
+                :key="`sk1-${i}`"
+                is-horizontal
+                imgCol="w-7rem md:w-10rem"
+                :size="[1, 1]"
+                :showBg="false"
+                :showBgMobile="false"
+                showTease
+                class="mb-6 mt-5"
+              />
             </div>
             <div v-if="!isApp">
               <div class="block lg:hidden mt-8">
