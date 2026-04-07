@@ -61,11 +61,6 @@ onMounted(() => {
   })
 })
 
-// clean up the useIntersectionObserver
-onUnmounted(() => {
-  stop()
-})
-
 useHead(() => ({
   title: `${show.value?.title} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`,
   meta: [
