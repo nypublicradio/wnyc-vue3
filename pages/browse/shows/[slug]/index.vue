@@ -63,19 +63,17 @@ onMounted(() => {
   })
 })
 
-useHead(() => ({
-  title: `${show.value?.title} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`,
-  meta: [
-    {
-      name: "og:title",
-      content: `${show.value?.title} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`,
-    },
-    {
-      name: "twitter:title",
-      content: `${show.value?.title} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`,
-    },
-  ],
-}))
+const title = `${show.value?.title} | WNYC`
+const description = getFirstSentence(show.value?.summary)
+useHead({
+  title,
+})
+useSeoMeta({
+  title,
+  ogTitle: title,
+  description,
+  ogDescription: description,
+})
 </script>
 
 <template>
