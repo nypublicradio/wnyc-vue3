@@ -98,25 +98,6 @@ export default defineNuxtConfig({
       mode: "out-in", // default
     },
     layoutTransition: true,
-    head: {
-      title: "WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
-      meta: [
-        {
-          name: "viewport",
-          content:
-            "viewport-fit=cover, width=device-width, initial-scale=1, maximum-scale=1",
-        },
-        // { name: 'msapplication-TileColor', content: '#ffffff' },
-        // { name: 'theme-color', content: '#ffffff' }
-      ],
-      link: [
-        {
-          rel: "icon",
-          type: "image/x-icon",
-          href: "https://media.wnyc.org/static/img/favicon_wnyc.ico?_=1553611630",
-        },
-      ],
-    },
   },
 
   css: [

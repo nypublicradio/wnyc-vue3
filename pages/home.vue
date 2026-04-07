@@ -5,11 +5,6 @@ import { useCurrentEpisode, useIsApp } from "~/composables/states"
 import { brandCards } from "~/composables/globals.ts"
 
 useHead({
-  title: 'WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News',
-  meta: [
-    { name: 'og:title', content: 'WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News' },
-    { name: 'twitter:title', content: 'WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News' },
-  ],
   bodyAttrs: {
     class: 'no-bottom-padding',
   },
