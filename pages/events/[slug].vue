@@ -4,7 +4,7 @@ import { useTopStories } from "~/composables/useTopStories"
 import { EVENT_BADGE_STYLES, useEventData } from "~/composables/useEventData"
 import { dynamicNavigation } from "~/utilities/helpers"
 
-const { getFilteredTopStories } = await useTopStories()
+const { getFilteredTopStories } = useTopStories()
 const config = useRuntimeConfig()
 const route = useRoute()
 const toast = useToast()

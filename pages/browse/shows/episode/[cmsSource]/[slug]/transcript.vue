@@ -136,13 +136,13 @@ const getEpisodeImage = () => {
   return epImage
 }
 
-const { data: showSlug } = await useFetch(() =>
+const { data: showSlug } = useFetch(() =>
   theSlug.value
     ? `${config.public.BFF_URL}/api/v2/show/${theSlug.value}?slugOnly=true`
     : null
 )
 
-const { data: show } = await useFetch(() =>
+const { data: show } = useFetch(() =>
   showSlug.value?.show?.slug
     ? `${config.public.BFF_URL}/api/pages/wagtail/${showSlug.value?.show?.slug}?showOnly=true`
     : null

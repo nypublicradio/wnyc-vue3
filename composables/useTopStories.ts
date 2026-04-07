@@ -2,11 +2,11 @@ interface Article {
   readonly id: string | number
 }
 // ROOT LEVEL COMPOSABLE TO FETCH TOP STORIES
-export const useTopStories = async () => {
+export const useTopStories = () => {
   const config = useRuntimeConfig()
   const toast = useToast()
 
-  const { data: topStoriesData, status, error } = await useFetch(
+  const { data: topStoriesData, status, error } = useFetch(
     `${config.public.BFF_URL}/api/homepagetopstories`
   )
 
