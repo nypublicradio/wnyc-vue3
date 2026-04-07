@@ -17,22 +17,6 @@ const {
 } = useFetch(
   `${config.public.BFF_URL}/api/story/${cmsSources.PUBLISHER}/${route.params.slug}`,
   {
-    onResponse({ response }) {
-      const res = response._data
-      // send GA page view
-      const { $analytics } = useNuxtApp()
-      $analytics.sendPageView({
-        page_title: res?.title,
-        page_type: "article",
-        content_group: `${storySource}_article`,
-        article_authors: res?.authors?.map((author) => author.name).join(","),
-        article_publish_date: res?.publicationDate,
-        article_updated_date: res?.updatedDate
-          ? res?.updatedDate
-          : res?.publicationDate,
-        article_title: res?.title,
-      })
-    },
     onResponseError() {
       globalToast.value = {
         severity: "error",
@@ -44,6 +28,24 @@ const {
     },
   }
 )
+
+onMounted(() => {
+  if (!storyData.value) return
+  const { $analytics } = useNuxtApp()
+  $analytics.sendPageView({
+    page_title: storyData.value?.title,
+    page_type: "article",
+    content_group: `${storySource}_article`,
+    article_authors: storyData.value?.authors
+      ?.map((author) => author.name)
+      .join(","),
+    article_publish_date: storyData.value?.publicationDate,
+    article_updated_date: storyData.value?.updatedDate
+      ? storyData.value?.updatedDate
+      : storyData.value?.publicationDate,
+    article_title: storyData.value?.title,
+  })
+})
 
 useHead(() => ({
   title: `${storyData.value?.title} | WNYC`,

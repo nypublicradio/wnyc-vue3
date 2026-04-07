@@ -3,7 +3,6 @@ import { useToast } from "primevue/usetoast"
 import { togglePlayEpisode } from "~/utilities/helpers"
 import { useTopStories } from "~/composables/useTopStories"
 const { getFilteredTopStories } = await useTopStories()
-const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
@@ -18,27 +17,6 @@ const {
     `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
   {
     key: `index-episode-${route.params.cmsSource}-${route.params.slug}`,
-    onResponse({ response }) {
-      const res = response._data
-      $analytics.sendPageView({
-        page_title: res.title,
-        page_type: "episode_page",
-        content_group: "on_demand_episode",
-        article_authors: res?.authors?.map((author) => author.name).join(","),
-        article_publish_date: res.publicationDate,
-        article_updated_date: res.updatedDate
-          ? res.updatedDate
-          : res.publicationDate,
-        article_title: res.title,
-      })
-
-      // check route param autoplay exists and if so, play the first segment
-      if (route.query.autoplay === "true") {
-        togglePlayEpisode(res.audio[0])
-        // remove the autoplay query param
-        router.replace({ query: { ...route.query, autoplay: null } })
-      }
-    },
     onResponseError() {
       toast.add({
         severity: "error",
@@ -50,6 +28,31 @@ const {
     },
   }
 )
+
+onMounted(() => {
+  if (!episode.value) return
+  const { $analytics } = useNuxtApp()
+  $analytics.sendPageView({
+    page_title: episode.value.title,
+    page_type: "episode_page",
+    content_group: "on_demand_episode",
+    article_authors: episode.value?.authors
+      ?.map((author) => author.name)
+      .join(","),
+    article_publish_date: episode.value.publicationDate,
+    article_updated_date: episode.value.updatedDate
+      ? episode.value.updatedDate
+      : episode.value.publicationDate,
+    article_title: episode.value.title,
+  })
+
+  // check route param autoplay exists and if so, play the first segment
+  if (route.query.autoplay === "true") {
+    togglePlayEpisode(episode.value.audio[0])
+    // remove the autoplay query param
+    router.replace({ query: { ...route.query, autoplay: null } })
+  }
+})
 
 const episodeData = computed(() => episode.value)
 const theSlug = computed(
@@ -93,6 +96,7 @@ useHead(() => ({
 
 <template>
   <div class="episode-page">
+    <FetchError v-if="error" />
     <FetchError v-if="error" />
     <template v-else>
       <section class="flex align-items-center">

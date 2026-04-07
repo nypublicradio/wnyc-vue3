@@ -5,7 +5,6 @@ import { EVENT_BADGE_STYLES, useEventData } from "~/composables/useEventData"
 import { dynamicNavigation } from "~/utilities/helpers"
 
 const { getFilteredTopStories } = await useTopStories()
-const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const route = useRoute()
 const toast = useToast()
@@ -13,18 +12,6 @@ const toast = useToast()
 const { data: event, status, error } = useFetch(
   `${config.public.BFF_URL}/api/events/${route.params.slug}`,
   {
-    onResponse({ response }) {
-      const res = response._data
-      $analytics.sendPageView({
-        page_title: res.title,
-        page_type: "event_page",
-        content_group: "on_demand_event",
-        article_authors: res?.authors?.map((author) => author.name).join(","),
-        article_publish_date: res.publicationDate,
-        article_updated_date: res.updatedDate ? res.updatedDate : res.publicationDate,
-        article_title: res.title,
-      })
-    },
     onResponseError() {
       toast.add({
         severity: "error",
@@ -35,6 +22,20 @@ const { data: event, status, error } = useFetch(
     },
   }
 )
+
+onMounted(() => {
+  if (!event.value) return
+  const { $analytics } = useNuxtApp()
+  $analytics.sendPageView({
+    page_title: event.value.title,
+    page_type: "event_page",
+    content_group: "on_demand_event",
+    article_authors: event.value?.authors?.map((author) => author.name).join(","),
+    article_publish_date: event.value.publicationDate,
+    article_updated_date: event.value.updatedDate ? event.value.updatedDate : event.value.publicationDate,
+    article_title: event.value.title,
+  })
+})
 
 const eventData = computed(() => event.value || {})
 
