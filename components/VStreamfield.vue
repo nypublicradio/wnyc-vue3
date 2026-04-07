@@ -56,6 +56,7 @@ const defaultLayout = "river-thin"
 const headerClasses = "mb-3"
 const verticalSpacingClasses = "mb-6 md:mb-8"
 
+// Helper function to get the appropriate layout component based on the block's layout value
 const getLayoutComponent = (layout: string) => {
   return layoutComponentMap[layout] || layoutComponentMap[defaultLayout]
 }
