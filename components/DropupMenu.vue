@@ -1,5 +1,7 @@
 <script setup>
 import { useBreakpoints } from "~/composables/useBreakpoints"
+import DropupMenuApp from "./DropupMenuApp.vue"
+import DropupMenuWeb from "./DropupMenuWeb.vue"
 const props = defineProps({
   options: {
     type: Array,
@@ -48,12 +50,9 @@ const { isMobileBreakpoint } = useBreakpoints()
 // 2way binding to the currentUserProfile on the parent prop v-model
 const vModel = defineModel()
 
-// Dynamic component import based on environment
-// This ensures code splitting - web users never load the APP code
+// Pick component based on breakpoint
 const DropupMenuComponent = computed(() => {
-  return isMobileBreakpoint.value
-    ? defineAsyncComponent(() => import("./DropupMenuApp.vue"))
-    : defineAsyncComponent(() => import("./DropupMenuWeb.vue"))
+  return isMobileBreakpoint.value ? DropupMenuApp : DropupMenuWeb
 })
 
 // Reference to the child component

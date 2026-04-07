@@ -2,20 +2,19 @@
 import { useBottomMenuState } from "~/composables/states"
 import { trackClickEvent, capitalizeFirstLetter } from "~/utilities/helpers"
 import { appMenuOptions as options } from "~/composables/globals"
+import HomeIcon from "~/components/icons/HomeIcon.vue"
+import LiveIcon from "~/components/icons/LiveIcon.vue"
+import BrowseIcon from "~/components/icons/BrowseIcon.vue"
+import StarIcon from "~/components/icons/StarIcon.vue"
 
-// Cache for icon components to prevent reloading
-const iconComponentCache = new Map()
-
-// Function to dynamically load icon components with memoization
-const getIconComponent = (iconName) => {
-  if (!iconComponentCache.has(iconName)) {
-    iconComponentCache.set(
-      iconName,
-      defineAsyncComponent(() => import(`./icons/${iconName}.vue`))
-    )
-  }
-  return iconComponentCache.get(iconName)
+const iconComponentMap = {
+  HomeIcon,
+  LiveIcon,
+  BrowseIcon,
+  StarIcon,
 }
+
+const getIconComponent = (iconName) => iconComponentMap[iconName]
 
 const route = useRoute()
 
@@ -68,7 +67,9 @@ const menuClick = (item) => {
 @keyframes liftBottomMenu {
   0%,
   66% {
-    transform: translateY(calc(var(--bottom-menu-height) + env(safe-area-inset-bottom)));
+    transform: translateY(
+      calc(var(--bottom-menu-height) + env(safe-area-inset-bottom))
+    );
   }
   100% {
     transform: translateY(0);
