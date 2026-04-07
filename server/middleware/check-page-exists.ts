@@ -8,18 +8,20 @@ export default defineEventHandler(async (event) => {
   const url = getRequestURL(event)
   const path = url.pathname
 
-  // Only check for dynamic page routes
-  // Skip API routes, static assets, and special routes
+  // Skip API routes, static assets, and Nuxt internals
   if (
     path.startsWith('/api/') ||
     path.startsWith('/_nuxt/') ||
-    path === '/sw.js' ||
-    path.includes('.') || // Files with extensions
-    path === '/' || // Home page
-    path === '/home' || // Common home page alias
-    path.startsWith('/__') // Nuxt internals
+    path.startsWith('/__') ||
+    path === '/' ||
+    path === '/home'
   ) {
     return
+  }
+
+  // Reject file-extension paths (e.g. /sw.js) that aren't real static assets
+  if (path.includes('.')) {
+    throw createError({ statusCode: 404, statusMessage: 'Not Found' })
   }
 
   const config = useRuntimeConfig()
