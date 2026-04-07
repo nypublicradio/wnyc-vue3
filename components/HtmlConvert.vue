@@ -111,21 +111,31 @@ const parsedNodes = computed(() => {
 })
 
 // Watch for changes to measure width if images are present
-watch(
-  rawHtmlString,
-  (newContent) => {
-    if (!newContent) return
+watch(rawHtmlString, (newContent) => {
+  if (!newContent) return
 
-    const hasImages = /<img[^>]*>/i.test(newContent)
-    if (hasImages) {
-      parentWidth.value = getFallbackWidth()
-      nextTick(() => {
-        updateParentWidth()
-      })
-    }
-  },
-  { immediate: import.meta.client }
-)
+  const hasImages = /<img[^>]*>/i.test(newContent)
+  if (hasImages) {
+    parentWidth.value = getFallbackWidth()
+    nextTick(() => {
+      updateParentWidth()
+    })
+  }
+})
+
+// Run the initial width measurement after mount so the server and client
+// both use parentWidth=304 during SSR/hydration, avoiding mismatches.
+onMounted(() => {
+  const newContent = rawHtmlString.value
+  if (!newContent) return
+  const hasImages = /<img[^>]*>/i.test(newContent)
+  if (hasImages) {
+    parentWidth.value = getFallbackWidth()
+    nextTick(() => {
+      updateParentWidth()
+    })
+  }
+})
 </script>
 
 <template>
