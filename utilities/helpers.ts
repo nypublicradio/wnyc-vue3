@@ -1493,3 +1493,9 @@ export const toggleNativePullToRefresh = (enable: boolean) => {
 export const isolateSlug = (slug: string) => {
   return slug?.split("/").filter(Boolean).pop()
 }
+
+export const getFirstSentence = (text: string): string => {
+  if (!text) return ''
+  const sentences = text.match(/(.*?[.?!])/)
+  return sentences ? sentences[0] : text
+}
