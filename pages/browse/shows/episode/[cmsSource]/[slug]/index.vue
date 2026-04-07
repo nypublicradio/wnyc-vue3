@@ -54,13 +54,12 @@ onMounted(() => {
   }
 })
 
-const episodeData = computed(() => episode.value)
 const theSlug = computed(
   () =>
-    episodeData.value?.showSlug ||
-    episodeData.value?.showId ||
-    episodeData.value?.show?.slug ||
-    episodeData.value?.headers?.brand?.slug
+    episode.value?.showSlug ||
+    episode.value?.showId ||
+    episode.value?.show?.slug ||
+    episode.value?.headers?.brand?.slug
 )
 
 const { data: showSlug } = useFetch(() =>
@@ -82,14 +81,14 @@ const breadcrumbs = computed(() => [
     label: showSlug.value?.show?.title,
     route: `/browse/shows/${showSlug.value?.show?.slug}`,
   },
-  { label: episodeData.value?.title },
+  { label: episode.value?.title },
 ])
 
 useHead(() => ({
-  title: `${episodeData.value?.title} | WNYC`,
+  title: `${episode.value?.title} | WNYC`,
   meta: [
-    { name: "og:title", content: `${episodeData.value?.title} | WNYC` },
-    { name: "twitter:title", content: `${episodeData.value?.title} | WNYC` },
+    { name: "og:title", content: `${episode.value?.title} | WNYC` },
+    { name: "twitter:title", content: `${episode.value?.title} | WNYC` },
   ],
 }))
 </script>
@@ -97,21 +96,20 @@ useHead(() => ({
 <template>
   <div class="episode-page">
     <FetchError v-if="error" />
-    <FetchError v-if="error" />
     <template v-else>
       <section class="flex align-items-center">
         <Breadcrumbs :items="breadcrumbs" />
       </section>
       <EpisodeTemplate
         :pending="status !== 'success'"
-        :episodeData="episodeData"
+        :episodeData="episode"
         :show="show"
         :showPending="showStatus !== 'success'"
       >
         <template #bottom>
           <Divider class="mt-8 mb-5" />
           <h2 class="mb-3">Top Stories From Gothamist</h2>
-          <TopStories :articles="getFilteredTopStories(episodeData)" />
+          <TopStories :articles="getFilteredTopStories(episode)" />
         </template>
       </EpisodeTemplate>
 

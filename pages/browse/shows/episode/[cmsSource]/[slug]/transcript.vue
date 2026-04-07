@@ -3,7 +3,6 @@ import { useToast } from "primevue/usetoast"
 import {
   trackClickEvent,
   togglePlayEpisode,
-  checkIsFavorited,
   copyToClipBoard,
 } from "~/utilities/helpers"
 import { useIsApp } from "~/composables/states"
@@ -64,37 +63,29 @@ onMounted(() => {
   }
 })
 
-const episodeData = computed(() => episode.value)
-
 useHead(() => ({
-  title: `${episodeData.value?.title} Transcript | WNYC`,
+  title: `${episode.value?.title} Transcript | WNYC`,
   meta: [
     {
       name: "og:title",
-      content: `${episodeData.value?.title} Transcript | WNYC`,
+      content: `${episode.value?.title} Transcript | WNYC`,
     },
     {
       name: "twitter:title",
-      content: `${episodeData.value?.title} Transcript | WNYC`,
+      content: `${episode.value?.title} Transcript | WNYC`,
     },
   ],
 }))
 const theSlug = computed(
   () =>
-    episodeData.value?.showSlug ||
-    episodeData.value?.show ||
-    episodeData.value?.headers.brand.slug
+    episode.value?.showSlug ||
+    episode.value?.show ||
+    episode.value?.headers?.brand?.slug
 )
 const backToEpisodePath = computed(
   () =>
     `${mediaTypeRoutes.episode}${route.params.cmsSource}/${route.params.slug}`
 )
-// if user is logged in, check if item is already favorited
-const isFavorited = ref(false)
-watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(route.params.slug)
-})
-
 // handle returning / routing to the full episode page
 const handleReturnToEpisode = () => {
   trackClickEvent(
@@ -120,8 +111,8 @@ const handleTranscriptLinkClick = () => {
 
 // get the image for the episode. if the episode image is the same as the show image, use the fallback image
 const getEpisodeImage = () => {
-  const epImage = episodeData.value?.image
-  const showImage = episodeData.value?.headers?.brand?.logoImage
+  const epImage = episode.value?.image
+  const showImage = episode.value?.headers?.brand?.logoImage
 
   // Handle Simplecast images which use 'url' instead of 'template'
   if (epImage && typeof epImage === "object") {
@@ -130,7 +121,7 @@ const getEpisodeImage = () => {
 
     return epImageIdentifier !== showImageIdentifier
       ? epImage
-      : episodeData.value?.gallery?.value?.slides?.[0]?.image || null
+      : episode.value?.gallery?.value?.slides?.[0]?.image || null
   }
 
   return epImage
@@ -170,7 +161,7 @@ const breadcrumbs = computed(() => [
     label: showSlug.value?.show?.title,
     route: `/browse/shows/${showSlug.value?.show?.slug}`,
   },
-  { label: episodeData.value?.title, route: backToEpisodePath.value },
+  { label: episode.value?.title, route: backToEpisodePath.value },
   { label: "Transcript" },
 ])
 
@@ -218,20 +209,20 @@ onUnmounted(() => {
                   }"
                   :allowVerticalEffect="false"
                   :ratio="[1, 1]"
-                  :alt="episodeData?.image?.altText || episodeData?.title"
+                  :alt="episode?.image?.altText || episode?.title"
                   class="episode-page-image flex-none w-7rem md:w-7rem"
                   :class="{ minimize: isMinimized }"
                 >
                 </VImage>
                 <!-- <h1 class="h2" :class="isMinimized ? 'mt-0' : 'mt-2'">
-                  {{ episodeData?.title }}
+                  {{ episode?.title }}
                 </h1> -->
 
                 <h1
                   class="text-xl -mt-1 md:mt-0 line-height-1 md:line-height-2"
                   :class="isMinimized ? 'mt-0 md:text-2xl' : 'mt-2 md:text-4xl'"
                 >
-                  {{ episodeData?.title }}
+                  {{ episode?.title }}
                 </h1>
               </div>
             </div>
@@ -274,7 +265,7 @@ onUnmounted(() => {
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
           <div v-if="status === 'success'">
-            <div v-if="episodeData?.transcript">
+            <div v-if="episode?.transcript">
               <div class="flex align-items-center gap-1">
                 <h2>Transcript</h2>
                 <Button
@@ -285,8 +276,8 @@ onUnmounted(() => {
                 />
               </div>
               <HtmlConvert
-                :htmlContent="episodeData?.transcript"
-                :key="`transcript-${episodeData?.id || route.params.slug}`"
+                :htmlContent="episode?.transcript"
+                :key="`transcript-${episode?.id || route.params.slug}`"
               />
             </div>
           </div>
