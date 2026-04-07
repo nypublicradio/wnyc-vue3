@@ -1,6 +1,6 @@
 <script setup>
 import { useTopStories } from "~/composables/useTopStories"
-const { topStories } = await useTopStories()
+const { topStories } = useTopStories()
 
 const route = useRoute()
 const config = useRuntimeConfig()

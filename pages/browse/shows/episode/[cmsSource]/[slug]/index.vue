@@ -2,7 +2,7 @@
 import { useToast } from "primevue/usetoast"
 import { togglePlayEpisode } from "~/utilities/helpers"
 import { useTopStories } from "~/composables/useTopStories"
-const { getFilteredTopStories } = await useTopStories()
+const { getFilteredTopStories } = useTopStories()
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
@@ -63,13 +63,13 @@ const theSlug = computed(
     episodeData.value?.headers?.brand?.slug
 )
 
-const { data: showSlug } = await useFetch(() =>
+const { data: showSlug } = useFetch(() =>
   theSlug.value
     ? `${config.public.BFF_URL}/api/v2/show/${theSlug.value}?slugOnly=true`
     : null
 )
 
-const { data: show, status: showStatus } = await useFetch(() =>
+const { data: show, status: showStatus } = useFetch(() =>
   showSlug.value?.show?.slug
     ? `${config.public.BFF_URL}/api/pages/wagtail/${showSlug.value?.show?.slug}?showOnly=true`
     : null

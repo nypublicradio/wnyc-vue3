@@ -4,8 +4,7 @@ import { useTopStories } from "~/composables/useTopStories"
 import { useIntersectionObserver } from "@vueuse/core"
 import { allSocialData } from "~/composables/navigationData.js"
 import { dynamicNavigation } from "~/utilities/helpers"
-const { getFilteredTopStories, topStories } = await useTopStories()
-const { $analytics } = useNuxtApp()
+const { getFilteredTopStories, topStories } = useTopStories()
 const config = useRuntimeConfig()
 const toast = useToast()
 
@@ -34,6 +33,7 @@ const { data: events, status, error } = useFetch(
 )
 
 onMounted(() => {
+  const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
     page_title: "Events Page",
     page_type: "events_page",
