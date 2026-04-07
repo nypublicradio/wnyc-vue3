@@ -199,7 +199,7 @@ onUnmounted(() => {
                 @click="handleReturnToEpisode"
               />
               <div
-                class="flex align-items-center md:align-items-start gap-2 mt-4"
+                class="flex align-items-center md:align-items-start gap-3 mt-4"
                 :class="{ 'align-items-center': isMinimized }"
               >
                 <VImage

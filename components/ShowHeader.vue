@@ -75,9 +75,11 @@ const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
 
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
-watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(route.params.slug)
-})
+if (import.meta.client) {
+  watchEffect(async () => {
+    isFavorited.value = await checkIsFavorited(route.params.slug)
+  })
+}
 
 // finds first episode with audio to play
 const firstEpisodeWithAudio = () => {
@@ -113,7 +115,7 @@ const isLoadedLiveStream = computed(() => {
 const isCurrentlyLive = computed(() => {
   return (
     isolateSlug(currentEpisodeHolder.value?.detailsLink) ===
-    props.show.meta.slug
+    props.show?.meta?.slug
   )
 })
 // handle the toggle play button at the top to play the most recent episode with audio and tracking
