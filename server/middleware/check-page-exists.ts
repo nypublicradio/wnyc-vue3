@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
   if (
     path.startsWith('/api/') ||
     path.startsWith('/_nuxt/') ||
-    path.startsWith('%2Fsw.js') ||
+    path === '/sw.js' ||
     path.includes('.') || // Files with extensions
     path === '/' || // Home page
     path === '/home' || // Common home page alias
