@@ -166,18 +166,16 @@ const breadcrumbs = computed(() => [
   },
 ])
 
+const title = `${show.value?.title} | WNYC`
+const description = getFirstSentence(show.value?.summary)
 useHead({
-  title: `Browse all ${show.value?.title} episodes | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`,
-  meta: [
-    {
-      name: "og:title",
-      content: `Browse all ${show.value?.title} episodes | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`,
-    },
-    {
-      name: "twitter:title",
-      content: `Browse all ${show.value?.title} episodes | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`,
-    },
-  ],
+  title,
+})
+useSeoMeta({
+  title,
+  ogTitle: title,
+  description,
+  ogDescription: description,
 })
 
 onUnmounted(() => stop())
