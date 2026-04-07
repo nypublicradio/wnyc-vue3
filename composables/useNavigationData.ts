@@ -268,9 +268,17 @@ export default async function useNavigationData () {
                             error = { value: null }
                             status = { value: 'success' }
                         } catch (err) {
-                            nData = { value: null }
-                            error = { value: err }
-                            status = { value: 'error' }
+                            // Retry once on server before giving up
+                            try {
+                                const serverData = await $fetch('/api/navigation')
+                                nData = { value: serverData }
+                                error = { value: null }
+                                status = { value: 'success' }
+                            } catch (retryErr) {
+                                nData = { value: null }
+                                error = { value: retryErr }
+                                status = { value: 'error' }
+                            }
                         }
                     } else if (isApp.value) {
                         // App mode (Capacitor): fetch directly from external APIs (no server endpoint available)
@@ -285,30 +293,26 @@ export default async function useNavigationData () {
                             status = { value: 'error' }
                         }
                     } else {
-                        // Client-side web mode: use useFetch for proper hydration
-                        const result = await useFetch('/api/navigation', {
-                            key: 'global-navigation-data',
-                        })
-                        nData = result.data
-                        error = result.error
-                        status = result.status
+                        // Client-side web mode: use $fetch directly (avoids payload hydration conflicts)
+                        try {
+                            const clientData = await $fetch('/api/navigation')
+                            nData = { value: clientData }
+                            error = { value: null }
+                            status = { value: 'success' }
+                        } catch (err) {
+                            nData = { value: null }
+                            error = { value: err }
+                            status = { value: 'error' }
+                        }
                     }
 
                     fetchStatus.value = status.value
                     fetchError.value = error.value
 
-                    // Check if there was a fetch error
-                    if (error.value) {
-                        throw new Error(`Navigation fetch failed: ${JSON.stringify(error.value)}`)
-                    }
-
-                    // Check if data is available before accessing nested properties
-                    if (!nData.value) {
-                        throw new Error('Navigation response is null')
-                    }
-
-                    if (!nData.value.data) {
-                        throw new Error('Navigation data property is missing')
+                    // If fetch failed or returned no data, use fallback nav (empty arrays set in catch)
+                    if (error.value || !nData.value || !nData.value.data) {
+                        console.warn('Navigation data unavailable, using fallback:', error.value?.message || 'null response')
+                        throw new Error('Navigation data unavailable')
                     }
 
                     const bffData = nData.value.data
