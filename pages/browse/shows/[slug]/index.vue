@@ -4,28 +4,19 @@ import { useIsApp } from "~/composables/states"
 
 const config = useRuntimeConfig()
 const route = useRoute()
-const sectionAnchorData = ref([
-  //  { label: "Most Recent", id: "most-recent" },
-])
 
 const {
   data: show,
   status,
   error,
-} = useFetch(
-  `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`,
-  {
-    onResponse(res) {
-      sectionAnchorData.value = res.response._data.inPageNavigation.map(
-        (item) => {
-          return {
-            label: item.value.linkText,
-            id: slugify(item.value.targetId || item.value.linkText),
-          }
-        }
-      )
-    },
-  }
+} = useFetch(`${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`)
+
+const sectionAnchorData = computed(
+  () =>
+    show.value?.inPageNavigation?.map((item) => ({
+      label: item.value.linkText,
+      id: slugify(item.value.targetId || item.value.linkText),
+    })) ?? []
 )
 
 const isApp = useIsApp()

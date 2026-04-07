@@ -9,7 +9,6 @@ import { useGlobalToast } from "~/composables/states"
 
 const config = useRuntimeConfig()
 const route = useRoute()
-const podcastId = ref(null)
 
 const meta = ref(null)
 const page = ref(1)
@@ -25,12 +24,11 @@ const {
   status,
   error,
 } = useFetch(
-  `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}?showOnly=true`,
-  {
-    onResponse(res) {
-      podcastId.value = res.response._data.linkedDataSource[0].value.id
-    },
-  }
+  `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}?showOnly=true`
+)
+
+const podcastId = computed(
+  () => show.value?.linkedDataSource?.[0]?.value?.id ?? null
 )
 
 const { status: scStatus, error: scError } = useFetch(

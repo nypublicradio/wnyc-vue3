@@ -65,6 +65,7 @@ const toggleAllShows = () => {
 }
 
 watch(searchFieldValue, () => {
+  if (!import.meta.client) return
   // sets the scroll to the top of the page when search field is updated. a delay is needed to allow the search to complete
   setTimeout(() => {
     window.scrollTo(0, 0)

@@ -22,23 +22,22 @@ const config = useRuntimeConfig()
 //   }
 // )
 //console.log("props.show = ", props.show)
-const podcastId = ref(null)
 const episodes = ref(null)
 const pendingMore = ref(true)
 const { data: show, error } = useFetch(
-  `${config.public.BFF_URL}/api/pages/wagtail/${props.show.slug}?showOnly=true`,
-  {
-    onResponse(res) {
-      //console.log("res.response._data = ", res.response._data)
-      const pId = res.response._data.linkedDataSource?.[0]?.value?.id
-      if (pId) {
-        podcastId.value = pId
-      } else {
-        pendingMore.value = false
-      }
-    },
-  }
+  `${config.public.BFF_URL}/api/pages/wagtail/${props.show.slug}?showOnly=true`
 )
+
+const podcastId = computed(
+  () => show.value?.linkedDataSource?.[0]?.value?.id ?? null
+)
+
+// if there's no podcastId after show loads, stop pending
+watch(show, (val) => {
+  if (val && !val.linkedDataSource?.[0]?.value?.id) {
+    pendingMore.value = false
+  }
+})
 
 const { error: scError } = useFetch(
   () =>
