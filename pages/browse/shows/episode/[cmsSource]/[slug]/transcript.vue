@@ -133,7 +133,7 @@ const { data: showSlug } = useFetch(() =>
     : null
 )
 
-const { data: show } = useFetch(() =>
+const { data: show, status: showStatus } = useFetch(() =>
   showSlug.value?.show?.slug
     ? `${config.public.BFF_URL}/api/pages/wagtail/${showSlug.value?.show?.slug}?showOnly=true`
     : null
@@ -287,7 +287,7 @@ onUnmounted(() => {
           </div>
         </div>
         <div class="col-fixed hidden lg:block w-20rem">
-          <ShowSummary :show="show" />
+          <ShowSummary v-if="showStatus === 'pending' || show" :show="show" />
         </div>
       </div>
     </section>

@@ -104,7 +104,7 @@ useHead(() => ({
         :pending="status !== 'success'"
         :episodeData="episode"
         :show="show"
-        :showPending="showStatus !== 'success'"
+        :showPending="showStatus === 'pending'"
       >
         <template #bottom>
           <Divider class="mt-8 mb-5" />
