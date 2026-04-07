@@ -13,6 +13,7 @@ export default defineEventHandler(async (event) => {
     path.startsWith('/api/') ||
     path.startsWith('/_nuxt/') ||
     path.startsWith('/__') ||
+    path.endsWith('_payload.json') ||
     path === '/' ||
     path === '/home'
   ) {

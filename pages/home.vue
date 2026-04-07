@@ -19,19 +19,15 @@ const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
 const isApp = useIsApp()
 
-const [
-  { data: latestNewsUpdatesData, error: error2 },
-  { data: pagedata, error, status, refresh },
-] = await Promise.all([
-  useFetch(`${config.public.BFF_URL}/api/homepagelatestnewsupdates`, {
-    retry: 2,
-    retryDelay: 500,
-  }),
-  useFetch(`${config.public.BFF_URL}/api/homepagecuration`, {
-    retry: 2,
-    retryDelay: 500,
-  }),
-])
+const { data: latestNewsUpdatesData, error: error2 } = useFetch(
+  `${config.public.BFF_URL}/api/homepagelatestnewsupdates`,
+  { retry: 2, retryDelay: 500 }
+)
+
+const { data: pagedata, error, status, refresh } = useFetch(
+  `${config.public.BFF_URL}/api/homepagecuration`,
+  { retry: 2, retryDelay: 500 }
+)
 
 definePageMeta({
   layout: "default",
