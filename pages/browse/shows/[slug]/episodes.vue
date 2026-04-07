@@ -24,7 +24,8 @@ const {
   status,
   error,
 } = useFetch(
-  `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}?showOnly=true`
+  () =>
+    `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}?showOnly=true`
 )
 
 const podcastId = computed(

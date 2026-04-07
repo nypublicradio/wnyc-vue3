@@ -12,17 +12,20 @@ const {
   data: storyData,
   status,
   error,
-} = await useFetch(`${config.public.BFF_URL}/api/npr/${route.params.slug}`, {
-  onResponseError() {
-    globalToast.value = {
-      severity: "error",
-      summary:
-        "We are having a problem loading this article. Please try again later.",
-      life: 6000,
-      closable: true,
-    }
-  },
-})
+} = await useFetch(
+  () => `${config.public.BFF_URL}/api/npr/${route.params.slug}`,
+  {
+    onResponseError() {
+      globalToast.value = {
+        severity: "error",
+        summary:
+          "We are having a problem loading this article. Please try again later.",
+        life: 6000,
+        closable: true,
+      }
+    },
+  }
+)
 
 onMounted(() => {
   if (!storyData.value) return
