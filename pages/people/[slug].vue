@@ -7,13 +7,13 @@ const router = useRouter()
 const config = useRuntimeConfig()
 const { getEpisodeFallBackImage, getUserFallBackImage } = useFallbackImages()
 const personName = ref(null)
-const personSlug = route.params.slug
-//const newPageData = ref(null)
 const {
   data: pagedata,
   status,
   error,
-} = useFetch(`${config.public.BFF_URL}/api/people/publisher/${personSlug}`)
+} = useFetch(
+  () => `${config.public.BFF_URL}/api/people/publisher/${route.params.slug}`
+)
 
 watch(pagedata, (val) => {
   if (val) {

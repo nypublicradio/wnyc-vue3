@@ -9,7 +9,9 @@ const {
   data: show,
   status,
   error,
-} = useFetch(`${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`)
+} = useFetch(
+  () => `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`
+)
 
 const sectionAnchorData = computed(
   () =>

@@ -15,7 +15,8 @@ const {
   status,
   error,
 } = useFetch(
-  `${config.public.BFF_URL}/api/story/${cmsSources.PUBLISHER}/${route.params.slug}`,
+  () =>
+    `${config.public.BFF_URL}/api/story/${cmsSources.PUBLISHER}/${route.params.slug}`,
   {
     onResponseError() {
       globalToast.value = {

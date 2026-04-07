@@ -10,7 +10,7 @@ const route = useRoute()
 const toast = useToast()
 
 const { data: event, status, error } = useFetch(
-  `${config.public.BFF_URL}/api/events/${route.params.slug}`,
+  () => `${config.public.BFF_URL}/api/events/${route.params.slug}`,
   {
     onResponseError() {
       toast.add({

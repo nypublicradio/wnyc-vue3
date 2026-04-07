@@ -15,7 +15,9 @@ const {
   data: pagedata,
   status,
   error,
-} = useFetch(`${config.public.BFF_URL}/api/staff/wagtail/${staffSlug}`)
+} = useFetch(
+  () => `${config.public.BFF_URL}/api/staff/wagtail/${route.params.slug}`
+)
 
 watch(pagedata, (val) => {
   if (val) {
