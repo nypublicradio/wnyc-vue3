@@ -34,7 +34,8 @@ const el = ref(null)
 
 const isDark = usePreferredDark()
 
-const tweetRegExp = /<blockquote class="twitter-tweet.*?\/status\/(?<id>\d+)?.*?\/blockquote>/g
+const tweetRegExp =
+  /<blockquote class="twitter-tweet.*?\/status\/(?<id>\d+)?.*?\/blockquote>/g
 const tweetIds = computed(() => {
   return [...props.block.value.embed.matchAll(tweetRegExp)].map(
     (match) => match.groups?.id
@@ -44,14 +45,15 @@ const tweetIds = computed(() => {
 // Remove tweet scripts included with blocks in the cms payload so they can't
 // interfere, we're handling this manually
 function stripTweetScripts(stringToStrip) {
-  const tweetScriptMatcher = /<script async(?:="")? src="https:\/\/platform.twitter.com\/widgets.js" charset="utf-8"><\/script>/g
+  const tweetScriptMatcher =
+    /<script async(?:="")? src="https:\/\/platform.twitter.com\/widgets.js" charset="utf-8"><\/script>/g
   return stringToStrip.replaceAll(tweetScriptMatcher, "")
 }
 
 // find the blockquote element for an unexpanded tweet embed
 function findTweetElement(tweetId) {
-  return [...el.value.querySelectorAll("blockquote.twitter-tweet")].filter((tweet) =>
-    tweet.outerHTML.includes(tweetId)
+  return [...el.value.querySelectorAll("blockquote.twitter-tweet")].filter(
+    (tweet) => tweet.outerHTML.includes(tweetId)
   )[0]
 }
 
@@ -65,13 +67,21 @@ function replaceTweet(tweetId) {
         return
       }
       const newTweetDiv = document.createElement("DIV")
-      originalTweetElement.parentNode.insertBefore(newTweetDiv, originalTweetElement)
+      originalTweetElement.parentNode.insertBefore(
+        newTweetDiv,
+        originalTweetElement
+      )
       originalTweetElement.parentNode.removeChild(originalTweetElement)
       window.twttr.widgets
-        .createTweet(tweetId, newTweetDiv, { theme: isDark.value ? "dark" : "light" })
+        .createTweet(tweetId, newTweetDiv, {
+          theme: isDark.value ? "dark" : "light",
+        })
         .then((createdTweet) => {
           if (!createdTweet)
-            newTweetDiv.parentNode.insertBefore(originalTweetElement, newTweetDiv)
+            newTweetDiv.parentNode.insertBefore(
+              originalTweetElement,
+              newTweetDiv
+            )
         })
         .catch((e) => resolve(e))
         .finally(resolve(newTweetDiv))
@@ -92,10 +102,12 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div
-    ref="el"
-    class="streamfield-embed streamfield-embed-tweet streamfield-paragraph mb-7"
-  />
+  <ClientOnly>
+    <div
+      ref="el"
+      class="streamfield-embed streamfield-embed-tweet streamfield-paragraph mb-7"
+    />
+  </ClientOnly>
 </template>
 
 <style lang="scss">

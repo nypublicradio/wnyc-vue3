@@ -124,7 +124,7 @@ watch(
       })
     }
   },
-  { immediate: true }
+  { immediate: import.meta.client }
 )
 </script>
 

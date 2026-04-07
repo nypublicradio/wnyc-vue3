@@ -9,20 +9,20 @@ const props = defineProps({
 })
 
 const currentEpisode = useCurrentEpisode()
-const bottomMenuHeight: number | string = getCssVar("--bottom-menu-height")
-const playerHeight: number | string = getCssVar("--player-height")
+const bottomBuffer = ref("0px")
 
-const bottomBuffer = ref(`${bottomMenuHeight}px`)
+onMounted(() => {
+  const bottomMenuHeight = getCssVar("--bottom-menu-height")
+  const playerHeight = getCssVar("--player-height")
 
-watch(
-  currentEpisode,
-  () => {
+  const updateBuffer = () => {
     bottomBuffer.value = currentEpisode.value
       ? `${Number(bottomMenuHeight) + Number(playerHeight)}px`
       : `${bottomMenuHeight}px`
-  },
-  { immediate: true }
-)
+  }
+  updateBuffer()
+  watch(currentEpisode, updateBuffer)
+})
 </script>
 
 <template>
