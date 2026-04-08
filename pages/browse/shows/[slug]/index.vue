@@ -1,5 +1,5 @@
 <script setup>
-import { checkIsFavorited, slugify } from "~/utilities/helpers"
+import { checkIsFavorited, slugify, getFirstSentence } from "~/utilities/helpers"
 import { useIsApp } from "~/composables/states"
 
 const config = useRuntimeConfig()
@@ -9,7 +9,7 @@ const {
   data: show,
   status,
   error,
-} = useFetch(
+} = await useFetch(
   () => `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`
 )
 
