@@ -31,16 +31,22 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
 
   try {
-    await $fetch(`${config.public.AVIARY_BASE_API}pages/find/`, {
+    await $fetch.raw(`${config.public.AVIARY_BASE_API}pages/find/`, {
       query: { html_path: path },
       headers: {
         'X-CMS-Site': config.public.cmsSite,
       },
+      redirect: 'manual', // Don't follow redirects — let NGINX handle them via @wagtail
     })
   } catch (error: any) {
     if (error?.statusCode === 404) {
       // Throw a real 404 so NGINX intercepts it and proxies to Wagtail,
       // which handles CMS-defined redirects before falling through to @missing.
+      throw createError({ statusCode: 404, statusMessage: 'Page Not Found' })
+    }
+    // Redirect responses (301/302) with redirect:'manual' cause $fetch to throw.
+    // Treat them as "not found here" so NGINX proxies to @wagtail for the redirect.
+    if (error?.status >= 300 && error?.status < 400) {
       throw createError({ statusCode: 404, statusMessage: 'Page Not Found' })
     }
     throw error
