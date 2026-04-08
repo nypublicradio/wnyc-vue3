@@ -13,11 +13,27 @@ export default defineEventHandler(async (event) => {
   if (
     path.startsWith('/api/') ||
     path.startsWith('/_nuxt/') ||
-    path.startsWith('/_ipx/') ||
     path.startsWith('/__') ||
-    path.startsWith('/sw.js') || // skip service worker
+    path.endsWith('_payload.json') ||
     path === '/' ||
-    path === '/home'
+    path === '/home' ||
+    // Skip known Nuxt page routes that don't exist in Wagtail
+    path.startsWith('/browse') ||
+    path.startsWith('/events') ||
+    path.startsWith('/story') ||
+    path.startsWith('/npr') ||
+    path.startsWith('/people') ||
+    path.startsWith('/staff') ||
+    path.startsWith('/archives') ||
+    path === '/dashboard' ||
+    path === '/saved' ||
+    path === '/login' ||
+    path === '/signup' ||
+    path === '/confirm' ||
+    path === '/forgot-password' ||
+    path === '/live' ||
+    path === '/mobile' ||
+    path === '/preview'
   ) {
     return
   }
