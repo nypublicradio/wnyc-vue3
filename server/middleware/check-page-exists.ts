@@ -1,4 +1,4 @@
-import { defineEventHandler, getRequestURL, setResponseStatus } from 'h3'
+import { defineEventHandler, getRequestURL } from 'h3'
 
 /**
  * Nitro middleware to check if dynamic pages exist before rendering
@@ -36,8 +36,9 @@ export default defineEventHandler(async (event) => {
     })
   } catch (error: any) {
     if (error?.statusCode === 404) {
-      setResponseStatus(event, 404, 'Page Not Found')
-      return
+      // Throw a real 404 so NGINX intercepts it and proxies to Wagtail,
+      // which handles CMS-defined redirects before falling through to @missing.
+      throw createError({ statusCode: 404, statusMessage: 'Page Not Found' })
     }
     throw error
   }
