@@ -20,9 +20,9 @@ export default defineEventHandler(async (event) => {
     return
   }
 
-  // Reject file-extension paths (e.g. /sw.js) that aren't real static assets
+  // Skip file-extension paths — let Nitro serve fonts, assets, _payload.json, etc. normally
   if (path.includes('.')) {
-    throw createError({ statusCode: 404, statusMessage: 'Not Found' })
+    return
   }
 
   const config = useRuntimeConfig()
