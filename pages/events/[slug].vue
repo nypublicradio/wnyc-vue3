@@ -9,7 +9,7 @@ const config = useRuntimeConfig()
 const route = useRoute()
 const toast = useToast()
 
-const { data: event, status, error } = useFetch(
+const { data: event, status, error } = await useFetch(
   () => `${config.public.BFF_URL}/api/events/${route.params.slug}`,
   {
     onResponseError() {
