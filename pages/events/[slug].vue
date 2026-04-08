@@ -2,7 +2,7 @@
 import { useToast } from "primevue/usetoast"
 import { useTopStories } from "~/composables/useTopStories"
 import { EVENT_BADGE_STYLES, useEventData } from "~/composables/useEventData"
-import { dynamicNavigation } from "~/utilities/helpers"
+import { dynamicNavigation, getFirstSentence } from "~/utilities/helpers"
 
 const { getFilteredTopStories } = useTopStories()
 const config = useRuntimeConfig()
