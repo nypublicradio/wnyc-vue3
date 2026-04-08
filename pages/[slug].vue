@@ -8,18 +8,6 @@ import type { InformationPage } from "~/composables/types/Page"
 
 const route = useRoute()
 
-// Validate the slug param before rendering — reject file-like paths and invalid slugs
-definePageMeta({
-  validate: (route) => {
-    const slug = route.params.slug as string
-    if (!slug) return false
-    // Reject paths with file extensions (e.g. sw.js, _payload.json)
-    if (slug.includes('.')) return false
-    // Only allow valid URL slugs (lowercase alphanumeric, hyphens, underscores)
-    return /^[a-z0-9][a-z0-9-_]*$/.test(slug)
-  },
-})
-
 /* preview */
 import { usePreviewData } from "~/composables/states"
 const previewData = usePreviewData()
