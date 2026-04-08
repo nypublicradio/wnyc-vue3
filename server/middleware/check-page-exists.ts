@@ -1,4 +1,5 @@
 import { defineEventHandler, getRequestURL } from 'h3'
+import axios from 'axios'
 
 /**
  * Nitro middleware to check if dynamic pages exist before rendering
@@ -30,25 +31,32 @@ export default defineEventHandler(async (event) => {
 
   const config = useRuntimeConfig()
 
-  try {
-    await $fetch.raw(`${config.public.AVIARY_BASE_API}pages/find/`, {
-      query: { html_path: path },
-      headers: {
-        'X-CMS-Site': config.public.cmsSite,
-      },
-      redirect: 'manual', // Don't follow redirects — let NGINX handle them via @wagtail
-    })
-  } catch (error: any) {
-    if (error?.statusCode === 404) {
-      // Throw a real 404 so NGINX intercepts it and proxies to Wagtail,
-      // which handles CMS-defined redirects before falling through to @missing.
-      throw createError({ statusCode: 404, statusMessage: 'Page Not Found' })
-    }
-    // Redirect responses (301/302) with redirect:'manual' cause $fetch to throw.
-    // Treat them as "not found here" so NGINX proxies to @wagtail for the redirect.
-    if (error?.status >= 300 && error?.status < 400) {
-      throw createError({ statusCode: 404, statusMessage: 'Page Not Found' })
-    }
-    throw error
+  // Use axios with maxRedirects:0 so we see the real status code.
+  // $fetch follows redirects by default and returns status 0 for manual redirects,
+  // making it impossible to distinguish 301 from 200.
+  const res = await axios.get(`${config.public.AVIARY_BASE_API}pages/find/`, {
+    params: { html_path: path },
+    headers: { 'X-CMS-Site': config.public.cmsSite as string },
+    maxRedirects: 0,
+    validateStatus: () => true, // never throw — we check the status ourselves
+  })
+
+  // 2xx = page exists, let Nuxt render it
+  if (res.status >= 200 && res.status < 300) {
+    return
   }
+
+  // 3xx = Wagtail redirect — throw 404 so NGINX intercepts and proxies to @wagtail,
+  // which forwards the redirect to the browser
+  if (res.status >= 300 && res.status < 400) {
+    throw createError({ statusCode: 404, statusMessage: 'Page Not Found' })
+  }
+
+  // 404 = page doesn't exist — throw 404 for NGINX → @wagtail → @missing chain
+  if (res.status === 404) {
+    throw createError({ statusCode: 404, statusMessage: 'Page Not Found' })
+  }
+
+  // Other errors (5xx etc.) — surface them
+  throw createError({ statusCode: res.status || 500, statusMessage: 'CMS check failed' })
 })
