@@ -1,6 +1,6 @@
 <script setup>
 import { useToast } from "primevue/usetoast"
-import { togglePlayEpisode } from "~/utilities/helpers"
+import { togglePlayEpisode, isolateSlug } from "~/utilities/helpers"
 import { useTopStories } from "~/composables/useTopStories"
 const { getFilteredTopStories } = useTopStories()
 const config = useRuntimeConfig()
@@ -54,12 +54,14 @@ onMounted(() => {
   }
 })
 
+// Simplecast episodes have showSlug/showId — fetch show info by UUID
 const theSlug = computed(
   () =>
     episode.value?.showSlug ||
     episode.value?.showId ||
     episode.value?.show?.slug ||
-    episode.value?.headers?.brand?.slug
+    episode.value?.headers?.brand?.slug ||
+    null
 )
 
 const { data: showSlug } = useFetch(() =>
@@ -68,9 +70,42 @@ const { data: showSlug } = useFetch(() =>
     : null
 )
 
+// Redirect table for old publisher show slugs
+const { data: redirectsData } = useFetch(
+  () => `${config.public.BFF_URL}/api/show-slug-redirects`,
+  {
+    key: "show-slug-redirects",
+    getCachedData(key, nuxtApp) {
+      return nuxtApp.payload.data[key] || nuxtApp.static.data[key]
+    },
+  }
+)
+
+// Resolve the show slug: simplecast lookup first, then redirect table, then raw fallback
+const resolvedShowSlug = computed(() => {
+  // Simplecast path
+  if (showSlug.value?.show?.slug) return showSlug.value.show.slug
+
+  // check redirect table for updated slug
+  const headerSlug = episode.value?.headers?.links?.find(
+    (link) => link.itemType === "show"
+  )?.slug
+  if (headerSlug && redirectsData.value) {
+    const redirect = redirectsData.value.find(
+      (r) => isolateSlug(r.from) === headerSlug
+    )
+    if (redirect) return isolateSlug(redirect.to)
+  }
+
+  // Raw fallbacks
+  return (
+    episode.value?.show?.slug || episode.value?.headers?.brand?.slug || null
+  )
+})
+
 const { data: show, status: showStatus } = useFetch(() =>
-  showSlug.value?.show?.slug
-    ? `${config.public.BFF_URL}/api/pages/wagtail/${showSlug.value?.show?.slug}?showOnly=true`
+  resolvedShowSlug.value
+    ? `${config.public.BFF_URL}/api/pages/wagtail/${resolvedShowSlug.value}?showOnly=true`
     : null
 )
 
@@ -78,8 +113,8 @@ const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Browse", route: "/browse" },
   {
-    label: showSlug.value?.show?.title,
-    route: `/browse/shows/${showSlug.value?.show?.slug}`,
+    label: show.value?.title,
+    route: `/browse/shows/${resolvedShowSlug.value}`,
   },
   { label: episode.value?.title },
 ])
@@ -122,6 +157,7 @@ useHead(() => ({
 .episode-page {
   min-height: 100vh;
 }
+
 .episode-page .segment-list .beforeHack {
   &::before {
     content: "";
