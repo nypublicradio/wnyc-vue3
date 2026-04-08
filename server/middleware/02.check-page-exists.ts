@@ -35,7 +35,10 @@ export default defineEventHandler(async (event) => {
   // Use axios with maxRedirects:0 so we see the real status code.
   // $fetch follows redirects by default and returns status 0 for manual redirects,
   // making it impossible to distinguish 301 from 200.
-  const res = await axios.get(`${config.public.AVIARY_BASE_API}pages/find/`, {
+  // Use private aviaryBaseApi (server-only) — never config.public.AVIARY_BASE_API
+  // which would leak the internal HTTP URL into the browser's hydration payload.
+  const baseApi = config.aviaryBaseApi as string
+  const res = await axios.get(`${baseApi}pages/find/`, {
     params: { html_path: path },
     headers: { 'X-CMS-Site': config.public.cmsSite as string },
     maxRedirects: 0,

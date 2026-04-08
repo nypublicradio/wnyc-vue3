@@ -36,9 +36,9 @@ if (isPreview) {
   }
   page = previewData.value.data
 } else {
-  // Fetch page data - middleware has already checked existence and set 404 if needed
+  // Fetch page data - server middleware has already checked existence and thrown 404 if needed
   const slug = `/${route?.params?.slug as string}`
-  const { data, error } = await useFetch('/api/pages/wagtail/find', {
+  const { data, error } = useFetch('/api/pages/wagtail/find', {
     key: `page-${slug}`,
     query: { html_path: slug },
   })
