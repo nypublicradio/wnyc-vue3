@@ -1,6 +1,6 @@
 <script setup>
 import { useToast } from "primevue/usetoast"
-import { togglePlayEpisode } from "~/utilities/helpers"
+import { togglePlayEpisode, isolateSlug } from "~/utilities/helpers"
 import { useTopStories } from "~/composables/useTopStories"
 const { getFilteredTopStories } = useTopStories()
 const { $analytics } = useNuxtApp()
@@ -50,25 +50,65 @@ const {
     },
   }
 )
-
 const episodeData = computed(() => episode.value)
-const theSlug = computed(
-  () =>
-    episodeData.value?.showSlug ||
-    episodeData.value?.showId ||
-    episodeData.value?.show?.slug ||
-    episodeData.value?.headers?.brand?.slug
+const showId = computed(
+  () => episodeData.value?.showSlug || episodeData.value?.showId || null
 )
-
-const { data: showSlug } = useLazyFetch(() =>
-  theSlug.value
-    ? `${config.public.BFF_URL}/api/v2/show/${theSlug.value}?slugOnly=true`
+const { data: fetchedShowInfo } = useLazyFetch(() =>
+  showId.value
+    ? `${config.public.BFF_URL}/api/v2/show/${showId.value}?slugOnly=true`
     : null
 )
+// pulls the show slug redirect table from the BFF
+const { data: redirectsData } = useLazyFetch(
+  () => `${config.public.BFF_URL}/api/show-slug-redirects`,
+  {
+    key: "show-slug-redirects",
+    // Cache the fetch in-memory so it only runs once per app session
+    getCachedData(key, nuxtApp) {
+      return nuxtApp.payload.data[key] || nuxtApp.static.data[key]
+    }
+  }
+)
+
+// finds the show slug from the headers links with the item type of show, then checks the show-slug-lookup-table for a redirect
+const getUpdatedShowSlug = () => {
+  const showSlug = episodeData.value?.headers?.links?.find(
+    (link) => link.itemType === "show"
+  )?.slug
+
+  if (!redirectsData.value) return null
+
+  const redirect = redirectsData.value.find(
+    (redirect) => isolateSlug(redirect.from) === showSlug
+  )
+
+  return redirect ? isolateSlug(redirect.to) : null
+}
+
+// if we do have a showId (simplecast), we can use it to fetch the show info
+// otherwise (old favorited publisher), we can use the show slug from the episode data
+// but we also have to use the show-slug-lookup-table to get the correct show slug
+const showInfo = computed(() => {
+  if (showId.value) {
+    return fetchedShowInfo.value
+  }
+
+  // Prevent returning the unwrapped show slug before redirects logic has fetched
+  if (!redirectsData.value) {
+    return null
+  }
+
+  return {
+    show: {
+      slug: getUpdatedShowSlug() || episodeData.value?.show?.slug,
+    },
+  }
+})
 
 const { data: show, status: showStatus } = useLazyFetch(() =>
-  showSlug.value?.show?.slug
-    ? `${config.public.BFF_URL}/api/pages/wagtail/${showSlug.value?.show?.slug}?showOnly=true`
+  showInfo.value?.show?.slug
+    ? `${config.public.BFF_URL}/api/pages/wagtail/${showInfo.value?.show?.slug}?showOnly=true`
     : null
 )
 
@@ -76,8 +116,8 @@ const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Browse", route: "/browse" },
   {
-    label: showSlug.value?.show?.title,
-    route: `/browse/shows/${showSlug.value?.show?.slug}`,
+    label: show.value?.title,
+    route: `/browse/shows/${show.value?.meta?.slug}`,
   },
   { label: episodeData.value?.title },
 ])

@@ -377,9 +377,11 @@ defineExpose({
       overflow-y: auto;
       .p-menu-item {
         position: relative;
-        .custom-icon {
-          width: 28px;
-          height: 28px;
+        .custom-icon,
+        .pi {
+          width: 24px !important;
+          height: 24px !important;
+          font-size: 24px !important;
           flex: none;
         }
         .p-menu-item-content {

@@ -1,5 +1,4 @@
 <script setup>
-import VImage from "./VImage.vue"
 const props = defineProps({
   options: {
     type: Array,
@@ -40,7 +39,7 @@ const emit = defineEmits(["change", "swipe-down"])
 const popover = ref(null)
 
 // 2way binding to the currentUserProfile on the parent prop v-model
-const vModel = defineModel()
+const vModel = defineModel({ type: [String, Object, Number] })
 
 // clicks the popover to close it
 const closeMenu = () => {
@@ -183,9 +182,11 @@ defineExpose({
       color: var(--surface-950);
     }
   }
-  .custom-icon {
-    width: 28px;
-    height: 28px;
+  .custom-icon,
+  .pi {
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 24px !important;
   }
 }
 </style>

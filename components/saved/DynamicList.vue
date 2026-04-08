@@ -47,6 +47,7 @@ const loadComponent = async (item) => {
       case mediaTypes.NPR_ARTICLE:
       case mediaTypes.SIMPLECAST:
       case mediaTypes.LIVE:
+      case mediaTypes.EVENT:
         return "MediaCard"
       default:
         return "MediaCard"

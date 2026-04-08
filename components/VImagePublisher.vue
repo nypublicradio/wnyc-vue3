@@ -124,6 +124,7 @@ const emit = defineEmits([
   "image-click",
   "keypress",
   "image-load",
+  "image-error",
   "image-enlarge-click",
 ])
 
@@ -298,6 +299,7 @@ onMounted(async () => {
             @hide="closeEnlarge"
             @keypress="emit('keypress', $event.target.value)"
             @load="emit('image-load')"
+            @error="emit('image-error')"
           >
             <template v-if="allowPreview" #previewicon>
               <ClientOnly>
@@ -343,6 +345,7 @@ onMounted(async () => {
           :loading="props.loading"
           @keypress="emit('keypress', $event.target.value)"
           @load="emit('image-load')"
+          @error="emit('image-error')"
         />
         <slot class="slot caption" name="caption"></slot>
         <slot class="slot gallery" name="gallery"></slot>

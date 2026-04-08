@@ -12,21 +12,19 @@ const props = defineProps({
 })
 
 const config = useRuntimeConfig()
-
-// const { data: oldShow } = useFetch(
-//   `${config.public.BFF_URL}/api/show/${props.show.slug}`,
-//   {
-//     params: {
-//       pageSize: props.episodesPerShow,
-//     },
-//   }
-// )
-//console.log("props.show = ", props.show)
 const podcastId = ref(null)
 const episodes = ref(null)
 const pendingMore = ref(true)
-const { data: show, error } = useFetch(
-  `${config.public.BFF_URL}/api/pages/wagtail/${props.show.slug}?showOnly=true`,
+const updatedSlug = ref(props.show.slug)
+
+// fetch is executed when fetchShow is called, and when updatedSlug is populated
+const {
+  data: showInfo,
+  error,
+  execute: fetchShow,
+} = useFetch(
+  () =>
+    `${config.public.BFF_URL}/api/pages/wagtail/${updatedSlug.value}?showOnly=true`,
   {
     onResponse(res) {
       //console.log("res.response._data = ", res.response._data)
@@ -37,9 +35,49 @@ const { data: show, error } = useFetch(
         pendingMore.value = false
       }
     },
+    immediate: false,
   }
 )
 
+// Check if the show slug needs to be updated due to a redirect
+const checkRedirectAndFetch = async () => {
+  try {
+    const { data: cachedRedirects } = await useFetch(
+      "/api/show-slug-redirects",
+      {
+        key: "global-show-redirects",
+        getCachedData(key, nuxtApp) {
+          return nuxtApp.payload.data[key] || nuxtApp.static.data[key]
+        },
+      }
+    )
+
+    const redirect = cachedRedirects.value?.find(
+      (r) =>
+        r.from.endsWith(`/${props.show.slug}`) || r.from === props.show.slug
+    )
+
+    if (redirect) {
+      // Extract the slug from the redirect destination URL
+      const newSlug = redirect.to.split("/").filter(Boolean).pop()
+      updatedSlug.value = newSlug
+      fetchShow() // Fetch explicitly with the updated slug
+      return newSlug
+    } else {
+      fetchShow() // Manually trigger if no change to updatedSlug
+      return props.show.slug
+    }
+  } catch (e) {
+    console.error("Failed to process redirect:", e)
+    fetchShow() // Fallback anyway
+    return props.show.slug
+  }
+}
+
+// Call the function on setup
+checkRedirectAndFetch()
+
+// watching for the podcastId to change to fetch episodes
 const { error: scError } = useFetch(
   () =>
     `${config.public.BFF_URL}/api/v3/show/${
@@ -53,7 +91,7 @@ const { error: scError } = useFetch(
       episodes.value = res.response._data.data
       // missing show title added from show data
       episodes.value.forEach((episode) => {
-        episode.showTitle = show.value.title
+        episode.showTitle = showInfo.value.title
       })
       pendingMore.value = false
     },
@@ -76,9 +114,6 @@ const { error: scError } = useFetch(
 </script>
 <template>
   <div v-if="!pendingMore" :key="props.show.media_id">
-    <!-- {{ podcastId }} -->
-    <!-- <pre>{{ oldShow }}</pre> -->
-    <!-- <pre>{{ episodes }}</pre> -->
     <MediaCard
       v-for="episode in episodes"
       :key="episode.id"
