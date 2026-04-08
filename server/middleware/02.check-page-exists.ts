@@ -15,6 +15,7 @@ export default defineEventHandler(async (event) => {
     path.startsWith('/_nuxt/') ||
     path.startsWith('/_ipx/') ||
     path.startsWith('/__') ||
+    path.startsWith('/sw.js') || // skip service worker
     path === '/' ||
     path === '/home'
   ) {
