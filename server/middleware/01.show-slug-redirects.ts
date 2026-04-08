@@ -2,14 +2,31 @@ export default defineEventHandler(async (event) => {
     const path = event.path.split('?')[0]
 
     // Skip API routes, static assets, and Nuxt internals
-    // (no need to skip app routes — the redirect table lookup is cheap and local)
     if (
         path.startsWith('/api/') ||
         path.startsWith('/_nuxt/') ||
-        path.startsWith('/_ipx/') ||
         path.startsWith('/__') ||
-        path.includes('.') ||
-        path === '/'
+        path.startsWith('/sw.js') || // skip service worker
+        path.endsWith('_payload.json') ||
+        path === '/' ||
+        path === '/home' ||
+        // Skip known Nuxt page routes 
+        path.startsWith('/browse') ||
+        path.startsWith('/events') ||
+        path.startsWith('/story') ||
+        path.startsWith('/npr') ||
+        path.startsWith('/people') ||
+        path.startsWith('/staff') ||
+        path.startsWith('/archives') ||
+        path === '/dashboard' ||
+        path === '/saved' ||
+        path === '/login' ||
+        path === '/signup' ||
+        path === '/confirm' ||
+        path === '/forgot-password' ||
+        path === '/live' ||
+        path === '/mobile' ||
+        path === '/preview'
     ) {
         return
     }
