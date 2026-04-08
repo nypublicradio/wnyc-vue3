@@ -14,15 +14,11 @@ export default defineEventHandler(async (event) => {
     path.startsWith('/_nuxt/') ||
     path.startsWith('/__') ||
     path.endsWith('_payload.json') ||
+    path.includes('.') ||
     path === '/' ||
     path === '/home'
   ) {
     return
-  }
-
-  // Reject file-extension paths (e.g. /sw.js) that aren't real static assets
-  if (path.includes('.')) {
-    throw createError({ statusCode: 404, statusMessage: 'Not Found' })
   }
 
   const config = useRuntimeConfig()
