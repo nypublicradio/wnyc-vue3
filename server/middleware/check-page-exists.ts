@@ -12,15 +12,18 @@ export default defineEventHandler(async (event) => {
   if (
     path.startsWith('/api/') ||
     path.startsWith('/_nuxt/') ||
+    path.startsWith('/_ipx/') ||
     path.startsWith('/__') ||
-    path.endsWith('_payload.json') ||
     path === '/' ||
     path === '/home'
   ) {
     return
   }
 
-  // Skip file-extension paths — let Nitro serve fonts, assets, _payload.json, etc. normally
+  // File-like paths (fonts, _payload.json, images, etc.)
+  // Let Nitro handle them — static files are already served before middleware,
+  // and _payload.json is generated dynamically by Nuxt's renderer.
+  // [slug].vue validate() handles rejecting invalid slugs at the route level.
   if (path.includes('.')) {
     return
   }
