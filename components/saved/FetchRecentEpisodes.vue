@@ -12,28 +12,50 @@ const props = defineProps({
 })
 
 const config = useRuntimeConfig()
-
-// const { data: oldShow } = useFetch(
-//   `${config.public.BFF_URL}/api/show/${props.show.slug}`,
-//   {
-//     params: {
-//       pageSize: props.episodesPerShow,
-//     },
-//   }
-// )
-//console.log("props.show = ", props.show)
 const episodes = ref(null)
 const pendingMore = ref(true)
-const { data: show, error } = useFetch(
-  `${config.public.BFF_URL}/api/pages/wagtail/${props.show.slug}?showOnly=true`
+const updatedSlug = ref(props.show.slug)
+
+// Check if the show slug needs to be updated due to a redirect
+const checkRedirectAndFetch = async () => {
+  try {
+    const { data: cachedRedirects } = await useFetch(
+      "/api/show-slug-redirects",
+      {
+        key: "global-show-redirects",
+        getCachedData(key, nuxtApp) {
+          return nuxtApp.payload.data[key] || nuxtApp.static.data[key]
+        },
+      }
+    )
+
+    const redirect = cachedRedirects.value?.find(
+      (r) =>
+        r.from.endsWith(`/${props.show.slug}`) || r.from === props.show.slug
+    )
+
+    if (redirect) {
+      const newSlug = redirect.to.split("/").filter(Boolean).pop()
+      updatedSlug.value = newSlug
+    }
+  } catch (e) {
+    console.error("Failed to process redirect:", e)
+  }
+}
+
+await checkRedirectAndFetch()
+
+const { data: showInfo, error } = useFetch(
+  () =>
+    `${config.public.BFF_URL}/api/pages/wagtail/${updatedSlug.value}?showOnly=true`
 )
 
 const podcastId = computed(
-  () => show.value?.linkedDataSource?.[0]?.value?.id ?? null
+  () => showInfo.value?.linkedDataSource?.[0]?.value?.id ?? null
 )
 
 // if there's no podcastId after show loads, stop pending
-watch(show, (val) => {
+watch(showInfo, (val) => {
   if (val && !val.linkedDataSource?.[0]?.value?.id) {
     pendingMore.value = false
   }
@@ -52,7 +74,7 @@ const { error: scError } = useFetch(
       episodes.value = res.response._data.data
       // missing show title added from show data
       episodes.value.forEach((episode) => {
-        episode.showTitle = show.value.title
+        episode.showTitle = showInfo.value?.title
       })
       pendingMore.value = false
     },
@@ -75,9 +97,6 @@ const { error: scError } = useFetch(
 </script>
 <template>
   <div v-if="!pendingMore" :key="props.show.media_id">
-    <!-- {{ podcastId }} -->
-    <!-- <pre>{{ oldShow }}</pre> -->
-    <!-- <pre>{{ episodes }}</pre> -->
     <MediaCard
       v-for="episode in episodes"
       :key="episode.id"

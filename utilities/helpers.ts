@@ -127,16 +127,9 @@ export const getOrg = (data) => {
   }
 }
 
-// returns the time since the episode was published, but checks for updated_date first
-export const whenTime = (data) => {
-  const res = data?.updatedDate
-    ? howLongAgo(data?.updatedDate)
-    : data?.publicationDate
-      ? howLongAgo(data?.publicationDate)
-      : data?.publishAt
-        ? howLongAgo(data?.publishAt)
-        : howLongAgo(data?.firstPublishedAt)
-  return res
+// returns the time since the episode was published
+export const whenTime = (date) => {
+  return howLongAgo(date)
 }
 
 // format ISO timestamp to return only the time
@@ -238,7 +231,8 @@ export function howLongAgo (date) {
  * to get the desired date format for the header
  */
 export function getDate (data = null, formatString = "EEE, MMM do") {
-  const date = data?.updatedDate || data?.publicationDate
+  // checks FIRST for meta.firstPublishedAt that is stored in the Supabase DB meta column when saving and history.
+  const date = data?.meta?.firstPublishedAt || data?.updatedDate || data?.publicationDate
   if (date) {
     const currentDate = new Date()
     const inputDate = new Date(date)
@@ -250,7 +244,7 @@ export function getDate (data = null, formatString = "EEE, MMM do") {
       currentDate.getDate() === inputDate.getDate()
 
     if (isSameDay) {
-      return whenTime(data)
+      return whenTime(date)
     }
 
     // Add year to format string if it's not the current year
@@ -299,7 +293,9 @@ export function capitalizeFirstLetter (str) {
  * helper function to change the global font size
  */
 export function setFontSize (size: string) {
-  if (!import.meta.client) return
+  const isApp = useIsApp()
+  // no font size for browser yet
+  if (!import.meta.client || !isApp.value) return
   document.documentElement.style.fontSize = size
 }
 
@@ -935,6 +931,12 @@ export const saveFavorite = async (
     const meta = media?.meta
     const audio = media?.audio ?? media?.hls
     const showTitle = media?.showTitle ?? media?.headers?.brand?.title ?? media?.station
+
+    // add firstPublishedAt if missing from meta
+    if (!meta?.firstPublishedAt) {
+      meta.firstPublishedAt = media?.updatedDate || media?.publicationDate
+    }
+
     const itemToSave: SavedItem = {
       uid,
       type,
@@ -1014,6 +1016,7 @@ export const getCssVar = (name: string, px = false) => {
 export const shouldOpenStoryInNewTab = (platform, storyLink, cmsSource) =>
   platform === "web" && Boolean(storyLink) && cmsSource === cmsSources.WAGTAIL
 
+// returns true if the story link is from gothamist.com
 export const shouldTrackOutgoingGothamistClick = (storyLink) =>
   Boolean(storyLink) && storyLink.includes("gothamist.com")
 
@@ -1088,15 +1091,15 @@ export const goToNprPage = (story, log = true) => {
 }
 
 /* centralized function to route to a event page */
-export const goToEventPage = (story, log = true) => {
+export const goToEventPage = (story/* , log = true */) => {
 
   navigateTo({
     path: `${mediaTypeRoutes[mediaTypes.EVENT]}${story.meta?.slug ?? story.slug ?? story.id}`,
   })
-  //}
-  if (log) {
-    saveRecentlyPlayed(story)
-  }
+  // we are not saving events to recently played as of 3/26/2026
+  // if (log) {
+  //   saveRecentlyPlayed(story)
+  // }
 }
 /* centralized function to route to a show page */
 export const goToShowPage = (show, params = null) => {
@@ -1209,6 +1212,7 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
         break
       case mediaTypes.EPISODE:
       case mediaTypes.SEGMENT:
+      case mediaTypes.FULL:
         goToEpisodePage(item, null, isSaveHistory)
         break
       case mediaTypes.STORY:

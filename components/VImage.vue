@@ -54,6 +54,8 @@ const finalSrcFallback = computed(() => {
 
 // Loading state for the image
 const imageLoaded = ref(false)
+// Whether the image src failed to load (triggers fallback)
+const imageErrored = ref(false)
 
 // Track whether the component has mounted (client-side).
 // Before mount (SSR + initial hydration), the image renders visible with no loader.
@@ -110,11 +112,25 @@ const handleImageLoad = () => {
   imageLoaded.value = true
 }
 
-// Reset loading state when image source changes
+// Handle image error - swap to fallback src
+const handleImageError = () => {
+  if (!imageErrored.value) {
+    imageErrored.value = true
+    imageLoaded.value = false
+  }
+}
+
+// The src actually passed down to the sub-component
+const effectiveSrc = computed(() => {
+  return imageErrored.value ? finalSrcFallback.value : imageTemplate.value
+})
+
+// Reset loading/error state when image source changes
 watch(
   () => imageTemplate.value,
   () => {
     imageLoaded.value = false
+    imageErrored.value = false
   }
 )
 
