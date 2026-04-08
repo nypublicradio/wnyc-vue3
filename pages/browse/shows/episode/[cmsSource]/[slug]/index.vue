@@ -3,7 +3,6 @@ import { useToast } from "primevue/usetoast"
 import { togglePlayEpisode, isolateSlug } from "~/utilities/helpers"
 import { useTopStories } from "~/composables/useTopStories"
 const { getFilteredTopStories } = useTopStories()
-const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
@@ -18,27 +17,6 @@ const {
     `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
   {
     key: `index-episode-${route.params.cmsSource}-${route.params.slug}`,
-    onResponse({ response }) {
-      const res = response._data
-      $analytics.sendPageView({
-        page_title: res.title,
-        page_type: "episode_page",
-        content_group: "on_demand_episode",
-        article_authors: res?.authors?.map((author) => author.name).join(","),
-        article_publish_date: res.publicationDate,
-        article_updated_date: res.updatedDate
-          ? res.updatedDate
-          : res.publicationDate,
-        article_title: res.title,
-      })
-
-      // check route param autoplay exists and if so, play the first segment
-      if (route.query.autoplay === "true") {
-        togglePlayEpisode(res.audio[0])
-        // remove the autoplay query param
-        router.replace({ query: { ...route.query, autoplay: null } })
-      }
-    },
     onResponseError() {
       toast.add({
         severity: "error",
@@ -50,65 +28,84 @@ const {
     },
   }
 )
-const episodeData = computed(() => episode.value)
-const showId = computed(
-  () => episodeData.value?.showSlug || episodeData.value?.showId || null
-)
-const { data: fetchedShowInfo } = useLazyFetch(() =>
-  showId.value
-    ? `${config.public.BFF_URL}/api/v2/show/${showId.value}?slugOnly=true`
-    : null
-)
-// pulls the show slug redirect table from the BFF
-const { data: redirectsData } = useLazyFetch(
-  () => `${config.public.BFF_URL}/api/show-slug-redirects`,
-  {
-    key: "show-slug-redirects",
-    // Cache the fetch in-memory so it only runs once per app session
-    getCachedData(key, nuxtApp) {
-      return nuxtApp.payload.data[key] || nuxtApp.static.data[key]
-    }
-  }
-)
 
-// finds the show slug from the headers links with the item type of show, then checks the show-slug-lookup-table for a redirect
-const getUpdatedShowSlug = () => {
-  const showSlug = episodeData.value?.headers?.links?.find(
-    (link) => link.itemType === "show"
-  )?.slug
+onMounted(() => {
+  if (!episode.value) return
+  const { $analytics } = useNuxtApp()
+  $analytics.sendPageView({
+    page_title: episode.value.title,
+    page_type: "episode_page",
+    content_group: "on_demand_episode",
+    article_authors: episode.value?.authors
+      ?.map((author) => author.name)
+      .join(","),
+    article_publish_date: episode.value.publicationDate,
+    article_updated_date: episode.value.updatedDate
+      ? episode.value.updatedDate
+      : episode.value.publicationDate,
+    article_title: episode.value.title,
+  })
 
-  if (!redirectsData.value) return null
-
-  const redirect = redirectsData.value.find(
-    (redirect) => isolateSlug(redirect.from) === showSlug
-  )
-
-  return redirect ? isolateSlug(redirect.to) : null
-}
-
-// if we do have a showId (simplecast), we can use it to fetch the show info
-// otherwise (old favorited publisher), we can use the show slug from the episode data
-// but we also have to use the show-slug-lookup-table to get the correct show slug
-const showInfo = computed(() => {
-  if (showId.value) {
-    return fetchedShowInfo.value
-  }
-
-  // Prevent returning the unwrapped show slug before redirects logic has fetched
-  if (!redirectsData.value) {
-    return null
-  }
-
-  return {
-    show: {
-      slug: getUpdatedShowSlug() || episodeData.value?.show?.slug,
-    },
+  // check route param autoplay exists and if so, play the first segment
+  if (route.query.autoplay === "true") {
+    togglePlayEpisode(episode.value.audio[0])
+    // remove the autoplay query param
+    router.replace({ query: { ...route.query, autoplay: null } })
   }
 })
 
-const { data: show, status: showStatus } = useLazyFetch(() =>
-  showInfo.value?.show?.slug
-    ? `${config.public.BFF_URL}/api/pages/wagtail/${showInfo.value?.show?.slug}?showOnly=true`
+// Simplecast episodes have showSlug/showId — fetch show info by UUID
+const theSlug = computed(
+  () =>
+    episode.value?.showSlug ||
+    episode.value?.showId ||
+    episode.value?.show?.slug ||
+    episode.value?.headers?.brand?.slug ||
+    null
+)
+
+const { data: showSlug } = useFetch(() =>
+  theSlug.value
+    ? `${config.public.BFF_URL}/api/v2/show/${theSlug.value}?slugOnly=true`
+    : null
+)
+
+// Redirect table for old publisher show slugs
+const { data: redirectsData } = useFetch(
+  () => `${config.public.BFF_URL}/api/show-slug-redirects`,
+  {
+    key: "show-slug-redirects",
+    getCachedData(key, nuxtApp) {
+      return nuxtApp.payload.data[key] || nuxtApp.static.data[key]
+    },
+  }
+)
+
+// Resolve the show slug: simplecast lookup first, then redirect table, then raw fallback
+const resolvedShowSlug = computed(() => {
+  // Simplecast path
+  if (showSlug.value?.show?.slug) return showSlug.value.show.slug
+
+  // check redirect table for updated slug
+  const headerSlug = episode.value?.headers?.links?.find(
+    (link) => link.itemType === "show"
+  )?.slug
+  if (headerSlug && redirectsData.value) {
+    const redirect = redirectsData.value.find(
+      (r) => isolateSlug(r.from) === headerSlug
+    )
+    if (redirect) return isolateSlug(redirect.to)
+  }
+
+  // Raw fallbacks
+  return (
+    episode.value?.show?.slug || episode.value?.headers?.brand?.slug || null
+  )
+})
+
+const { data: show, status: showStatus } = useFetch(() =>
+  resolvedShowSlug.value
+    ? `${config.public.BFF_URL}/api/pages/wagtail/${resolvedShowSlug.value}?showOnly=true`
     : null
 )
 
@@ -117,21 +114,22 @@ const breadcrumbs = computed(() => [
   { label: "Browse", route: "/browse" },
   {
     label: show.value?.title,
-    route: `/browse/shows/${show.value?.meta?.slug}`,
+    route: `/browse/shows/${resolvedShowSlug.value}`,
   },
-  { label: episodeData.value?.title },
+  { label: episode.value?.title },
 ])
+
+useHead(() => ({
+  title: `${episode.value?.title} | WNYC`,
+  meta: [
+    { name: "og:title", content: `${episode.value?.title} | WNYC` },
+    { name: "twitter:title", content: `${episode.value?.title} | WNYC` },
+  ],
+}))
 </script>
 
 <template>
   <div class="episode-page">
-    <Html lang="en">
-      <Head>
-        <Title>{{ episodeData?.title }} | WNYC</Title>
-        <Meta name="og:title" :content="`${episodeData?.title} | WNYC`" />
-        <Meta name="twitter:title" :content="`${episodeData?.title} | WNYC`" />
-      </Head>
-    </Html>
     <FetchError v-if="error" />
     <template v-else>
       <section class="flex align-items-center">
@@ -139,14 +137,14 @@ const breadcrumbs = computed(() => [
       </section>
       <EpisodeTemplate
         :pending="status !== 'success'"
-        :episodeData="episodeData"
+        :episodeData="episode"
         :show="show"
-        :showPending="showStatus !== 'success'"
+        :showPending="showStatus === 'pending'"
       >
         <template #bottom>
           <Divider class="mt-8 mb-5" />
           <h2 class="mb-3">Top Stories From Gothamist</h2>
-          <TopStories :articles="getFilteredTopStories(episodeData)" />
+          <TopStories :articles="getFilteredTopStories(episode)" />
         </template>
       </EpisodeTemplate>
 
@@ -159,6 +157,7 @@ const breadcrumbs = computed(() => [
 .episode-page {
   min-height: 100vh;
 }
+
 .episode-page .segment-list .beforeHack {
   &::before {
     content: "";
