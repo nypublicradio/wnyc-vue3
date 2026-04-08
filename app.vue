@@ -209,6 +209,11 @@ useHead({
   ],
   link: [
     { rel: "canonical", href: canonicalUrl },
+    {
+      rel: "icon",
+      type: "image/x-icon",
+      href: "https://media.wnyc.org/static/img/favicon_wnyc.ico?_=1553611630",
+    },
   ],
 })
 useSeoMeta({
