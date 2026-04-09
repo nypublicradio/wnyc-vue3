@@ -19,13 +19,20 @@ const props = defineProps({
 })
 const { isMobile } = useDevice()
 const reactiveData = toRef(props, "data")
+const hideScrollBar = ref(false)
+onMounted(() => {
+  hideScrollBar.value = isMobile
+})
 </script>
 
 <template>
-  <div class="horizontal-scroll-feature" :class="`-mx-${props.edgeNegativeMargin}`">
+  <div
+    class="horizontal-scroll-feature"
+    :class="`-mx-${props.edgeNegativeMargin}`"
+  >
     <div
       class="scroll flex align-items-stretch"
-      :class="[{ hideScrollBar: isMobile }, `gap-${props.gap}`]"
+      :class="[{ hideScrollBar: hideScrollBar }, `gap-${props.gap}`]"
     >
       <slot name="default" v-if="reactiveData" />
       <slot v-else name="skeleton">

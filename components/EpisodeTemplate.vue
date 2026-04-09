@@ -195,12 +195,12 @@ const togglePlayHere = (epData) => {
 }
 
 const isFavorited = ref(false)
-watchEffect(async () => {
-  if (import.meta.client) {
+onMounted(() => {
+  watchEffect(async () => {
     isFavorited.value = await checkIsFavorited(
       props.episodeData?.meta?.slug || route.params.slug
     )
-  }
+  })
 })
 
 // add item to favorites

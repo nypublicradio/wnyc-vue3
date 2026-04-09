@@ -104,60 +104,65 @@ defineExpose({
         </div>
       </slot>
     </div>
-    <Popover ref="popover">
-      <div
-        class="p-menu-list"
-        :class="props.contentClass"
-        role="menu"
-        aria-label="Menu options"
-      >
-        <div class="p-menu-item">
-          <div
-            v-for="(item, index) in options"
-            :key="item.label"
-            class="style-mode-dark item p-menu-item-content relative"
-            @click="onMenuUpdate(item)"
-            @keydown="onKeyDown($event, item)"
-            tabindex="0"
-            :autofocus="index === 0"
-            role="menuitem"
-            :aria-label="item.label"
-            :class="[
-              {
-                selected:
-                  item.id ===
-                    (typeof vModel === 'object' ? vModel.id : vModel) &&
-                  props.checkMark,
-              },
-            ]"
-          >
-            <div :key="item.label" class="flex align-items-center options">
-              <VImage
-                v-if="item.image"
-                :src="item.image"
-                alt="item.label"
-                class="mr-3 flex-none"
-                style="width: 40px; height: 40px"
-                :srcset="[2]"
-              />
-              <i v-if="item.icon" class="mr-3" :class="item.icon"></i>
-              <component
-                class="mr-3 custom-icon"
-                :active="item.active ?? false"
-                v-if="item.customIcon"
-                :is="item.customIcon"
-              />
-              <div class="option-holder flex flex-column">
-                <div class="option pointer-events-none">{{ item.label }}</div>
-                <div v-if="props.showTitle" class="text-sm pointer-events-none">
-                  {{ item.title }}
+    <ClientOnly>
+      <Popover ref="popover">
+        <div
+          class="p-menu-list"
+          :class="props.contentClass"
+          role="menu"
+          aria-label="Menu options"
+        >
+          <div class="p-menu-item">
+            <div
+              v-for="(item, index) in options"
+              :key="item.label"
+              class="style-mode-dark item p-menu-item-content relative"
+              @click="onMenuUpdate(item)"
+              @keydown="onKeyDown($event, item)"
+              tabindex="0"
+              :autofocus="index === 0"
+              role="menuitem"
+              :aria-label="item.label"
+              :class="[
+                {
+                  selected:
+                    item.id ===
+                      (typeof vModel === 'object' ? vModel.id : vModel) &&
+                    props.checkMark,
+                },
+              ]"
+            >
+              <div :key="item.label" class="flex align-items-center options">
+                <VImage
+                  v-if="item.image"
+                  :src="item.image"
+                  alt="item.label"
+                  class="mr-3 flex-none"
+                  style="width: 40px; height: 40px"
+                  :srcset="[2]"
+                />
+                <i v-if="item.icon" class="mr-3" :class="item.icon"></i>
+                <component
+                  class="mr-3 custom-icon"
+                  :active="item.active ?? false"
+                  v-if="item.customIcon"
+                  :is="item.customIcon"
+                />
+                <div class="option-holder flex flex-column">
+                  <div class="option pointer-events-none">{{ item.label }}</div>
+                  <div
+                    v-if="props.showTitle"
+                    class="text-sm pointer-events-none"
+                  >
+                    {{ item.title }}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </Popover>
+      </Popover>
+    </ClientOnly>
   </div>
 </template>
 
