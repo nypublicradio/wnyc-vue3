@@ -5,7 +5,7 @@
 
 <script setup lang="ts">
 import type { InformationPage } from "~/composables/types/Page"
-
+const config = useRuntimeConfig()
 const route = useRoute()
 
 /* preview */
@@ -24,12 +24,11 @@ if (isPreview) {
   }
   page = previewData.value.data
 } else {
-  // Fetch page data - server middleware has already checked existence and thrown 404 if needed
   const slug = `/${route?.params?.slug as string}`
-  const { data, error } = useFetch('/api/pages/wagtail/find', {
-    key: `page-${slug}`,
-    query: { html_path: slug },
-  })
+  const { data, error } = await useAsyncData(
+    `page-${slug}`,
+    () => $fetch(`${config.public.BFF_URL}/api/pages/wagtail/find`, { query: { html_path: slug } })
+  )
   
   if (error.value || !data.value) {
     throw createError({
