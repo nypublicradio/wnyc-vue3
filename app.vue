@@ -148,7 +148,8 @@ onMounted(async () => {
   //   document.addEventListener("pointerenter", () => {})
   // }
 
-  // Ads
+  // Ads - deferred to after hydration to prevent DOM mutation conflicts
+  await nextTick()
   window.htlbid = window.htlbid || {}
   htlbid.cmd = htlbid.cmd || []
   htlbid.cmd.push(() => {
