@@ -29,6 +29,8 @@ const {
   }
 )
 
+const filteredTopStories = computed(() => getFilteredTopStories(episode.value))
+
 onMounted(() => {
   if (!episode.value) return
   const { $analytics } = useNuxtApp()
@@ -145,7 +147,7 @@ useHead(() => ({
         <template #bottom>
           <Divider class="mt-8 mb-5" />
           <h2 class="mb-3">Top Stories From Gothamist</h2>
-          <TopStories :articles="getFilteredTopStories(episode)" />
+          <TopStories :articles="filteredTopStories" />
         </template>
       </EpisodeTemplate>
 
