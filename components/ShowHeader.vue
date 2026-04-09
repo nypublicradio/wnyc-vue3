@@ -75,11 +75,11 @@ const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
 
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
-if (import.meta.client) {
+onMounted(() => {
   watchEffect(async () => {
     isFavorited.value = await checkIsFavorited(route.params.slug)
   })
-}
+})
 
 // finds first episode with audio to play
 const firstEpisodeWithAudio = () => {
