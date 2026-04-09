@@ -165,6 +165,10 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  maxContentWidth: {
+    type: Number,
+    default: 432,
+  },
   loading: {
     type: String,
     default: "lazy",
@@ -383,7 +387,9 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
   <div
     class="media-card"
     :style="`cursor: ${props.isSegment ? 'default !important' : ''}; ${
-      props.inCarousel ? `--min-content-width: ${props.minContentWidth}px` : ''
+      props.inCarousel
+        ? `--min-content-width: ${props.minContentWidth}px; --max-content-width: ${props.maxContentWidth}px;`
+        : ''
     }`"
     :class="[
       {
@@ -900,7 +906,7 @@ $contentPaddingY: 1.25rem;
       :deep(img) {
         height: 100%;
         width: auto;
-        max-width: none;
+        max-width: var(--max-content-width);
         object-fit: cover;
         object-position: center center;
       }
