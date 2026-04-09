@@ -4,7 +4,7 @@ import MyPreset from "./assets/wnyc-theme.js"
 export default defineNuxtConfig({
   modules: [
     "@nuxtjs/supabase",
-    "@nuxtjs/ionic",
+    ...(process.env.NUXT_SSR === "true" ? [] : ["@nuxtjs/ionic"]),
     "@nuxtjs/device",
     "@nuxt/image",
     "@hypernym/nuxt-gsap",
