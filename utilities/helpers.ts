@@ -928,12 +928,12 @@ export const saveFavorite = async (
     const title = media?.title
     const producingOrganizations = media?.producingOrganizations
     const authors = media?.authors
-    const meta = media?.meta
+    const meta = media?.meta ?? {}
     const audio = media?.audio ?? media?.hls
     const showTitle = media?.showTitle ?? media?.headers?.brand?.title ?? media?.station
 
     // add firstPublishedAt if missing from meta
-    if (!meta?.firstPublishedAt) {
+    if (!meta.firstPublishedAt) {
       meta.firstPublishedAt = media?.updatedDate || media?.publicationDate
     }
 

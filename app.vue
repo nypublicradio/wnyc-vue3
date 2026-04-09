@@ -48,6 +48,14 @@ const fullDeviceInfo = useFullDeviceInfo()
 const appDownloadLink = useAppDownloadLink()
 const isApp = useIsApp()
 
+// Capacitor APIs are client-only — on the server, assume web/browser
+const isWeb = import.meta.client ? Capacitor.getPlatform() === "web" : true
+isApp.value = !isWeb
+const gtmHeadConfig = getGtmHeadConfig({
+  isWeb,
+  gtmId: config.public.GTM_ID,
+})
+
 // Only initialize OneSignal on client-side to avoid SSR errors
 let initOneSignal: any, notificationPermissionSync: any, handleAppUrlOpen: any
 if (import.meta.client) {
@@ -56,20 +64,6 @@ if (import.meta.client) {
   notificationPermissionSync = oneSignal.notificationPermissionSync
   handleAppUrlOpen = oneSignal.handleAppUrlOpen
 }
-
-const isWeb = Capacitor.getPlatform() === "web"
-isApp.value = !isWeb
-const gtmHeadConfig = getGtmHeadConfig({
-  isWeb,
-  gtmId: config.public.GTM_ID,
-})
-
-// Initialize device info and app download link asynchronously
-const initializeDeviceInfo = async () => {
-  fullDeviceInfo.value = await getFullDeviceInfo()
-  appDownloadLink.value = await getAppDownloadLink()
-}
-initializeDeviceInfo()
 
 useHead({
   htmlAttrs: {
