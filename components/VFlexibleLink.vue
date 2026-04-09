@@ -1,6 +1,8 @@
 <script setup>
 import { computed } from "vue"
 
+defineOptions({ inheritAttrs: false })
+
 const props = defineProps({
   /**
    * pass through and not render link visuals
