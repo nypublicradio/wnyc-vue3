@@ -160,14 +160,14 @@ onMounted(async () => {
   })
 })
 
-useHead({
-  script: [
-    {
-      src: config.public.HTL_JS,
-      async: true,
-    },
-  ],
-})
+// useHead({
+//   script: [
+//     {
+//       src: config.public.HTL_JS,
+//       async: true,
+//     },
+//   ],
+// })
 
 watch(globalToast, (optionsObj) => {
   if (optionsObj) {

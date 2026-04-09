@@ -10,20 +10,18 @@ const sensitiveContent = useSensitiveContent()
 </script>
 
 <template>
-  <ClientOnly>
-    <div>
-      <div :class="`ad-wrapper ${sensitiveContent ? '' : layout}`">
-        <div v-if="!sensitiveContent" :class="slotClass"></div>
-      </div>
-      <p
-        v-if="fineprint && !sensitiveContent"
-        :class="`type-fineprint text-center ${fineprintClass || ''}`"
-        class="mt-3"
-      >
-        {{ fineprint }}
-      </p>
+  <div>
+    <div :class="`ad-wrapper ${sensitiveContent ? '' : layout}`">
+      <div v-if="!sensitiveContent" :class="slotClass"></div>
     </div>
-  </ClientOnly>
+    <p
+      v-if="fineprint && !sensitiveContent"
+      :class="`type-fineprint text-center ${fineprintClass || ''}`"
+      class="mt-3"
+    >
+      {{ fineprint }}
+    </p>
+  </div>
 </template>
 <style lang="scss">
 .ad-wrapper.leaderboard .htl-ad-gpt {

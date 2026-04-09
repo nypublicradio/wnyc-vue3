@@ -452,8 +452,14 @@ onMounted(() => {
 
   // Observe track for added/removed items (async content)
   if (trackRef.value) {
+    let mutationRafId = null
     observer = new MutationObserver(() => {
-      onResize()
+      // Debounce via rAF to avoid forced reflows during hydration cascades
+      if (mutationRafId) return
+      mutationRafId = requestAnimationFrame(() => {
+        mutationRafId = null
+        onResize()
+      })
     })
     observer.observe(trackRef.value, { childList: true })
   }
