@@ -65,12 +65,19 @@ const isExternal = computed(() => {
 const isAnchor = computed(() => {
   return props.to.charAt(0) === "#"
 })
+
+const linkStyle = computed(() => ({
+  "--flexible-link-radius": props.radius,
+  "--flexible-link-word-break": props.wordBreak,
+  "--flexible-link-raw-hover": props.rawHover,
+}))
 </script>
 
 <template>
   <div
     v-if="!to"
     class="flexible-link null inline"
+    :style="linkStyle"
     v-bind="$attrs"
     @click="emit('flexible-link-click', to)"
   >
@@ -79,6 +86,7 @@ const isAnchor = computed(() => {
   <a
     v-else-if="isExternal"
     v-bind="$attrs"
+    :style="linkStyle"
     :href="to"
     :target="target"
     :rel="`noopener ${props.target === '_blank' ? 'noreferrer' : ''}`"
@@ -92,6 +100,7 @@ const isAnchor = computed(() => {
   <a
     v-else-if="isAnchor"
     v-bind="$attrs"
+    :style="linkStyle"
     :href="to"
     target="_self"
     class="flexible-link anchor"
@@ -104,6 +113,7 @@ const isAnchor = computed(() => {
   <nuxt-link
     v-else
     class="flexible-link internal"
+    :style="linkStyle"
     :class="{ ['raw']: raw }"
     :to="to"
     v-bind="$attrs"
@@ -115,8 +125,8 @@ const isAnchor = computed(() => {
 </template>
 <style lang="scss" scoped>
 .flexible-link {
-  border-radius: v-bind(radius);
-  word-break: v-bind(wordBreak);
+  border-radius: var(--flexible-link-radius);
+  word-break: var(--flexible-link-word-break);
 }
 .flexible-link:not(.raw):not(.null) {
   color: var(--link-button-color);
@@ -152,7 +162,7 @@ const isAnchor = computed(() => {
   line-height: 0;
   &:hover,
   *:hover {
-    text-decoration: v-bind(rawHover);
+    text-decoration: var(--flexible-link-raw-hover);
   }
 }
 </style>
