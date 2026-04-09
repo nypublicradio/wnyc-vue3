@@ -56,7 +56,7 @@
     "@sentry/integrations": "^7.114.0",
     "@sentry/node": "^10.0.0",
     "@sentry/tracing": "^7.114.0",
-    "@sentry/vue": "^7.118.0",
+    "@sentry/vue": "^9.5.0",
     "@supabase/supabase-js": "^2.45.1",
     "@tokenizer/http": "^0.6.2",
     "@types/humps": "^2.0.4",
@@ -87,6 +87,7 @@
     "primeflex": "^3.3.1",
     "primeicons": "^7.0.0",
     "primevue": "^4.2.5",
+    "sharp": "^0.34.5",
     "ufo": "^1.5.4",
     "vue": "3.4.31",
     "worker-timers": "^8.0.4"
