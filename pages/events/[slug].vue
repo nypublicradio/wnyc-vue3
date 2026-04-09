@@ -2,14 +2,14 @@
 import { useToast } from "primevue/usetoast"
 import { useTopStories } from "~/composables/useTopStories"
 import { EVENT_BADGE_STYLES, useEventData } from "~/composables/useEventData"
-import { dynamicNavigation } from "~/utilities/helpers"
+import { dynamicNavigation, getFirstSentence } from "~/utilities/helpers"
 
 const { getFilteredTopStories } = useTopStories()
 const config = useRuntimeConfig()
 const route = useRoute()
 const toast = useToast()
 
-const { data: event, status, error } = useFetch(
+const { data: event, status, error } = await useFetch(
   () => `${config.public.BFF_URL}/api/events/${route.params.slug}`,
   {
     onResponseError() {
@@ -97,13 +97,22 @@ const breadcrumbs = computed(() => [
   { label: title.value || "Event" },
 ])
 
-useHead(() => ({
-  title: `${title.value} | WNYC`,
-  meta: [
-    { name: 'og:title', content: `${title.value} | WNYC` },
-    { name: 'twitter:title', content: `${title.value} | WNYC` },
-  ],
-}))
+const pageTitle = `${eventData.value?.title} | WNYC`
+const description = getFirstSentence(eventData.value?.description)
+useHead({
+  title: pageTitle,
+})
+if (eventData.value?.preventSearchIndexing) {
+  useHead({
+    meta: [{name: "robots", content: "noindex" }],
+  })
+}
+useSeoMeta({
+  title: pageTitle,
+  ogTitle: pageTitle,
+  description,
+  ogDescription: description,
+})
 </script>
 
 <template>

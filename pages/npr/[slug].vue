@@ -59,13 +59,22 @@ const breadcrumbs = computed(() => [
   { label: storyData.value?.title },
 ])
 
+const title = `${storyData.value?.title} | WNYC`
+const description = storyData.value?.description
+const canonicalUrl = storyData.value?.link
 useHead(() => ({
-  title: `${storyData.value?.title} | WNYC`,
-  meta: [
-    { name: "og:title", content: `${storyData.value?.title} | WNYC` },
-    { name: "twitter:title", content: `${storyData.value?.title} | WNYC` },
+  title,
+  link: [
+    { rel: "canonical", href: canonicalUrl }
   ],
 }))
+useSeoMeta({
+  title,
+  description,
+  ogUrl: canonicalUrl,
+  ogTitle: title,
+  ogDescription: description,
+})
 </script>
 
 <template>

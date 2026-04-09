@@ -63,19 +63,6 @@ onMounted(() => {
   }
 })
 
-useHead(() => ({
-  title: `${episode.value?.title} Transcript | WNYC`,
-  meta: [
-    {
-      name: "og:title",
-      content: `${episode.value?.title} Transcript | WNYC`,
-    },
-    {
-      name: "twitter:title",
-      content: `${episode.value?.title} Transcript | WNYC`,
-    },
-  ],
-}))
 const theSlug = computed(
   () =>
     episode.value?.showSlug ||
@@ -172,6 +159,17 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener("scroll", debouncedScroll)
   clearTimeout(scrollTimeout)
+})
+
+const title = `${episode.value?.title} | WNYC`
+const tease = episode.value?.tease ?? getFirstSentence(stripHtmlTags(episodeData.value?.tease))
+const description = episode.value?.description ?? getFirstSentence(stripHtmlTags(episodeData.value?.description))
+useHead({
+  title,
+})
+useSeoMeta({
+  title,
+  description: tease ?? description,
 })
 </script>
 

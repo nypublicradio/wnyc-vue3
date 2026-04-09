@@ -93,21 +93,13 @@ watch(
   { once: true }
 )
 
+const title = "Browse Shows | WNYC"
 useHead({
-  title:
-    "Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
-  meta: [
-    {
-      name: "og:title",
-      content:
-        "Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
-    },
-    {
-      name: "twitter:title",
-      content:
-        "Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
-    },
-  ],
+  title,
+})
+useSeoMeta({
+  title,
+  ogTitle: title,
 })
 </script>
 
