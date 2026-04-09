@@ -1491,5 +1491,5 @@ export const toggleNativePullToRefresh = (enable: boolean) => {
 }
 // isolates the slug from the end of a url
 export const isolateSlug = (slug: string) => {
-  return slug?.split("/").pop()
+  return slug?.split("/").filter(Boolean).pop()
 }
