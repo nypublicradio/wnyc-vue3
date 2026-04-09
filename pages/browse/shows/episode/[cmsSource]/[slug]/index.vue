@@ -1,6 +1,11 @@
 <script setup>
 import { useToast } from "primevue/usetoast"
-import { getFirstSentence, isolateSlug, stripHtmlTags,togglePlayEpisode } from "~/utilities/helpers"
+import {
+  getFirstSentence,
+  isolateSlug,
+  stripHtmlTags,
+  togglePlayEpisode,
+} from "~/utilities/helpers"
 import { useTopStories } from "~/composables/useTopStories"
 const { getFilteredTopStories } = useTopStories()
 const config = useRuntimeConfig()
@@ -122,10 +127,12 @@ const breadcrumbs = computed(() => [
   { label: episode.value?.title },
 ])
 
-
 const title = `${episode.value?.title} | WNYC`
-const tease = episode.value?.tease ?? getFirstSentence(stripHtmlTags(episodeData.value?.tease))
-const description = episode.value?.description ?? getFirstSentence(stripHtmlTags(episodeData.value?.description))
+const tease =
+  episode.value?.tease ?? getFirstSentence(stripHtmlTags(episode.value?.tease))
+const description =
+  episode.value?.description ??
+  getFirstSentence(stripHtmlTags(episode.value?.description))
 useHead({
   title,
 })

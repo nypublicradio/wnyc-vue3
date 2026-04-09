@@ -669,9 +669,9 @@ const getAuthorsFromBylineUrl = memoize(async (url: string): Promise<Author> => 
   }
   let image
   let biography = ''
-  const res = response.data?.resources[0]
-  if (res.assets !== undefined && res.assets !== null) {
-    for (const asset of Object.values(res.assets)) {
+  const res = response?.data?.resources[0]
+  if (res?.assets !== undefined && res?.assets !== null) {
+    for (const asset of Object.values(res?.assets)) {
       if (asset.profiles[0]?.href === '/v1/profiles/image') {
         image = asset.enclosures.filter((enclosure) => {
           return enclosure.rels.includes('primary')
@@ -683,7 +683,7 @@ const getAuthorsFromBylineUrl = memoize(async (url: string): Promise<Author> => 
     for (const layoutItem of Object.values(res.layout)) {
       const layoutId = layoutItem?.href?.substring(layoutItem.href.lastIndexOf("/") + 1)
       if (res?.profiles[0]?.href === '/v1/profiles/text') {
-        biography += response.data?.resources[layoutId]?.text ? `<p>${response.data?.resources[layoutId]?.text}</p>` : ''
+        biography += response?.data?.resources[layoutId]?.text ? `<p>${response?.data?.resources[layoutId]?.text}</p>` : ''
       }
     }
   }
@@ -719,7 +719,7 @@ const getShowInfoFromProgramUrl = memoize(async (url: string): Promise<{ title: 
 
   try {
     const response = await axios(options)
-    const resource = response.data?.resources?.[0]
+    const resource = response?.data?.resources?.[0]
     const showTitle = resource?.title || 'NPR'
     // Extract slug from nprWebsitePath (e.g., "/programs/all-things-considered/" -> "all-things-considered")
     const nprPath = resource?.nprWebsitePath
@@ -860,7 +860,7 @@ const processNprLayout = async (article: NprArticle): Promise<string> => {
     // Try both camelCase and kebab-case formats since NPR API is inconsistent
     const camelCaseId = rawLayoutId ? convertNprImageId(rawLayoutId) : undefined
     const asset = rawLayoutId
-      ? (article.assets?.[camelCaseId] || article.assets?.[rawLayoutId])
+      ? (article?.assets?.[camelCaseId] || article?.assets?.[rawLayoutId])
       : undefined
 
     if (!asset?.profiles?.[0]) {
@@ -889,11 +889,11 @@ const processNprLayout = async (article: NprArticle): Promise<string> => {
 
 // Helper: Extract audio information from NPR assets
 const extractNprAudio = (article: NprArticle): { url?: string; duration?: number } => {
-  if (!article.assets) {
+  if (!article?.assets) {
     return {}
   }
 
-  for (const asset of Object.values(article.assets)) {
+  for (const asset of Object.values(article?.assets)) {
     const hasAudioProfile = asset.profiles?.some(p => p.href === '/v1/profiles/audio')
     const hasAudioEnclosure = asset.enclosures?.some(e => e.type?.startsWith('audio/'))
 
@@ -956,7 +956,7 @@ export async function normalizeNprPage (article: NprArticle, componentType = "de
   // Try both camelCase and kebab-case formats since NPR API is inconsistent
   const camelCaseId = rawImageId ? convertNprImageId(rawImageId) : undefined
   const firstImage = rawImageId
-    ? (article.assets?.[camelCaseId] || article.assets?.[rawImageId])
+    ? (article?.assets?.[camelCaseId] || article?.assets?.[rawImageId])
     : undefined
 
   /*   console.log('NPR Image Debug:', {
