@@ -99,7 +99,6 @@ const handleMouseLeave = () => {
     @keydown.enter="handleMouseEnterKey"
     @mouseleave="handleMouseLeave"
     class="nav-button flex-none"
-    :class="[$attrs.class]"
     raw
     :to="props.route"
     :aria-haspopup="hasMenuSlot ? 'true' : 'false'"
@@ -135,10 +134,12 @@ const handleMouseLeave = () => {
         <slot name="image" />
       </template>
     </Button>
-    <Popover @click.prevent ref="op" appendTo="self" v-if="hasMenuSlot">
-      <!-- :pt="{ transition: { name: 'popover-transition' } }" -->
-      <slot name="menu" />
-    </Popover>
+    <ClientOnly>
+      <Popover @click.prevent ref="op" appendTo="self" v-if="hasMenuSlot">
+        <!-- :pt="{ transition: { name: 'popover-transition' } }" -->
+        <slot name="menu" />
+      </Popover>
+    </ClientOnly>
   </VFlexibleLink>
 </template>
 

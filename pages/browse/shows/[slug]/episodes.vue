@@ -4,6 +4,7 @@ import {
   checkIsFavorited,
   trackClickEvent,
   dynamicNavigation,
+  getFirstSentence,
 } from "~/utilities/helpers"
 import { useGlobalToast } from "~/composables/states"
 

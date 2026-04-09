@@ -1,5 +1,9 @@
 <script setup>
-import { checkIsFavorited, slugify, getFirstSentence } from "~/utilities/helpers"
+import {
+  checkIsFavorited,
+  slugify,
+  getFirstSentence,
+} from "~/utilities/helpers"
 import { useIsApp } from "~/composables/states"
 
 const config = useRuntimeConfig()
@@ -15,7 +19,7 @@ const {
 
 const sectionAnchorData = computed(
   () =>
-    show.value?.inPageNavigation?.map((item) => ({
+    show?.value?.inPageNavigation?.map((item) => ({
       label: item.value.linkText,
       id: slugify(item.value.targetId || item.value.linkText),
     })) ?? []
@@ -50,7 +54,7 @@ const scrollToSection = (sectionId, behavior = "smooth", offset = 90) => {
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Browse", route: "/browse" },
-  { label: show.value?.title },
+  { label: show?.value?.title },
 ])
 
 onMounted(() => {
@@ -63,8 +67,8 @@ onMounted(() => {
   })
 })
 
-const title = `${show.value?.title} | WNYC`
-const description = getFirstSentence(show.value?.summary)
+const title = `${show?.value?.title} | WNYC`
+const description = getFirstSentence(show?.value?.summary)
 useHead({
   title,
 })
