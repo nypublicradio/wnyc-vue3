@@ -167,7 +167,6 @@ export default defineNuxtConfig({
   },
 
   plugins: [
-    { src: "~/plugins/observer-safety.client.js", mode: "client" },
     // "~/plugins/router-guards.js",
     // "~/plugins/error-handler.js",
     "~/plugins/firebase.client.js",

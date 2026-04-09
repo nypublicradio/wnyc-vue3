@@ -104,6 +104,13 @@ const maskStyle = computed(() => {
   }
 })
 
+const carouselStyle = computed(() => ({
+  ...maskStyle.value,
+  "--carousel-arrow-top-xl": props.xlTop,
+  "--carousel-arrow-top-lg": props.lgTop,
+  "--carousel-arrow-top-md": props.mdTop,
+}))
+
 // Scroll Handler
 const onScroll = () => {
   if (!trackRef.value) return
@@ -267,7 +274,7 @@ onBeforeUnmount(() => {
   <div
     class="material-carousel-basic"
     ref="carouselRef"
-    :style="maskStyle"
+    :style="carouselStyle"
     role="region"
     aria-label="carousel"
   >
@@ -428,7 +435,7 @@ onBeforeUnmount(() => {
   position: absolute;
   z-index: 10;
   transform: translateY(-50%);
-  top: v-bind(xlTop);
+  top: var(--carousel-arrow-top-xl);
   background: white;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 50%;
@@ -450,10 +457,10 @@ onBeforeUnmount(() => {
     transform: translateY(-50%) scale(0.95);
   }
   @include media("<lg") {
-    top: v-bind(lgTop);
+    top: var(--carousel-arrow-top-lg);
   }
   @include media("<md") {
-    top: v-bind(mdTop);
+    top: var(--carousel-arrow-top-md);
   }
 }
 </style>
