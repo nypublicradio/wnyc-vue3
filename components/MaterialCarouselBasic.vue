@@ -215,7 +215,7 @@ let mutationObserver = null
 let mutationRafId = null
 
 onMounted(() => {
-  if (carouselRef.value) {
+  if (carouselRef.value instanceof Element) {
     containerWidth.value = carouselRef.value.offsetWidth
     resizeObserver = new ResizeObserver((entries) => {
       // Wrap in rAF to avoid "ResizeObserver loop limit exceeded"
@@ -227,7 +227,7 @@ onMounted(() => {
     resizeObserver.observe(carouselRef.value)
   }
 
-  if (trackRef.value) {
+  if (trackRef.value instanceof Node) {
     mutationObserver = new MutationObserver(() => {
       // Debounce via rAF to avoid forced reflows during hydration cascades
       if (mutationRafId) return

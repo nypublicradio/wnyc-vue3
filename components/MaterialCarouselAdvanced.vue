@@ -436,7 +436,7 @@ let observer = null
 
 onMounted(() => {
   // Setup ResizeObserver for container
-  if (carouselRef.value) {
+  if (carouselRef.value instanceof Element) {
     // Initialize width immediately if possible
     containerWidth.value = carouselRef.value.offsetWidth
 
@@ -451,7 +451,7 @@ onMounted(() => {
   }
 
   // Observe track for added/removed items (async content)
-  if (trackRef.value) {
+  if (trackRef.value instanceof Node) {
     let mutationRafId = null
     observer = new MutationObserver(() => {
       // Debounce via rAF to avoid forced reflows during hydration cascades
