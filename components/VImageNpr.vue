@@ -289,15 +289,13 @@ onMounted(async () => {
         :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`"
       >
         <div v-if="isVertical" class="bg">
-          <nuxt-img
-            :format="props.format"
-            :provider="handleProvider"
+          <img
             class="blurred-bg-image"
             :src="theSrc"
             :width="computedWidth"
             :height="props.height"
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
-            :loading="props.loading"
+            :loading="loading"
           />
         </div>
         <img

@@ -2,11 +2,13 @@
 import Button from "primevue/button"
 import Dialog from "primevue/dialog"
 import ProgressSpinner from "primevue/progressspinner"
+import { useImage } from "#imports"
 import { useFallbackImages } from "~/composables/useFallbackImages"
 
 defineOptions({ inheritAttrs: false })
 
 const { getEpisodeFallBackImage } = useFallbackImages()
+const $img = useImage()
 
 const props = defineProps({
   /**
@@ -203,6 +205,59 @@ const computedSrc = computed(() => {
   }
   return String(props.src)
 })
+
+const imageOptions = computed(() => {
+  return {
+    provider: handleProvider.value || undefined,
+  }
+})
+
+const mainImageModifiers = computed(() => {
+  return {
+    ...props.modifiers,
+    width: computedWidth.value,
+    height: props.height,
+    format: props.format,
+    quality: props.quality,
+  }
+})
+
+const mainImage = computed(() => {
+  return $img.getSizes(computedSrc.value, {
+    ...imageOptions.value,
+    sizes: props.sizes || undefined,
+    densities: props.density || undefined,
+    modifiers: mainImageModifiers.value,
+  })
+})
+
+const blurredBgSrc = computed(() => {
+  return $img(
+    computedSrc.value,
+    {
+      ...props.modifiers,
+      width: computedWidth.value,
+      height: props.height,
+      format: props.format,
+      quality: props.quality,
+    },
+    imageOptions.value
+  )
+})
+
+const enlargedImageSrc = computed(() => {
+  return $img(
+    computedSrc.value,
+    {
+      ...props.modifiers,
+      width: computedEnlargeWidth.value,
+      height: computedEnlargeHeight.value,
+      format: props.format,
+      quality: 70,
+    },
+    imageOptions.value
+  )
+})
 // method to handle the click on the enlarge button and its loading states
 const enlarge = () => {
   loadingEnlargedImage.value = true
@@ -228,8 +283,7 @@ onMounted(async () => {
     return
   }
 
-  // The nuxt-img component renders directly as an <img> element
-  const img = imageRef.value.$el
+  const img = imageRef.value
 
   if (img && img.tagName === "IMG" && img.complete && img.naturalHeight !== 0) {
     // Image is already loaded (cached)
@@ -257,39 +311,33 @@ const handleProvider = computed(() => {
         :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`"
       >
         <div v-if="isVertical" class="bg">
-          <nuxt-img
-            :format="props.format"
-            :provider="handleProvider"
+          <img
             class="blurred-bg-image"
-            :src="computedSrc"
+            :src="blurredBgSrc"
             :width="computedWidth"
             :height="props.height"
-            :quality="String(props.quality)"
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
-            :modifiers="props.modifiers"
             :loading="props.loading"
+            decoding="auto"
           />
         </div>
-        <nuxt-img
+        <img
           ref="imageRef"
-          :format="props.format"
-          :provider="handleProvider"
           class="image native-image"
           :class="isVertical ? 'is-vertical' : ''"
-          :src="computedSrc"
+          :src="mainImage.src"
           :width="computedWidth"
           :height="props.height"
-          :sizes="props.sizes"
-          :densities="props.density"
+          :sizes="mainImage.sizes || undefined"
+          :srcset="mainImage.srcset || undefined"
           :style="[
             isVertical
               ? `aspect-ratio:${props.maxWidth} / ${props.maxHeight}; object-fit: contain;`
               : '',
           ]"
           :alt="props.isDecorative ? '' : props.alt"
-          :quality="String(props.quality)"
           :loading="props.loading"
-          :modifiers="props.modifiers"
+          decoding="auto"
           @load="handleImageLoad"
           @error="emit('image-error')"
         />
@@ -319,18 +367,15 @@ const handleProvider = computed(() => {
               header=" "
               :style="{ width: '95vw' }"
             >
-              <nuxt-img
-                :format="props.format"
-                :provider="handleProvider"
+              <img
                 class="enlarged-image"
-                :src="computedSrc"
+                :src="enlargedImageSrc"
                 style="width: 100%; height: auto"
                 :alt="props.isDecorative ? '' : props.alt"
                 loading="eager"
-                :quality="70"
                 :width="computedEnlargeWidth"
                 :height="computedEnlargeHeight"
-                :modifiers="props.modifiers"
+                decoding="auto"
                 @load="enlargeLoad($event.target)"
               />
               <template #closeicon
