@@ -42,25 +42,27 @@ const { handleSleepTimer } = useSleepTimer()
 
 const isFavorited = ref(false)
 const showDownload = ref(true)
-watchEffect(async () => {
-  // hide share if it is a segment, which is only set in NPR direct show episodes
-  currentEpisode.value?.isSegment
-    ? (showShare.value = false)
-    : (showShare.value = true)
-  isFavorited.value = await checkIsFavorited(
-    currentEpisode.value.showSlug ||
-      currentEpisode.value.slug ||
-      currentEpisode.value.meta?.slug ||
-      null
-  )
-  // show/hide download button based on show title
-  const showsWithoutDownload = ["nyc now", "wnyc news"]
-  const showTitle = (
-    currentEpisode.value.showTitle || currentEpisode.value.title
-  )?.toLowerCase()
-  showDownload.value = showTitle
-    ? !showsWithoutDownload.includes(showTitle) || !isApp.value
-    : true
+onMounted(() => {
+  watchEffect(async () => {
+    // hide share if it is a segment, which is only set in NPR direct show episodes
+    currentEpisode.value?.isSegment
+      ? (showShare.value = false)
+      : (showShare.value = true)
+    isFavorited.value = await checkIsFavorited(
+      currentEpisode.value.showSlug ||
+        currentEpisode.value.slug ||
+        currentEpisode.value.meta?.slug ||
+        null
+    )
+    // show/hide download button based on show title
+    const showsWithoutDownload = ["nyc now", "wnyc news"]
+    const showTitle = (
+      currentEpisode.value.showTitle || currentEpisode.value.title
+    )?.toLowerCase()
+    showDownload.value = showTitle
+      ? !showsWithoutDownload.includes(showTitle) || !isApp.value
+      : true
+  })
 })
 
 onMounted(() => {

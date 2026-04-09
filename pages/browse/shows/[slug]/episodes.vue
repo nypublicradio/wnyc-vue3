@@ -132,10 +132,10 @@ const { stop } = useIntersectionObserver(
 )
 
 const isFavorited = ref(false)
-watchEffect(async () => {
-  if (import.meta.client) {
+onMounted(() => {
+  watchEffect(async () => {
     isFavorited.value = await checkIsFavorited(route.params.slug)
-  }
+  })
 })
 
 const hasError = computed(() => {

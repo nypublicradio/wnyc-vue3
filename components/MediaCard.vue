@@ -213,13 +213,15 @@ const getImage = computed(() => {
   }
 })
 
-watchEffect(async () => {
-  if (!props.data) return
-  isDownloaded.value = isAlreadyDownloaded(props.data)
-  isFavorited.value = await checkIsFavorited(
-    props.data?.meta?.slug || props.data?.slug
-  )
-  eventDate.value = props.data?.startDatetime
+onMounted(() => {
+  watchEffect(async () => {
+    if (!props.data) return
+    isDownloaded.value = isAlreadyDownloaded(props.data)
+    isFavorited.value = await checkIsFavorited(
+      props.data?.meta?.slug || props.data?.slug
+    )
+    eventDate.value = props.data?.startDatetime
+  })
 })
 
 // add item to favorites
