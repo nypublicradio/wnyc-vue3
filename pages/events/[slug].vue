@@ -110,7 +110,7 @@ if (eventData.value?.preventSearchIndexing) {
 useSeoMeta({
   title: pageTitle,
   ogTitle: pageTitle,
-  description: description,
+  description,
   ogDescription: description,
 })
 </script>

@@ -1494,6 +1494,7 @@ export const isolateSlug = (slug: string) => {
   return slug?.split("/").filter(Boolean).pop()
 }
 
+// get the first sentence from a string of text
 export const getFirstSentence = (text: string): string => {
   if (!text) return ''
   const sentences = text.match(/(.*?[.?!])/)
