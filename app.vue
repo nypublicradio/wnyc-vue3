@@ -187,9 +187,12 @@ watch(globalError, (error) => {
   }
 })
 
-const title = "WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-const description = "WNYC is America's most listened-to public radio station and the producer of award-winning programs and podcasts like Radiolab, On the Media, and The Brian Lehrer Show."
-const keywords = "wnyc, podcasts, npr, new york, WNYC Studios, arts, culture, classical, music, news, public, radio"
+const title =
+  "WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
+const description =
+  "WNYC is America's most listened-to public radio station and the producer of award-winning programs and podcasts like Radiolab, On the Media, and The Brian Lehrer Show."
+const keywords =
+  "wnyc, podcasts, npr, new york, WNYC Studios, arts, culture, classical, music, news, public, radio"
 const canonicalUrl = `https://www.wnyc.org${route.fullPath}`
 const ogImage = {
   url: "https://media.wnyc.org/i/1200/1200/c/80/1/wnyc_square_logo.png",
@@ -204,7 +207,11 @@ useHead({
   title,
   meta: [
     { charset: "utf-8" },
-    { name: "viewport", content: "viewport-fit=cover, width=device-width, initial-scale=1, maximum-scale=1" },
+    {
+      name: "viewport",
+      content:
+        "viewport-fit=cover, width=device-width, initial-scale=1, maximum-scale=1",
+    },
     { name: "robots", content: "index, follow" },
   ],
   link: [
@@ -235,76 +242,9 @@ useSeoMeta({
   themeColor,
   msapplicationTileColor: themeColor,
 })
-
 </script>
 
 <template>
-  <Html lang="en">
-    <Head>
-      <Link rel="canonical" :href="`https://wnyc.org${route.path}`" />
-      <Link rel="stylesheet" :href="config.public.HTL_CSS" type="text/css" />
-      <Title>
-        WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News
-      </Title>
-      <Meta
-        name="description"
-        content="WNYC is America's most listened-to public radio station and the producer of award-winning programs and podcasts like Radiolab, On the Media, and The Brian Lehrer Show."
-      />
-      <Meta
-        name="keywords"
-        content="wnyc, podcasts, npr, new york, WNYC Studios, arts, culture, classical, music, news, public, radio"
-      />
-      <Meta
-        name="og:site_name"
-        content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-      />
-      <Meta name="og:type" content="website" />
-      <Meta name="og:url" :content="`https://www.wnyc.org${route.fullPath}`" />
-      <Meta
-        name="og:title"
-        content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-      />
-      <Meta
-        name="og:description"
-        content="WNYC is America's most listened-to public radio station and the producer of award-winning programs and podcasts like Radiolab, On the Media, and The Brian Lehrer Show."
-      />
-      <Meta
-        name="og:image"
-        content="https://media.wnyc.org/i/1200/1200/c/80/1/wnyc_square_logo.png"
-      />
-      <Meta name="og:image:alt" content="WNYC" />
-      <Meta name="og:image:width" content="1200" />
-      <Meta name="og:image:height" content="600" />
-      <Meta name="fb:app_id" content="151261804904925" />
-      <Meta name="twitter:card" content="summary_large_image" />
-      <Meta name="twitter:site" content="@radiolab" />
-      <Meta name="twitter:title" content="WNYC" />
-      <Meta
-        name="twitter:description"
-        content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-      />
-      <Meta
-        name="twitter:image"
-        content="https://media.wnyc.org/i/1200/1200/c/80/1/wnyc_square_logo.png"
-      />
-      <Meta
-        name="theme-color"
-        :content="
-          currentUserProfile?.dark_mode
-            ? browserTopColorDarkMode
-            : browserTopColor
-        "
-      />
-      <Meta
-        name="msapplication-TileColor"
-        :content="
-          currentUserProfile?.dark_mode
-            ? browserTopColorDarkMode
-            : browserTopColor
-        "
-      />
-    </Head>
-  </Html>
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
