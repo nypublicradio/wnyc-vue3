@@ -24,8 +24,8 @@ export default defineNuxtPlugin((nuxtApp) => {
       }),
     ],
     tracesSampleRate: config.public.SENTRY_ENV.toUpperCase() === 'PROD' ? 0.1 : 1.0,
-    replaysSessionSampleRate: config.public.SENTRY_ENV.toUpperCase() === 'PROD' ? 0.0005 : 0.1,
-    replaysOnErrorSampleRate: config.public.SENTRY_ENV.toUpperCase() === 'PROD' ? 0.001 : 0.5,
+    replaysSessionSampleRate: config.public.SENTRY_ENV.toUpperCase() === 'PROD' ? 0.0005 : 1.0,
+    replaysOnErrorSampleRate: config.public.SENTRY_ENV.toUpperCase() === 'PROD' ? 0.001 : 1.0,
     allowUrls: [
       'https://native-app.wnyc.org',
       'https://demo.native-app.wnyc.org',
@@ -37,16 +37,15 @@ export default defineNuxtPlugin((nuxtApp) => {
       'Failed to fetch',
       'NetworkError when attempting to fetch resource.',
       'Load failed',
-      /Failed to execute 'observe' on 'MutationObserver'/,
     ],
     // Only add Sentry tracing headers to our own domains that support it
-    // Use regex to match only the hostname, not query strings containing our domain
+    // External CMS/API domains don't allow sentry-trace header in CORS
     tracePropagationTargets: [
-      /^https:\/\/prod\.wnyc\.org/,
-      /^https:\/\/demo\.wnyc\.org/,
-      /^https:\/\/www\.wnyc\.org/,
-      /^https:\/\/(demo\.)?native-app\.wnyc\.org/,
-      /^https?:\/\/local\.dev\.nypr\.digital/,
+      'demo.wnyc.org',
+      'www.wnyc.org',
+      'native-app.wnyc.org',
+      'demo.native-app.wnyc.org',
+      'local.dev.nypr.digital',
     ],
     maxValueLength: 1000,
     trackComponents: false,// disabled to prevent compilerOptions Vue warning loop
