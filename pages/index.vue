@@ -1,6 +1,4 @@
 <script setup>
-import { useBrowserTopColorDarkMode } from "~/composables/globals.ts"
-
 definePageMeta({
   layout: "default",
   //middleware: ["check-auth-provider"],
