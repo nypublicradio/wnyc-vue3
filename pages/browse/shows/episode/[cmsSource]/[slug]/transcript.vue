@@ -4,6 +4,7 @@ import {
   trackClickEvent,
   togglePlayEpisode,
   copyToClipBoard,
+  getFirstSentence,
 } from "~/utilities/helpers"
 import { useIsApp } from "~/composables/states"
 import { mediaTypeRoutes } from "~/composables/globals"
@@ -162,8 +163,12 @@ onUnmounted(() => {
 })
 
 const title = `${episode.value?.title} | WNYC`
-const tease = episode.value?.tease ?? getFirstSentence(stripHtmlTags(episodeData.value?.tease))
-const description = episode.value?.description ?? getFirstSentence(stripHtmlTags(episodeData.value?.description))
+const tease =
+  episode.value?.tease ??
+  getFirstSentence(stripHtmlTags(episodeData.value?.tease))
+const description =
+  episode.value?.description ??
+  getFirstSentence(stripHtmlTags(episodeData.value?.description))
 useHead({
   title,
 })
