@@ -81,23 +81,24 @@ const { data: redirectsData } = useFetch(
   }
 )
 
-// Resolve the show slug: simplecast lookup first, then redirect table, then raw fallback
+// Resolve the show slug: redirect table first, then simplecast, then raw fallback
 const resolvedShowSlug = computed(() => {
-  // Simplecast path
-  if (showSlug.value?.show?.slug) return showSlug.value.show.slug
-
-  // check redirect table for updated slug
+  // 1. check redirect table for updated slug
   const headerSlug = episode.value?.headers?.links?.find(
     (link) => link.itemType === "show"
   )?.slug
-  if (headerSlug && redirectsData.value) {
-    const redirect = redirectsData.value.find(
+
+  if (headerSlug) {
+    const redirect = redirectsData.value?.find(
       (r) => isolateSlug(r.from) === headerSlug
     )
-    if (redirect) return isolateSlug(redirect.to)
+    return redirect ? isolateSlug(redirect.to) : headerSlug
   }
 
-  // Raw fallbacks
+  // 2. Simplecast path fallback
+  if (showSlug.value?.show?.slug) return showSlug.value.show.slug
+
+  // 3. Raw fallbacks
   return (
     episode.value?.show?.slug || episode.value?.headers?.brand?.slug || null
   )

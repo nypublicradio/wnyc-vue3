@@ -20,6 +20,11 @@ const getPublisherPageData = async (pageSlug: string) => {
 
 // getting page data from the wagtail api
 const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean) => {
+    // if the pageSlug is a url (www.example.com or example.com), just return null
+    if (/^(www\.)?[^/]+\.[a-z]{2,}$/i.test(pageSlug)) {
+        return {}
+    }
+
     const config = __getConfig()
     const options = {
         method: 'GET',
@@ -53,8 +58,12 @@ const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean) => {
         }
 
         return await normalizeArticlePage(resData)
-    } catch (error) {
-        console.error('Error in getWagtailPageData:', error)
+    } catch (error: any) {
+        if (error?.response?.status === 404) {
+            // Nuxt expects proper error objects to avoid generic 500 noise
+            throw createError({ statusCode: 404, statusMessage: `Page not found: ${pageSlug}` })
+        }
+        console.error('Error in getWagtailPageData!:', pageSlug, error)
         throw error
     }
 }
