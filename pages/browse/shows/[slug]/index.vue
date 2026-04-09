@@ -13,8 +13,9 @@ const {
   data: show,
   status,
   error,
-} = await useFetch(
-  () => `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`
+} = useFetch(
+  () => `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`,
+  { key: `show-${route.params.slug}` }
 )
 
 const sectionAnchorData = computed(
@@ -29,10 +30,10 @@ const isApp = useIsApp()
 
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
-watchEffect(async () => {
-  if (import.meta.client) {
+onMounted(() => {
+  watchEffect(async () => {
     isFavorited.value = await checkIsFavorited(route.params.slug)
-  }
+  })
 })
 
 // scrolls to the selected section from the jump link buttons
