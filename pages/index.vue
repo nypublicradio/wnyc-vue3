@@ -6,7 +6,6 @@ definePageMeta({
   //middleware: ["check-auth-provider"],
 })
 
-const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const route = useRoute()
 
 useHead({
