@@ -29,7 +29,7 @@ export default defineNuxtConfig({
     url: process.env.SUPABASE_URL,
     key: process.env.SUPABASE_KEY,
     redirect: false,
-    useSsrCookies: false,
+    useSsrCookies: process.env.NUXT_SSR === "true",
   },
 
   image: {
@@ -60,6 +60,9 @@ export default defineNuxtConfig({
   ssr: process.env.NUXT_SSR === 'true',
 
   nitro: {
+    routeRules: {
+      '/confirm': { ssr: false },
+    },
     prerender: {
       // Disable prerendering when SSR is false (SPA mode for mobile)
       crawlLinks: process.env.NUXT_SSR === 'true',
