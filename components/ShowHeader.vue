@@ -75,11 +75,11 @@ const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
 
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
-onMounted(() => {
+if (import.meta.client) {
   watchEffect(async () => {
     isFavorited.value = await checkIsFavorited(route.params.slug)
   })
-})
+}
 
 // finds first episode with audio to play
 const firstEpisodeWithAudio = () => {
@@ -277,32 +277,30 @@ const isThisShowPlaying = computed(() => {
               </div>
             </div>
             <div v-else class="hidden md:flex flex-column gap-3 w-full">
-              <ClientOnly>
-                <div class="flex flex-column gap-0">
-                  <Skeleton
-                    class="my-2"
-                    height="48px"
-                    width="65%"
-                    borderRadius="24px"
-                  />
-                  <!-- <Skeleton
+              <div class="flex flex-column gap-0">
+                <Skeleton
+                  class="my-2"
+                  height="48px"
+                  width="65%"
+                  borderRadius="24px"
+                />
+                <!-- <Skeleton
                   v-if="showScheduleSummary"
                   height="14px"
                   width="35%"
                   borderRadius="24px"
                 /> -->
-                </div>
-                <div class="flex flex-column gap-2">
-                  <Skeleton height="14px" width="100%" borderRadius="24px" />
-                  <Skeleton height="14px" width="100%" borderRadius="24px" />
-                  <Skeleton height="14px" width="72%" borderRadius="24px" />
-                </div>
-                <div class="flex gap-3">
-                  <Skeleton height="48px" width="48px" borderRadius="24px" />
-                  <Skeleton height="41px" width="99px" borderRadius="24px" />
-                  <Skeleton height="41px" width="178px" borderRadius="24px" />
-                </div>
-              </ClientOnly>
+              </div>
+              <div class="flex flex-column gap-2">
+                <Skeleton height="14px" width="100%" borderRadius="24px" />
+                <Skeleton height="14px" width="100%" borderRadius="24px" />
+                <Skeleton height="14px" width="72%" borderRadius="24px" />
+              </div>
+              <div class="flex gap-3">
+                <Skeleton height="48px" width="48px" borderRadius="24px" />
+                <Skeleton height="41px" width="99px" borderRadius="24px" />
+                <Skeleton height="41px" width="178px" borderRadius="24px" />
+              </div>
             </div>
           </div>
         </div>

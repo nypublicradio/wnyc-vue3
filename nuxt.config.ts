@@ -174,7 +174,6 @@ export default defineNuxtConfig({
 
   plugins: [
     "~/plugins/router-guards.client.js",
-    "~/plugins/error-handler.client.js",
     "~/plugins/firebase.client.js",
   ],
 
