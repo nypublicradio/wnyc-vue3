@@ -29,7 +29,7 @@ const {
   {
     key: `show-episodes-page-${route.params.slug}`,
     getCachedData(key, nuxtApp) {
-      if (import.meta.client) return undefined
+      //if (import.meta.client) return undefined
       return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
     },
   }
@@ -53,7 +53,7 @@ const {
     key: `episodes-${podcastId.value || route.params.slug}`,
     query: { offset: 0, limit },
     getCachedData(key, nuxtApp) {
-      if (import.meta.client) return undefined
+      //if (import.meta.client) return undefined
       return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
     },
   }

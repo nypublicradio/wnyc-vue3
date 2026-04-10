@@ -23,7 +23,7 @@ const {
   getCachedData(key, nuxtApp) {
     // Skip cache on client-side navigations to always fetch fresh data.
     // During SSR/hydration, use the server-rendered payload to avoid double fetching.
-    if (import.meta.client) return undefined
+    //if (import.meta.client) return undefined
     return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
   },
 })
