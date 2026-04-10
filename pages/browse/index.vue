@@ -34,7 +34,8 @@ const options = computed(() => ({
   },
 }))
 
-const search = ref(null)
+const allShows = computed(() => shows?.value?.all ?? [])
+const search = useFuse(searchFieldValue, allShows, options)
 
 // clear the search field
 const clearSearchField = () => {
@@ -81,17 +82,6 @@ onMounted(() => {
     content_group: "app_tab",
   })
 })
-
-watch(
-  shows,
-  () => {
-    // init the search when shoes is populated
-    if (shows) {
-      search.value = useFuse(searchFieldValue, shows?.value?.all, options)
-    }
-  },
-  { once: true }
-)
 
 const title = "Browse Shows | WNYC"
 useHead({
