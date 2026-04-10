@@ -22,8 +22,14 @@ const {
   refresh,
   pending,
 } = useFetch(fetchUrl, {
-  key: `show-${route.params.slug}`,
+  key: `show-page-${route.params.slug}`,
   watch: false,
+  getCachedData(key, nuxtApp) {
+    // Skip cache on client-side navigations to always fetch fresh data.
+    // During SSR/hydration, use the server-rendered payload to avoid double fetching.
+    if (import.meta.client) return undefined
+    return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
+  },
 })
 
 console.log(
@@ -92,9 +98,9 @@ onMounted(() => {
     "slug:",
     route.params.slug
   )
-  if (!show.value && status.value !== "pending") {
+  if (status.value === 'idle' || (!show.value && status.value !== 'pending')) {
     console.log(
-      "[ShowPage] onMounted - no data and not pending, calling refresh()"
+      "[ShowPage] onMounted - no data or idle, calling refresh()"
     )
     refresh()
   }
