@@ -1,9 +1,18 @@
 <script setup lang="ts">
 import type { InformationPage } from "../composables/types/Page"
 
-defineProps<{
+const props = defineProps<{
   page: InformationPage
 }>()
+
+const title = `${props.page.title} | WNYC`
+useHead({
+  title,
+})
+useSeoMeta({
+  title,
+  ogTitle: title,
+})
 </script>
 
 <template>
