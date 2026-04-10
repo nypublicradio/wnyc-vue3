@@ -28,6 +28,11 @@ const {
   },
 })
 
+onMounted(() => {
+  console.log("!show.value = ", !show.value)
+  console.log("error = ", error.value)
+})
+
 const sectionAnchorData = computed(
   () =>
     show?.value?.inPageNavigation?.map((item) => ({
