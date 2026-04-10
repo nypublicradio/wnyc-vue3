@@ -14,6 +14,7 @@ definePageMeta({
 const route = useRoute()
 const user = useSupabaseUser()
 const supabase = useSupabaseClient()
+const config = useRuntimeConfig()
 const { setAuthState } = useAuth()
 
 // Handle PKCE OAuth flow: exchange the ?code= query param for a session
@@ -37,7 +38,7 @@ watch(
 
         if (sessionData.session) {
           // Convert Supabase session to JWT
-          const jwtResponse = await $fetch("/api/auth/session-to-jwt", {
+          const jwtResponse = await $fetch(`${config.public.BFF_URL}/api/auth/session-to-jwt`, {
             method: "POST",
             body: {
               access_token: sessionData.session.access_token,
