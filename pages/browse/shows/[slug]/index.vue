@@ -12,15 +12,11 @@ const route = useRoute()
 const fetchUrl = computed(
   () => `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`
 )
-console.log("[ShowPage] setup - slug:", route.params.slug)
-console.log("[ShowPage] setup - fetchUrl:", fetchUrl.value)
 
 const {
   data: show,
   status,
   error,
-  refresh,
-  pending,
 } = useFetch(fetchUrl, {
   key: `show-page-${route.params.slug}`,
   watch: false,
@@ -30,80 +26,6 @@ const {
     if (import.meta.client) return undefined
     return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
   },
-})
-
-console.log(
-  "[ShowPage] after useFetch - status:",
-  status.value,
-  "pending:",
-  pending.value,
-  "error:",
-  error.value,
-  "hasData:",
-  !!show.value
-)
-
-watch(status, (newStatus, oldStatus) => {
-  console.log(
-    "[ShowPage] status changed:",
-    oldStatus,
-    "->",
-    newStatus,
-    "hasData:",
-    !!show.value,
-    "error:",
-    error.value
-  )
-})
-
-watch(pending, (newPending) => {
-  console.log("[ShowPage] pending changed:", newPending)
-})
-
-watch(
-  show,
-  (newShow) => {
-    console.log(
-      "[ShowPage] show data changed - hasData:",
-      !!newShow,
-      "title:",
-      newShow?.title
-    )
-  },
-  { immediate: false }
-)
-
-watch(
-  () => route.params.slug,
-  (newSlug, oldSlug) => {
-    console.log(
-      "[ShowPage] slug changed:",
-      oldSlug,
-      "->",
-      newSlug,
-      "refreshing..."
-    )
-    refresh()
-  }
-)
-
-onMounted(() => {
-  console.log(
-    "[ShowPage] onMounted - status:",
-    status.value,
-    "pending:",
-    pending.value,
-    "hasData:",
-    !!show.value,
-    "slug:",
-    route.params.slug
-  )
-  if (status.value === 'idle' || (!show.value && status.value !== 'pending')) {
-    console.log(
-      "[ShowPage] onMounted - no data or idle, calling refresh()"
-    )
-    refresh()
-  }
 })
 
 const sectionAnchorData = computed(

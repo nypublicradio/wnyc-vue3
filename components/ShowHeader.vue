@@ -277,30 +277,32 @@ const isThisShowPlaying = computed(() => {
               </div>
             </div>
             <div v-else class="hidden md:flex flex-column gap-3 w-full">
-              <div class="flex flex-column gap-0">
-                <Skeleton
-                  class="my-2"
-                  height="48px"
-                  width="65%"
-                  borderRadius="24px"
-                />
-                <!-- <Skeleton
+              <ClientOnly>
+                <div class="flex flex-column gap-0">
+                  <Skeleton
+                    class="my-2"
+                    height="48px"
+                    width="65%"
+                    borderRadius="24px"
+                  />
+                  <!-- <Skeleton
                   v-if="showScheduleSummary"
                   height="14px"
                   width="35%"
                   borderRadius="24px"
                 /> -->
-              </div>
-              <div class="flex flex-column gap-2">
-                <Skeleton height="14px" width="100%" borderRadius="24px" />
-                <Skeleton height="14px" width="100%" borderRadius="24px" />
-                <Skeleton height="14px" width="72%" borderRadius="24px" />
-              </div>
-              <div class="flex gap-3">
-                <Skeleton height="48px" width="48px" borderRadius="24px" />
-                <Skeleton height="41px" width="99px" borderRadius="24px" />
-                <Skeleton height="41px" width="178px" borderRadius="24px" />
-              </div>
+                </div>
+                <div class="flex flex-column gap-2">
+                  <Skeleton height="14px" width="100%" borderRadius="24px" />
+                  <Skeleton height="14px" width="100%" borderRadius="24px" />
+                  <Skeleton height="14px" width="72%" borderRadius="24px" />
+                </div>
+                <div class="flex gap-3">
+                  <Skeleton height="48px" width="48px" borderRadius="24px" />
+                  <Skeleton height="41px" width="99px" borderRadius="24px" />
+                  <Skeleton height="41px" width="178px" borderRadius="24px" />
+                </div>
+              </ClientOnly>
             </div>
           </div>
         </div>

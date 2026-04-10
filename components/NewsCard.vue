@@ -28,7 +28,12 @@ const emit = defineEmits(["on-click"])
 </script>
 
 <template>
-  <div v-if="newsData" class="news-card p-ripple" @click="emit('on-click')" v-ripple>
+  <div
+    v-if="newsData"
+    class="news-card p-ripple"
+    @click="emit('on-click')"
+    v-ripple
+  >
     <div>
       <VBadge
         :label="props.badgeLabel"
@@ -37,13 +42,15 @@ const emit = defineEmits(["on-click"])
       />
       <div class="news-title mt-2">
         <h2 class="text-sm md:text-base">{{ props.newsData?.cardTitle }}</h2>
-        <div class="flex align-items-center justify-content-between lg:text-base">
+        <div
+          class="flex align-items-center justify-content-between lg:text-base"
+        >
           <PipeData>
             <template #left>{{ props.sourceLabel }}</template>
             <template #right>
-              <ClientOnly>
-                <span class="nobreak">{{ howLongAgo(props.newsData?.newsdate) }}</span>
-              </ClientOnly>
+              <span class="nobreak">{{
+                howLongAgo(props.newsData?.newsdate)
+              }}</span>
             </template>
           </PipeData>
           <PlayButton
@@ -66,27 +73,37 @@ const emit = defineEmits(["on-click"])
       <BarsPlaying class="mr-2" :data="props.newsData" />
     </div>
   </div>
-  <div v-else class="news-card skeleton-holder flex p-2 md:p-3 lg:p-3">
-    <Skeleton height="19px" width="91px" borderRadius="0px" />
-    <div class="w-full">
-      <Skeleton
-        height="14px"
-        width="45%"
-        borderRadius="16px"
-        style="margin-bottom: 11px"
-      />
-      <div class="flex align-items-center justify-content-between">
-        <Skeleton height="14px" width="50%" borderRadius="16px" />
+  <ClientOnly v-else>
+    <div class="news-card skeleton-holder flex p-2 md:p-3 lg:p-3">
+      <Skeleton height="19px" width="91px" borderRadius="0px" />
+      <div class="w-full">
         <Skeleton
-          class="hidden md:block"
-          height="28px"
-          width="86px"
-          borderRadius="15px"
+          height="14px"
+          width="45%"
+          borderRadius="16px"
+          style="margin-bottom: 11px"
         />
+        <div class="flex align-items-center justify-content-between">
+          <Skeleton height="14px" width="50%" borderRadius="16px" />
+          <Skeleton
+            class="hidden md:block"
+            height="28px"
+            width="86px"
+            borderRadius="15px"
+          />
+        </div>
       </div>
+      <Skeleton
+        class="md:hidden"
+        height="28px"
+        width="86px"
+        borderRadius="15px"
+      />
     </div>
-    <Skeleton class="md:hidden" height="28px" width="86px" borderRadius="15px" />
-  </div>
+    <template #fallback>
+      <span />
+    </template>
+  </ClientOnly>
 </template>
 
 <style lang="scss" scoped>
