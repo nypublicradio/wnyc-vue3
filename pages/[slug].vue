@@ -26,13 +26,12 @@ if (isPreview) {
   }
   page = previewData.value.data
 } else {
-  // Fetch page data - server middleware has already checked existence and thrown 404 if needed
   const slug = `/${route?.params?.slug as string}`
-  const { data, error } = useFetch(`${config.public.BFF_URL}/api/pages/wagtail/find`, {
+  const { data, error } = await useFetch(`${config.public.BFF_URL}/api/pages/wagtail/find`, {
     key: `page-${slug}`,
     query: { html_path: slug },
   })
-  
+
   if (error.value || !data.value) {
     throw createError({
       statusCode: error.value?.statusCode || 404,
@@ -43,27 +42,6 @@ if (isPreview) {
   
   page = normalizeFindPageResponse(data)
 }
-
-// const { $analytics } = useNuxtApp()
-
-// onMounted(() => {
-//   if (isPreview) return
-
-//   switch (page?.type) {
-//     case "information_page":
-//       $analytics.schedulePageView({
-//         page_type: "information_page",
-//         content_group: "static-page",
-//       })
-//       break
-//     default:
-//       throw createError({
-//         statusCode: 404,
-//         statusMessage: "Page Not Found",
-//         fatal: true,
-//       })
-//   }
-// })
 </script>
 
 <template>
