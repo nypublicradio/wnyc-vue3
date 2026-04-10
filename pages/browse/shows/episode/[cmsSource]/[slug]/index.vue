@@ -83,6 +83,7 @@ const { data: redirectsData } = useFetch(
   {
     key: "show-slug-redirects",
     getCachedData(key, nuxtApp) {
+      if (import.meta.client) return undefined
       return nuxtApp.payload.data[key] || nuxtApp.static.data[key]
     },
   }

@@ -17,8 +17,10 @@ const config = useRuntimeConfig()
 // 1. Fetch global redirects once per SSR payload (cached globally)
 const { data: cachedRedirects } = await useFetch("/api/show-slug-redirects", {
   key: "global-show-redirects",
-  getCachedData: (key, nuxtApp) =>
-    nuxtApp.payload.data[key] || nuxtApp.static.data[key],
+  getCachedData: (key, nuxtApp) => {
+    if (import.meta.client) return undefined
+    return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
+  },
 })
 
 // 2. Fetch show info & episodes in a single consolidated pass
