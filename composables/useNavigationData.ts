@@ -219,6 +219,7 @@ export default async function useNavigationData () {
     }))
     const fetchStatus = useState("navigationFetchStatus", () => 'idle')
     const fetchError = useState("navigationFetchError", () => null)
+    const fetchPromise = useState<Promise<void> | null>("navigationFetchPromise", () => null)
 
     // Get app download link outside conditional to ensure Nuxt context is available
     const appDownloadLink = useAppDownloadLink()
@@ -226,6 +227,21 @@ export default async function useNavigationData () {
 
     // Only fetch if we don't have data yet and not currently fetching
     if (headerNavigationData.value.length === 0) {
+        // Deduplicate concurrent calls: if a fetch is already in progress, await it instead of starting another
+        if (fetchPromise.value) {
+            await fetchPromise.value
+            return {
+                headerNavigationData,
+                allNavigationData,
+                footerNavigationData,
+                footerLegalLinksData,
+                donateButtonData,
+                status: fetchStatus,
+                error: fetchError
+            }
+        }
+
+        const doFetch = async () => {
         // Start fetch (no module-level guard to avoid cross-request contamination in SSR)
         try {
             let nData, error, status
@@ -327,8 +343,7 @@ export default async function useNavigationData () {
             //example donate link:
             // app:https://pledge.wnyc.org/support/wnyc-app/?utm_medium=wnyc-app&utm_source=donation-button&utm_campaign=give-now-button
             // web: https://pledge.wnyc.org/support/wnyc/?utm_medium=wnyc&utm_source=donation-button&utm_campaign=give-now-button
-            console.log('bffData.donateResponse?.product_banners:', bffData.donateResponse?.product_banners)
-            console.log('donateBanner:', donateBanner)
+
             if (donateBanner) {
                 const adjustedDonateLink = isApp.value
                     ? donateBanner.value.buttonLink.includes('wnyc-app')
@@ -341,7 +356,6 @@ export default async function useNavigationData () {
                 finalDonateData.buttonText = donateBanner.value.button_text
                 finalDonateData.buttonLink = adjustedDonateLink || ''
             }
-            console.log('Final resolved donate button data:', finalDonateData)
             const footerNavItems = workingAllNav.filter((item) => item.inFooterMenu !== false)
 
             // Update shared state
@@ -372,6 +386,11 @@ export default async function useNavigationData () {
             footerLegalLinksData.value = []
             donateButtonData.value = { buttonText: '', buttonLink: '' }
         }
+        }
+
+        fetchPromise.value = doFetch()
+        await fetchPromise.value
+        fetchPromise.value = null
     }
 
     // Return the shared state and status

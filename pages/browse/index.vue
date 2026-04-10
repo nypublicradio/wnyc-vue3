@@ -34,7 +34,11 @@ const options = computed(() => ({
   },
 }))
 
-const search = ref(null)
+const { results: searchResults } = useFuse(
+  searchFieldValue,
+  computed(() => shows.value?.all ?? []),
+  options
+)
 
 // clear the search field
 const clearSearchField = () => {
@@ -81,17 +85,6 @@ onMounted(() => {
     content_group: "app_tab",
   })
 })
-
-watch(
-  shows,
-  () => {
-    // init the search when shoes is populated
-    if (shows) {
-      search.value = useFuse(searchFieldValue, shows?.value?.all, options)
-    }
-  },
-  { once: true }
-)
 
 const title = "Browse Shows | WNYC"
 useHead({
@@ -255,7 +248,7 @@ useSeoMeta({
           </div>
           <div class="shows grid">
             <ShowItem
-              v-for="show in search.results"
+              v-for="show in searchResults"
               :data="show.item"
               :key="show.item.title"
               class="col-12 md:col-4 md:mb-5"
@@ -269,7 +262,7 @@ useSeoMeta({
           </div>
           <!-- if no results show this -->
           <div
-            v-if="search.results.length === 0"
+            v-if="searchResults.length === 0"
             class="text-center flex flex-column gap-4 my-6"
           >
             <h2>No results for "{{ searchFieldValue }}"</h2>
