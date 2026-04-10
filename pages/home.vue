@@ -21,7 +21,7 @@ const { data: latestNewsUpdatesData, error: error2 } = useFetch(
     retry: 2,
     retryDelay: 500,
     getCachedData(key, nuxtApp) {
-      //if (import.meta.client) return undefined
+      if (import.meta.client) return undefined
       return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
     },
   }
@@ -37,7 +37,7 @@ const {
   retry: 2,
   retryDelay: 500,
   getCachedData(key, nuxtApp) {
-    //if (import.meta.client) return undefined
+    if (import.meta.client) return undefined
     return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
   },
 })
