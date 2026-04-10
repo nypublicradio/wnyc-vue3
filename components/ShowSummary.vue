@@ -71,37 +71,44 @@ const handleShowClick = () => {
     />
   </div>
   <div v-else class="flex flex-column gap-4">
-    <!-- Image and Title skeleton -->
-    <div class="flex gap-3 align-items-start">
-      <Skeleton size="80px" borderRadius="0px" />
-      <div class="flex align-items-center flex-1">
-        <Skeleton class="mt-2" height="1rem" width="60%" borderRadius="16px" />
+    <ClientOnly>
+      <!-- Image and Title skeleton -->
+      <div class="flex gap-3 align-items-start">
+        <Skeleton size="80px" borderRadius="0px" />
+        <div class="flex align-items-center flex-1">
+          <Skeleton
+            class="mt-2"
+            height="1rem"
+            width="60%"
+            borderRadius="16px"
+          />
+        </div>
       </div>
-    </div>
 
-    <!-- Description skeleton -->
-    <div class="flex flex-column gap-2">
-      <Skeleton height="1rem" width="100%" borderRadius="16px" />
-      <Skeleton height="1rem" width="95%" borderRadius="16px" />
-      <Skeleton height="1rem" width="80%" borderRadius="16px" />
-    </div>
+      <!-- Description skeleton -->
+      <div class="flex flex-column gap-2">
+        <Skeleton height="1rem" width="100%" borderRadius="16px" />
+        <Skeleton height="1rem" width="95%" borderRadius="16px" />
+        <Skeleton height="1rem" width="80%" borderRadius="16px" />
+      </div>
 
-    <!-- Listen via paragraph skeleton -->
-    <div class="flex flex-column gap-1">
-      <Skeleton height="1rem" width="100%" borderRadius="16px" />
-      <Skeleton height="1rem" width="70%" borderRadius="16px" />
-    </div>
+      <!-- Listen via paragraph skeleton -->
+      <div class="flex flex-column gap-1">
+        <Skeleton height="1rem" width="100%" borderRadius="16px" />
+        <Skeleton height="1rem" width="70%" borderRadius="16px" />
+      </div>
 
-    <!-- Social buttons skeleton -->
-    <div class="flex gap-2 align-items-center">
-      <Skeleton height="1rem" width="120px" borderRadius="16px" />
-      <Skeleton height="2rem" width="2rem" shape="circle" />
-      <Skeleton height="2rem" width="2rem" shape="circle" />
-      <Skeleton height="2rem" width="2rem" shape="circle" />
-      <Skeleton height="2rem" width="2rem" shape="circle" />
-    </div>
+      <!-- Social buttons skeleton -->
+      <div class="flex gap-2 align-items-center">
+        <Skeleton height="1rem" width="120px" borderRadius="16px" />
+        <Skeleton height="2rem" width="2rem" shape="circle" />
+        <Skeleton height="2rem" width="2rem" shape="circle" />
+        <Skeleton height="2rem" width="2rem" shape="circle" />
+        <Skeleton height="2rem" width="2rem" shape="circle" />
+      </div>
 
-    <!-- Ad skeleton -->
-    <Skeleton height="250px" width="300px" borderRadius="8px" />
+      <!-- Ad skeleton -->
+      <Skeleton height="250px" width="300px" borderRadius="8px" />
+    </ClientOnly>
   </div>
 </template>

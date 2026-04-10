@@ -6,7 +6,7 @@ import { brandCards } from "~/composables/globals.ts"
 
 useHead({
   bodyAttrs: {
-    class: 'no-bottom-padding',
+    class: "no-bottom-padding",
   },
 })
 
@@ -17,7 +17,7 @@ const isApp = useIsApp()
 const { data: latestNewsUpdatesData, error: error2 } = useFetch(
   `${config.public.BFF_URL}/api/homepagelatestnewsupdates`,
   {
-    key: 'home-latest-news-updates',
+    key: "home-latest-news-updates",
     retry: 2,
     retryDelay: 500,
     getCachedData(key, nuxtApp) {
@@ -27,18 +27,20 @@ const { data: latestNewsUpdatesData, error: error2 } = useFetch(
   }
 )
 
-const { data: pagedata, error, status, refresh } = useFetch(
-  `${config.public.BFF_URL}/api/homepagecuration`,
-  {
-    key: 'home-page-curation',
-    retry: 2,
-    retryDelay: 500,
-    getCachedData(key, nuxtApp) {
-      if (import.meta.client) return undefined
-      return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
-    },
-  }
-)
+const {
+  data: pagedata,
+  error,
+  status,
+  refresh,
+} = useFetch(`${config.public.BFF_URL}/api/homepagecuration`, {
+  key: "home-page-curation",
+  retry: 2,
+  retryDelay: 500,
+  getCachedData(key, nuxtApp) {
+    if (import.meta.client) return undefined
+    return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
+  },
+})
 
 definePageMeta({
   layout: "default",
@@ -49,7 +51,7 @@ definePageMeta({
 
 onMounted(() => {
   // retry fetch if server-side fetch failed
-  if (status.value === 'error' || !pagedata.value) {
+  if (status.value === "error" || !pagedata.value) {
     refresh()
   }
   // send GA page view
@@ -64,7 +66,6 @@ onMounted(() => {
 
 <template>
   <div class="home">
-
     <section class="mb-4 pt-0 md:my-4 md:pt-4">
       <div class="home-top grid grid-nogutter gap-4">
         <LiveFeature class="col-12 lg:col -mx-4 md:mx-0 w-screen md:w-full" />
@@ -74,8 +75,8 @@ onMounted(() => {
             Latest News Updates
           </h2>
           <LatestNewsUpdates
-            :localNewscast="latestNewsUpdatesData?.local_newscast"
-            :nationalNewscast="latestNewsUpdatesData?.national_newscast"
+            :localNewscast="latestNewsUpdatesData?.local_newscast ?? null"
+            :nationalNewscast="latestNewsUpdatesData?.national_newscast ?? null"
           />
         </div>
       </div>
