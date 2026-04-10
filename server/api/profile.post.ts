@@ -25,7 +25,8 @@ interface ProfileResponse {
     isActiveSustainer: boolean;
     activeRecurringDonations: RecurringDonation[];
     queryStringEncrypted: string | null;
-    oneTime: any; // Raw Salesforce object data
+    oneTimeDonationAmount: number | null;
+    oneTimeDonationDate: string | null;
 }
 
 /**
@@ -89,14 +90,14 @@ const getContactData = async (lookupParams: { salesforceID?: string; email?: str
             contact = await salesforce.findOne(
                 'Contact',
                 { Id: lookupParams.salesforceID },
-                ['Id', 'FirstName', 'LastName', 'npo02__LastCloseDate__c', 'npo02__LastOppAmount__c', 'Query_String_Encrypted__c']
+                ['Id', 'FirstName', 'LastName', 'npo02__LastCloseDate__c', 'npo02__LastOppAmount__c', 'Last_OneTime_Gift_Amount__c', 'Last_OneTime_Gift_Date__c', 'Query_String_Encrypted__c']
             );
         } else if (lookupParams.email) {
             // Lookup by email
             contact = await salesforce.findOne(
                 'Contact',
                 { Email: lookupParams.email },
-                ['Id', 'FirstName', 'LastName', 'npo02__LastCloseDate__c', 'npo02__LastOppAmount__c', 'Query_String_Encrypted__c']
+                ['Id', 'FirstName', 'LastName', 'npo02__LastCloseDate__c', 'npo02__LastOppAmount__c', 'Last_OneTime_Gift_Amount__c', 'Last_OneTime_Gift_Date__c', 'Query_String_Encrypted__c']
             );
         }
 
@@ -127,33 +128,6 @@ const getContactData = async (lookupParams: { salesforceID?: string; email?: str
     }
 };
 
-/**
- * Retrieves the SB_Contact_Giving_Summary__c object from Salesforce
- * Returns all fields from the Contact Giving Summary object
- */
-const getOneTime = async (contactId: string): Promise<any> => {
-    try {
-        const oneTime = await salesforce.findOne(
-            'SB_Contact_Giving_Summary__c',
-            { 'sb_CGS_Contact__c': contactId },
-            [
-                'sb_CGS_Last_One_Time_Gift_Amount__c',
-                'sb_CGS_Last_One_Time_Gift_Date__c'
-            ]
-        );
-
-        if (!oneTime) return null;
-
-        // Remove Salesforce metadata attributes
-        const { attributes: _attributes, ...cleanData } = oneTime;
-
-        return cleanData;
-    } catch (error: any) {
-        // Log error but don't fail the entire request if giving summary is not found
-        console.error('Failed to fetch giving summary:', error.message);
-        return null;
-    }
-};
 
 /**
  * Retrieves active recurring donations from Salesforce using SObject methods
@@ -177,9 +151,9 @@ const getActiveRecurringDonations = async (contact: any): Promise<any[]> => {
                 'cfg_Digital_Membership_Program_Name__c'
             ]
         );
-        
+
         const transactions = await nyprDb.getTransactionsBySalesforceId(contact.Id);
-        
+
         // Create maps of springboard_id to status and amount for quick lookup
         const statusMap = new Map<number, string>();
         const amountMap = new Map<number, number>();
@@ -194,22 +168,22 @@ const getActiveRecurringDonations = async (contact: any): Promise<any[]> => {
                 }
             });
         }
-        
+
         // Attach status and updated amount to each recurring donation
         const donationsWithStatus = (recurringDonations || []).map(donation => {
             const springboardId = Number(donation.Master_Donation_ID__c);
             const updatedAmount = donation.Master_Donation_ID__c ? amountMap.get(springboardId) : undefined;
-            
+
             return {
                 ...donation,
                 // Use updated amount if available, otherwise use original amount
                 npe03__Amount__c: updatedAmount !== undefined ? updatedAmount : donation.npe03__Amount__c,
-                status: donation.Master_Donation_ID__c 
+                status: donation.Master_Donation_ID__c
                     ? statusMap.get(springboardId) || 'Completed'
                     : 'Complete'
             };
         });
-        
+
         return donationsWithStatus;
     } catch (error: any) {
         // Enhanced error handling with categorization
@@ -259,7 +233,6 @@ const combineName = (contact: any): string | null => {
 const buildProfileResponse = (
     contact: any,
     activeRecurringDonations: any[],
-    oneTime: any
 ): ProfileResponse => {
     const formattedRecurringDonations = formatRecurringDonations(activeRecurringDonations);
     const isActiveSustainer = activeRecurringDonations.length > 0;
@@ -270,9 +243,10 @@ const buildProfileResponse = (
         lastDonationDate: contact.npo02__LastCloseDate__c,
         lastDonationAmount: contact.npo02__LastOppAmount__c,
         isActiveSustainer,
+        oneTimeDonationAmount: contact.Last_OneTime_Gift_Amount__c,
+        oneTimeDonationDate: contact.Last_OneTime_Gift_Date__c,
         activeRecurringDonations: formattedRecurringDonations,
         queryStringEncrypted: contact.Query_String_Encrypted__c,
-        oneTime
     };
 };
 
@@ -324,11 +298,8 @@ export default defineEventHandler(async (event): Promise<ProfileResponse> => {
     // Get contact data first, then use it to fetch recurring donations and giving summary
     // No need to escape salesforceID since SObject methods handle sanitization automatically
     const contact = await getContactData(salesforceID);
-    const [activeRecurringDonations, oneTime] = await Promise.all([
-        getActiveRecurringDonations(contact),
-        getOneTime(contact.Id)
-    ]);
+    const activeRecurringDonations = await getActiveRecurringDonations(contact);
 
     // Return comprehensive profile response
-    return buildProfileResponse(contact, activeRecurringDonations, oneTime);
+    return buildProfileResponse(contact, activeRecurringDonations);
 });
