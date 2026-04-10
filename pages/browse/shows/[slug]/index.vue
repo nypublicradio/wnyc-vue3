@@ -17,20 +17,22 @@ const {
   data: show,
   status,
   error,
+  refresh,
 } = useFetch(fetchUrl, {
   key: `show-page-${route.params.slug}`,
   watch: false,
   getCachedData(key, nuxtApp) {
-    // Skip cache on client-side navigations to always fetch fresh data.
-    // During SSR/hydration, use the server-rendered payload to avoid double fetching.
-    if (import.meta.client) return undefined
+    // Always use Nuxt payload cache for hydration and navigation
+    console.log("[ShowPage] getCachedData", key, nuxtApp.payload.data[key])
     return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
   },
 })
 
 onMounted(() => {
-  console.log("!show.value = ", !show.value)
-  console.log("error = ", error.value)
+  // Only refresh if data is missing or errored
+  if (!show.value || status.value === "error") {
+    refresh()
+  }
 })
 
 const sectionAnchorData = computed(
