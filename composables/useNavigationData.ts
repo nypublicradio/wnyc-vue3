@@ -317,16 +317,31 @@ export default async function useNavigationData () {
 
             workingHeaderNav = workingHeaderNav.filter((item) => item.inHeaderMenu !== false)
 
-            const donateButtonLabel = isApp.value ? "WNYC App Donate Button" : "WNYC Donate Button"
+            const donateButtonLabel = "WNYC App Donate Button"
             const donateBanner = bffData.donateResponse?.product_banners?.find(
                 (banner) => banner.value.title === donateButtonLabel
             )
 
             const finalDonateData = { buttonText: '', buttonLink: '' }
+            // change the donate link based on if it coming from the app or not. this is because in the Wagtail CMS, we can only have one product banner that controls the donate button. (https://cms.prod.nypr.digital/admin/settings/utils/systemmessagessettings/4/)
+            //example donate link:
+            // app:https://pledge.wnyc.org/support/wnyc-app/?utm_medium=wnyc-app&utm_source=donation-button&utm_campaign=give-now-button
+            // web: https://pledge.wnyc.org/support/wnyc/?utm_medium=wnyc&utm_source=donation-button&utm_campaign=give-now-button
+            console.log('bffData.donateResponse?.product_banners:', bffData.donateResponse?.product_banners)
+            console.log('donateBanner:', donateBanner)
             if (donateBanner) {
+                const adjustedDonateLink = isApp.value
+                    ? donateBanner.value.buttonLink.includes('wnyc-app')
+                        ? finalDonateData.buttonLink = donateBanner.value.buttonLink
+                        : finalDonateData.buttonLink = donateBanner.value.buttonLink.replace('wnyc', 'wnyc-app')
+                    : finalDonateData.buttonLink.includes('wnyc-app')
+                        ? finalDonateData.buttonLink = donateBanner.value.buttonLink.replace('wnyc-app', 'wnyc')
+                        : finalDonateData.buttonLink = donateBanner.value.buttonLink
+
                 finalDonateData.buttonText = donateBanner.value.button_text
-                finalDonateData.buttonLink = donateBanner.value.button_link
+                finalDonateData.buttonLink = adjustedDonateLink || ''
             }
+            console.log('Final resolved donate button data:', finalDonateData)
             const footerNavItems = workingAllNav.filter((item) => item.inFooterMenu !== false)
 
             // Update shared state
