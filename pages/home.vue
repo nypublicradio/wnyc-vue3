@@ -14,22 +14,19 @@ const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
 const isApp = useIsApp()
 
-const { data: latestNewsUpdatesData, error: error2 } = useFetch(
-  `${config.public.BFF_URL}/api/homepagelatestnewsupdates`,
-  {
-    key: "home-latest-news-updates",
-    retry: 2,
-    retryDelay: 500,
-    getCachedData(key, nuxtApp) {
-      if (import.meta.client) return undefined
-      return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
-    },
-  }
-)
-
-onMounted(() => {
-  console.log("!show.value = ", !latestNewsUpdatesData.value)
-  console.log("error = ", error2.value)
+const {
+  data: latestNewsUpdatesData,
+  error: error2,
+  refresh: refreshNews,
+} = useFetch(`${config.public.BFF_URL}/api/homepagelatestnewsupdates`, {
+  key: "home-latest-news-updates",
+  retry: 2,
+  retryDelay: 500,
+  getCachedData(key, nuxtApp) {
+    // Always use Nuxt payload cache for hydration and navigation
+    console.log("[HomePage] getCachedData", key, nuxtApp.payload.data[key])
+    return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
+  },
 })
 
 const {
@@ -42,7 +39,8 @@ const {
   retry: 2,
   retryDelay: 500,
   getCachedData(key, nuxtApp) {
-    if (import.meta.client) return undefined
+    // Always use Nuxt payload cache for hydration and navigation
+    console.log("[HomePage] getCachedData", key, nuxtApp.payload.data[key])
     return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
   },
 })
@@ -55,9 +53,12 @@ definePageMeta({
 })
 
 onMounted(() => {
-  // retry fetch if server-side fetch failed
-  if (status.value === "error" || !pagedata.value) {
+  // Only refresh if data is missing or errored
+  if (!pagedata.value || status.value === "error") {
     refresh()
+  }
+  if (!latestNewsUpdatesData.value || error2.value) {
+    refreshNews()
   }
   // send GA page view
   const { $analytics } = useNuxtApp()
