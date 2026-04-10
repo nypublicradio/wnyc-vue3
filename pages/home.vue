@@ -16,12 +16,28 @@ const isApp = useIsApp()
 
 const { data: latestNewsUpdatesData, error: error2 } = useFetch(
   `${config.public.BFF_URL}/api/homepagelatestnewsupdates`,
-  { retry: 2, retryDelay: 500 }
+  {
+    key: 'home-latest-news-updates',
+    retry: 2,
+    retryDelay: 500,
+    getCachedData(key, nuxtApp) {
+      if (import.meta.client) return undefined
+      return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
+    },
+  }
 )
 
 const { data: pagedata, error, status, refresh } = useFetch(
   `${config.public.BFF_URL}/api/homepagecuration`,
-  { retry: 2, retryDelay: 500 }
+  {
+    key: 'home-page-curation',
+    retry: 2,
+    retryDelay: 500,
+    getCachedData(key, nuxtApp) {
+      if (import.meta.client) return undefined
+      return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
+    },
+  }
 )
 
 definePageMeta({
