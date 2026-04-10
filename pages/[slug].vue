@@ -7,6 +7,7 @@
 import type { InformationPage } from "~/composables/types/Page"
 
 const route = useRoute()
+const config = useRuntimeConfig()
 
 // Validate the slug param before rendering — reject file-like paths and invalid slugs
 definePageMeta({
@@ -38,7 +39,7 @@ if (isPreview) {
 } else {
   // Fetch page data - server middleware has already checked existence and thrown 404 if needed
   const slug = `/${route?.params?.slug as string}`
-  const { data, error } = useFetch('/api/pages/wagtail/find', {
+  const { data, error } = useFetch(`${config.public.BFF_URL}/api/pages/wagtail/find`, {
     key: `page-${slug}`,
     query: { html_path: slug },
   })
