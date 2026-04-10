@@ -48,9 +48,11 @@ const emit = defineEmits(["on-click"])
           <PipeData>
             <template #left>{{ props.sourceLabel }}</template>
             <template #right>
-              <span class="nobreak">{{
-                howLongAgo(props.newsData?.newsdate)
-              }}</span>
+              <ClientOnly>
+                <span class="nobreak">{{
+                  howLongAgo(props.newsData?.newsdate)
+                }}</span>
+              </ClientOnly>
             </template>
           </PipeData>
           <PlayButton
@@ -73,37 +75,32 @@ const emit = defineEmits(["on-click"])
       <BarsPlaying class="mr-2" :data="props.newsData" />
     </div>
   </div>
-  <ClientOnly v-else>
-    <div class="news-card skeleton-holder flex p-2 md:p-3 lg:p-3">
-      <Skeleton height="19px" width="91px" borderRadius="0px" />
-      <div class="w-full">
-        <Skeleton
-          height="14px"
-          width="45%"
-          borderRadius="16px"
-          style="margin-bottom: 11px"
-        />
-        <div class="flex align-items-center justify-content-between">
-          <Skeleton height="14px" width="50%" borderRadius="16px" />
-          <Skeleton
-            class="hidden md:block"
-            height="28px"
-            width="86px"
-            borderRadius="15px"
-          />
-        </div>
-      </div>
+  <div v-else class="news-card skeleton-holder flex p-2 md:p-3 lg:p-3">
+    <Skeleton height="19px" width="91px" borderRadius="0px" />
+    <div class="w-full">
       <Skeleton
-        class="md:hidden"
-        height="28px"
-        width="86px"
-        borderRadius="15px"
+        height="14px"
+        width="45%"
+        borderRadius="16px"
+        style="margin-bottom: 11px"
       />
+      <div class="flex align-items-center justify-content-between">
+        <Skeleton height="14px" width="50%" borderRadius="16px" />
+        <Skeleton
+          class="hidden md:block"
+          height="28px"
+          width="86px"
+          borderRadius="15px"
+        />
+      </div>
     </div>
-    <template #fallback>
-      <span />
-    </template>
-  </ClientOnly>
+    <Skeleton
+      class="md:hidden"
+      height="28px"
+      width="86px"
+      borderRadius="15px"
+    />
+  </div>
 </template>
 
 <style lang="scss" scoped>
