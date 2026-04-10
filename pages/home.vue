@@ -27,6 +27,11 @@ const { data: latestNewsUpdatesData, error: error2 } = useFetch(
   }
 )
 
+onMounted(() => {
+  console.log("!show.value = ", !latestNewsUpdatesData.value)
+  console.log("error = ", error2.value)
+})
+
 const {
   data: pagedata,
   error,
