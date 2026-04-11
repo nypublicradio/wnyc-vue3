@@ -1,6 +1,6 @@
 <script setup>
 import { useCurrentEpisode, useIsApp } from "~/composables/states"
-import { useFetchWrapper } from "~/composables/useFetchWrapper"
+import { useFetchWrapper, isSSR } from "~/composables/useFetchWrapper"
 // import { useTopStories } from "~/composables/useTopStories"
 // const { topStories } = useTopStories()
 import { brandCards } from "~/composables/globals.ts"
@@ -15,28 +15,30 @@ const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
 const isApp = useIsApp()
 
-const {
-  data: latestNewsUpdatesData,
-  error: error2,
-  refresh: refreshNews,
-} = useFetchWrapper(`${config.public.BFF_URL}/api/homepagelatestnewsupdates`, {
-  key: "home-latest-news-updates",
-  retry: 2,
-  retryDelay: 500,
-  logKey: true,
-})
+const newsFetchArgs = [
+  `${config.public.BFF_URL}/api/homepagelatestnewsupdates`,
+  {
+    key: "home-latest-news-updates",
+    retry: 2,
+    retryDelay: 500,
+  }
+]
+const curationFetchArgs = [
+  `${config.public.BFF_URL}/api/homepagecuration`,
+  {
+    key: "home-page-curation",
+    retry: 2,
+    retryDelay: 500,
+  }
+]
 
-const {
-  data: pagedata,
-  error,
-  status,
-  refresh,
-} = useFetchWrapper(`${config.public.BFF_URL}/api/homepagecuration`, {
-  key: "home-page-curation",
-  retry: 2,
-  retryDelay: 500,
-  logKey: true,
-})
+const { data: latestNewsUpdatesData, error: error2 } = isSSR
+  ? await useFetchWrapper(...newsFetchArgs)
+  : useFetchWrapper(...newsFetchArgs)
+
+const { data: pagedata, error, status } = isSSR
+  ? await useFetchWrapper(...curationFetchArgs)
+  : useFetchWrapper(...curationFetchArgs)
 
 definePageMeta({
   layout: "default",
