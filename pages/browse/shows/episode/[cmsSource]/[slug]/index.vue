@@ -71,14 +71,14 @@ const theSlug = computed(
     null
 )
 
-const { data: showSlug } = useFetch(() =>
+const { data: showSlug } = await useFetch(() =>
   theSlug.value
     ? `${config.public.BFF_URL}/api/v2/show/${theSlug.value}?slugOnly=true`
     : null
 )
 
 // Redirect table for old publisher show slugs
-const { data: redirectsData } = useFetch(
+const { data: redirectsData } = await useFetch(
   () => `${config.public.BFF_URL}/api/show-slug-redirects`,
   {
     key: "show-slug-redirects",
@@ -112,7 +112,7 @@ const resolvedShowSlug = computed(() => {
   )
 })
 
-const { data: show, status: showStatus } = useFetch(() =>
+const { data: show, status: showStatus } = await useFetch(() =>
   resolvedShowSlug.value
     ? `${config.public.BFF_URL}/api/pages/wagtail/${resolvedShowSlug.value}?showOnly=true`
     : null

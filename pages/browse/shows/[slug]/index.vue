@@ -5,7 +5,7 @@ import {
   getFirstSentence,
 } from "~/utilities/helpers"
 import { useIsApp } from "~/composables/states"
-import { useFetchWrapper } from "~/composables/useFetchWrapper"
+import { useFetchWrapper, isSSR } from "~/composables/useFetchWrapper"
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -14,16 +14,20 @@ const fetchUrl = computed(
   () => `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`
 )
 
+const showFetchArgs = [
+  fetchUrl,
+  {
+    key: `show-page-${route.params.slug}`,
+    watch: false,
+  },
+]
 const {
   data: show,
   status,
   error,
-  refresh,
-} = useFetchWrapper(fetchUrl, {
-  key: `show-page-${route.params.slug}`,
-  watch: false,
-  logKey: true,
-})
+} = isSSR
+  ? await useFetchWrapper(...showFetchArgs)
+  : useFetchWrapper(...showFetchArgs)
 
 // Auto-refresh handled by useFetchWrapper
 
