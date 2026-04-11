@@ -1,8 +1,6 @@
 import { onMounted } from 'vue'
 import { useFetch } from '#app'
 
-// Exportable SSR detection based on NUXT_SSR env var
-export const isSSR = process.env.NUXT_SSR === 'true' || process.env.NUXT_SSR === true
 /**
  * useFetchWrapper - a composable to standardize Nuxt useFetch usage with SSR cache, error handling, and optional auto-refresh.
  *
