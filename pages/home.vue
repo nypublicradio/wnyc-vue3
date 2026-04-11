@@ -1,5 +1,6 @@
 <script setup>
 import { useCurrentEpisode, useIsApp } from "~/composables/states"
+import { useFetchWrapper } from "~/composables/useFetchWrapper"
 // import { useTopStories } from "~/composables/useTopStories"
 // const { topStories } = useTopStories()
 import { brandCards } from "~/composables/globals.ts"
@@ -18,15 +19,11 @@ const {
   data: latestNewsUpdatesData,
   error: error2,
   refresh: refreshNews,
-} = useFetch(`${config.public.BFF_URL}/api/homepagelatestnewsupdates`, {
+} = useFetchWrapper(`${config.public.BFF_URL}/api/homepagelatestnewsupdates`, {
   key: "home-latest-news-updates",
   retry: 2,
   retryDelay: 500,
-  getCachedData(key, nuxtApp) {
-    // Always use Nuxt payload cache for hydration and navigation
-    console.log("[HomePage] getCachedData", key, nuxtApp.payload.data[key])
-    return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
-  },
+  logKey: true,
 })
 
 const {
@@ -34,15 +31,11 @@ const {
   error,
   status,
   refresh,
-} = useFetch(`${config.public.BFF_URL}/api/homepagecuration`, {
+} = useFetchWrapper(`${config.public.BFF_URL}/api/homepagecuration`, {
   key: "home-page-curation",
   retry: 2,
   retryDelay: 500,
-  getCachedData(key, nuxtApp) {
-    // Always use Nuxt payload cache for hydration and navigation
-    console.log("[HomePage] getCachedData", key, nuxtApp.payload.data[key])
-    return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
-  },
+  logKey: true,
 })
 
 definePageMeta({
@@ -52,14 +45,8 @@ definePageMeta({
   },
 })
 
+// Auto-refresh handled by useFetchWrapper
 onMounted(() => {
-  // Only refresh if data is missing or errored
-  if (!pagedata.value || status.value === "error") {
-    refresh()
-  }
-  if (!latestNewsUpdatesData.value || error2.value) {
-    refreshNews()
-  }
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
