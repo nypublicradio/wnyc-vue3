@@ -31,7 +31,7 @@ const curationFetchArgs = [
     retryDelay: 500,
   },
 ]
-console.log("isApp in show page:", isApp.value)
+
 const { data: latestNewsUpdatesData, error: error2 } = isApp.value
   ? useFetchWrapper(...newsFetchArgs)
   : await useFetchWrapper(...newsFetchArgs)
