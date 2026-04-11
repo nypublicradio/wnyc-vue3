@@ -5,6 +5,7 @@ import {
   getFirstSentence,
 } from "~/utilities/helpers"
 import { useIsApp } from "~/composables/states"
+import { useFetchWrapper } from "~/composables/useFetchWrapper"
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -18,22 +19,13 @@ const {
   status,
   error,
   refresh,
-} = useFetch(fetchUrl, {
+} = useFetchWrapper(fetchUrl, {
   key: `show-page-${route.params.slug}`,
   watch: false,
-  getCachedData(key, nuxtApp) {
-    // Always use Nuxt payload cache for hydration and navigation
-    console.log("[ShowPage] getCachedData", key, nuxtApp.payload.data[key])
-    return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
-  },
+  logKey: true,
 })
 
-onMounted(() => {
-  // Only refresh if data is missing or errored
-  if (!show.value || status.value === "error") {
-    refresh()
-  }
-})
+// Auto-refresh handled by useFetchWrapper
 
 const sectionAnchorData = computed(
   () =>
