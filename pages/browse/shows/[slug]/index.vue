@@ -18,7 +18,7 @@ const showFetchArgs = [
     watch: false,
   },
 ]
-console.log("isApp in show page:", isApp.value)
+
 const {
   data: show,
   status,
