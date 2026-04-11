@@ -5,29 +5,27 @@ import {
   getFirstSentence,
 } from "~/utilities/helpers"
 import { useIsApp } from "~/composables/states"
-import { useFetchWrapper, isSSR } from "~/composables/useFetchWrapper"
+import { useFetchWrapper } from "~/composables/useFetchWrapper"
 
 const config = useRuntimeConfig()
 const route = useRoute()
-
-const fetchUrl = computed(
-  () => `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`
-)
+const isApp = useIsApp()
 
 const showFetchArgs = [
-  fetchUrl,
+  () => `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`,
   {
     key: `show-page-${route.params.slug}`,
     watch: false,
   },
 ]
+console.log("isApp in show page:", isApp.value)
 const {
   data: show,
   status,
   error,
-} = isSSR
-  ? await useFetchWrapper(...showFetchArgs)
-  : useFetchWrapper(...showFetchArgs)
+} = isApp.value
+  ? useFetchWrapper(...showFetchArgs)
+  : await useFetchWrapper(...showFetchArgs)
 
 // Auto-refresh handled by useFetchWrapper
 
@@ -38,8 +36,6 @@ const sectionAnchorData = computed(
       id: slugify(item.value.targetId || item.value.linkText),
     })) ?? []
 )
-
-const isApp = useIsApp()
 
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
@@ -81,8 +77,8 @@ onMounted(() => {
   })
 })
 
-const title = `${show?.value?.title} | WNYC`
-const description = getFirstSentence(show?.value?.summary)
+const title = `${show.value?.title} | WNYC`
+const description = getFirstSentence(show.value?.summary)
 useHead({
   title,
 })
