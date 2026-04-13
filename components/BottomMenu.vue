@@ -13,7 +13,7 @@ const iconComponentMap = {
   BrowseIcon,
   StarIcon,
 }
-
+// get the bottom icon component based on the name
 const getIconComponent = (iconName) => iconComponentMap[iconName]
 
 const route = useRoute()

@@ -29,10 +29,12 @@ const {
   error,
 } = await useAsyncData(`recent-episodes-${props.show?.slug}`, async () => {
   // Resolve redirect slug natively
-  const r = cachedRedirects.value?.find(
-    (r) => r.from.endsWith(`/${props.show.slug}`) || r.from === props.show.slug
+  const redirect = cachedRedirects.value?.find(
+    (redirectItem) =>
+      redirectItem.from.endsWith(`/${props.show.slug}`) ||
+      redirectItem.from === props.show.slug
   )
-  const slug = r ? isolateSlug(r.to) : props.show.slug
+  const slug = redirect ? isolateSlug(redirect.to) : props.show.slug
 
   // Fetch Wagtail show config safely
   const showInfo = await $fetch(
