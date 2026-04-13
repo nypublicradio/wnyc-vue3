@@ -17,7 +17,7 @@ const {
   data: episode,
   status,
   error,
-} = useFetchWrapper(
+} = await useFetchWrapper(
   () =>
     `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
   {
@@ -71,10 +71,14 @@ const theSlug = computed(
     null
 )
 
-const { data: showSlug } = await useFetchWrapper(() =>
-  theSlug.value
-    ? `${config.public.BFF_URL}/api/v2/show/${theSlug.value}?slugOnly=true`
-    : null
+const { data: showSlug } = await useFetchWrapper(
+  () =>
+    theSlug.value
+      ? `${config.public.BFF_URL}/api/v2/show/${theSlug.value}?slugOnly=true`
+      : null,
+  {
+    key: `v2-show-only-${theSlug.value}`,
+  }
 )
 
 // Redirect table for old publisher show slugs
@@ -108,10 +112,14 @@ const resolvedShowSlug = computed(() => {
   )
 })
 
-const { data: show, status: showStatus } = await useFetchWrapper(() =>
-  resolvedShowSlug.value
-    ? `${config.public.BFF_URL}/api/pages/wagtail/${resolvedShowSlug.value}?showOnly=true`
-    : null
+const { data: show, status: showStatus } = await useFetchWrapper(
+  () =>
+    resolvedShowSlug.value
+      ? `${config.public.BFF_URL}/api/pages/wagtail/${resolvedShowSlug.value}?showOnly=true`
+      : null,
+  {
+    key: `wagtail-show-only-${resolvedShowSlug.value}`,
+  }
 )
 
 const breadcrumbs = computed(() => [

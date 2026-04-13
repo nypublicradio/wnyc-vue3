@@ -16,7 +16,10 @@ const {
   status,
   error,
 } = await useFetchWrapper(
-  () => `${config.public.BFF_URL}/api/staff/wagtail/${route.params.slug}`
+  () => `${config.public.BFF_URL}/api/staff/wagtail/${route.params.slug}`,
+  {
+    key: `wagtail-people-page-${route.params.slug}`,
+  }
 )
 
 watch(pagedata, (val) => {

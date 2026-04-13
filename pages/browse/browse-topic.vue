@@ -13,6 +13,7 @@ const {
 } = useFetchWrapper(
   `${config.public.BFF_URL}/api/browse/browse-topic/getTopicData`,
   {
+    key: "browse-topics",
     params: {
       topic: route.query.topic,
     },

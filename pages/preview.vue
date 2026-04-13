@@ -22,9 +22,10 @@ function formatData(data) {
 let fetchData = null
 
 // Fetch preview data from Aviary
-function handlePreviewData() {
-  useFetchWrapper(
-    `${config.public.AVIARY_BASE_API}page_preview/?identifier=${identifier}&token=${token}`
+async function handlePreviewData() {
+  await useFetchWrapper(
+    `${config.public.AVIARY_BASE_API}page_preview/?identifier=${identifier}&token=${token}`,
+    { key: `page-preview-${identifier}` }
   ).then((response) => {
     if (process.client && response.error.value) {
       const { $sentry } = useNuxtApp()

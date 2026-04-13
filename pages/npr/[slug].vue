@@ -15,6 +15,7 @@ const {
 } = await useFetchWrapper(
   () => `${config.public.BFF_URL}/api/npr/${route.params.slug}`,
   {
+    key: `npr-story-${route.params.slug}`,
     onResponseError() {
       globalToast.value = {
         severity: "error",
