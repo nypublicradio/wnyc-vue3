@@ -9,7 +9,7 @@ export const useTopStories = () => {
   const topStoriesFetchArgs = [
     `${config.public.BFF_URL}/api/homepagetopstories`,
     {
-      key: `top-stories`,
+      key: "top-stories",
     },
   ]
 

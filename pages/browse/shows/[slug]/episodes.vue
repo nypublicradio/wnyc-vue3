@@ -17,7 +17,6 @@ const meta = ref(null)
 
 const pendingMore = ref(false)
 const loadMoreRef = ref(null)
-const isInitialObserver = ref(true)
 
 // Await the initial show data fetch for SSR
 const {
@@ -63,6 +62,23 @@ watch(
   { immediate: true }
 )
 
+const hasMore = computed(() => {
+  if (!meta.value?.pagination) return false
+
+  // Try to use the explicit hasMore boolean if provided by the BFF
+  if (typeof meta.value.hasMore === "boolean") {
+    return meta.value.hasMore
+  }
+
+  const totalCount =
+    meta.value.pagination.count ??
+    meta.value.totalCount ??
+    meta.value.pagination.totalCount
+  const nextOffset = meta.value.pagination.offset + limit
+
+  return !totalCount || nextOffset < totalCount
+})
+
 // Pagination handling
 const loadMore = async () => {
   if (!hasMore.value || pendingMore.value) return
@@ -102,23 +118,6 @@ const loadMore = async () => {
   }
 }
 
-const hasMore = computed(() => {
-  if (!meta.value?.pagination) return false
-
-  // Try to use the explicit hasMore boolean if provided by the BFF
-  if (typeof meta.value.hasMore === "boolean") {
-    return meta.value.hasMore
-  }
-
-  const totalCount =
-    meta.value.pagination.count ??
-    meta.value.totalCount ??
-    meta.value.pagination.totalCount
-  const nextOffset = meta.value.pagination.offset + limit
-
-  return !totalCount || nextOffset < totalCount
-})
-
 const { stop } = useIntersectionObserver(
   loadMoreRef,
   ([{ isIntersecting }]) => {
@@ -143,9 +142,10 @@ onMounted(() => {
 const hasError = computed(() => {
   const e1 = error.value
   const e2 = scError.value
-  if (e1 && e1?.statusCode !== 404 && e1?.status !== 404) return true
-  if (e2 && e2?.statusCode !== 404 && e2?.status !== 404) return true
-  return false
+  return (
+    (e1 && e1.statusCode !== 404 && e1.status !== 404) ||
+    (e2 && e2.statusCode !== 404 && e2.status !== 404)
+  )
 })
 
 onMounted(() => {

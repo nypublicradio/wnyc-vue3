@@ -41,9 +41,9 @@ const { isMobileBreakpoint } = useBreakpoints()
 
 const disabledScheduleDate = ref(null)
 onMounted(() => {
-  const d = new Date()
-  d.setDate(d.getDate() + 6)
-  disabledScheduleDate.value = d
+  const futureDisabledDate = new Date()
+  futureDisabledDate.setDate(futureDisabledDate.getDate() + 6)
+  disabledScheduleDate.value = futureDisabledDate
 })
 
 // schedule a local notification and track it

@@ -113,17 +113,17 @@ const handleImageLoad = () => {
 }
 
 // Handle image error - swap to fallback src
-const handleImageError = () => {
-  if (!imageErrored.value) {
-    imageErrored.value = true
-    imageLoaded.value = false
-  }
-}
+// const handleImageError = () => {
+//   if (!imageErrored.value) {
+//     imageErrored.value = true
+//     imageLoaded.value = false
+//   }
+// }
 
-// The src actually passed down to the sub-component
-const effectiveSrc = computed(() => {
-  return imageErrored.value ? finalSrcFallback.value : imageTemplate.value
-})
+// // The src actually passed down to the sub-component
+// const effectiveSrc = computed(() => {
+//   return imageErrored.value ? finalSrcFallback.value : imageTemplate.value
+// })
 
 // Reset loading/error state when image source changes
 watch(
