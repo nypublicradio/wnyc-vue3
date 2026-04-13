@@ -12,6 +12,7 @@ const toast = useToast()
 const { data: event, status, error } = await useFetchWrapper(
   () => `${config.public.BFF_URL}/api/events/${route.params.slug}`,
   {
+    key: `event-${route.params.slug}`,
     onResponseError() {
       toast.add({
         severity: "error",
@@ -39,7 +40,7 @@ onMounted(() => {
 
 const eventData = computed(() => event.value || {})
 
-const { data: moreEvents } = useFetchWrapper(
+const { data: moreEvents } = await useFetchWrapper(
   `${config.public.BFF_URL}/api/events/list?limit=4`
 )
 

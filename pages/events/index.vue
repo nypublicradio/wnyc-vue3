@@ -20,7 +20,8 @@ const isInitialObserver = ref(true)
 
 const { data: events, status, error } = await useFetchWrapper(
   `${config.public.BFF_URL}/api/events/list`,
-  {
+  { 
+    key: "events-list",
     onResponseError() {
       toast.add({
         severity: "error",

@@ -18,6 +18,7 @@ const {
   () =>
     `${config.public.BFF_URL}/api/story/${cmsSources.PUBLISHER}/${route.params.slug}`,
   {
+    key: `story-${cmsSources.PUBLISHER}-${route.params.slug}`,
     onResponseError() {
       globalToast.value = {
         severity: "error",

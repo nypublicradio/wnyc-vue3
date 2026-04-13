@@ -12,7 +12,10 @@ const {
   status,
   error,
 } = await useFetchWrapper(
-  () => `${config.public.BFF_URL}/api/people/publisher/${route.params.slug}`
+  () => `${config.public.BFF_URL}/api/people/publisher/${route.params.slug}`,
+  {
+    key: `publisher-people-page-${route.params.slug}`,
+  }
 )
 
 watch(pagedata, (val) => {
