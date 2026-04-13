@@ -15,13 +15,12 @@ const props = defineProps({
 const config = useRuntimeConfig()
 
 // 1. Fetch global redirects once per SSR payload (cached globally)
-const { data: cachedRedirects } = await useFetch("/api/show-slug-redirects", {
-  key: "global-show-redirects",
-  getCachedData: (key, nuxtApp) => {
-    if (import.meta.client) return undefined
-    return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
-  },
-})
+const { data: cachedRedirects } = await useFetchWrapper(
+  "/api/show-slug-redirects",
+  {
+    key: "global-show-redirects",
+  }
+)
 
 // 2. Fetch show info & episodes in a single consolidated pass
 const {

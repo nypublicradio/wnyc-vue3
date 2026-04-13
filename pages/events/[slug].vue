@@ -9,7 +9,7 @@ const config = useRuntimeConfig()
 const route = useRoute()
 const toast = useToast()
 
-const { data: event, status, error } = await useFetch(
+const { data: event, status, error } = await useFetchWrapper(
   () => `${config.public.BFF_URL}/api/events/${route.params.slug}`,
   {
     onResponseError() {
@@ -39,7 +39,7 @@ onMounted(() => {
 
 const eventData = computed(() => event.value || {})
 
-const { data: moreEvents } = useFetch(
+const { data: moreEvents } = useFetchWrapper(
   `${config.public.BFF_URL}/api/events/list?limit=4`
 )
 

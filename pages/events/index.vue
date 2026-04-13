@@ -18,7 +18,7 @@ const loadMoreRefVisible = ref(false)
 const loadMoreRef = ref(null)
 const isInitialObserver = ref(true)
 
-const { data: events, status, error } = useFetch(
+const { data: events, status, error } = await useFetchWrapper(
   `${config.public.BFF_URL}/api/events/list`,
   {
     onResponseError() {

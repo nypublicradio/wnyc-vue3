@@ -14,7 +14,7 @@ const {
   data: storyData,
   status,
   error,
-} = await useFetch(
+} = await useFetchWrapper(
   () =>
     `${config.public.BFF_URL}/api/story/${cmsSources.PUBLISHER}/${route.params.slug}`,
   {

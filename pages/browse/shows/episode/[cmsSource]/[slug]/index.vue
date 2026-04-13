@@ -17,7 +17,7 @@ const {
   data: episode,
   status,
   error,
-} = useFetch(
+} = useFetchWrapper(
   () =>
     `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
   {
@@ -71,21 +71,17 @@ const theSlug = computed(
     null
 )
 
-const { data: showSlug } = await useFetch(() =>
+const { data: showSlug } = await useFetchWrapper(() =>
   theSlug.value
     ? `${config.public.BFF_URL}/api/v2/show/${theSlug.value}?slugOnly=true`
     : null
 )
 
 // Redirect table for old publisher show slugs
-const { data: redirectsData } = await useFetch(
+const { data: redirectsData } = await useFetchWrapper(
   () => `${config.public.BFF_URL}/api/show-slug-redirects`,
   {
     key: "show-slug-redirects",
-    getCachedData(key, nuxtApp) {
-      if (import.meta.client) return undefined
-      return nuxtApp.payload.data[key] || nuxtApp.static.data[key]
-    },
   }
 )
 
@@ -112,7 +108,7 @@ const resolvedShowSlug = computed(() => {
   )
 })
 
-const { data: show, status: showStatus } = await useFetch(() =>
+const { data: show, status: showStatus } = await useFetchWrapper(() =>
   resolvedShowSlug.value
     ? `${config.public.BFF_URL}/api/pages/wagtail/${resolvedShowSlug.value}?showOnly=true`
     : null
