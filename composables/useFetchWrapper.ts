@@ -13,7 +13,6 @@ import { useFetch } from '#app'
 export function useFetchWrapper (request, options = {}) {
     const {
         key,
-        getCachedData,
         autoRefresh = true,
         logKey = false,
         ...rest

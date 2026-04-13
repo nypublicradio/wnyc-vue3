@@ -9,7 +9,6 @@ import type { InformationPage } from "~/composables/types/Page"
 const route = useRoute()
 const config = useRuntimeConfig()
 
-
 /* preview */
 import { usePreviewData } from "~/composables/states"
 const previewData = usePreviewData()
@@ -20,26 +19,29 @@ if (isPreview) {
   if (!previewData.value || !previewData.value.data) {
     throw createError({
       statusCode: 404,
-      statusMessage: 'Preview data not found',
+      statusMessage: "Preview data not found",
       fatal: true,
     })
   }
   page = previewData.value.data
 } else {
   const slug = `/${route?.params?.slug as string}`
-  const { data, error } = await useFetch(`${config.public.BFF_URL}/api/pages/wagtail/find`, {
-    key: `page-${slug}`,
-    query: { html_path: slug },
-  })
+  const { data, error } = await useFetchWrapper(
+    `${config.public.BFF_URL}/api/pages/wagtail/find`,
+    {
+      key: `page-${slug}`,
+      query: { html_path: slug },
+    }
+  )
 
   if (error.value || !data.value) {
     throw createError({
       statusCode: error.value?.statusCode || 404,
-      statusMessage: error.value?.message || 'Page Not Found',
+      statusMessage: error.value?.message || "Page Not Found",
       fatal: true,
     })
   }
-  
+
   page = normalizeFindPageResponse(data)
 }
 </script>

@@ -12,7 +12,7 @@ const {
   data: storyData,
   status,
   error,
-} = await useFetch(
+} = await useFetchWrapper(
   () => `${config.public.BFF_URL}/api/npr/${route.params.slug}`,
   {
     onResponseError() {
@@ -64,9 +64,7 @@ const description = storyData.value?.description
 const canonicalUrl = storyData.value?.link
 useHead(() => ({
   title,
-  link: [
-    { rel: "canonical", href: canonicalUrl }
-  ],
+  link: [{ rel: "canonical", href: canonicalUrl }],
 }))
 useSeoMeta({
   title,

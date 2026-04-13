@@ -11,7 +11,7 @@ const {
   data: pagedata,
   status,
   error,
-} = useFetch(
+} = await useFetchWrapper(
   () => `${config.public.BFF_URL}/api/people/publisher/${route.params.slug}`
 )
 

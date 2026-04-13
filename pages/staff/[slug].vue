@@ -15,7 +15,7 @@ const {
   data: pagedata,
   status,
   error,
-} = useFetch(
+} = await useFetchWrapper(
   () => `${config.public.BFF_URL}/api/staff/wagtail/${route.params.slug}`
 )
 

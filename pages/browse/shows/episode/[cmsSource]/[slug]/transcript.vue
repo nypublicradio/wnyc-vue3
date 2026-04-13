@@ -5,6 +5,7 @@ import {
   togglePlayEpisode,
   copyToClipBoard,
   getFirstSentence,
+  stripHtmlTags,
 } from "~/utilities/helpers"
 import { useIsApp } from "~/composables/states"
 import { mediaTypeRoutes } from "~/composables/globals"
@@ -22,7 +23,7 @@ const {
   data: episode,
   status,
   error,
-} = useFetch(
+} = await useFetchWrapper(
   () =>
     `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
   {
@@ -115,13 +116,13 @@ const getEpisodeImage = () => {
   return epImage
 }
 
-const { data: showSlug } = useFetch(() =>
+const { data: showSlug } = useFetchWrapper(() =>
   theSlug.value
     ? `${config.public.BFF_URL}/api/v2/show/${theSlug.value}?slugOnly=true`
     : null
 )
 
-const { data: show, status: showStatus } = useFetch(() =>
+const { data: show, status: showStatus } = useFetchWrapper(() =>
   showSlug.value?.show?.slug
     ? `${config.public.BFF_URL}/api/pages/wagtail/${showSlug.value?.show?.slug}?showOnly=true`
     : null
@@ -164,11 +165,10 @@ onUnmounted(() => {
 
 const title = `${episode.value?.title} | WNYC`
 const tease =
-  episode.value?.tease ??
-  getFirstSentence(stripHtmlTags(episodeData.value?.tease))
+  episode.value?.tease ?? getFirstSentence(stripHtmlTags(episode.value?.tease))
 const description =
   episode.value?.description ??
-  getFirstSentence(stripHtmlTags(episodeData.value?.description))
+  getFirstSentence(stripHtmlTags(episode.value?.description))
 useHead({
   title,
 })

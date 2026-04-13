@@ -11,7 +11,7 @@ const {
   data: shows,
   status,
   error,
-} = await useFetch(`${config.public.BFF_URL}/api/v3/shows`)
+} = await useFetchWrapper(`${config.public.BFF_URL}/api/v3/shows`)
 
 const router = useRouter()
 const searchFieldValue = ref("")

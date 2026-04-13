@@ -24,14 +24,10 @@ const {
   data: show,
   status,
   error,
-} = await useFetch(
+} = await useFetchWrapper(
   `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}?showOnly=true`,
   {
     key: `show-episodes-page-${route.params.slug}`,
-    getCachedData(key, nuxtApp) {
-      if (import.meta.client) return undefined
-      return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
-    },
   }
 )
 
@@ -44,7 +40,7 @@ const {
   data: episodeData,
   status: scStatus,
   error: scError,
-} = await useFetch(
+} = await useFetchWrapper(
   () =>
     podcastId.value
       ? `${config.public.BFF_URL}/api/v3/show/${podcastId.value}/episodes`
@@ -52,10 +48,6 @@ const {
   {
     key: `episodes-${podcastId.value || route.params.slug}`,
     query: { offset: 0, limit },
-    getCachedData(key, nuxtApp) {
-      if (import.meta.client) return undefined
-      return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
-    },
   }
 )
 

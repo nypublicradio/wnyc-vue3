@@ -10,11 +10,14 @@ const {
   data: categoryData,
   status,
   error,
-} = useFetch(`${config.public.BFF_URL}/api/browse/browse-topic/getTopicData`, {
-  params: {
-    topic: route.query.topic,
-  },
-})
+} = useFetchWrapper(
+  `${config.public.BFF_URL}/api/browse/browse-topic/getTopicData`,
+  {
+    params: {
+      topic: route.query.topic,
+    },
+  }
+)
 // navigate back to home and track it
 const backHome = () => {
   navigateTo("/browse")
