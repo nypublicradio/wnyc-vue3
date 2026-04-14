@@ -1,4 +1,9 @@
 <script setup>
+useHead({
+  bodyAttrs: {
+    class: "no-bottom-padding",
+  },
+})
 definePageMeta({
   middleware: ["check-logged-in"],
   pageTransition: false, // Disable page transition
@@ -39,18 +44,3 @@ onMounted(() => {
     </section>
   </div>
 </template>
-
-<style lang="scss">
-body {
-  main {
-    @include media(">=lg") {
-      padding-bottom: 0;
-    }
-  }
-}
-</style>
-<style lang="scss" scoped>
-.signup-page {
-  //background: var(--p-surface-25);
-}
-</style>

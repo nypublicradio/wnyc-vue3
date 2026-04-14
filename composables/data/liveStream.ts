@@ -268,7 +268,7 @@ export default function useLiveStream () {
     } catch (error) {
       globalToast.value = {
         severity: "error",
-        summary: "Sorry. We are having trouble. Please try again later.",
+        summary: "Sorry. We are having trouble With the live stream. Please try again later.",
         life: null,
         closable: true,
       }
@@ -348,7 +348,7 @@ export default function useLiveStream () {
       if (error.status !== 500) {
         globalToast.value = {
           severity: "error",
-          summary: "Sorry. We are having trouble. Please try again later.",
+          summary: "Sorry. We are having trouble With the live stream. Please try again later.",
           life: null,
           closable: true,
         }

@@ -187,7 +187,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <div class="episode-page">
+  <div class="transcript-page">
     <section>
       <transition name="fade">
         <div v-if="status === 'success'" class="flex align-items-center mb-4">
@@ -308,7 +308,8 @@ useSeoMeta({
 </template>
 
 <style lang="scss" scoped>
-.episode-page {
+.transcript-page {
+  min-height: 95vh;
   .pinned {
     position: sticky;
     z-index: 10;
