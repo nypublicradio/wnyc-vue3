@@ -66,8 +66,8 @@ export default defineNuxtConfig({
     },
     prerender: {
       // Disable prerendering when SSR is false (SPA mode for mobile)
-      crawlLinks: process.env.NUXT_SSR === 'true',
-      routes: process.env.NUXT_SSR === 'true' ? ['/'] : ['/'],
+      //crawlLinks: process.env.NUXT_SSR === 'true',
+      //routes: process.env.NUXT_SSR === 'true' ? ['/'] : ['/'],
       // Don't fail the build on prerender errors for client-only routes
       failOnError: false,
       // Ignore client-only routes that don't work with SSR
