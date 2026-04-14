@@ -2,6 +2,7 @@ import { sentryVitePlugin } from "@sentry/vite-plugin"
 import MyPreset from "./assets/wnyc-theme.js"
 
 export default defineNuxtConfig({
+  devtools: { enabled: true },
   modules: [
     "@nuxtjs/supabase",
     ...(process.env.NUXT_SSR === "true" ? [] : ["@nuxtjs/ionic"]),
