@@ -251,6 +251,7 @@ export default defineNuxtConfig({
       SPRINGBOARD_URL: process.env.SPRINGBOARD_URL ?? "https://nypr.hosted.jacksonriverdev.com",
       NEWSLETTER_API: process.env.NEWSLETTER_API ?? 'https://api.demo.nypr.digital/email-proxy/subscribe',
       NEWSLETTER_MULTI_LIST_IDS: 'WNYC Weekly Brief++WNYC Membership',
+      NUXT_SSR: process.env.NUXT_SSR === 'true' ? 'true' : 'false',
     },
   },
 
