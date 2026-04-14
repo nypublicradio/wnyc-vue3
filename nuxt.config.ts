@@ -2,7 +2,7 @@ import { sentryVitePlugin } from "@sentry/vite-plugin"
 import MyPreset from "./assets/wnyc-theme.js"
 
 export default defineNuxtConfig({
-  devtools: { enabled: true },
+  //devtools: { enabled: true },
   modules: [
     "@nuxtjs/supabase",
     ...(process.env.NUXT_SSR === "true" ? [] : ["@nuxtjs/ionic"]),
@@ -66,7 +66,7 @@ export default defineNuxtConfig({
     },
     prerender: {
       // Disable prerendering when SSR is false (SPA mode for mobile)
-      //crawlLinks: process.env.NUXT_SSR === 'true',
+      crawlLinks: process.env.NUXT_SSR === 'true',
       //routes: process.env.NUXT_SSR === 'true' ? ['/'] : ['/'],
       // Don't fail the build on prerender errors for client-only routes
       failOnError: false,
