@@ -86,7 +86,7 @@ export default defineNuxtConfig({
 
   ionic: {
     integrations: {
-      router: process.env.NUXT_SSR === 'true',
+      router: false,
       pwa: false,
     },
     css: {
