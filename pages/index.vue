@@ -1,19 +1,24 @@
-<script setup async>
-import { useBrowserTopColorDarkMode } from "~/composables/globals.ts"
-
-useHead({
-  bodyAttrs: {
-    class: "no-bottom-padding hide-bottom-menu hide-footer",
-  },
-})
-
+<script setup>
 definePageMeta({
   layout: "default",
   //middleware: ["check-auth-provider"],
 })
 
-const browserTopColorDarkMode = useBrowserTopColorDarkMode()
 const route = useRoute()
+
+useHead({
+  title: "WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+  bodyAttrs: {
+    class: "no-bottom-padding hide-bottom-menu hide-footer",
+  },
+})
+
+// Redirect to /home immediately (works on both server and client)
+// Server-side: sends a 302 redirect so /home loads with full SSR data
+// Client-side (app mode): navigates after mount for the loader animation
+if (import.meta.server) {
+  navigateTo("/home", { redirectCode: 302 })
+}
 
 onMounted(() => {
   setTimeout(() => {
@@ -23,28 +28,6 @@ onMounted(() => {
 </script>
 <template>
   <div class="index">
-    <Html>
-      <Head>
-        <Title
-          >WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
-          News</Title
-        >
-        <Meta
-          name="og:title"
-          content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-        <Meta
-          name="twitter:title"
-          content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-        <!-- force browser top color dark -->
-        <Meta name="theme-color" :content="browserTopColorDarkMode" />
-        <Meta
-          name="msapplication-TileColor"
-          :content="browserTopColorDarkMode"
-        />
-      </Head>
-    </Html>
     <div class="page" :class="[`${String(route.name)}`]">
       <Transition name="fade">
         <section class="loading-holder">

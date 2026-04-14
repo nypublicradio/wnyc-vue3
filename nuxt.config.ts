@@ -4,7 +4,7 @@ import MyPreset from "./assets/wnyc-theme.js"
 export default defineNuxtConfig({
   modules: [
     "@nuxtjs/supabase",
-    "@nuxtjs/ionic",
+    ...(process.env.NUXT_SSR === "true" ? [] : ["@nuxtjs/ionic"]),
     "@nuxtjs/device",
     "@nuxt/image",
     "@hypernym/nuxt-gsap",
@@ -29,7 +29,7 @@ export default defineNuxtConfig({
     url: process.env.SUPABASE_URL,
     key: process.env.SUPABASE_KEY,
     redirect: false,
-    useSsrCookies: false,
+    useSsrCookies: process.env.NUXT_SSR === "true",
   },
 
   image: {
@@ -60,6 +60,9 @@ export default defineNuxtConfig({
   ssr: process.env.NUXT_SSR === 'true',
 
   nitro: {
+    routeRules: {
+      '/confirm': { ssr: false },
+    },
     prerender: {
       // Disable prerendering when SSR is false (SPA mode for mobile)
       crawlLinks: process.env.NUXT_SSR === 'true',
@@ -98,25 +101,6 @@ export default defineNuxtConfig({
       mode: "out-in", // default
     },
     layoutTransition: true,
-    head: {
-      title: "WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
-      meta: [
-        {
-          name: "viewport",
-          content:
-            "viewport-fit=cover, width=device-width, initial-scale=1, maximum-scale=1",
-        },
-        // { name: 'msapplication-TileColor', content: '#ffffff' },
-        // { name: 'theme-color', content: '#ffffff' }
-      ],
-      link: [
-        {
-          rel: "icon",
-          type: "image/x-icon",
-          href: "https://media.wnyc.org/static/img/favicon_wnyc.ico?_=1553611630",
-        },
-      ],
-    },
   },
 
   css: [
@@ -129,6 +113,9 @@ export default defineNuxtConfig({
   //serverMiddleware: ['~/search/algolia-index'],
 
   vite: {
+    define: {
+      __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: true,
+    },
     css: {
       preprocessorOptions: {
         scss: {
@@ -186,8 +173,7 @@ export default defineNuxtConfig({
   },
 
   plugins: [
-    "~/plugins/router-guards.js",
-    "~/plugins/error-handler.js",
+    "~/plugins/router-guards.client.js",
     "~/plugins/firebase.client.js",
   ],
 
@@ -197,7 +183,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     // Server-only runtime values (read at runtime by Nitro)
-    
+
     aviaryBaseApi: process.env.AVIARY_BASE_API,
     simplecastUrl: process.env.SIMPLECAST_URL ?? 'https://api.simplecast.com',
     simplecastApiKey: process.env.SIMPLECAST_API_KEY,

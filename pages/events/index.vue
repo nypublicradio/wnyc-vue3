@@ -5,7 +5,6 @@ import { useIntersectionObserver } from "@vueuse/core"
 import { allSocialData } from "~/composables/navigationData.js"
 import { dynamicNavigation } from "~/utilities/helpers"
 const { getFilteredTopStories, topStories } = useTopStories()
-const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const toast = useToast()
 
@@ -19,9 +18,10 @@ const loadMoreRefVisible = ref(false)
 const loadMoreRef = ref(null)
 const isInitialObserver = ref(true)
 
-const { data: events, status, error } = useFetch(
+const { data: events, status, error } = await useFetchWrapper(
   `${config.public.BFF_URL}/api/events/list`,
-  {
+  { 
+    key: "events-list",
     onResponseError() {
       toast.add({
         severity: "error",
@@ -34,6 +34,7 @@ const { data: events, status, error } = useFetch(
 )
 
 onMounted(() => {
+  const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
     page_title: "Events Page",
     page_type: "events_page",
@@ -89,6 +90,7 @@ const loadMore = async () => {
       life: 6000,
       closable: true,
     })
+    console.error("Error loading more events:", e)
   }
 }
 
@@ -104,17 +106,19 @@ const breadcrumbs = computed(() => [
 ])
 
 const greeneSpaceUrl = "https://thegreenespace.org"
+
+const title = "Events | WNYC"
+useHead({
+  title,
+})
+useSeoMeta({
+  title,
+  ogTitle: title,
+})
 </script>
 
 <template>
   <div class="event-page event-list-page">
-    <Html lang="en">
-      <Head>
-        <Title>Events | WNYC</Title>
-        <!-- <Meta name="og:title" :content="`${eventData?.title} | WNYC`" />
-        <Meta name="twitter:title" :content="`${eventData?.title} | WNYC`" /> -->
-      </Head>
-    </Html>
     <section>
       <div class="flex align-items-center">
         <Breadcrumbs :items="breadcrumbs" />

@@ -14,22 +14,28 @@ const token = route.query.token
 // Format data received from Aviary
 function formatData(data) {
   const transformedData = transformResponseData(data)
-  const normalizedData = normalizeFindPageResponse(transformedData) as ArticlePage
+  const normalizedData = normalizeFindPageResponse(
+    transformedData
+  ) as ArticlePage
   return normalizedData
 }
 let fetchData = null
 
 // Fetch preview data from Aviary
-function handlePreviewData() {
-  useFetch(
-    `${config.public.AVIARY_BASE_API}page_preview/?identifier=${identifier}&token=${token}`
+async function handlePreviewData() {
+  await useFetchWrapper(
+    `${config.public.AVIARY_BASE_API}page_preview/?identifier=${identifier}&token=${token}`,
+    { key: `page-preview-${identifier}` }
   ).then((response) => {
     if (process.client && response.error.value) {
       const { $sentry } = useNuxtApp()
       $sentry.captureException(response.error.value)
     }
     fetchData = response.data
-    previewData.value = { data: formatData(response.data), error: response.error }
+    previewData.value = {
+      data: formatData(response.data),
+      error: response.error,
+    }
     // add slug to data for the Tags pages
     previewData.value.slug = fetchData.value.meta.slug
   })
@@ -60,7 +66,10 @@ handlePreviewData()
 <template>
   <div>
     <div class="preview text-center bold py-8 text-5xl">
-      <i class="pi pi-spin pi-spinner lnline-block mr-3" style="font-size: 2rem" />
+      <i
+        class="pi pi-spin pi-spinner lnline-block mr-3"
+        style="font-size: 2rem"
+      />
       <h3 class="inline-block">Building preview...</h3>
     </div>
   </div>

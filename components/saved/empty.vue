@@ -1,5 +1,15 @@
 
 <script lang="ts" setup>
+import FollowIcon from "~/components/icons/FollowIcon.vue"
+import StarIcon from "~/components/icons/StarIcon.vue"
+import Headphones from "~/components/icons/Headphones.vue"
+
+const iconComponentMap = {
+  FollowIcon,
+  StarIcon,
+  Headphones,
+}
+
 const props = defineProps({
   icon: {
     type: String,
@@ -15,12 +25,7 @@ const props = defineProps({
   },
 })
 
-// dynamically load the icon based on the props.icon
-const icon = computed(() => {
-  return defineAsyncComponent(
-    () => import(`~/components/icons/${props.icon}.vue`)
-  )
-})
+const icon = computed(() => iconComponentMap[props.icon])
 </script>
 
 <template>

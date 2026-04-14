@@ -11,7 +11,17 @@ import {
   useCurrentUserProfile,
   useGlobalToast,
 } from "~/composables/states"
-import { clearTimeout, setTimeout } from "worker-timers"
+
+// worker-timers requires Web Workers (browser-only).
+// Fall back to global setTimeout/clearTimeout on the server to avoid SSR crashes.
+let workerSetTimeout: typeof globalThis.setTimeout = globalThis.setTimeout
+let workerClearTimeout: typeof globalThis.clearTimeout = globalThis.clearTimeout
+if (import.meta.client) {
+  import("worker-timers").then((mod) => {
+    workerSetTimeout = mod.setTimeout as any
+    workerClearTimeout = mod.clearTimeout as any
+  })
+}
 // Get a list of article pages using the Aviary /pages api
 export async function updateLiveStream (slug: string, save = true) {
   const config = useRuntimeConfig()
@@ -205,7 +215,7 @@ export default function useLiveStream () {
   // Function to clear all timeouts
   const clearAllTimeout = () => {
     if (timeout) {
-      clearTimeout(timeout)
+      workerClearTimeout(timeout)
       timeout = null
     }
   }
@@ -253,12 +263,12 @@ export default function useLiveStream () {
         // delay plus 30 seconds to make sure the event has ended and the next one has started so when the  next fetch happens, we get the updated schedule displayed
         const delay =
           (await getTimeDifference(liveScheduleData.value[0].attributes.end)) + 30000
-        timeout = setTimeout(refreshData, delay)
+        timeout = workerSetTimeout(refreshData, delay)
       }
     } catch (error) {
       globalToast.value = {
         severity: "error",
-        summary: "Sorry. We are having trouble. Please try again later.",
+        summary: "Sorry. We are having trouble With the live stream. Please try again later.",
         life: null,
         closable: true,
       }
@@ -338,7 +348,7 @@ export default function useLiveStream () {
       if (error.status !== 500) {
         globalToast.value = {
           severity: "error",
-          summary: "Sorry. We are having trouble. Please try again later.",
+          summary: "Sorry. We are having trouble With the live stream. Please try again later.",
           life: null,
           closable: true,
         }
@@ -426,7 +436,7 @@ export default function useLiveStream () {
     )
 
     if (targetStation) {
-      setTimeout(() => {
+      workerSetTimeout(() => {
         switchStation(targetStation)
         if (autoplay) togglePlayHere()
       }, 100)

@@ -1,39 +1,48 @@
 <script setup>
-import { checkIsFavorited, slugify } from "~/utilities/helpers"
+import {
+  checkIsFavorited,
+  slugify,
+  getFirstSentence,
+} from "~/utilities/helpers"
 import { useIsApp } from "~/composables/states"
+import { useFetchWrapper } from "~/composables/useFetchWrapper"
 
 const config = useRuntimeConfig()
 const route = useRoute()
-const sectionAnchorData = ref([
-  //  { label: "Most Recent", id: "most-recent" },
-])
+const isApp = useIsApp()
+
+const showFetchArgs = [
+  () => `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`,
+  {
+    key: `show-page-${route.params.slug}`,
+    watch: false,
+  },
+]
 
 const {
   data: show,
   status,
   error,
-} = useFetch(
-  `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`,
-  {
-    onResponse(res) {
-      sectionAnchorData.value = res.response._data.inPageNavigation.map(
-        (item) => {
-          return {
-            label: item.value.linkText,
-            id: slugify(item.value.targetId || item.value.linkText),
-          }
-        }
-      )
-    },
-  }
-)
+} = isApp.value
+  ? useFetchWrapper(...showFetchArgs)
+  : await useFetchWrapper(...showFetchArgs)
 
-const isApp = useIsApp()
+// Auto-refresh handled by useFetchWrapper
+
+const sectionAnchorData = computed(
+  () =>
+    show?.value?.inPageNavigation?.map((item) => ({
+      label: item.value.linkText,
+      id: slugify(item.value.targetId || item.value.linkText),
+    })) ?? []
+)
 
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
-watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(route.params.slug)
+onMounted(() => {
+  watchEffect(async () => {
+    isFavorited.value = await checkIsFavorited(route.params.slug)
+  })
 })
 
 // scrolls to the selected section from the jump link buttons
@@ -55,7 +64,7 @@ const scrollToSection = (sectionId, behavior = "smooth", offset = 90) => {
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Browse", route: "/browse" },
-  { label: show.value?.title },
+  { label: show?.value?.title },
 ])
 
 onMounted(() => {
@@ -68,55 +77,47 @@ onMounted(() => {
   })
 })
 
-// clean up the useIntersectionObserver
-onUnmounted(() => {
-  stop()
+const title = `${show.value?.title} | WNYC`
+const description = getFirstSentence(show.value?.summary)
+useHead({
+  title,
+})
+useSeoMeta({
+  title,
+  ogTitle: title,
+  description,
+  ogDescription: description,
 })
 </script>
 
 <template>
   <div class="shows-page pb-7" :class="{ 'is-app': isApp }">
-    <Html lang="en">
-      <Head>
-        <Title
-          >{{ show?.title }} | WNYC | New York Public Radio, Podcasts, Live
-          Streaming Radio, News</Title
-        >
-        <Meta
-          name="og:title"
-          :content="`${show?.title} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`"
-        />
-        <Meta
-          name="twitter:title"
-          :content="`${show?.title} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`"
-        />
-      </Head>
-    </Html>
     <section>
       <div class="flex align-items-center">
         <Breadcrumbs :items="breadcrumbs" />
       </div>
-      <FetchError v-if="error" />
+      <FetchError v-if="status === 'error'" />
     </section>
     <template v-if="!error">
       <!-- <pre>{{ show }}</pre> -->
       <ShowHeader :show="show" />
 
-      <story-htlAd
-        class="md:hidden mt-4 mb-3"
-        layout="rectangle"
-        slotClass="htlad-wnyc_homepage_rectangle"
-        fineprint="WNYC is funded by sponsors and member donations"
-      />
+      <div class="md:hidden mt-4 mb-3">
+        <story-htlAd
+          layout="rectangle"
+          slotClass="htlad-wnyc_homepage_rectangle"
+          fineprint="WNYC is funded by sponsors and member donations"
+        />
+      </div>
       <!-- JUMP LINKS -->
-      <section v-if="sectionAnchorData" class="hidden md:block">
+      <section class="hidden md:block">
         <div class="grid">
           <div class="col-fixed hidden xxl:block w-20rem"></div>
           <div class="col pr-2 lg:pr-4">
             <div
               class="flex flex-wrap justify-content-start align-items-center gap-3 my-5"
             >
-              <template v-if="status === 'success'">
+              <template v-if="sectionAnchorData.length">
                 <Button
                   v-for="i in sectionAnchorData"
                   :key="i.id"
@@ -126,7 +127,7 @@ onUnmounted(() => {
                   @click="scrollToSection(i.id)"
                 />
               </template>
-              <template v-else>
+              <template v-else-if="isApp">
                 <Skeleton
                   v-for="i in 3"
                   :key="`jump-link-${i}`"

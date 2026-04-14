@@ -212,6 +212,7 @@ const updateMetrics = () => {
 }
 
 let mutationObserver = null
+let mutationRafId = null
 
 onMounted(() => {
   if (carouselRef.value) {
@@ -228,8 +229,12 @@ onMounted(() => {
 
   if (trackRef.value) {
     mutationObserver = new MutationObserver(() => {
-      // Content changed (e.g. items added), re-measure scroll width
-      updateMetrics()
+      // Debounce via rAF to avoid forced reflows during hydration cascades
+      if (mutationRafId) return
+      mutationRafId = requestAnimationFrame(() => {
+        mutationRafId = null
+        updateMetrics()
+      })
     })
     mutationObserver.observe(trackRef.value, {
       childList: true,
@@ -252,6 +257,7 @@ onBeforeUnmount(() => {
   if (trackRef.value) {
     trackRef.value.removeEventListener("scrollend", unlockAnimation)
   }
+  if (mutationRafId) cancelAnimationFrame(mutationRafId)
   if (mutationObserver) mutationObserver.disconnect()
   if (resizeObserver) resizeObserver.disconnect()
 })

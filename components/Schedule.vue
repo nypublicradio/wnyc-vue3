@@ -39,8 +39,12 @@ const isDarkMode = useIsDarkMode()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const { isMobileBreakpoint } = useBreakpoints()
 
-const disabledScheduleDate = new Date()
-disabledScheduleDate.setDate(disabledScheduleDate.getDate() + 6)
+const disabledScheduleDate = ref(null)
+onMounted(() => {
+  const futureDisabledDate = new Date()
+  futureDisabledDate.setDate(futureDisabledDate.getDate() + 6)
+  disabledScheduleDate.value = futureDisabledDate
+})
 
 // schedule a local notification and track it
 const handleScheduleLocalNotification = async (entry) => {
@@ -235,8 +239,9 @@ const handleScheduleNavigationButtonLabel = (date) => {
           :label="handleScheduleNavigationButtonLabel(nextDayScheduleDate)"
           icon="pi pi-chevron-right"
           :class="
+            disabledScheduleDate &&
             formatDate(currentScheduleDate, 'LLLL d, yyyy') ===
-            formatDate(disabledScheduleDate, 'LLLL d, yyyy')
+              formatDate(disabledScheduleDate, 'LLLL d, yyyy')
               ? 'pointer-events-none opacity-50'
               : 'day-change-btn link'
           "

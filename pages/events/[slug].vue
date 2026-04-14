@@ -2,29 +2,17 @@
 import { useToast } from "primevue/usetoast"
 import { useTopStories } from "~/composables/useTopStories"
 import { EVENT_BADGE_STYLES, useEventData } from "~/composables/useEventData"
-import { dynamicNavigation } from "~/utilities/helpers"
+import { dynamicNavigation, getFirstSentence } from "~/utilities/helpers"
 
 const { getFilteredTopStories } = useTopStories()
-const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const route = useRoute()
 const toast = useToast()
 
-const { data: event, status, error } = useFetch(
-  `${config.public.BFF_URL}/api/events/${route.params.slug}`,
+const { data: event, status, error } = await useFetchWrapper(
+  () => `${config.public.BFF_URL}/api/events/${route.params.slug}`,
   {
-    onResponse({ response }) {
-      const res = response._data
-      $analytics.sendPageView({
-        page_title: res.title,
-        page_type: "event_page",
-        content_group: "on_demand_event",
-        article_authors: res?.authors?.map((author) => author.name).join(","),
-        article_publish_date: res.publicationDate,
-        article_updated_date: res.updatedDate ? res.updatedDate : res.publicationDate,
-        article_title: res.title,
-      })
-    },
+    key: `event-${route.params.slug}`,
     onResponseError() {
       toast.add({
         severity: "error",
@@ -36,9 +24,23 @@ const { data: event, status, error } = useFetch(
   }
 )
 
+onMounted(() => {
+  if (!event.value) return
+  const { $analytics } = useNuxtApp()
+  $analytics.sendPageView({
+    page_title: event.value.title,
+    page_type: "event_page",
+    content_group: "on_demand_event",
+    article_authors: event.value?.authors?.map((author) => author.name).join(","),
+    article_publish_date: event.value.publicationDate,
+    article_updated_date: event.value.updatedDate ? event.value.updatedDate : event.value.publicationDate,
+    article_title: event.value.title,
+  })
+})
+
 const eventData = computed(() => event.value || {})
 
-const { data: moreEvents } = useFetch(
+const { data: moreEvents } = await useFetchWrapper(
   `${config.public.BFF_URL}/api/events/list?limit=4`
 )
 
@@ -95,17 +97,27 @@ const breadcrumbs = computed(() => [
   { label: "Events", route: "/events" },
   { label: title.value || "Event" },
 ])
+
+const pageTitle = `${eventData.value?.title} | WNYC`
+const description = getFirstSentence(eventData.value?.description)
+useHead({
+  title: pageTitle,
+})
+if (eventData.value?.preventSearchIndexing) {
+  useHead({
+    meta: [{name: "robots", content: "noindex" }],
+  })
+}
+useSeoMeta({
+  title: pageTitle,
+  ogTitle: pageTitle,
+  description,
+  ogDescription: description,
+})
 </script>
 
 <template>
   <div class="event-page">
-    <Html lang="en">
-      <Head>
-        <Title>{{ title }} | WNYC</Title>
-        <Meta name="og:title" :content="`${title} | WNYC`" />
-        <Meta name="twitter:title" :content="`${title} | WNYC`" />
-      </Head>
-    </Html>
     <FetchError v-if="error" />
     <template v-else>
       <section>

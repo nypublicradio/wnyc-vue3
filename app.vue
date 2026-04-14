@@ -48,6 +48,14 @@ const fullDeviceInfo = useFullDeviceInfo()
 const appDownloadLink = useAppDownloadLink()
 const isApp = useIsApp()
 
+// Capacitor APIs are client-only — on the server, assume web/browser
+const isWeb = import.meta.client ? Capacitor.getPlatform() === "web" : true
+isApp.value = !isWeb
+const gtmHeadConfig = getGtmHeadConfig({
+  isWeb,
+  gtmId: config.public.GTM_ID,
+})
+
 // Only initialize OneSignal on client-side to avoid SSR errors
 let initOneSignal: any, notificationPermissionSync: any, handleAppUrlOpen: any
 if (import.meta.client) {
@@ -56,20 +64,6 @@ if (import.meta.client) {
   notificationPermissionSync = oneSignal.notificationPermissionSync
   handleAppUrlOpen = oneSignal.handleAppUrlOpen
 }
-
-const isWeb = Capacitor.getPlatform() === "web"
-isApp.value = !isWeb
-const gtmHeadConfig = getGtmHeadConfig({
-  isWeb,
-  gtmId: config.public.GTM_ID,
-})
-
-// Initialize device info and app download link asynchronously
-const initializeDeviceInfo = async () => {
-  fullDeviceInfo.value = await getFullDeviceInfo()
-  appDownloadLink.value = await getAppDownloadLink()
-}
-initializeDeviceInfo()
 
 useHead({
   htmlAttrs: {
@@ -154,7 +148,8 @@ onMounted(async () => {
   //   document.addEventListener("pointerenter", () => {})
   // }
 
-  // Ads
+  // Ads - deferred to after hydration to prevent DOM mutation conflicts
+  await nextTick()
   window.htlbid = window.htlbid || {}
   htlbid.cmd = htlbid.cmd || []
   htlbid.cmd.push(() => {
@@ -192,75 +187,66 @@ watch(globalError, (error) => {
     })
   }
 })
+
+const title =
+  "WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
+const description =
+  "WNYC is America's most listened-to public radio station and the producer of award-winning programs and podcasts like Radiolab, On the Media, and The Brian Lehrer Show."
+const keywords =
+  "wnyc, podcasts, npr, new york, WNYC Studios, arts, culture, classical, music, news, public, radio"
+const canonicalUrl = `https://www.wnyc.org${route.fullPath}`
+const ogImage = {
+  url: "https://media.wnyc.org/i/1200/1200/c/80/1/wnyc_square_logo.png",
+  alt: "WNYC",
+  width: 1200,
+  height: 600,
+}
+const themeColor = currentUserProfile?.dark_mode
+  ? browserTopColorDarkMode
+  : browserTopColor
+useHead({
+  title,
+  meta: [
+    { charset: "utf-8" },
+    {
+      name: "viewport",
+      content:
+        "viewport-fit=cover, width=device-width, initial-scale=1, maximum-scale=1",
+    },
+    { name: "robots", content: "index, follow" },
+  ],
+  link: [
+    { rel: "canonical", href: canonicalUrl },
+    {
+      rel: "icon",
+      type: "image/x-icon",
+      href: "https://media.wnyc.org/static/img/favicon_wnyc.ico?_=1553611630",
+    },
+  ],
+})
+useSeoMeta({
+  title,
+  description,
+  keywords,
+  ogDescription: description,
+  ogImage: ogImage.url,
+  ogImageAlt: ogImage.alt,
+  ogImageHeight: ogImage.height,
+  ogImageWidth: ogImage.width,
+  ogSiteName: title,
+  ogTitle: title,
+  ogType: "website",
+  ogUrl: canonicalUrl,
+  twitterCard: "summary_large_image",
+  twitterImage: ogImage.url,
+  twitterSite: "@WNYC",
+  themeColor,
+  msapplicationTileColor: themeColor,
+})
 </script>
 
 <template>
-  <Html lang="en">
-    <Head>
-      <Link rel="canonical" :href="`https://wnyc.org${route.path}`" />
-      <Link rel="stylesheet" :href="config.public.HTL_CSS" type="text/css" />
-      <Title>
-        WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News
-      </Title>
-      <Meta
-        name="description"
-        content="WNYC is America's most listened-to public radio station and the producer of award-winning programs and podcasts like Radiolab, On the Media, and The Brian Lehrer Show."
-      />
-      <Meta
-        name="keywords"
-        content="wnyc, podcasts, npr, new york, WNYC Studios, arts, culture, classical, music, news, public, radio"
-      />
-      <Meta
-        name="og:site_name"
-        content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-      />
-      <Meta name="og:type" content="website" />
-      <Meta name="og:url" :content="`https://www.wnyc.org${route.fullPath}`" />
-      <Meta
-        name="og:title"
-        content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-      />
-      <Meta
-        name="og:description"
-        content="WNYC is America's most listened-to public radio station and the producer of award-winning programs and podcasts like Radiolab, On the Media, and The Brian Lehrer Show."
-      />
-      <Meta
-        name="og:image"
-        content="https://media.wnyc.org/i/1200/1200/c/80/1/wnyc_square_logo.png"
-      />
-      <Meta name="og:image:alt" content="WNYC" />
-      <Meta name="og:image:width" content="1200" />
-      <Meta name="og:image:height" content="600" />
-      <Meta name="fb:app_id" content="151261804904925" />
-      <Meta name="twitter:card" content="summary_large_image" />
-      <Meta name="twitter:site" content="@radiolab" />
-      <Meta name="twitter:title" content="WNYC" />
-      <Meta
-        name="twitter:description"
-        content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-      />
-      <Meta
-        name="twitter:image"
-        content="https://media.wnyc.org/i/1200/1200/c/80/1/wnyc_square_logo.png"
-      />
-      <Meta
-        name="theme-color"
-        :content="
-          currentUserProfile?.dark_mode
-            ? browserTopColorDarkMode
-            : browserTopColor
-        "
-      />
-      <Meta
-        name="msapplication-TileColor"
-        :content="
-          currentUserProfile?.dark_mode
-            ? browserTopColorDarkMode
-            : browserTopColor
-        "
-      />
-    </Head>
-  </Html>
+  <NuxtLoadingIndicator />
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>

@@ -1,6 +1,8 @@
 <script setup>
 import { mediaTypes } from "~/composables/globals"
 import { dynamicNavigation } from "~/utilities/helpers"
+import ShowItem from "~/components/ShowItem.vue"
+import MediaCard from "~/components/MediaCard.vue"
 
 const props = defineProps({
   table: {
@@ -32,38 +34,15 @@ const user = useCurrentUser()
 const pending = ref(true)
 const fetchError = ref(null)
 
-// determines what component to load based on the item type
-const loadComponent = async (item) => {
-  const componentName = computed(() => {
-    switch (item.type) {
-      case mediaTypes.SHOW:
-        return "ShowItem"
-      case mediaTypes.EPISODE:
-      case mediaTypes.SEGMENT:
-      case mediaTypes.NPR_EPISODE:
-      case mediaTypes.STORY:
-      case mediaTypes.ARTICLE_PAGE:
-      case mediaTypes.ARTICLE:
-      case mediaTypes.NPR_ARTICLE:
-      case mediaTypes.SIMPLECAST:
-      case mediaTypes.LIVE:
-      case mediaTypes.EVENT:
-        return "MediaCard"
-      default:
-        return "MediaCard"
-    }
-  })
+const componentMap = {
+  ShowItem,
+  MediaCard,
+}
 
-  return markRaw(
-    await defineAsyncComponent({
-      loader: () => import(`~/components/${componentName.value}.vue`),
-      onError: (err) => {
-        console.error(
-          `Failed to load component ${componentName.value}: ${err.message}`
-        )
-      },
-    })
-  )
+// determines what component to load based on the item type
+const loadComponent = (item) => {
+  const componentName = item.type === mediaTypes.SHOW ? "ShowItem" : "MediaCard"
+  return markRaw(componentMap[componentName])
 }
 
 const getFilteredItemsData = computed(async () => {

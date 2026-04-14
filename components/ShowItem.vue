@@ -49,8 +49,10 @@ const currentEpisodeHolder = useCurrentEpisodeHolder()
 
 // check if item is already favorited
 const isFavorited = ref(false)
-watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(props.data.slug)
+onMounted(() => {
+  watchEffect(async () => {
+    isFavorited.value = await checkIsFavorited(props.data.slug)
+  })
 })
 
 // check if the show is currently live

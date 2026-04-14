@@ -52,6 +52,16 @@ a:focus-visible {
   scrollbar-width: thin;
 }
 
+.nuxt-loading-indicator {
+  //background: var(--p-primary-500) !important;
+  background: repeating-linear-gradient(
+    to right,
+    var(--p-primary-200) 0%,
+    var(--p-primary-400) 50%,
+    var(--p-primary-500) 100% 100%
+  ) !important;
+}
+
 html {
   overflow-x: hidden !important;
   overflow-y: auto !important;

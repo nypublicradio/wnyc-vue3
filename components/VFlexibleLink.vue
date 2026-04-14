@@ -1,6 +1,8 @@
 <script setup>
 import { computed } from "vue"
 
+defineOptions({ inheritAttrs: false })
+
 const props = defineProps({
   /**
    * pass through and not render link visuals
@@ -71,14 +73,14 @@ const isAnchor = computed(() => {
   <div
     v-if="!to"
     class="flexible-link null inline"
-    v-bind="{ ...$attrs }"
+    v-bind="$attrs"
     @click="emit('flexible-link-click', to)"
   >
     <slot name="default"></slot>
   </div>
   <a
     v-else-if="isExternal"
-    v-bind="{ ...$props, ...$attrs }"
+    v-bind="$attrs"
     :href="to"
     :target="target"
     :rel="`noopener ${props.target === '_blank' ? 'noreferrer' : ''}`"
@@ -91,7 +93,7 @@ const isAnchor = computed(() => {
   </a>
   <a
     v-else-if="isAnchor"
-    v-bind="{ ...$props, ...$attrs }"
+    v-bind="$attrs"
     :href="to"
     target="_self"
     class="flexible-link anchor"
@@ -106,7 +108,7 @@ const isAnchor = computed(() => {
     class="flexible-link internal"
     :class="{ ['raw']: raw }"
     :to="to"
-    v-bind="{ ...$attrs }"
+    v-bind="$attrs"
     @click="emit('flexible-link-click', to)"
     :tabIndex="tabIndexNumber"
   >

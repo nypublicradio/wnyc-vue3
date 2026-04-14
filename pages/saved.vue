@@ -1,8 +1,26 @@
 <script setup>
 import { useSelectedSavedTab, useIsDarkMode } from "~/composables/states"
 import { getSavedMenuItems } from "~/composables/globals"
+import FollowedShows from "~/components/saved/FollowedShows.vue"
+import Favorites from "~/components/saved/Favorites.vue"
+import Downloads from "~/components/saved/Downloads.vue"
+import History from "~/components/saved/History.vue"
 
 useHead({
+  title:
+    "Saved | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+  meta: [
+    {
+      name: "og:title",
+      content:
+        "Saved | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+    },
+    {
+      name: "twitter:title",
+      content:
+        "Saved | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+    },
+  ],
   bodyAttrs: {
     class: "grey-bg",
   },
@@ -48,21 +66,16 @@ const selectMenuItem = async (menuItem, index) => {
   }
 }
 
-// function to dynamically load the component based on the selected menu item
-const loadComponent = (componentName) => {
-  return defineAsyncComponent({
-    loader: () => import(`~/components/saved/${componentName}.vue`),
-    delay: 0,
-    timeout: 10000,
-    onError: (err) => {
-      console.error(`Failed to load component ${componentName}: ${err.message}`)
-    },
-  })
+const savedComponentMap = {
+  FollowedShows,
+  Favorites,
+  Downloads,
+  History,
 }
 
 // Create a computed to get the current component to avoid recreating it
 const currentComponent = computed(() => {
-  return loadComponent(selectedMenuItem.value.value)
+  return savedComponentMap[selectedMenuItem.value.value]
 })
 
 const handleStyleMode = computed(() => {
@@ -112,22 +125,6 @@ onMounted(() => {
 
 <template>
   <div class="saved-page thinContent">
-    <Html lang="en">
-      <Head>
-        <Title
-          >Saved | WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
-          News</Title
-        >
-        <Meta
-          name="og:title"
-          content="Saved | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-        <Meta
-          name="twitter:title"
-          content="Saved | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-      </Head>
-    </Html>
     <section class="flex align-items-center justify-content-between md:py-5">
       <h1>Saved</h1>
     </section>

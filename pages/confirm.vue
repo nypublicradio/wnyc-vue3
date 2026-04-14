@@ -11,11 +11,23 @@ definePageMeta({
   layout: "default",
 })
 
+const route = useRoute()
 const user = useSupabaseUser()
-// JWT token is set in the cookie by the auth middleware
-// when the user is authenticated, so we can use it to allow access to the Salesforce endpoint
 const supabase = useSupabaseClient()
+const config = useRuntimeConfig()
 const { setAuthState } = useAuth()
+
+// Handle PKCE OAuth flow: exchange the ?code= query param for a session
+// This is required for Google/Apple OAuth which returns a code after redirect
+const code = route.query.code as string | undefined
+if (code) {
+  try {
+    await supabase.auth.exchangeCodeForSession(code)
+  } catch (error) {
+    console.error("Failed to exchange OAuth code for session:", error)
+  }
+}
+
 watch(
   user,
   async () => {
@@ -26,7 +38,7 @@ watch(
 
         if (sessionData.session) {
           // Convert Supabase session to JWT
-          const jwtResponse = await $fetch("/api/auth/session-to-jwt", {
+          const jwtResponse = await $fetch(`${config.public.BFF_URL}/api/auth/session-to-jwt`, {
             method: "POST",
             body: {
               access_token: sessionData.session.access_token,

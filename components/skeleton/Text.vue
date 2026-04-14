@@ -22,18 +22,19 @@ const props = defineProps({
   },
 })
 
-function rndWidth(min, max) {
-  min = Math.ceil(min)
-  max = Math.floor(max)
-  return `${Math.floor(Math.random() * (max - min + 1)) + min}%`
-}
-const rndGap = (min = props.gapMin, max = props.gapMax) => {
-  min = Math.ceil(min)
-  max = Math.floor(max)
-  return Math.floor(Math.random() * (max - min + 1)) + min
-}
-
-const gap = rndGap()
+const widths = [
+  "100%",
+  "92%",
+  "85%",
+  "97%",
+  "78%",
+  "88%",
+  "95%",
+  "82%",
+  "90%",
+  "75%",
+]
+const gap = Math.min(props.gapMin + 2, props.gapMax)
 </script>
 
 <template>
@@ -41,7 +42,7 @@ const gap = rndGap()
     v-for="(line, index) in props.lines"
     :key="`sk-text-${index}`"
     :height="props.height"
-    :width="rndWidth(75, 100)"
+    :width="widths[index % widths.length]"
     :borderRadius="props.radius"
     class="mb-1"
     :class="gap === index ? 'mb-5' : ''"

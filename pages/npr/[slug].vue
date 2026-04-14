@@ -4,7 +4,6 @@ const { topStories } = useTopStories()
 
 const route = useRoute()
 const config = useRuntimeConfig()
-const { $analytics } = useNuxtApp()
 
 const storySource = "NPR"
 //const breadcrumbs = computed(() => [{ label: "Home", route: "/home" }])
@@ -13,31 +12,38 @@ const {
   data: storyData,
   status,
   error,
-} = useLazyFetch(`${config.public.BFF_URL}/api/npr/${route.params.slug}`, {
-  onResponse({ response }) {
-    // send GA page view
-    const res = response._data
-    $analytics.sendPageView({
-      page_title: res?.title,
-      page_type: "article",
-      content_group: `${storySource}_article`,
-      article_authors: res?.authors?.map((author) => author.name).join(","),
-      article_publish_date: res?.publicationDate,
-      article_updated_date: res?.updatedDate
-        ? res?.updatedDate
-        : res?.publicationDate,
-      article_title: res?.title,
-    })
-  },
-  onResponseError() {
-    globalToast.value = {
-      severity: "error",
-      summary:
-        "We are having a problem loading this article. Please try again later.",
-      life: 6000,
-      closable: true,
-    }
-  },
+} = await useFetchWrapper(
+  () => `${config.public.BFF_URL}/api/npr/${route.params.slug}`,
+  {
+    key: `npr-story-${route.params.slug}`,
+    onResponseError() {
+      globalToast.value = {
+        severity: "error",
+        summary:
+          "We are having a problem loading this article. Please try again later.",
+        life: 6000,
+        closable: true,
+      }
+    },
+  }
+)
+
+onMounted(() => {
+  if (!storyData.value) return
+  const { $analytics } = useNuxtApp()
+  $analytics.sendPageView({
+    page_title: storyData.value?.title,
+    page_type: "article",
+    content_group: `${storySource}_article`,
+    article_authors: storyData.value?.authors
+      ?.map((author) => author.name)
+      .join(","),
+    article_publish_date: storyData.value?.publicationDate,
+    article_updated_date: storyData.value?.updatedDate
+      ? storyData.value?.updatedDate
+      : storyData.value?.publicationDate,
+    article_title: storyData.value?.title,
+  })
 })
 
 const breadcrumbs = computed(() => [
@@ -53,17 +59,25 @@ const breadcrumbs = computed(() => [
     : []),
   { label: storyData.value?.title },
 ])
+
+const title = `${storyData.value?.title} | WNYC`
+const description = storyData.value?.description
+const canonicalUrl = storyData.value?.link
+useHead(() => ({
+  title,
+  link: [{ rel: "canonical", href: canonicalUrl }],
+}))
+useSeoMeta({
+  title,
+  description,
+  ogUrl: canonicalUrl,
+  ogTitle: title,
+  ogDescription: description,
+})
 </script>
 
 <template>
   <div class="npr-story-page">
-    <Html lang="en">
-      <Head>
-        <Title>{{ storyData?.title }} | WNYC</Title>
-        <Meta name="og:title" :content="`${storyData?.title} | WNYC`" />
-        <Meta name="twitter:title" :content="`${storyData?.title} | WNYC`" />
-      </Head>
-    </Html>
     <FetchError v-if="error" />
     <template v-else>
       <section class="flex align-items-center">

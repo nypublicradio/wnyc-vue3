@@ -1,5 +1,6 @@
 <script setup>
 import { useCurrentEpisode, useIsApp } from "~/composables/states"
+import { useFetchWrapper } from "~/composables/useFetchWrapper"
 // import { useTopStories } from "~/composables/useTopStories"
 // const { topStories } = useTopStories()
 import { brandCards } from "~/composables/globals.ts"
@@ -14,15 +15,34 @@ const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
 const isApp = useIsApp()
 
-const { data: latestNewsUpdatesData, error: error2 } = useLazyFetch(
-  `${config.public.BFF_URL}/api/homepagelatestnewsupdates`
-)
+const newsFetchArgs = [
+  `${config.public.BFF_URL}/api/homepagelatestnewsupdates`,
+  {
+    key: "home-latest-news-updates",
+    retry: 2,
+    retryDelay: 500,
+  },
+]
+const curationFetchArgs = [
+  `${config.public.BFF_URL}/api/homepagecuration`,
+  {
+    key: "home-page-curation",
+    retry: 2,
+    retryDelay: 500,
+  },
+]
+
+const { data: latestNewsUpdatesData, error: error2 } = isApp.value
+  ? useFetchWrapper(...newsFetchArgs)
+  : await useFetchWrapper(...newsFetchArgs)
 
 const {
   data: pagedata,
   error,
   status,
-} = useLazyFetch(`${config.public.BFF_URL}/api/homepagecuration`)
+} = isApp.value
+  ? useFetchWrapper(...curationFetchArgs)
+  : await useFetchWrapper(...curationFetchArgs)
 
 definePageMeta({
   layout: "default",
@@ -31,6 +51,7 @@ definePageMeta({
   },
 })
 
+// Auto-refresh handled by useFetchWrapper
 onMounted(() => {
   // send GA page view
   const { $analytics } = useNuxtApp()
@@ -44,23 +65,6 @@ onMounted(() => {
 
 <template>
   <div class="home">
-    <Html lang="en">
-      <Head>
-        <Title
-          >WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
-          News</Title
-        >
-        <Meta
-          name="og:title"
-          content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-        <Meta
-          name="twitter:title"
-          content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-      </Head>
-    </Html>
-
     <section class="mb-4 pt-0 md:my-4 md:pt-4">
       <div class="home-top grid grid-nogutter gap-4">
         <LiveFeature class="col-12 lg:col -mx-4 md:mx-0 w-screen md:w-full" />
@@ -70,8 +74,8 @@ onMounted(() => {
             Latest News Updates
           </h2>
           <LatestNewsUpdates
-            :localNewscast="latestNewsUpdatesData?.local_newscast"
-            :nationalNewscast="latestNewsUpdatesData?.national_newscast"
+            :localNewscast="latestNewsUpdatesData?.local_newscast ?? null"
+            :nationalNewscast="latestNewsUpdatesData?.national_newscast ?? null"
           />
         </div>
       </div>

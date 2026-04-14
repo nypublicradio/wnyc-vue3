@@ -92,25 +92,26 @@ onMounted(async () => {
 onUnmounted(() => {
   clearAllTimeout()
 })
+
+useHead({
+  title:
+    "Listen Live | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+  meta: [
+    {
+      name: "og:title",
+      content:
+        "Listen Live | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+    },
+    {
+      name: "twitter:title",
+      content:
+        "Listen Live | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+    },
+  ],
+})
 </script>
 <template>
   <div class="page live-page">
-    <Html lang="en">
-      <Head>
-        <Title
-          >Listen Live | WNYC | New York Public Radio, Podcasts, Live Streaming
-          Radio, News</Title
-        >
-        <Meta
-          name="og:title"
-          content="Listen Live | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-        <Meta
-          name="twitter:title"
-          content="Listen Live | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-      </Head>
-    </Html>
     <div class="top flex flex-column gap-3 style-mode-dark mb-3">
       <HorizontalScrollFeature
         :data="allCurrentStations"

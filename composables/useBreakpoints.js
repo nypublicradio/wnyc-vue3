@@ -35,9 +35,14 @@ const breakpointOrder = {
     'xxxl': 7
 }
 
+// SSR-safe default breakpoint (lg = desktop, most web visitors)
+const SSR_DEFAULT_BREAKPOINT = 'lg'
+const SSR_DEFAULT_WIDTH = 1024
+
 // Global shared state and resize handler
-const globalBreakpoint = ref('')
-const globalWindowWidth = ref(0)
+// Initialize with SSR defaults on both server and client to prevent hydration mismatches
+const globalBreakpoint = ref(SSR_DEFAULT_BREAKPOINT)
+const globalWindowWidth = ref(SSR_DEFAULT_WIDTH)
 let listenerCount = 0
 let isInitialized = false
 
@@ -168,9 +173,21 @@ const cleanupBreakpoints = () => {
  */
 export function useBreakpoints () {
     const isMobileBreakpoint = computed(() => breakpoint("<md"))
+
     onMounted(() => {
         listenerCount++
-        initializeBreakpoints()
+        if (import.meta.client) {
+            // Defer breakpoint measurement until after hydration completes
+            // to prevent mismatches when Suspense boundaries resolve async components
+            const nuxtApp = useNuxtApp()
+            if (nuxtApp.isHydrating) {
+                nuxtApp.hook('app:suspense:resolve', () => {
+                    initializeBreakpoints()
+                })
+            } else {
+                initializeBreakpoints()
+            }
+        }
     })
 
     onUnmounted(() => {

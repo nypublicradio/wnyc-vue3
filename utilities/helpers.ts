@@ -928,12 +928,12 @@ export const saveFavorite = async (
     const title = media?.title
     const producingOrganizations = media?.producingOrganizations
     const authors = media?.authors
-    const meta = media?.meta
+    const meta = media?.meta ?? {}
     const audio = media?.audio ?? media?.hls
     const showTitle = media?.showTitle ?? media?.headers?.brand?.title ?? media?.station
 
     // add firstPublishedAt if missing from meta
-    if (!meta?.firstPublishedAt) {
+    if (!meta.firstPublishedAt) {
       meta.firstPublishedAt = media?.updatedDate || media?.publicationDate
     }
 
@@ -1491,5 +1491,12 @@ export const toggleNativePullToRefresh = (enable: boolean) => {
 }
 // isolates the slug from the end of a url
 export const isolateSlug = (slug: string) => {
-  return slug?.split("/").pop()
+  return slug?.split("/").filter(Boolean).pop()
+}
+
+// get the first sentence from a string of text
+export const getFirstSentence = (text: string): string => {
+  if (!text) return ''
+  const sentences = text.match(/(.*?[.?!])/)
+  return sentences ? sentences[0] : text
 }
