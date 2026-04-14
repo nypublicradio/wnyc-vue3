@@ -2,6 +2,7 @@ import { sentryVitePlugin } from "@sentry/vite-plugin"
 import MyPreset from "./assets/wnyc-theme.js"
 
 export default defineNuxtConfig({
+  //devtools: { enabled: true },
   modules: [
     "@nuxtjs/supabase",
     ...(process.env.NUXT_SSR === "true" ? [] : ["@nuxtjs/ionic"]),
@@ -65,8 +66,8 @@ export default defineNuxtConfig({
     },
     prerender: {
       // Disable prerendering when SSR is false (SPA mode for mobile)
-      crawlLinks: process.env.NUXT_SSR === 'true',
-      routes: process.env.NUXT_SSR === 'true' ? ['/'] : ['/'],
+      //crawlLinks: process.env.NUXT_SSR === 'true',
+      //routes: process.env.NUXT_SSR === 'true' ? ['/'] : ['/'],
       // Don't fail the build on prerender errors for client-only routes
       failOnError: false,
       // Ignore client-only routes that don't work with SSR
@@ -85,7 +86,7 @@ export default defineNuxtConfig({
 
   ionic: {
     integrations: {
-      router: process.env.NUXT_SSR === 'true',
+      router: false,
       pwa: false,
     },
     css: {
@@ -251,6 +252,7 @@ export default defineNuxtConfig({
       SPRINGBOARD_URL: process.env.SPRINGBOARD_URL ?? "https://nypr.hosted.jacksonriverdev.com",
       NEWSLETTER_API: process.env.NEWSLETTER_API ?? 'https://api.demo.nypr.digital/email-proxy/subscribe',
       NEWSLETTER_MULTI_LIST_IDS: 'WNYC Weekly Brief++WNYC Membership',
+      NUXT_SSR: process.env.NUXT_SSR === 'true' ? 'true' : 'false',
     },
   },
 

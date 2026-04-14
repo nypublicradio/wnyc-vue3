@@ -32,17 +32,15 @@ const curationFetchArgs = [
   },
 ]
 
-const { data: latestNewsUpdatesData, error: error2 } = isApp.value
-  ? useFetchWrapper(...newsFetchArgs)
-  : await useFetchWrapper(...newsFetchArgs)
+const { data: latestNewsUpdatesData, error: error2 } = await useFetchWrapper(
+  ...newsFetchArgs
+)
 
 const {
   data: pagedata,
   error,
   status,
-} = isApp.value
-  ? useFetchWrapper(...curationFetchArgs)
-  : await useFetchWrapper(...curationFetchArgs)
+} = await useFetchWrapper(...curationFetchArgs)
 
 definePageMeta({
   layout: "default",
