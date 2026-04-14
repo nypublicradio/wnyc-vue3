@@ -14,7 +14,7 @@ export function useFetchWrapper (request, options = {}) {
     const {
         key,
         autoRefresh = true,
-        logKey = true,
+        logKey = false,
         ...rest
     } = options
 
@@ -38,7 +38,6 @@ export function useFetchWrapper (request, options = {}) {
     if (autoRefresh) {
         onMounted(() => {
             if (!fetchResult.data.value || fetchResult.status.value === 'error') {
-                console.log('[useFetchWrapper] Auto-refreshing data for key:', key)
                 fetchResult.refresh()
             }
         })
