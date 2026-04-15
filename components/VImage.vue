@@ -126,23 +126,11 @@ const handleImageLoad = () => {
 // })
 
 // Reset loading/error state when image source changes
-// Vue-idiomatic: use a ref to the wrapper and check for loaded image
-const wrapperRef = ref(null)
 watch(
   () => imageTemplate.value,
-  async () => {
+  () => {
     imageLoaded.value = false
     imageErrored.value = false
-
-    await nextTick()
-    const wrapper = wrapperRef.value
-    if (wrapper) {
-      // Find the first <img> or .native-image inside the wrapper
-      const img = wrapper.querySelector("img, .native-image")
-      if (img && img.complete && img.naturalHeight !== 0) {
-        imageLoaded.value = true
-      }
-    }
   }
 )
 
@@ -193,9 +181,10 @@ const childProps = computed(() => {
 <template>
   <div class="v-image-wrapper">
     <!-- Wrapper controls image visibility — not on <component> since inheritAttrs:false prevents class fallthrough -->
-    <div :class="imageVisibilityClass" ref="wrapperRef">
+    <div :class="imageVisibilityClass">
       <component
         :is="dynamicComponent"
+        :key="imageTemplate"
         v-bind="childProps"
         @image-load="handleImageLoad"
       >
