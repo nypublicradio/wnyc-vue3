@@ -289,7 +289,6 @@ watch(settingsSideBarBrowser, async (newVal) => {
   }
 
   .p-drawer-content {
-    max-width: $contentWidth;
     width: 100%;
     margin: auto;
     padding: 0;
