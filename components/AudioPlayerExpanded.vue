@@ -427,28 +427,27 @@ const moreFromClick = async () => {
         </DotMenu>
       </div>
     </div>
+    <pre class="text-xs">{{ currentEpisode }}</pre>
+
     <VImage
       v-if="
-        !!currentEpisode.onTodaysShowImageTemplate
-          ? false
-          : currentEpisode.player_image !== currentEpisode.image
+        Boolean(currentEpisode?.onTodaysShowImageTemplate)
+          ? currentEpisode?.player_image !== currentEpisode?.image
+          : false
       "
-      :src="currentEpisode.image || currentEpisode.image.template"
-      :alt="`${currentEpisode.title} featured image`"
+      :src="currentEpisode?.image || currentEpisode?.image?.template"
+      :alt="`${currentEpisode?.title} featured image`"
       :size="{
         xs: [327, 218],
         sm: [528, 352],
         md: [672, 448],
-        lg: [896, 597],
-        xl: [1104, 736],
-        xxl: [1344, 896],
       }"
       class="card-feature-image"
     >
       <template #caption>
         <VImageCaption
-          v-if="currentEpisode.image.caption"
-          :text="currentEpisode.image.caption"
+          v-if="currentEpisode?.image?.caption"
+          :text="currentEpisode?.image?.caption"
           class="caption"
         />
       </template>
@@ -465,9 +464,6 @@ const moreFromClick = async () => {
         xs: [327, 218],
         sm: [528, 352],
         md: [672, 448],
-        lg: [896, 597],
-        xl: [1104, 736],
-        xxl: [1344, 896],
       }"
       class="show-feature-image"
     >
