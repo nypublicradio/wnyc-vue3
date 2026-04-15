@@ -456,8 +456,6 @@ const moreFromClick = async () => {
         </DotMenu>
       </div>
     </div>
-    <pre class="text-xs">{{ currentEpisode }}</pre>
-
     <VImage
       v-if="
         Boolean(currentEpisode?.onTodaysShowImageTemplate)
