@@ -41,15 +41,34 @@ const isApp = useIsApp()
 const { handleSleepTimer } = useSleepTimer()
 
 const isFavorited = ref(false)
+const isShowFollowed = ref(false)
 const showDownload = ref(true)
+
+const getTrueSlugFromId = async (id) => {
+  try {
+    const v2SlugRes = await $fetch(
+      `${config.public.BFF_URL}/api/v2/show/${id}?slugOnly=true`
+    ).catch((e) => null)
+    console.log("v2SlugRes", v2SlugRes)
+    return v2SlugRes?.show?.slug
+  } catch (error) {
+    console.error(`Error getting true slug from id: ${error}`)
+    return null
+  }
+}
+
 onMounted(() => {
   watchEffect(async () => {
     // hide share if it is a segment, which is only set in NPR direct show episodes
     currentEpisode.value?.isSegment ? (showShare.value = false) : (showShare.value = true)
-
+    console.log("currentEpisode.value", currentEpisode.value)
     isFavorited.value = await checkIsFavorited(
       currentEpisode.value?.meta?.slug || currentEpisode.value?.slug
     )
+
+    const trueSlug = await getTrueSlugFromId(currentEpisode.value.showSlug)
+    isShowFollowed.value = await checkIsFavorited(trueSlug)
+
     // show/hide download button based on show title
     const showsWithoutDownload = ["nyc now", "wnyc news"]
     const showTitle = (
@@ -81,11 +100,7 @@ const handleAddToFavorites = () => {
 const handleFollow = async (showSlug) => {
   try {
     // Step 1: Query v2 to explicitly resolve the slug (especially for UUIDs)
-    const v2SlugRes = await $fetch(
-      `${config.public.BFF_URL}/api/v2/show/${showSlug}?slugOnly=true`
-    ).catch((e) => null)
-
-    const trueSlug = v2SlugRes?.show?.slug
+    const trueSlug = await getTrueSlugFromId(showSlug)
 
     let showData = null
 
@@ -96,6 +111,8 @@ const handleFollow = async (showSlug) => {
       ).catch((e) => null)
     }
 
+    console.log("showData", showData)
+
     if (!showData) {
       console.warn("Unable to find the show properties.")
       globalToast.value = {
@@ -105,15 +122,14 @@ const handleFollow = async (showSlug) => {
       }
       return
     }
-
     addToFavorites2({
       item: showData,
-      isFavorited: isFavorited.value,
+      isFavorited: isShowFollowed.value,
       message: "Updated your followed shows.",
     })
 
     if (user.value) {
-      isFavorited.value = !isFavorited.value
+      isShowFollowed.value = !isShowFollowed.value
     }
   } catch (error) {
     console.error(`Error following this show: ${error}`)
@@ -170,11 +186,11 @@ const getDotMenuItems = () => {
     ...(isLive.value
       ? [
           {
-            label: `${isFavorited.value ? "Unfollow" : "Follow"} ${
+            label: `${isShowFollowed.value ? "Unfollow" : "Follow"} ${
               currentEpisode.value.title
             }`,
             customIcon: FollowIcon,
-            active: isFavorited.value,
+            active: isShowFollowed.value,
             title: currentEpisode.value.title,
             command: () => {
               handleFollow(currentEpisode.value.showSlug)
@@ -400,7 +416,7 @@ const moreFromClick = async () => {
             <ShareIcon />
           </template>
         </Button>
-
+        {{ isShowFollowed }}
         <DotMenu
           :menuItems="getDotMenuItems()"
           size="large"
