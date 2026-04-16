@@ -27,7 +27,7 @@ const STATION_METADATA = {
     },
     'wqxr': {
         name: 'WQXR 105.9 FM',
-        audio: 'https://fm1059.wqxr.org/wqxr',
+        audio: 'https://stream.wqxr.org/wqxr',
         hls: 'https://hls-live.wnyc.org/wqxr48-hls/playlist.m3u8',
         imageLogo: 'https://media.wnyc.org/i/%s/%s/%s/%s/1/wqxr_1_1.png',
     },
@@ -39,7 +39,7 @@ const STATION_METADATA = {
     },
     'wqxr-holiday-channel-on-wnyc': {
         name: 'WQXR Holiday Channel',
-        audio: 'https://holidaystream.wqxr.org/holiday',
+        audio: 'https://stream.wqxr.org/qxr-special',
         hls: 'https://hls-live.wnyc.org/qxr-special-hls.aac/playlist.m3u8',
         imageLogo: 'https://media.wnyc.org/i/%s/%s/%s/%s/1/wqxr_1_1.png',
     },
