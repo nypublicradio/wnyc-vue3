@@ -31,6 +31,10 @@ export default defineNuxtConfig({
     key: process.env.SUPABASE_KEY,
     redirect: false,
     useSsrCookies: process.env.NUXT_SSR === "true",
+    // Allow insecure cookies on localhost:
+    cookieOptions: {
+      secure: process.env.NODE_ENV === 'production',
+    }
   },
 
   image: {
