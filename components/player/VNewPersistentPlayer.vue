@@ -730,7 +730,6 @@ defineExpose({
             <div
               class="flex flex-column md:flex-row gap-3 md:align-items-center"
             >
-              <!--   <pre class="text-xs">{{ currentEpisode }}</pre> -->
               <VImage
                 class="flex-none w-9rem h-9rem align-self-center md:align-self-start"
                 :alt="`${props.title} show image`"
