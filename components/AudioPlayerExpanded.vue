@@ -46,11 +46,9 @@ onMounted(() => {
   watchEffect(async () => {
     // hide share if it is a segment, which is only set in NPR direct show episodes
     currentEpisode.value?.isSegment ? (showShare.value = false) : (showShare.value = true)
+
     isFavorited.value = await checkIsFavorited(
-      currentEpisode.value.showSlug ||
-        currentEpisode.value.slug ||
-        currentEpisode.value.meta?.slug ||
-        null
+      currentEpisode.value?.meta?.slug || currentEpisode.value?.slug
     )
     // show/hide download button based on show title
     const showsWithoutDownload = ["nyc now", "wnyc news"]
@@ -82,23 +80,38 @@ const handleAddToFavorites = () => {
 // add show to favorites
 const handleFollow = async (showSlug) => {
   try {
-    const ep = currentEpisode.value
-    // Build a minimal show object from episode data to avoid needing a separate API call.
-    // This mirrors what ShowHeader.vue does — it passes the already-loaded show object directly.
-    const showData = {
-      id: ep.showId ?? showSlug,
-      slug: showSlug,
-      title: ep.showTitle ?? ep.title,
-      type: "show",
-      cmsSource: ep.cmsSource,
-      image: ep.headers?.brand?.logoImage ?? ep.image,
-      url: ep.url,
+    // Step 1: Query v2 to explicitly resolve the slug (especially for UUIDs)
+    const v2SlugRes = await $fetch(
+      `${config.public.BFF_URL}/api/v2/show/${showSlug}?slugOnly=true`
+    ).catch((e) => null)
+
+    const trueSlug = v2SlugRes?.show?.slug
+
+    let showData = null
+
+    // Step 2: Only fetch wagtail if we successfully resolved a true slug from v2
+    if (trueSlug) {
+      showData = await $fetch(
+        `${config.public.BFF_URL}/api/pages/wagtail/${trueSlug}?showOnly=true`
+      ).catch((e) => null)
     }
+
+    if (!showData) {
+      console.warn("Unable to find the show properties.")
+      globalToast.value = {
+        severity: "warn",
+        summary: "Unable to find the show to follow.",
+        life: 3000,
+      }
+      return
+    }
+
     addToFavorites2({
       item: showData,
       isFavorited: isFavorited.value,
       message: "Updated your followed shows.",
     })
+
     if (user.value) {
       isFavorited.value = !isFavorited.value
     }
@@ -343,7 +356,7 @@ const moreFromClick = async () => {
           rounded
           aria-label="add to favorites"
           @click="handleAddToFavorites"
-          v-if="!currentEpisode.hideFavorite"
+          v-if="!currentEpisode.hideFavorite && !isLive"
         >
           <template #icon>
             <StarIcon :active="isFavorited" />
