@@ -40,7 +40,7 @@ const STATION_METADATA = {
     'wqxr-holiday-channel-on-wnyc': {
         name: 'WQXR Holiday Channel',
         audio: 'https://holidaystream.wqxr.org/holiday',
-        hls: 'https://hls-live.wnyc.org/holidayapp-hls.aac/playlist.m3u8',
+        hls: 'https://hls-live.wnyc.org/qxr-special-hls.aac/playlist.m3u8',
         imageLogo: 'https://media.wnyc.org/i/%s/%s/%s/%s/1/wqxr_1_1.png',
     },
 }
