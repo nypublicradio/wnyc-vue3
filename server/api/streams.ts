@@ -27,20 +27,20 @@ const STATION_METADATA = {
     },
     'wqxr': {
         name: 'WQXR 105.9 FM',
-        audio: 'https://fm1059.wqxr.org/wqxr',
-        hls: 'https://hls-live.wnyc.org/wqxrapp-hls.aac/playlist.m3u8',
+        audio: 'https://stream.wqxr.org/wqxr',
+        hls: 'https://hls-live.wnyc.org/wqxr48-hls/playlist.m3u8',
         imageLogo: 'https://media.wnyc.org/i/%s/%s/%s/%s/1/wqxr_1_1.png',
     },
     'q2': {
         name: 'New Sounds',
         audio: 'https://q2stream.wqxr.org/q2',
-        hls: 'https://hls-live.wnyc.org/q2app-hls.aac/playlist.m3u8',
+        hls: 'https://hls-live.wnyc.org/q248-hls/playlist.m3u8',
         imageLogo: 'https://media.wnyc.org/i/%s/%s/%s/%s/1/ns_showcard-newsounds-radio-1.jpg',
     },
     'wqxr-holiday-channel-on-wnyc': {
         name: 'WQXR Holiday Channel',
-        audio: 'https://holidaystream.wqxr.org/holiday',
-        hls: 'https://hls-live.wnyc.org/holidayapp-hls.aac/playlist.m3u8',
+        audio: 'https://stream.wqxr.org/qxr-special',
+        hls: 'https://hls-live.wnyc.org/qxr-special-hls.aac/playlist.m3u8',
         imageLogo: 'https://media.wnyc.org/i/%s/%s/%s/%s/1/wqxr_1_1.png',
     },
 }
