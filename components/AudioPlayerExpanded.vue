@@ -44,12 +44,15 @@ const isFavorited = ref(false)
 const isShowFollowed = ref(false)
 const showDownload = ref(true)
 
+// get true slug from id
 const getTrueSlugFromId = async (id) => {
   try {
     const v2SlugRes = await $fetch(
       `${config.public.BFF_URL}/api/v2/show/${id}?slugOnly=true`
-    ).catch((e) => null)
-    console.log("v2SlugRes", v2SlugRes)
+    ).catch((e) => {
+      console.error(`Error getting true slug from id: ${e}`)
+      return null
+    })
     return v2SlugRes?.show?.slug
   } catch (error) {
     console.error(`Error getting true slug from id: ${error}`)
@@ -61,7 +64,6 @@ onMounted(() => {
   watchEffect(async () => {
     // hide share if it is a segment, which is only set in NPR direct show episodes
     currentEpisode.value?.isSegment ? (showShare.value = false) : (showShare.value = true)
-    console.log("currentEpisode.value", currentEpisode.value)
     isFavorited.value = await checkIsFavorited(
       currentEpisode.value?.meta?.slug || currentEpisode.value?.slug
     )
@@ -110,8 +112,6 @@ const handleFollow = async (showSlug) => {
         `${config.public.BFF_URL}/api/pages/wagtail/${trueSlug}?showOnly=true`
       ).catch((e) => null)
     }
-
-    console.log("showData", showData)
 
     if (!showData) {
       console.warn("Unable to find the show properties.")
