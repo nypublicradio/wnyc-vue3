@@ -105,7 +105,7 @@ const breadcrumbs = computed(() => [
   { label: "Events", route: "/events" },
 ])
 
-const greeneSpaceUrl = "https://thegreenespace.org"
+const greeneSpaceUrl = "/rent-the-greene-space"
 
 const title = "Events | WNYC"
 useHead({
