@@ -184,6 +184,7 @@ const childProps = computed(() => {
     <div :class="imageVisibilityClass">
       <component
         :is="dynamicComponent"
+        :key="imageTemplate"
         v-bind="childProps"
         @image-load="handleImageLoad"
       >
