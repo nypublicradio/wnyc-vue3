@@ -49,7 +49,7 @@ const showDownload = ref(true)
 // get true slug from id
 const getTrueSlugFromRedirects = async (link) => {
   const currentSlug = isolateSlug(link)
-  return getTrueSlug(currentSlug)
+  return await getTrueSlug(currentSlug)
 }
 
 onMounted(() => {
@@ -102,7 +102,7 @@ const handleFollowLive = async (link) => {
       if (trueSlug) {
         showData = await $fetch(
           `${config.public.BFF_URL}/api/pages/wagtail/${trueSlug}?showOnly=true`
-        ).catch((e) => null)
+        ).catch(() => null)
       }
 
       if (!showData) {
@@ -321,7 +321,7 @@ const moreFromClick = async () => {
     currentEpisode.value.meta?.showSlug ||
     currentEpisode.value.showId ||
     currentEpisode.value.show
-  let finalSlug = await getTrueSlug(slug)
+  const finalSlug = await getTrueSlug(slug)
 
   trackClickEvent(
     `Click Tracking - Expanded Audio Player More from ${title}`,
