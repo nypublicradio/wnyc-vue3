@@ -416,7 +416,6 @@ const moreFromClick = async () => {
             <ShareIcon />
           </template>
         </Button>
-        {{ isShowFollowed }}
         <DotMenu
           :menuItems="getDotMenuItems()"
           size="large"
