@@ -4,6 +4,7 @@ import {
   shareAPI,
   checkIsFavorited,
   addToFavorites2,
+  isolateSlug,
 } from "~/utilities/helpers"
 import {
   useCurrentEpisode,
@@ -45,16 +46,19 @@ const isShowFollowed = ref(false)
 const showDownload = ref(true)
 
 // get true slug from id
-const getTrueSlugFromId = async (id) => {
+const getTrueSlugFromRedirects = async (link) => {
+  const currentSlug = isolateSlug(link)
   try {
-    const v2SlugRes = await $fetch(
-      `${config.public.BFF_URL}/api/v2/show/${id}?slugOnly=true`
-    ).catch((e) => {
-      console.error(`Error getting true slug from id: ${e}`)
-      return null
-    })
-    console.log("v2SlugRes", v2SlugRes)
-    return v2SlugRes?.show?.slug
+    // get the list of redirects
+    const redirectsData = await $fetch(
+      `${config.public.BFF_URL}/api/show-slug-redirects`,
+      {
+        key: "show-slug-redirects",
+      }
+    )
+    // find the redirect in the list
+    const redirect = redirectsData?.find((r) => isolateSlug(r.from) === currentSlug)
+    return redirect ? isolateSlug(redirect.to) : currentSlug
   } catch (error) {
     console.error(`Error getting true slug from id: ${error}`)
     return null
@@ -63,13 +67,13 @@ const getTrueSlugFromId = async (id) => {
 
 onMounted(() => {
   watchEffect(async () => {
+    if (!user.value) return
     // hide share if it is a segment, which is only set in NPR direct show episodes
     currentEpisode.value?.isSegment ? (showShare.value = false) : (showShare.value = true)
     isFavorited.value = await checkIsFavorited(
       currentEpisode.value?.meta?.slug || currentEpisode.value?.slug
     )
-
-    const trueSlug = await getTrueSlugFromId(currentEpisode.value.showSlug)
+    const trueSlug = await getTrueSlugFromRedirects(currentEpisode.value.detailsLink)
     isShowFollowed.value = await checkIsFavorited(trueSlug)
 
     // show/hide download button based on show title
@@ -100,29 +104,29 @@ const handleAddToFavorites = () => {
   }
 }
 // add show to favorites
-const handleFollow = async (showSlug) => {
+const handleFollowLive = async (link) => {
   try {
-    // Step 1: Query v2 to explicitly resolve the slug (especially for UUIDs)
-    console.log("showSlug", showSlug)
-    const trueSlug = await getTrueSlugFromId(showSlug)
-    console.log("trueSlug", trueSlug)
     let showData = null
+    if (user.value) {
+      // Step 1: Query v2 to explicitly resolve the slug (especially for UUIDs)
+      const trueSlug = await getTrueSlugFromRedirects(link)
 
-    // Step 2: Only fetch wagtail if we successfully resolved a true slug from v2
-    if (trueSlug) {
-      showData = await $fetch(
-        `${config.public.BFF_URL}/api/pages/wagtail/${trueSlug}?showOnly=true`
-      ).catch((e) => null)
-    }
-    console.log("showData", showData)
-    if (!showData) {
-      console.warn("Unable to find the show properties.")
-      globalToast.value = {
-        severity: "warn",
-        summary: "Unable to find the show to follow.",
-        life: 3000,
+      // Step 2: Only fetch wagtail if we successfully resolved a true slug from v2
+      if (trueSlug) {
+        showData = await $fetch(
+          `${config.public.BFF_URL}/api/pages/wagtail/${trueSlug}?showOnly=true`
+        ).catch((e) => null)
       }
-      return
+
+      if (!showData) {
+        console.warn("Unable to find the show properties.")
+        globalToast.value = {
+          severity: "warn",
+          summary: "Unable to find the show to follow.",
+          life: 3000,
+        }
+        return
+      }
     }
     addToFavorites2({
       item: showData,
@@ -195,7 +199,7 @@ const getDotMenuItems = () => {
             active: isShowFollowed.value,
             title: currentEpisode.value.title,
             command: () => {
-              handleFollow(currentEpisode.value.showSlug)
+              handleFollowLive(currentEpisode.value.detailsLink)
             },
           },
           ...(isApp.value
@@ -362,7 +366,7 @@ const moreFromClick = async () => {
 
 <template>
   <section class="expanded-player flex flex-column gap-3">
-    <pre class="text-xs">{{ currentEpisode }}</pre>
+    <!-- <pre class="text-xs">{{ currentEpisode }}</pre> -->
     <div class="tools flex justify-content-between">
       <div v-if="isLive && isApp" class="flex gap-3">
         <SleepTimerButton @emit-click="handleSleepTimer" :isActive="sleepTimerRunning" />
