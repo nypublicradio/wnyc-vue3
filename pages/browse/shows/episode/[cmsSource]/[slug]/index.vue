@@ -13,11 +13,7 @@ const route = useRoute()
 const router = useRouter()
 const toast = useToast()
 
-const {
-  data: episode,
-  status,
-  error,
-} = await useFetchWrapper(
+const { data: episode, status, error } = await useFetchWrapper(
   () =>
     `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
   {
@@ -25,8 +21,7 @@ const {
     onResponseError() {
       toast.add({
         severity: "error",
-        summary:
-          "We are having a problem loading this episode. Please try again later.",
+        summary: "We are having a problem loading this episode. Please try again later.",
         life: 6000,
         closable: true,
       })
@@ -43,9 +38,7 @@ onMounted(() => {
     page_title: episode.value.title,
     page_type: "episode_page",
     content_group: "on_demand_episode",
-    article_authors: episode.value?.authors
-      ?.map((author) => author.name)
-      .join(","),
+    article_authors: episode.value?.authors?.map((author) => author.name).join(","),
     article_publish_date: episode.value.publicationDate,
     article_updated_date: episode.value.updatedDate
       ? episode.value.updatedDate
@@ -70,7 +63,7 @@ const theSlug = computed(
     episode.value?.headers?.brand?.slug ||
     null
 )
-
+console.log("theSlug", theSlug.value)
 const { data: showSlug } = await useFetchWrapper(
   () =>
     theSlug.value
@@ -80,7 +73,7 @@ const { data: showSlug } = await useFetchWrapper(
     key: `v2-show-only-${theSlug.value}`,
   }
 )
-
+console.log("showSlug", showSlug.value.show)
 // Redirect table for old publisher show slugs
 const { data: redirectsData } = await useFetchWrapper(
   () => `${config.public.BFF_URL}/api/show-slug-redirects`,
@@ -97,9 +90,7 @@ const resolvedShowSlug = computed(() => {
   )?.slug
 
   if (headerSlug) {
-    const redirect = redirectsData.value?.find(
-      (r) => isolateSlug(r.from) === headerSlug
-    )
+    const redirect = redirectsData.value?.find((r) => isolateSlug(r.from) === headerSlug)
     return redirect ? isolateSlug(redirect.to) : headerSlug
   }
 
@@ -107,10 +98,10 @@ const resolvedShowSlug = computed(() => {
   if (showSlug.value?.show?.slug) return showSlug.value.show.slug
 
   // 3. Raw fallbacks
-  return (
-    episode.value?.show?.slug || episode.value?.headers?.brand?.slug || null
-  )
+  return episode.value?.show?.slug || episode.value?.headers?.brand?.slug || null
 })
+
+console.log("resolvedShowSlug", resolvedShowSlug.value)
 
 const { data: show, status: showStatus } = await useFetchWrapper(
   () =>
