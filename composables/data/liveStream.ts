@@ -156,6 +156,7 @@ export default function useLiveStream () {
     }
   }
 
+  // format the time and round to the nearest quarter hour
   const formatAndRoundTime = (dateArg) => {
     const date = new Date(dateArg)
 
