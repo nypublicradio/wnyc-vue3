@@ -103,7 +103,7 @@ const handleFollow = async (showSlug) => {
   try {
     // Step 1: Query v2 to explicitly resolve the slug (especially for UUIDs)
     const trueSlug = await getTrueSlugFromId(showSlug)
-
+    console.log("trueSlug", trueSlug)
     let showData = null
 
     // Step 2: Only fetch wagtail if we successfully resolved a true slug from v2
@@ -112,7 +112,7 @@ const handleFollow = async (showSlug) => {
         `${config.public.BFF_URL}/api/pages/wagtail/${trueSlug}?showOnly=true`
       ).catch((e) => null)
     }
-
+    console.log("showData", showData)
     if (!showData) {
       console.warn("Unable to find the show properties.")
       globalToast.value = {
