@@ -108,10 +108,10 @@ const handleFollowLive = async (link) => {
   try {
     let showData = null
     if (user.value) {
-      // Step 1: Query v2 to explicitly resolve the slug (especially for UUIDs)
+      // Step 1: get the true slug from the detailsLink
       const trueSlug = await getTrueSlugFromRedirects(link)
 
-      // Step 2: Only fetch wagtail if we successfully resolved a true slug from v2
+      // Step 2: fetch wagtail show data if we successfully resolved a true slug
       if (trueSlug) {
         showData = await $fetch(
           `${config.public.BFF_URL}/api/pages/wagtail/${trueSlug}?showOnly=true`
@@ -128,12 +128,14 @@ const handleFollowLive = async (link) => {
         return
       }
     }
+
+    // add show to favorites (this is not nested under the user check because this function handles the user prompt to login/create an account)
     addToFavorites2({
       item: showData,
       isFavorited: isShowFollowed.value,
       message: "Updated your followed shows.",
     })
-
+    // toggle the followed state if the user is logged in
     if (user.value) {
       isShowFollowed.value = !isShowFollowed.value
     }
