@@ -5,6 +5,7 @@ import {
   checkIsFavorited,
   addToFavorites2,
   isolateSlug,
+  getTrueSlug,
 } from "~/utilities/helpers"
 import {
   useCurrentEpisode,
@@ -48,21 +49,7 @@ const showDownload = ref(true)
 // get true slug from id
 const getTrueSlugFromRedirects = async (link) => {
   const currentSlug = isolateSlug(link)
-  try {
-    // get the list of redirects
-    const redirectsData = await $fetch(
-      `${config.public.BFF_URL}/api/show-slug-redirects`,
-      {
-        key: "show-slug-redirects",
-      }
-    )
-    // find the redirect in the list
-    const redirect = redirectsData?.find((r) => isolateSlug(r.from) === currentSlug)
-    return redirect ? isolateSlug(redirect.to) : currentSlug
-  } catch (error) {
-    console.error(`Error getting true slug from id: ${error}`)
-    return null
-  }
+  return getTrueSlug(currentSlug)
 }
 
 onMounted(() => {
@@ -334,28 +321,8 @@ const moreFromClick = async () => {
     currentEpisode.value.meta?.showSlug ||
     currentEpisode.value.showId ||
     currentEpisode.value.show
-  let finalSlug = slug
-  // detect if the slug is a uuid
-  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-    slug
-  )
-  if (isUuid) {
-    try {
-      const showSlug = await $fetch(
-        `${config.public.BFF_URL}/api/v2/show/${slug}?slugOnly=true`
-      )
-      finalSlug = showSlug.show.slug
-    } catch (error) {
-      globalToast.value = {
-        severity: "error",
-        summary: "We are having a problem loading the show page. Please try again later.",
-        life: 6000,
-        closable: true,
-      }
-      console.error(`Error fetching show details in moreFromClick: ${error}`)
-      return
-    }
-  }
+  let finalSlug = await getTrueSlug(slug)
+
   trackClickEvent(
     `Click Tracking - Expanded Audio Player More from ${title}`,
     "Expanded Audio Player",

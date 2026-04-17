@@ -63,7 +63,7 @@ const theSlug = computed(
     episode.value?.headers?.brand?.slug ||
     null
 )
-console.log("theSlug", theSlug.value)
+
 const { data: showSlug } = await useFetchWrapper(
   () =>
     theSlug.value
@@ -73,7 +73,7 @@ const { data: showSlug } = await useFetchWrapper(
     key: `v2-show-only-${theSlug.value}`,
   }
 )
-console.log("showSlug", showSlug.value.show)
+
 // Redirect table for old publisher show slugs
 const { data: redirectsData } = await useFetchWrapper(
   () => `${config.public.BFF_URL}/api/show-slug-redirects`,
@@ -100,8 +100,6 @@ const resolvedShowSlug = computed(() => {
   // 3. Raw fallbacks
   return episode.value?.show?.slug || episode.value?.headers?.brand?.slug || null
 })
-
-console.log("resolvedShowSlug", resolvedShowSlug.value)
 
 const { data: show, status: showStatus } = await useFetchWrapper(
   () =>
