@@ -4,6 +4,8 @@ import {
   shareAPI,
   checkIsFavorited,
   addToFavorites2,
+  isolateSlug,
+  getTrueSlug,
 } from "~/utilities/helpers"
 import {
   useCurrentEpisode,
@@ -45,30 +47,20 @@ const isShowFollowed = ref(false)
 const showDownload = ref(true)
 
 // get true slug from id
-const getTrueSlugFromId = async (id) => {
-  try {
-    const v2SlugRes = await $fetch(
-      `${config.public.BFF_URL}/api/v2/show/${id}?slugOnly=true`
-    ).catch((e) => {
-      console.error(`Error getting true slug from id: ${e}`)
-      return null
-    })
-    return v2SlugRes?.show?.slug
-  } catch (error) {
-    console.error(`Error getting true slug from id: ${error}`)
-    return null
-  }
+const getTrueSlugFromRedirects = async (link) => {
+  const currentSlug = isolateSlug(link)
+  return await getTrueSlug(currentSlug)
 }
 
 onMounted(() => {
   watchEffect(async () => {
+    if (!user.value) return
     // hide share if it is a segment, which is only set in NPR direct show episodes
     currentEpisode.value?.isSegment ? (showShare.value = false) : (showShare.value = true)
     isFavorited.value = await checkIsFavorited(
       currentEpisode.value?.meta?.slug || currentEpisode.value?.slug
     )
-
-    const trueSlug = await getTrueSlugFromId(currentEpisode.value.showSlug)
+    const trueSlug = await getTrueSlugFromRedirects(currentEpisode.value.detailsLink)
     isShowFollowed.value = await checkIsFavorited(trueSlug)
 
     // show/hide download button based on show title
@@ -99,35 +91,38 @@ const handleAddToFavorites = () => {
   }
 }
 // add show to favorites
-const handleFollow = async (showSlug) => {
+const handleFollowLive = async (link) => {
   try {
-    // Step 1: Query v2 to explicitly resolve the slug (especially for UUIDs)
-    const trueSlug = await getTrueSlugFromId(showSlug)
-
     let showData = null
+    if (user.value) {
+      // Step 1: get the true slug from the detailsLink
+      const trueSlug = await getTrueSlugFromRedirects(link)
 
-    // Step 2: Only fetch wagtail if we successfully resolved a true slug from v2
-    if (trueSlug) {
-      showData = await $fetch(
-        `${config.public.BFF_URL}/api/pages/wagtail/${trueSlug}?showOnly=true`
-      ).catch((e) => null)
-    }
-
-    if (!showData) {
-      console.warn("Unable to find the show properties.")
-      globalToast.value = {
-        severity: "warn",
-        summary: "Unable to find the show to follow.",
-        life: 3000,
+      // Step 2: fetch wagtail show data if we successfully resolved a true slug
+      if (trueSlug) {
+        showData = await $fetch(
+          `${config.public.BFF_URL}/api/pages/wagtail/${trueSlug}?showOnly=true`
+        ).catch(() => null)
       }
-      return
+
+      if (!showData) {
+        console.warn("Unable to find the show properties.")
+        globalToast.value = {
+          severity: "warn",
+          summary: "Unable to find the show to follow.",
+          life: 3000,
+        }
+        return
+      }
     }
+
+    // add show to favorites (this is not nested under the user check because this function handles the user prompt to login/create an account)
     addToFavorites2({
       item: showData,
       isFavorited: isShowFollowed.value,
       message: "Updated your followed shows.",
     })
-
+    // toggle the followed state if the user is logged in
     if (user.value) {
       isShowFollowed.value = !isShowFollowed.value
     }
@@ -193,7 +188,7 @@ const getDotMenuItems = () => {
             active: isShowFollowed.value,
             title: currentEpisode.value.title,
             command: () => {
-              handleFollow(currentEpisode.value.showSlug)
+              handleFollowLive(currentEpisode.value.detailsLink)
             },
           },
           ...(isApp.value
@@ -326,28 +321,8 @@ const moreFromClick = async () => {
     currentEpisode.value.meta?.showSlug ||
     currentEpisode.value.showId ||
     currentEpisode.value.show
-  let finalSlug = slug
-  // detect if the slug is a uuid
-  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-    slug
-  )
-  if (isUuid) {
-    try {
-      const showSlug = await $fetch(
-        `${config.public.BFF_URL}/api/v2/show/${slug}?slugOnly=true`
-      )
-      finalSlug = showSlug.show.slug
-    } catch (error) {
-      globalToast.value = {
-        severity: "error",
-        summary: "We are having a problem loading the show page. Please try again later.",
-        life: 6000,
-        closable: true,
-      }
-      console.error(`Error fetching show details in moreFromClick: ${error}`)
-      return
-    }
-  }
+  const finalSlug = await getTrueSlug(slug)
+
   trackClickEvent(
     `Click Tracking - Expanded Audio Player More from ${title}`,
     "Expanded Audio Player",
@@ -416,7 +391,6 @@ const moreFromClick = async () => {
             <ShareIcon />
           </template>
         </Button>
-        {{ isShowFollowed }}
         <DotMenu
           :menuItems="getDotMenuItems()"
           size="large"

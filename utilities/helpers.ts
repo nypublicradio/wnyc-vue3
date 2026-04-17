@@ -1500,3 +1500,45 @@ export const getFirstSentence = (text: string): string => {
   const sentences = text.match(/(.*?[.?!])/)
   return sentences ? sentences[0] : text
 }
+
+// return match redirects and return true slug
+export const getTrueSlug = async (slug: string): Promise<string> => {
+  const config = useRuntimeConfig()
+  let newSlug = slug
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    slug
+  )
+  // if isUuid get slug from uuid
+  if (isUuid) {
+    try {
+      const showSlug: any = await $fetch(
+        `${config.public.BFF_URL}/api/v2/show/${slug}?slugOnly=true`
+      )
+      newSlug = showSlug.show.slug
+    } catch (error) {
+      const globalToast = useGlobalToast()
+      globalToast.value = {
+        severity: "error",
+        summary: "We are having a problem loading the show page. Please try again later.",
+        life: 6000,
+        closable: true,
+      }
+      console.error(`Error getting true slug from uuid: ${error}`)
+      return newSlug
+    }
+  }
+
+  // check redirect table
+  try {
+    // get the list of redirects
+    const redirectsData: any[] = await $fetch(
+      `${config.public.BFF_URL}/api/show-slug-redirects`
+    )
+    // find the redirect in the list
+    const redirect = redirectsData?.find((r) => isolateSlug(r.from) === newSlug)
+    return redirect ? isolateSlug(redirect.to) : newSlug
+  } catch (error) {
+    console.error(`Error getting true slug from id: ${error}`)
+    return newSlug
+  }
+}

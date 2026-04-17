@@ -35,6 +35,7 @@ const redirects = [
     { from: '/browse/shows/universe-art', to: '/browse/shows/universe-of-art' },
     { from: '/browse/shows/anxiety', to: '/browse/shows/notes-from-america' },
     { from: '/browse/shows/one-a', to: '/browse/shows/1a' },
+    { from: '/browse/shows/science-friday-hour-2', to: '/browse/shows/science-friday' },
     { from: '/browse/shows/bbc-specials', to: '/series/specials' },
     { from: '/browse/shows/the-moth', to: 'https://themoth.org/' },
     { from: '/browse/shows/moth-radio-hour', to: 'https://themoth.org/' },
