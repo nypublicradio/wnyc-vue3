@@ -156,20 +156,26 @@ export default function useLiveStream () {
     }
   }
 
+  const formatAndRoundTime = (dateArg) => {
+    const date = new Date(dateArg)
+
+    // 15 minutes in milliseconds
+    const ms = 1000 * 60 * 15
+
+    // Round the time to the nearest quarter hour mark
+    const roundedDate = new Date(Math.round(date.getTime() / ms) * ms)
+
+    return roundedDate.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    })
+  }
+
   // get the time for the schedule entry
   const getTheTime = (startArg, endArg, index) => {
-    const start = new Date(startArg)
-    const startTime = start.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    })
-    const end = new Date(endArg)
-    const endTime = end.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    })
+    const startTime = formatAndRoundTime(startArg)
+    const endTime = formatAndRoundTime(endArg)
     return index === 0 && isToday.value ? `Now Until ${endTime}` : startTime
   }
 
@@ -470,6 +476,7 @@ export default function useLiveStream () {
     clearAllTimeout,
     getTimeDifference,
     getTheTime,
+    formatAndRoundTime,
     togglePlayHere,
     liveScheduleData,
     allLiveScheduleData,
