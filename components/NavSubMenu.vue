@@ -11,14 +11,12 @@ const emit = defineEmits(["emit-click"])
 const onFocusOut = (e, index, length) => {
   const checkTabbingBackward =
     e.relatedTarget &&
-    e.relatedTarget.compareDocumentPosition(e.target) &
-      Node.DOCUMENT_POSITION_PRECEDING
+    e.relatedTarget.compareDocumentPosition(e.target) & Node.DOCUMENT_POSITION_PRECEDING
   const isTabbingBackward = !Boolean(checkTabbingBackward)
 
   const itemLength = length - 1
   const parentMenu =
-    e.target.parentElement.parentElement.parentElement.parentElement
-      .parentElement
+    e.target.parentElement.parentElement.parentElement.parentElement.parentElement
   // tabbing forward
   if (itemLength === index && !isTabbingBackward) {
     if (parentMenu?.nextElementSibling) {
@@ -55,7 +53,7 @@ const onFocusOut = (e, index, length) => {
 
 <template>
   <!-- only show the dropdown if more than 1 item -->
-  <div v-if="props.model?.length > 1" class="nav-sub-menu-holder">
+  <div v-if="props.model?.length > 1 || props.model == null" class="nav-sub-menu-holder">
     <div class="blank-spacer" tabindex="-1"></div>
     <div class="nav-sub-menu">
       <div v-if="props.model">

@@ -173,11 +173,7 @@ const onLogOut = async () => {
                     </div>
                     <div v-else class="flex flex-column p-4 gap-3">
                       <div class="flex align-items-center gap-2">
-                        <Avatar
-                          :image="avatarUrl"
-                          shape="circle"
-                          class="flex-none"
-                        >
+                        <Avatar :image="avatarUrl" shape="circle" class="flex-none">
                           <template #icon v-if="!avatarUrl">
                             <UserIcon />
                           </template>
