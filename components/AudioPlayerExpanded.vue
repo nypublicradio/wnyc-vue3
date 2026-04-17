@@ -53,6 +53,7 @@ const getTrueSlugFromId = async (id) => {
       console.error(`Error getting true slug from id: ${e}`)
       return null
     })
+    console.log("v2SlugRes", v2SlugRes)
     return v2SlugRes?.show?.slug
   } catch (error) {
     console.error(`Error getting true slug from id: ${error}`)
@@ -102,6 +103,7 @@ const handleAddToFavorites = () => {
 const handleFollow = async (showSlug) => {
   try {
     // Step 1: Query v2 to explicitly resolve the slug (especially for UUIDs)
+    console.log("showSlug", showSlug)
     const trueSlug = await getTrueSlugFromId(showSlug)
     console.log("trueSlug", trueSlug)
     let showData = null
