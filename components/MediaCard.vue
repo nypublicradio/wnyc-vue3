@@ -850,29 +850,33 @@ $contentPaddingY: 1.25rem;
         /* Force strict image sizing behavior when in carousel */
         flex: 0 0 auto !important;
         width: auto !important;
-        height: auto !important;
         max-width: none !important;
 
-        :deep(.v-image-wrapper) {
+        /* Strip intermediary layout constraints and safely pass 100% height down the hierarchy so the top-level PrimeFlex height class governs sizing */
+        :deep(.v-image-wrapper),
+        :deep(.image-loaded),
+        :deep(.image-loading),
+        :deep(.image-loader-container),
+        :deep(.v-image),
+        :deep(.v-image-link),
+        :deep(.v-image-holder),
+        :deep(.v-image-publisher-holder) {
+          height: 100% !important;
           width: auto !important;
-          height: auto !important;
+          max-width: none !important;
+          max-height: none !important;
         }
 
-        :deep(.v-image-link) {
-          display: block;
-        }
-
-        :deep(.v-image-holder) {
+        /* Disarm any inline layout-shifting aspect ratio constraints set directly via props */
+        :deep(.v-image-holder),
+        :deep(.v-image-publisher-holder) {
           aspect-ratio: auto !important;
-          width: auto !important;
-          height: auto !important;
         }
 
-        /* Ensure img child dictates width by native ratio, but respects height from the size prop */
+        /* Ensure actual rendering logic allows height constraint to drive proportional auto widths */
         :deep(img.image) {
           width: auto !important;
-          height: revert !important;
-          height: revert-layer !important;
+          height: 100% !important;
           max-width: none !important;
           max-height: none !important;
         }

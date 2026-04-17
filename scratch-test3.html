@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  html, body { background: #f0f0f0; margin: 0; padding: 20px;}
+  .imgCol {
+    height: 288px; /* Simulated lg:h-18rem */
+  }
+
+  /* MEDIA CARD container to simulate flex column context */
+  .holder {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    width: min-content; /* This is in &.in-carousel */
+  }
+
+  .image {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    /* height: auto !important; -> removed so imgCol controls height */
+    max-width: none !important;
+  }
+
+  .v-image-wrapper {
+    width: auto !important;
+    height: 100% !important;
+  }
+
+  .v-image-link {
+    display: block;
+    height: 100% !important;
+  }
+
+  .v-image-holder {
+    aspect-ratio: auto !important;
+    width: auto !important;
+    height: 100% !important;
+    background: pink; /* to visualize holder */
+  }
+
+  img.image {
+    width: auto !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+  }
+</style>
+</head>
+<body>
+  <div class="holder">
+    <div class="image imgCol">
+      <div class="v-image-wrapper">
+        <a class="v-image-link">
+          <div class="v-image-holder">
+            <!-- Simulated image with a 3:2 ratio -->
+            <img class="image" src="https://via.placeholder.com/600x400" width="600" height="400">
+          </div>
+        </a>
+      </div>
+    </div>
+    <div style="padding: 10px;">Content below the image that shouldn't wrap weirdly</div>
+  </div>
+</body>
+</html>
