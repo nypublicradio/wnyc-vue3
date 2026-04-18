@@ -107,6 +107,7 @@ export interface ArticlePage extends Page {
   relatedLinks?: NavigationLink[]
   tags?: Tag[]
   url?: string
+  shareUrl?: string
   uuid: string
   section?: Tag
   body?: StreamfieldBlock[] | string
