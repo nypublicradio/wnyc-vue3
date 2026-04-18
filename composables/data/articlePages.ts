@@ -321,7 +321,7 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
   if (typeof article === 'undefined')
     return null
   //console.log("normalizeSimplecastListItem", article)
-
+  const config = useRuntimeConfig()
   // Simplecast uses UUIDs as episode IDs - preserve the original UUID for API calls
   const simplecastId = article.id || article.episodeId || article.uuid
 
@@ -352,7 +352,7 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
     sponsoredContent: undefined,
     relatedLinks: undefined,
     url: article.url,
-    shareUrl: article.url,
+    shareUrl: `${config.public.BFF_URL}${mediaTypeRoutes.simplecast}${simplecastId}`,
     link: `${mediaTypeRoutes.simplecast}${simplecastId}`,
     section: undefined,
     //rawBody: getWagtailRawBody(article.body),
