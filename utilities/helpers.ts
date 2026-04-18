@@ -465,7 +465,7 @@ export const shareAPI = async (
   const shareData = {
     title: stripHtmlTags(content.socialTitle || content.title),
     text: stripHtmlTags(content.rawBody || content.description || content.title),
-    url: content.url || content.titleLink,
+    url: content.shareUrl || content.url || content.titleLink,
   }
 
   trackClickEvent("Click Tracking - Share", componentOfOrigin, shareData.title)
