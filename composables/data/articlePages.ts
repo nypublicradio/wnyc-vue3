@@ -949,6 +949,7 @@ const extractImageDimensions = (image?: string): { w: number; h: number } => {
 
 // Normalize an article page object from NPR into a generic ArticlePage object.
 export async function normalizeNprPage (article: NprArticle, componentType = "default", showSlug?: string): Promise<ArticlePage> {
+  const config = useRuntimeConfig()
   const id = article.id
   const firstImageHref = article.images?.[0]?.href
   const rawImageId = firstImageHref?.substring(firstImageHref.lastIndexOf("/") + 1)
@@ -1019,6 +1020,7 @@ export async function normalizeNprPage (article: NprArticle, componentType = "de
     body: textBody,
     rawBody: textBody,
     link: article.webPages?.[0]?.href ?? '/',
+    url: `${config.public.BFF_URL}${mediaTypeRoutes[mediaTypes.NPR_ARTICLE]}${article.id}`,
     authors,
   })
 }

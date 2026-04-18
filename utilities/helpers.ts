@@ -461,6 +461,7 @@ export const shareAPI = async (
   content,
   componentOfOrigin = "Component of origin not specified"
 ) => {
+  console.log('content', content)
   const shareData = {
     title: stripHtmlTags(content.socialTitle || content.title),
     text: stripHtmlTags(content.rawBody || content.description || content.title),
