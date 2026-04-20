@@ -192,9 +192,9 @@ export function normalizePerson (person: Record<string, any>): Person {
 
 // Wagtail: Transform page data from the API into a simpler and typed format
 export async function normalizeWagtailPage (article: Record<string, any | undefined>): ArticlePage {
-  const config = useRuntimeConfig()
   if (typeof article === 'undefined')
     return null
+  const config = useRuntimeConfig()
   return Object.assign({}, await normalizePage(article), {
     description: article.description,
     image: article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage ?? article.showArt,

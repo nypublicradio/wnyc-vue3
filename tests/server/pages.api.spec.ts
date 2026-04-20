@@ -44,6 +44,9 @@ globalThis.__testRuntimeConfig = {
   },
 }
 
+// @ts-expect-error - mock useRuntimeConfig for test environment
+globalThis.useRuntimeConfig = () => globalThis.__testRuntimeConfig
+
 describe('server/api/pages [wagtail] passes through body.curated_list', () => {
   beforeEach(() => {
     axiosMock.mockClear()
