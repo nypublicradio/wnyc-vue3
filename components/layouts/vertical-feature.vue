@@ -46,12 +46,8 @@ const rectSizes = {
 const isSquare = ref(false)
 const featureItem = reactiveItems.value?.[0]
 if (featureItem) {
-  const imgHeight = Number(
-    featureItem.imageFullHeight || featureItem.image?.height
-  )
-  const imgWidth = Number(
-    featureItem.imageFullWidth || featureItem.image?.width
-  )
+  const imgHeight = Number(featureItem.imageFullHeight || featureItem.image?.height)
+  const imgWidth = Number(featureItem.imageFullWidth || featureItem.image?.width)
   if (featureItem.cmsSource === mediaTypes.SIMPLECAST) {
     isSquare.value = true
   } else if (
@@ -67,18 +63,10 @@ if (featureItem) {
 
 // Initialize leftCol/rightCol with values consistent with isSquare
 const leftCol = ref(
-  props.isThin
-    ? "col-12 md:col-8"
-    : isSquare.value
-    ? "lg:col-5"
-    : "lg:col-5 xl:col-6"
+  props.isThin ? "col-12 md:col-8" : isSquare.value ? "lg:col-5" : "lg:col-5 xl:col-6"
 )
 const rightCol = ref(
-  props.isThin
-    ? "col-12 lg:col-12"
-    : isSquare.value
-    ? "lg:col-7"
-    : "lg:col-7 xl:col-6"
+  props.isThin ? "col-12 lg:col-12" : isSquare.value ? "lg:col-7" : "lg:col-7 xl:col-6"
 )
 
 watch(isSquare, (newVal) => {
@@ -114,10 +102,7 @@ const listTextClasses = props.isThin ? "text-sm" : "text-base lg:text-base"
 </script>
 
 <template>
-  <div
-    class="layout layout-vertical-feature"
-    :class="{ 'is-thin': props.isThin }"
-  >
+  <div class="layout layout-vertical-feature" :class="{ 'is-thin': props.isThin }">
     <LayoutsTitleHeader
       :label="props.label || props.list.title"
       :seeMore="props.seeMore"
@@ -165,7 +150,7 @@ const listTextClasses = props.isThin ? "text-sm" : "text-base lg:text-base"
             :imgCol="listImgColClasses"
             :titleClasses="listTitleClasses"
             :teaseClasses="listTextClasses"
-            :pipeClasses="listTextClasses"
+            pipeClasses="text-xs"
             :showTitleClasses="listTextClasses"
             :allowVerticalEffect="false"
             :ratio="[1, 1]"
@@ -263,4 +248,3 @@ const listTextClasses = props.isThin ? "text-sm" : "text-base lg:text-base"
   }
 }
 </style>
-
