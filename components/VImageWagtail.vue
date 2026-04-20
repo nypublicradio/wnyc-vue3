@@ -167,6 +167,9 @@ const computedWidth = computed(() => {
     ? Math.round(props.maxWidth / (props.maxHeight / props.height))
     : props.width
 })
+const computedHeight = computed(() => {
+  return props.sizes ? null : props.height
+})
 const computedEnlargeWidth = computed(() => {
   if (import.meta.server) return props.maxWidth
   const modalFramePaddingOffset = 84
@@ -254,7 +257,7 @@ const handleProvider = computed(() => {
     >
       <div
         class="v-image-holder"
-        :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`"
+        :style="`${props.sizes ? `` : `aspect-ratio:${ratio[0]} / ${ratio[1]}`}`"
       >
         <div v-if="isVertical" class="bg">
           <nuxt-img
@@ -263,7 +266,7 @@ const handleProvider = computed(() => {
             class="blurred-bg-image"
             :src="computedSrc"
             :width="computedWidth"
-            :height="props.height"
+            :height="computedHeight"
             :quality="String(props.quality)"
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
             :modifiers="props.modifiers"
@@ -278,7 +281,7 @@ const handleProvider = computed(() => {
           :class="isVertical ? 'is-vertical' : ''"
           :src="computedSrc"
           :width="computedWidth"
-          :height="props.height"
+          :height="computedHeight"
           :sizes="props.sizes"
           :densities="props.density"
           :style="[

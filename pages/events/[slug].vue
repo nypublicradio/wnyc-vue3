@@ -188,13 +188,7 @@ useSeoMeta({
                 <VImage
                   v-if="eventData?.image"
                   :src="eventData?.image"
-                  :size="{
-                    xxs: [316, 178],
-                    xs: [517, 291],
-                    sm: [709, 399],
-                    md: [885, 498],
-                    lg: [672, 378],
-                  }"
+                  sizes="lg:672px md:885px sm:709px xs:517px xxs:316px"
                   :alt="eventData?.image?.title || eventData?.title"
                   class="event-body__image-frame mb-4"
                 />

@@ -42,9 +42,7 @@ useHead(() => ({
           text
           severity="secondary"
           aria-label="back to previous page"
-          @click="
-            navigateTo(`/story/${route.query.article}?src=${route.query.src}`)
-          "
+          @click="navigateTo(`/story/${route.query.article}?src=${route.query.src}`)"
           label="Return"
         />
       </div>
@@ -134,9 +132,7 @@ useHead(() => ({
         >
           <VImage
             :src="img.image"
-            :ratio="[img.image.width, img.image.height]"
             sizes="xs:390px md:768px"
-            density="x1 x2"
             :max-width="Number(img.image.width)"
             :max-height="Number(img.image.height)"
             :alt="img.image.alt"
@@ -166,9 +162,7 @@ useHead(() => ({
         text
         severity="secondary"
         aria-label="back to previous page"
-        @click="
-          navigateTo(`/story/${route.query.article}?src=${route.query.src}`)
-        "
+        @click="navigateTo(`/story/${route.query.article}?src=${route.query.src}`)"
         label="Return"
       />
     </section>
