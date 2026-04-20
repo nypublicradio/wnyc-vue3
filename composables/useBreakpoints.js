@@ -1,5 +1,6 @@
-import { ref, onMounted, onUnmounted } from "vue"
+import { ref, onMounted, onUnmounted, computed } from "vue"
 import breakpoints from "~/assets/scss/breakpoints.module.scss"
+import { useIsApp } from "~/composables/states"
 
 /**
  * Get the current breakpoint based on window width
@@ -173,6 +174,17 @@ const cleanupBreakpoints = () => {
  */
 export function useBreakpoints () {
     const isMobileBreakpoint = computed(() => breakpoint("<md"))
+    const isApp = useIsApp()
+
+    // If we're running as a Capacitor app (no SSR hydration to worry about),
+    // we can eagerly initialize the breakpoint right now in the setup phase.
+    // This prevents `globalBreakpoint` from defaulting to 'lg' and tricking
+    // optimization logic in `useVImageDimensions` into thinking we already have
+    // an 'lg' image loaded.
+    if (import.meta.client && !isInitialized && isApp.value) {
+        globalWindowWidth.value = window.innerWidth
+        globalBreakpoint.value = getCurrentBreakpoint(window.innerWidth)
+    }
 
     onMounted(() => {
         listenerCount++
@@ -180,7 +192,7 @@ export function useBreakpoints () {
             // Defer breakpoint measurement until after hydration completes
             // to prevent mismatches when Suspense boundaries resolve async components
             const nuxtApp = useNuxtApp()
-            if (nuxtApp.isHydrating) {
+            if (nuxtApp.isHydrating && !isApp.value) {
                 nuxtApp.hook('app:suspense:resolve', () => {
                     initializeBreakpoints()
                 })
