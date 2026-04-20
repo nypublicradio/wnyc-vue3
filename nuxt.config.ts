@@ -40,6 +40,7 @@ export default defineNuxtConfig({
   image: {
     dir: "public/",
     screens: {
+      xxs: 375,
       xs: 390,
       sm: 640,
       md: 767,
@@ -51,6 +52,7 @@ export default defineNuxtConfig({
     wagtail: {
       baseURL: process.env.IMAGE_BASE_URL,
       screens: {
+        xxs: 375,
         xs: 390,
         sm: 640,
         md: 767,
