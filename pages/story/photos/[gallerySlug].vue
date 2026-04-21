@@ -133,6 +133,7 @@ useHead(() => ({
           <VImage
             :src="img.image"
             sizes="xs:390px md:768px"
+            :blindLoaderRatio="[16, 9]"
             :max-width="Number(img.image.width)"
             :max-height="Number(img.image.height)"
             :alt="img.image.alt"
