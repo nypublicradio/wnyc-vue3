@@ -425,7 +425,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
           class="content-flex flex gap-2 flex-column justify-content-between w-full h-full"
         >
           <div class="top flex gap-2 flex-column w-full">
-            <div class="text flex gap-1 flex-column align-items-start">
+            <div class="text flex gap-2 flex-column align-items-start">
               <LiveBadge v-if="props.showLive && !props.saved" class="align-self-start" />
               <p v-if="props.showTitle" :class="props.showTitleClasses">
                 {{ props.data?.org ?? props.data?.showTitle }}
