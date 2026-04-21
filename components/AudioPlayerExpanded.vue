@@ -44,6 +44,7 @@ const { handleSleepTimer } = useSleepTimer()
 
 const isFavorited = ref(false)
 const isShowFollowed = ref(false)
+const isShowFollowable = ref(true)
 const showDownload = ref(true)
 
 // get true slug from id
@@ -180,17 +181,22 @@ const getDotMenuItems = () => {
   return [
     ...(isLive.value
       ? [
-          {
-            label: `${isShowFollowed.value ? "Unfollow" : "Follow"} ${
-              currentEpisode.value.title
-            }`,
-            customIcon: FollowIcon,
-            active: isShowFollowed.value,
-            title: currentEpisode.value.title,
-            command: () => {
-              handleFollowLive(currentEpisode.value.detailsLink)
-            },
-          },
+          ...(isShowFollowable.value
+            ? [
+                {
+                  label: `${isShowFollowed.value ? "Unfollow" : "Follow"} ${
+                    currentEpisode.value.title
+                  }`,
+                  customIcon: FollowIcon,
+                  active: isShowFollowed.value,
+                  title: currentEpisode.value.title,
+                  command: () => {
+                    handleFollowLive(currentEpisode.value.detailsLink)
+                  },
+                },
+              ]
+            : []),
+
           ...(isApp.value
             ? [
                 {
@@ -438,11 +444,7 @@ const moreFromClick = async () => {
       "
       :src="currentEpisode?.image || currentEpisode?.image?.template"
       :alt="`${currentEpisode?.title} featured image`"
-      :size="{
-        xs: [327, 218],
-        sm: [528, 352],
-        md: [672, 448],
-      }"
+      sizes="xs:327, sm:528, md:672"
       class="card-feature-image"
     >
       <template #caption>
@@ -461,11 +463,7 @@ const moreFromClick = async () => {
       v-if="currentEpisode.onTodaysShowImageTemplate"
       :src="{ template: currentEpisode.onTodaysShowImageTemplate }"
       :alt="`${currentEpisode.title} featured image`"
-      :size="{
-        xs: [327, 218],
-        sm: [528, 352],
-        md: [672, 448],
-      }"
+      sizes="xs:327, sm:528, md:672"
       class="show-feature-image"
     >
       <template #caption>
