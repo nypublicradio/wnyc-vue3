@@ -104,6 +104,7 @@ function getArticleLink (articleData): string {
 
 // Transform author data from the API into a simpler and typed format
 export function normalizeAuthor (author: Record<string, any>): Author {
+  const config = useRuntimeConfig()
   return {
     id: author.id,
     firstName: author.firstName,
@@ -118,6 +119,7 @@ export function normalizeAuthor (author: Record<string, any>): Author {
     email: author.email,
     slug: author.slug,
     url: author.slug && `/staff/${author.slug}`,
+    shareUrl: `${config.public.BFF_URL}${mediaTypeRoutes[mediaTypes.STAFF]}${author.slug}`,
     socialMediaProfile: author.socialMediaProfile,
   }
 }
@@ -168,6 +170,7 @@ function normalizePersonSocial (social: Record<string, any>): ISocial {
 
 // Transform person data from the API into a simpler and typed format
 export function normalizePerson (person: Record<string, any>): Person {
+  const config = useRuntimeConfig()
   const pa = person.attributes
   return {
     id: person.id,
@@ -180,6 +183,7 @@ export function normalizePerson (person: Record<string, any>): Person {
     email: pa.email,
     slug: pa.slug,
     url: `/people/${pa.slug}`,
+    shareUrl: `${config.public.BFF_URL}${mediaTypeRoutes[mediaTypes.PEOPLE]}${pa.slug}`,
     socialMediaProfile: pa.social.length > 0 ? pa.social.map(normalizePersonSocial) : null, // Fix: Wrap the normalizePersonSocial result in an array
     shows: pa.shows,
   }
@@ -190,6 +194,7 @@ export function normalizePerson (person: Record<string, any>): Person {
 export async function normalizeWagtailPage (article: Record<string, any | undefined>): ArticlePage {
   if (typeof article === 'undefined')
     return null
+  const config = useRuntimeConfig()
   return Object.assign({}, await normalizePage(article), {
     description: article.description,
     image: article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage ?? article.showArt,
@@ -217,6 +222,7 @@ export async function normalizeWagtailPage (article: Record<string, any | undefi
     tags: article.tags,
     //url: article.url,
     url: null,
+    shareUrl: `${config.public.BFF_URL}${getWagtailArticleLink(article)}`,
     section: { name: article.ancestry?.[0].title, slug: article.ancestry?.[0].slug },
     body: article.body,
     rawBody: getWagtailRawBody(article.body),
@@ -278,6 +284,7 @@ export async function normalizeWagtailListItem (article: Record<string, any | un
     sponsoredContent: article.sponsoredContent,
     relatedLinks: article.relatedLinks,
     url: article.url,
+    shareUrl: article.url,
     section: { name: article.ancestry?.[0].title, slug: article.ancestry?.[0].slug },
     rawBody: getWagtailRawBody(article.body),
     audio: article.audio,
@@ -314,7 +321,7 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
   if (typeof article === 'undefined')
     return null
   //console.log("normalizeSimplecastListItem", article)
-
+  const config = useRuntimeConfig()
   // Simplecast uses UUIDs as episode IDs - preserve the original UUID for API calls
   const simplecastId = article.id || article.episodeId || article.uuid
 
@@ -345,6 +352,7 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
     sponsoredContent: undefined,
     relatedLinks: undefined,
     url: article.url,
+    shareUrl: `${config.public.BFF_URL}${mediaTypeRoutes.simplecast}${simplecastId}`,
     link: `${mediaTypeRoutes.simplecast}${simplecastId}`,
     section: undefined,
     //rawBody: getWagtailRawBody(article.body),
@@ -434,7 +442,7 @@ async function getSimplecastDuration (article: SimplecastArticle): Promise<numbe
 export async function normalizeSimplecastPage (article: SimplecastArticle): Promise<ArticlePage> {
   if (typeof article === 'undefined')
     return null
-
+  const config = useRuntimeConfig()
   const duration = await getSimplecastDuration(article)
   const simplecastId = article.id
   const { showId, showTitle, showImageUrl } = getSimplecastShowInfo(article)
@@ -481,6 +489,7 @@ export async function normalizeSimplecastPage (article: SimplecastArticle): Prom
     tags: getSimplecastTags(article),
     //url: article.episodeUrl,
     url: null,
+    shareUrl: `${config.public.BFF_URL}${mediaTypeRoutes.simplecast}${simplecastId}`,
     section: undefined,
     body: bodyText,
     rawBody: bodyText,
@@ -527,6 +536,7 @@ export async function normalizePublisherPage (article: Record<string, any | unde
     })
   }
   const authors = article.attributes.appearances?.authors.map(normalizeAuthor)
+  const config = useRuntimeConfig()
   // Remove publisher author fields because we don't haven't built out the author pages for publisher
   authors.forEach((author) => {
     delete author.slug
@@ -568,6 +578,7 @@ export async function normalizePublisherPage (article: Record<string, any | unde
     tags: article.attributes?.tags, // This may need tweaking
     //url: article.attributes.url,
     url: null,
+    shareUrl: `${config.public.BFF_URL}${getPublisherArticleLink(article)}`,
     section: undefined, //Does this exist in publisher?
     body: article.attributes.body,
     rawBody: article.attributes.body,
@@ -629,6 +640,7 @@ export async function normalizePublisherListItem (article: Record<string, any | 
     contributingOrganizations: article.attributes?.producingOrganizations,
     publicationDate: article.attributes.publishAt && new Date(article.attributes.publishAt),
     url: article.attributes.url,
+    shareUrl: article.attributes.url,
     rawBody: null,
     body: article.attributes.body,
     audio: article.attributes.audio,
@@ -949,6 +961,7 @@ const extractImageDimensions = (image?: string): { w: number; h: number } => {
 
 // Normalize an article page object from NPR into a generic ArticlePage object.
 export async function normalizeNprPage (article: NprArticle, componentType = "default", showSlug?: string): Promise<ArticlePage> {
+  const config = useRuntimeConfig()
   const id = article.id
   const firstImageHref = article.images?.[0]?.href
   const rawImageId = firstImageHref?.substring(firstImageHref.lastIndexOf("/") + 1)
@@ -1019,6 +1032,7 @@ export async function normalizeNprPage (article: NprArticle, componentType = "de
     body: textBody,
     rawBody: textBody,
     link: article.webPages?.[0]?.href ?? '/',
+    shareUrl: `${config.public.BFF_URL}${mediaTypeRoutes[mediaTypes.NPR_ARTICLE]}${article.id}`,
     authors,
   })
 }
@@ -1175,6 +1189,7 @@ export function normalizeSearchResults (results: Record<string, any | undefined>
     relatedLinks: result.relatedLinks,
     tags: result.tags,
     url: result.url,
+    shareUrl: result.url,
     uuid: result.uuid,
     section: getSectionInfo(result),
     body: result.body,

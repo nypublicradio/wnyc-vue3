@@ -78,9 +78,12 @@ export const slugify = (text) => {
 export const getRouteOrLink = (
   url: string,
   routingDomains: string[] = [
-    "www.wnyc.org",
+    "wnyc.org",
     "demo.wnyc.org",
+    "prod.wnyc.org",
+    "www.wnyc.org",
     "www.demo.wnyc.org",
+    "www.prod.wnyc.org",
   ]
 ) => {
   if (!url) return url
@@ -464,9 +467,8 @@ export const shareAPI = async (
   const shareData = {
     title: stripHtmlTags(content.socialTitle || content.title),
     text: stripHtmlTags(content.rawBody || content.description || content.title),
-    url: content.url || content.titleLink,
+    url: content.shareUrl || content.url || content.titleLink,
   }
-
   trackClickEvent("Click Tracking - Share", componentOfOrigin, shareData.title)
   // Native Mobile Sharing
   if (Capacitor.isNativePlatform()) {
