@@ -52,7 +52,7 @@ const startEndTime = computed(() => {
             {{ reactiveData?.title || reactiveData?.showTitle }}
           </h1>
           <HtmlConvert
-            class="blurb truncate t3lines mt-1 mb-3 text-white"
+            class="blurb truncate t3lines mt-1 mb-3"
             noBlocks
             :htmlContent="reactiveData?.onTodaysShowHeadline || reactiveData?.details"
             htmlClasses="line-height-3"
