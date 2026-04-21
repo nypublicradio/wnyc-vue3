@@ -48,10 +48,34 @@ const isShowFollowable = ref(true)
 const showDownload = ref(true)
 
 // get true slug from id
-const getTrueSlugFromRedirects = async (link) => {
+const getTrueSlugFromRedirects = async (link, isolateReturn = true) => {
   const currentSlug = isolateSlug(link)
-  return await getTrueSlug(currentSlug)
+  return await getTrueSlug(currentSlug, isolateReturn)
 }
+
+const trueSlug = ref(null)
+const trueTo = ref(null)
+
+watch(
+  currentEpisode,
+  async () => {
+    // initially populate the true slug
+    trueSlug.value = await getTrueSlugFromRedirects(
+      currentEpisode.value.detailsLink,
+      true
+    )
+    // initially populate the true "to" destination if LIVE only
+    if (isLive.value) {
+      trueTo.value = await getTrueSlugFromRedirects(
+        currentEpisode.value.detailsLink,
+        false
+      )
+      // handle if isShowFollowable
+      isShowFollowable.value = !trueTo.value.includes("http")
+    }
+  },
+  { immediate: true }
+)
 
 onMounted(() => {
   watchEffect(async () => {
@@ -61,8 +85,8 @@ onMounted(() => {
     isFavorited.value = await checkIsFavorited(
       currentEpisode.value?.meta?.slug || currentEpisode.value?.slug
     )
-    const trueSlug = await getTrueSlugFromRedirects(currentEpisode.value.detailsLink)
-    isShowFollowed.value = await checkIsFavorited(trueSlug)
+    //const trueSlug = await getTrueSlugFromRedirects(currentEpisode.value.detailsLink)
+    isShowFollowed.value = await checkIsFavorited(trueSlug.value)
 
     // show/hide download button based on show title
     const showsWithoutDownload = ["nyc now", "wnyc news"]
@@ -91,18 +115,19 @@ const handleAddToFavorites = () => {
     isFavorited.value = !isFavorited.value
   }
 }
+
 // add show to favorites
 const handleFollowLive = async (link) => {
   try {
     let showData = null
     if (user.value) {
       // Step 1: get the true slug from the detailsLink
-      const trueSlug = await getTrueSlugFromRedirects(link)
+      //const trueSlug = await getTrueSlugFromRedirects(link)
 
       // Step 2: fetch wagtail show data if we successfully resolved a true slug
-      if (trueSlug) {
+      if (trueSlug.value) {
         showData = await $fetch(
-          `${config.public.BFF_URL}/api/pages/wagtail/${trueSlug}?showOnly=true`
+          `${config.public.BFF_URL}/api/pages/wagtail/${trueSlug.value}?showOnly=true`
         ).catch(() => null)
       }
 
@@ -398,6 +423,7 @@ const moreFromClick = async () => {
           </template>
         </Button>
         <DotMenu
+          v-if="getDotMenuItems().length > 0"
           :menuItems="getDotMenuItems()"
           size="large"
           class="-mr-2"
