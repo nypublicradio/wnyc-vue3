@@ -104,10 +104,7 @@ onMounted(() => {
         /> -->
         <div
           :key="`${block.id}-curated-list`"
-          v-if="
-            block.type === 'curated_list' &&
-            block?.value?.list?.listItems?.length
-          "
+          v-if="block.type === 'curated_list' && block?.value?.list?.listItems?.length"
           :class="verticalSpacingClasses"
           :id="slugify(block?.value?.label)"
         >
@@ -224,7 +221,6 @@ onMounted(() => {
           :maxWidth="block.value.image.width"
           :maxHeight="block.value.image.height"
           sizes="xs:390px md:768px"
-          density="x1 x2"
         >
           <!--           <template #caption>
             <VImageCaption
@@ -256,10 +252,7 @@ onMounted(() => {
         <!-- image -->
 
         <!-- block-quote -->
-        <div
-          v-else-if="block.type === 'block_quote'"
-          class="streamfield-block-quote"
-        >
+        <div v-else-if="block.type === 'block_quote'" class="streamfield-block-quote">
           <blockquote>
             <HtmlConvert
               v-if="block.value.blockQuote"
@@ -305,9 +298,7 @@ onMounted(() => {
       </div>
       <!-- 1/2 way through the streamfield, insert the donation block -->
       <streamfield-donation
-        v-if="
-          props.showDonation && index === Math.floor(streamfield.length / 2)
-        "
+        v-if="props.showDonation && index === Math.floor(streamfield.length / 2)"
         @onClick="
           trackClickEvent(
             `story page id ${props.article.id}`,
