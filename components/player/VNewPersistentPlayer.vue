@@ -7,7 +7,6 @@ import Button from "primevue/button"
 import { nextTick, onMounted, ref, watch } from "vue"
 import { useIsApp } from "~/composables/states"
 import { toggleNativePullToRefresh } from "~/utilities/helpers"
-
 const props = defineProps({
   /**
    * get if the stream is buffering / loading
@@ -596,7 +595,7 @@ defineExpose({
             <!-- {{ props.title }}
             {{ props.description }} -->
             <VNewTrackInfo
-              v-bind="{ ...$props, ...$attrs }"
+              v-bind="$props"
               :livestream="isLiveStream"
               :class="[{ 'cursor-pointer': props.canClickAnywhere }]"
               @description-click="emit('description-click')"
