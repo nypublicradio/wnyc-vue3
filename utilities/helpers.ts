@@ -78,9 +78,12 @@ export const slugify = (text) => {
 export const getRouteOrLink = (
   url: string,
   routingDomains: string[] = [
-    "www.wnyc.org",
+    "wnyc.org",
     "demo.wnyc.org",
+    "prod.wnyc.org",
+    "www.wnyc.org",
     "www.demo.wnyc.org",
+    "www.prod.wnyc.org",
   ]
 ) => {
   if (!url) return url
