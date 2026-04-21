@@ -39,6 +39,7 @@ const props = defineProps({
   modifiers: { default: null, type: Object },
   quality: { default: undefined, type: Number },
   ratio: { default: null, type: Array },
+  blindLoaderRatio: { default: [3, 2], type: Array },
   sizes: { default: undefined, type: String },
   srcset: { default: undefined, type: Array },
   to: { default: null, type: String },
@@ -136,6 +137,11 @@ watch(
 
 // Computed style for loader dimensions to match image responsively
 const loaderDimensions = computed(() => {
+  // if using nuxt-img size prop for native ratio handling, we have to hard code the ratio in or the loader will use square defaults.
+  if (props.sizes) {
+    return `aspect-ratio:${props.blindLoaderRatio[0]} / ${props.blindLoaderRatio[1]};  width:100%; height:100%; max-width:100%; max-height:100%;`
+  }
+
   // Use aspect-ratio and width: 100% to make it responsive like the images
   return `aspect-ratio: ${imageRatio.value[0]} / ${imageRatio.value[1]}; width:100%; height:100%; max-width:${imageRatio.value[0]}px; max-height:${imageRatio.value[1]}px;`
 })
@@ -154,8 +160,7 @@ const childProps = computed(() => {
   // Pass-through props (only if defined/non-default, to let child defaults work)
   if (props.alt) p.alt = props.alt
   if (props.allowPreview) p.allowPreview = props.allowPreview
-  if (props.allowVerticalEffect)
-    p.allowVerticalEffect = props.allowVerticalEffect
+  if (props.allowVerticalEffect) p.allowVerticalEffect = props.allowVerticalEffect
   if (props.density !== undefined) p.density = props.density
   if (props.format !== undefined) p.format = props.format
   if (props.isDecorative) p.isDecorative = props.isDecorative
@@ -195,11 +200,8 @@ const childProps = computed(() => {
     </div>
 
     <!-- Loader container that holds space -->
-    <div
-      v-if="shouldShowLoader"
-      class="image-loader-container"
-      :style="loaderDimensions"
-    >
+
+    <div v-if="shouldShowLoader" class="image-loader-container" :style="loaderDimensions">
       <ClientOnly>
         <WnycLoader class="image-loader-anim" size="1rem" bg spinner />
       </ClientOnly>
