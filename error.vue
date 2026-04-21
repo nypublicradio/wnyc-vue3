@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { refreshData } from "./utilities/helpers"
-import { useIsApp } from "~/composables/states"
-import DefaultLayout from "./layouts/default.vue"
 
 const props = defineProps({
   error: {
@@ -9,8 +7,6 @@ const props = defineProps({
     default: null,
   },
 })
-
-const isApp = useIsApp()
 
 // Set the HTTP response status code based on the error
 // This is critical for nginx to intercept 404s and proxy to CMS
@@ -32,7 +28,7 @@ function handleGoHome() {
 
 <template>
   <div class="error">
-    <DefaultLayout>
+    <NuxtLayout>
       <section class="flex flex-column md:flex-row gap-3 align-items-center">
         <nuxt-img
           src="/404_tote.webp"
@@ -63,7 +59,7 @@ function handleGoHome() {
           </div>
         </div>
       </section>
-    </DefaultLayout>
+    </NuxtLayout>
     <Drawers class="z-2" />
   </div>
 </template>
