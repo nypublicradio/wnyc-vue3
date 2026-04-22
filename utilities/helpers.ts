@@ -1504,7 +1504,7 @@ export const getFirstSentence = (text: string): string => {
 }
 
 // return match redirects and return true slug
-export const getTrueSlug = async (slug: string, isolateReturn: boolean = true): Promise<string> => {
+export const getTrueSlug = async (slug: string, isolateReturn = true) => {
   const config = useRuntimeConfig()
   let newSlug = slug
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
