@@ -52,9 +52,11 @@
     -webkit-touch-callout: none; /* disable the iOS long press action */
     -webkit-user-select: none; /* disable text selection */
     color: var(--link-button-color);
+    transition: color var(--p-transition-duration);
+    -webkit-transition: color var(--p-transition-duration);
     &:hover,
     &:active {
-      color: var(--link-button-color);
+      color: var(--link-button-hover-color);
     }
     &:visited {
       color: var(--link-button-color);
