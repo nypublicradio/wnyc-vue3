@@ -72,7 +72,7 @@ export default defineNuxtConfig({
     },
     prerender: {
       // Disable prerendering when SSR is false (SPA mode for mobile)
-      crawlLinks: process.env.NUXT_SSR === 'true',
+      //crawlLinks: process.env.NUXT_SSR === 'true',
       routes: process.env.NUXT_SSR === 'true' ? [
         '/browse/shows/brian-lehrer-show',
         '/browse/shows/all-of-it',
