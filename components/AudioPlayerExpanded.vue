@@ -44,13 +44,42 @@ const { handleSleepTimer } = useSleepTimer()
 
 const isFavorited = ref(false)
 const isShowFollowed = ref(false)
+const isShowFollowable = ref(true)
 const showDownload = ref(true)
 
 // get true slug from id
-const getTrueSlugFromRedirects = async (link) => {
+const getTrueSlugFromRedirects = async (link, isolateReturn = true) => {
   const currentSlug = isolateSlug(link)
-  return await getTrueSlug(currentSlug)
+  return await getTrueSlug(currentSlug, isolateReturn)
 }
+
+const trueSlug = ref(null)
+const trueTo = ref(null)
+
+const isLive = computed(() => {
+  return isLiveStream.value
+})
+
+watch(
+  currentEpisode,
+  async () => {
+    // initially populate the true slug
+    trueSlug.value = await getTrueSlugFromRedirects(
+      currentEpisode.value.detailsLink,
+      true
+    )
+    // initially populate the true "to" destination if LIVE only
+    if (isLive.value) {
+      trueTo.value = await getTrueSlugFromRedirects(
+        currentEpisode.value.detailsLink,
+        false
+      )
+      // handle if isShowFollowable
+      isShowFollowable.value = !trueTo.value.includes("http")
+    }
+  },
+  { immediate: true }
+)
 
 onMounted(() => {
   watchEffect(async () => {
@@ -60,8 +89,8 @@ onMounted(() => {
     isFavorited.value = await checkIsFavorited(
       currentEpisode.value?.meta?.slug || currentEpisode.value?.slug
     )
-    const trueSlug = await getTrueSlugFromRedirects(currentEpisode.value.detailsLink)
-    isShowFollowed.value = await checkIsFavorited(trueSlug)
+    //const trueSlug = await getTrueSlugFromRedirects(currentEpisode.value.detailsLink)
+    isShowFollowed.value = await checkIsFavorited(trueSlug.value)
 
     // show/hide download button based on show title
     const showsWithoutDownload = ["nyc now", "wnyc news"]
@@ -90,18 +119,18 @@ const handleAddToFavorites = () => {
     isFavorited.value = !isFavorited.value
   }
 }
+
 // add show to favorites
-const handleFollowLive = async (link) => {
+const handleFollowLive = async () => {
   try {
     let showData = null
     if (user.value) {
-      // Step 1: get the true slug from the detailsLink
-      const trueSlug = await getTrueSlugFromRedirects(link)
+      // Step 1: get the trueSlug from the detailsLink declared on the root and set in the watch
 
       // Step 2: fetch wagtail show data if we successfully resolved a true slug
-      if (trueSlug) {
+      if (trueSlug.value) {
         showData = await $fetch(
-          `${config.public.BFF_URL}/api/pages/wagtail/${trueSlug}?showOnly=true`
+          `${config.public.BFF_URL}/api/pages/wagtail/${trueSlug.value}?showOnly=true`
         ).catch(() => null)
       }
 
@@ -171,26 +200,27 @@ const handleShare = () => {
 //   )
 // }
 
-const isLive = computed(() => {
-  return isLiveStream.value
-})
-
 // set the items for the Dot menu
 const getDotMenuItems = () => {
   return [
     ...(isLive.value
       ? [
-          {
-            label: `${isShowFollowed.value ? "Unfollow" : "Follow"} ${
-              currentEpisode.value.title
-            }`,
-            customIcon: FollowIcon,
-            active: isShowFollowed.value,
-            title: currentEpisode.value.title,
-            command: () => {
-              handleFollowLive(currentEpisode.value.detailsLink)
-            },
-          },
+          ...(isShowFollowable.value
+            ? [
+                {
+                  label: `${isShowFollowed.value ? "Unfollow" : "Follow"} ${
+                    currentEpisode.value.title
+                  }`,
+                  customIcon: FollowIcon,
+                  active: isShowFollowed.value,
+                  title: currentEpisode.value.title,
+                  command: () => {
+                    handleFollowLive()
+                  },
+                },
+              ]
+            : []),
+
           ...(isApp.value
             ? [
                 {
@@ -392,6 +422,7 @@ const moreFromClick = async () => {
           </template>
         </Button>
         <DotMenu
+          v-if="getDotMenuItems().length > 0"
           :menuItems="getDotMenuItems()"
           size="large"
           class="-mr-2"
@@ -438,11 +469,7 @@ const moreFromClick = async () => {
       "
       :src="currentEpisode?.image || currentEpisode?.image?.template"
       :alt="`${currentEpisode?.title} featured image`"
-      :size="{
-        xs: [327, 218],
-        sm: [528, 352],
-        md: [672, 448],
-      }"
+      sizes="xs:327, sm:528, md:672"
       class="card-feature-image"
     >
       <template #caption>
@@ -461,11 +488,7 @@ const moreFromClick = async () => {
       v-if="currentEpisode.onTodaysShowImageTemplate"
       :src="{ template: currentEpisode.onTodaysShowImageTemplate }"
       :alt="`${currentEpisode.title} featured image`"
-      :size="{
-        xs: [327, 218],
-        sm: [528, 352],
-        md: [672, 448],
-      }"
+      sizes="xs:327, sm:528, md:672"
       class="show-feature-image"
     >
       <template #caption>

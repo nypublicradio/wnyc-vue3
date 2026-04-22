@@ -1504,7 +1504,7 @@ export const getFirstSentence = (text: string): string => {
 }
 
 // return match redirects and return true slug
-export const getTrueSlug = async (slug: string): Promise<string> => {
+export const getTrueSlug = async (slug: string, isolateReturn = true) => {
   const config = useRuntimeConfig()
   let newSlug = slug
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
@@ -1538,7 +1538,7 @@ export const getTrueSlug = async (slug: string): Promise<string> => {
     )
     // find the redirect in the list
     const redirect = redirectsData?.find((r) => isolateSlug(r.from) === newSlug)
-    return redirect ? isolateSlug(redirect.to) : newSlug
+    return redirect ? isolateReturn ? isolateSlug(redirect.to) : redirect.to : newSlug
   } catch (error) {
     console.error(`Error getting true slug from id: ${error}`)
     return newSlug
