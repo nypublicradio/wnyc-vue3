@@ -345,16 +345,20 @@ export default async function useNavigationData () {
                 // web: https://pledge.wnyc.org/support/wnyc/?utm_medium=wnyc&utm_source=donation-button&utm_campaign=give-now-button
 
                 if (donateBanner) {
-                    const adjustedDonateLink = isApp.value
-                        ? donateBanner.value.buttonLink.includes('wnyc-app')
-                            ? finalDonateData.buttonLink = donateBanner.value.buttonLink
-                            : finalDonateData.buttonLink = donateBanner.value.buttonLink.replace('wnyc', 'wnyc-app')
-                        : finalDonateData.buttonLink.includes('wnyc-app')
-                            ? finalDonateData.buttonLink = donateBanner.value.buttonLink.replace('wnyc-app', 'wnyc')
-                            : finalDonateData.buttonLink = donateBanner.value.buttonLink
+                    let link = donateBanner.value.button_link
 
+                    // Normalize the URL to web format first to avoid duplication
+                    link = link.replace('/support/wnyc-app', '/support/wnyc')
+                        .replace('utm_medium=wnyc-app', 'utm_medium=wnyc')
+
+                    // Convert to app format if we are in the app
+                    if (isApp.value) {
+                        link = link.replace('/support/wnyc', '/support/wnyc-app')
+                            .replace(/utm_medium=[^&]+/, 'utm_medium=wnyc-app')
+                    }
+
+                    finalDonateData.buttonLink = link
                     finalDonateData.buttonText = donateBanner.value.button_text
-                    finalDonateData.buttonLink = adjustedDonateLink || ''
                 }
                 const footerNavItems = workingAllNav.filter((item) => item.inFooterMenu !== false)
 
