@@ -21,6 +21,7 @@
 }
 
 @mixin html-formatting() {
+  color: var(--p-text-color);
   h1 {
     line-height: 1.25em;
     letter-spacing: -1px;
