@@ -140,7 +140,7 @@ useSeoMeta({
           <div class="col-fixed hidden xxl:block w-20rem"></div>
           <div class="col pr-2 lg:pr-4">
             <div v-if="status === 'success'" class="flex flex-column gap-5">
-              <LazyVStreamfield :streamfieldBlocks="show?.body" />
+              <VStreamfield :streamfieldBlocks="show?.body" />
             </div>
             <div v-if="status !== 'success'">
               <div class="flex justify-content-between align-items-center mb-5 mt-2">
