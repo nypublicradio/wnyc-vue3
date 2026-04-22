@@ -176,13 +176,11 @@ onUnmounted(() => {
           &.bg {
             width: auto;
             margin-left: calc(40vw - 385px);
-            width: auto;
           }
           @include media("<sm") {
             &.bg {
               width: auto;
               margin-left: 0;
-              width: auto;
             }
           }
           &.photo {
