@@ -56,6 +56,10 @@ const getTrueSlugFromRedirects = async (link, isolateReturn = true) => {
 const trueSlug = ref(null)
 const trueTo = ref(null)
 
+const isLive = computed(() => {
+  return isLiveStream.value
+})
+
 watch(
   currentEpisode,
   async () => {
@@ -117,12 +121,11 @@ const handleAddToFavorites = () => {
 }
 
 // add show to favorites
-const handleFollowLive = async (link) => {
+const handleFollowLive = async () => {
   try {
     let showData = null
     if (user.value) {
-      // Step 1: get the true slug from the detailsLink
-      //const trueSlug = await getTrueSlugFromRedirects(link)
+      // Step 1: get the trueSlug from the detailsLink declared on the root and set in the watch
 
       // Step 2: fetch wagtail show data if we successfully resolved a true slug
       if (trueSlug.value) {
@@ -197,10 +200,6 @@ const handleShare = () => {
 //   )
 // }
 
-const isLive = computed(() => {
-  return isLiveStream.value
-})
-
 // set the items for the Dot menu
 const getDotMenuItems = () => {
   return [
@@ -216,7 +215,7 @@ const getDotMenuItems = () => {
                   active: isShowFollowed.value,
                   title: currentEpisode.value.title,
                   command: () => {
-                    handleFollowLive(currentEpisode.value.detailsLink)
+                    handleFollowLive()
                   },
                 },
               ]
