@@ -73,7 +73,13 @@ export default defineNuxtConfig({
     prerender: {
       // Disable prerendering when SSR is false (SPA mode for mobile)
       //crawlLinks: process.env.NUXT_SSR === 'true',
-      //routes: process.env.NUXT_SSR === 'true' ? ['/'] : ['/'],
+      // routes: process.env.NUXT_SSR === 'true' ? [
+      //   '/browse/shows/brian-lehrer-show',
+      //   '/browse/shows/all-of-it',
+      //   '/browse/shows/classical-music-happy-hour',
+      //   '/browse/shows/radiolab',
+      //   '/browse/shows/on-the-media'
+      // ] : null,
       // Don't fail the build on prerender errors for client-only routes
       failOnError: false,
       // Ignore client-only routes that don't work with SSR
@@ -102,6 +108,23 @@ export default defineNuxtConfig({
   },
 
   app: {
+    head: {
+      link: [
+        // Analytics & Tracking
+        { rel: 'preconnect', href: 'https://www.googletagmanager.com' },
+        // Ads
+        { rel: 'preconnect', href: 'https://securepubads.g.doubleclick.net' },
+        { rel: 'preconnect', href: 'https://cm.g.doubleclick.net' },
+        // APIs & Backend
+        { rel: 'preconnect', href: 'https://vuycervrdrtycpjzhqxg.supabase.co' },
+        { rel: 'preconnect', href: 'https://firebase.googleapis.com' },
+        { rel: 'preconnect', href: 'https://api.wnyc.org' },
+        { rel: 'preconnect', href: 'https://api.prod.nypr.digital' },
+        { rel: 'preconnect', href: 'https://cms.prod.nypr.digital' },
+        // Audio & Assets
+        { rel: 'preconnect', href: 'https://assets.webstream.wnyc.org' },
+      ]
+    },
     //pageTransition: { name: 'rotate', mode: 'out-in' },
     pageTransition: {
       name: "page",

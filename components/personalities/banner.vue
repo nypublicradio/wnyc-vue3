@@ -99,18 +99,21 @@ onUnmounted(() => {
             :alt="item.name"
             class="bg hidden sm:block"
             :class="item.id"
+            loading="lazy"
           />
           <img
             :src="item.bgSm"
             :alt="item.name"
             class="bg block sm:hidden"
             :class="item.id"
+            loading="lazy"
           />
           <img
             :src="item.text"
             :alt="item.name"
             class="text absolute left-0 top-0"
             :class="item.id"
+            loading="lazy"
           />
         </div>
         <img
@@ -118,6 +121,7 @@ onUnmounted(() => {
           :alt="item.name"
           class="photo"
           :class="item.id"
+          loading="lazy"
         />
       </div>
     </VFlexibleLink>
@@ -172,13 +176,11 @@ onUnmounted(() => {
           &.bg {
             width: auto;
             margin-left: calc(40vw - 385px);
-            width: auto;
           }
           @include media("<sm") {
             &.bg {
               width: auto;
               margin-left: 0;
-              width: auto;
             }
           }
           &.photo {

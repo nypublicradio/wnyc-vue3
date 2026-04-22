@@ -1,9 +1,5 @@
 <script setup>
-import {
-  checkIsFavorited,
-  slugify,
-  getFirstSentence,
-} from "~/utilities/helpers"
+import { checkIsFavorited, slugify, getFirstSentence } from "~/utilities/helpers"
 import { useIsApp } from "~/composables/states"
 import { useFetchWrapper } from "~/composables/useFetchWrapper"
 
@@ -19,11 +15,7 @@ const showFetchArgs = [
   },
 ]
 
-const {
-  data: show,
-  status,
-  error,
-} = isApp.value
+const { data: show, status, error } = isApp.value
   ? useFetchWrapper(...showFetchArgs)
   : await useFetchWrapper(...showFetchArgs)
 
@@ -50,8 +42,7 @@ const scrollToSection = (sectionId, behavior = "smooth", offset = 90) => {
   const element = document.getElementById(sectionId)
 
   if (element) {
-    const elementPosition =
-      element.getBoundingClientRect().top + window.pageYOffset
+    const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
     const offsetPosition = elementPosition - offset
 
     window.scrollTo({
@@ -152,9 +143,7 @@ useSeoMeta({
               <VStreamfield :streamfieldBlocks="show?.body" />
             </div>
             <div v-if="status !== 'success'">
-              <div
-                class="flex justify-content-between align-items-center mb-5 mt-2"
-              >
+              <div class="flex justify-content-between align-items-center mb-5 mt-2">
                 <Skeleton height="18px" width="80px" borderRadius="4px" />
                 <Skeleton height="18px" width="80px" borderRadius="4px" />
               </div>
