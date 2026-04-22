@@ -300,3 +300,12 @@ $spacing-base: 0.25; //  matches prime-flex
   filter: blur(20px); /* Fallback for browsers that don't support SVG filters */
   filter: url(#v-image-blur-filter); /* Safari-compatible inline SVG filter reference */
 }
+
+//button focus ring
+@mixin focus-ring-defaults {
+  outline-color: var(--p-focus-ring-color);
+  outline-width: var(--p-focus-ring-width);
+  outline-offset: var(--p-focus-ring-offset);
+  outline-style: var(--p-focus-ring-style);
+  border-radius: 2px;
+}

@@ -40,10 +40,7 @@ figure {
 }
 
 a:focus-visible {
-  outline-color: var(--p-focus-ring-color);
-  outline-width: var(--p-focus-ring-width);
-  outline-offset: var(--p-focus-ring-offset);
-  outline-style: var(--p-focus-ring-style);
+  @include focus-ring-defaults;
 }
 
 * {
@@ -711,6 +708,15 @@ html.style-mode-dark {
           rgb(0, 0, 0) 100%
         );
       }
+    }
+  }
+}
+
+.p-breadcrumb {
+  .p-breadcrumb-item {
+    &:focus-visible,
+    &:focus {
+      @include focus-ring-defaults;
     }
   }
 }
