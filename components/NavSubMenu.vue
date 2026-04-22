@@ -4,6 +4,10 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  minWidth: {
+    type: String,
+    default: "285px",
+  },
 })
 const emit = defineEmits(["emit-click"])
 
@@ -53,7 +57,11 @@ const onFocusOut = (e, index, length) => {
 
 <template>
   <!-- only show the dropdown if more than 1 item -->
-  <div v-if="props.model?.length > 1 || props.model == null" class="nav-sub-menu-holder">
+  <div
+    v-if="props.model?.length > 1 || props.model == null"
+    class="nav-sub-menu-holder"
+    :style="`--min-width: ${props.minWidth};`"
+  >
     <div class="blank-spacer" tabindex="-1"></div>
     <div class="nav-sub-menu">
       <div v-if="props.model">
@@ -102,7 +110,7 @@ const onFocusOut = (e, index, length) => {
     height: 12px;
     width: 100%;
     background: transparent;
-    min-width: 280px;
+    min-width: var(--min-width);
     margin-left: -12px;
     margin-top: 0;
     cursor: default;
@@ -119,7 +127,7 @@ const onFocusOut = (e, index, length) => {
     box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.3);
     background-color: var(--header-menu-background);
     z-index: 1;
-    min-width: 280px;
+    min-width: var(--min-width);
 
     .menu-item {
       transition: background-color var(--p-transition-duration);

@@ -34,6 +34,7 @@ const emit = defineEmits(["emit-click"])
         <template #menu v-if="item.items">
           <NavSubMenu
             :model="item?.items[0]"
+            min-width="230px"
             @emit-click="emit('emit-click', event)"
           />
         </template>
