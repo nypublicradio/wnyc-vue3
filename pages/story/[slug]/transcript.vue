@@ -98,25 +98,25 @@ const getEpisodeImage = () => {
   return epImage
 }
 
-const { data: showSlug } = await useFetchWrapper(
-  () =>
-    theSlug.value
-      ? `${config.public.BFF_URL}/api/v2/show/${theSlug.value}?slugOnly=true`
-      : null,
-  {
-    key: `v2-show-only-${theSlug.value}`,
-  }
-)
+// const { data: showSlug } = await useFetchWrapper(
+//   () =>
+//     theSlug.value
+//       ? `${config.public.BFF_URL}/api/v2/show/${theSlug.value}?slugOnly=true`
+//       : null,
+//   {
+//     key: `v2-show-only-${theSlug.value}`,
+//   }
+// )
 
-const { data: show, status: showStatus } = await useFetchWrapper(
-  () =>
-    showSlug.value?.show?.slug
-      ? `${config.public.BFF_URL}/api/pages/wagtail/${showSlug.value?.show?.slug}?showOnly=true`
-      : null,
-  {
-    key: `wagtail-show-only-${showSlug.value?.show?.slug}`,
-  }
-)
+// const { data: show, status: showStatus } = await useFetchWrapper(
+//   () =>
+//     showSlug.value?.show?.slug
+//       ? `${config.public.BFF_URL}/api/pages/wagtail/${showSlug.value?.show?.slug}?showOnly=true`
+//       : null,
+//   {
+//     key: `wagtail-show-only-${showSlug.value?.show?.slug}`,
+//   }
+// )
 
 // episode image resize on scroll
 const handleScroll = () => {
