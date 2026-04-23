@@ -114,17 +114,18 @@ onMounted(() => {
             :label="block?.value?.label"
             :seeMore="block?.value?.seeMoreLink"
           />
-          <VFlexibleLink
+          <div
             v-if="block?.value?.seeMoreLink"
-            :to="getRouteOrLink(block?.value?.seeMoreLink.url)"
-            raw
+            class="flex justify-content-center mt-4 w-full"
           >
-            <Button
-              severity="secondary"
-              class="mt-4 px-5 mx-auto block"
-              :label="block?.value?.seeMoreLink.label"
-            />
-          </VFlexibleLink>
+            <VFlexibleLink :to="getRouteOrLink(block?.value?.seeMoreLink.url)" raw>
+              <Button
+                severity="secondary"
+                class="px-5"
+                :label="block?.value?.seeMoreLink.label"
+              />
+            </VFlexibleLink>
+          </div>
         </div>
 
         <StreamfieldCtaBlock
