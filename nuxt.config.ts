@@ -68,6 +68,11 @@ export default defineNuxtConfig({
 
   nitro: {
     routeRules: {
+      '/home': { swr: 60 },
+      // Cache ALL shows and any nested episode pages under a show for 15 minutes
+      '/browse/shows/**': { swr: 900 },
+      '/npr/**': { swr: 900 },
+      '/events/**': { swr: 900 },
       '/confirm': { ssr: false },
     },
     prerender: {
