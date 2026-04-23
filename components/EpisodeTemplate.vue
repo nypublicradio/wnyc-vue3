@@ -152,14 +152,8 @@ const handleShare = () => {
 
 //handle the transcript of the episode
 const handleTranscript = () => {
-  if (route.params.cmsSource) {
-    navigateTo(`./${route.params.slug}/transcript`)
-  } else {
-    // Fallback for old route structure
-    navigateTo(
-      `./${route.params.slug}/transcript?src=${route.query.src}&type=${route.query.type}`
-    )
-  }
+  const basePath = route.path.replace(/\/$/, "")
+  navigateTo(`${basePath}/transcript`)
 }
 
 // handle comments button click

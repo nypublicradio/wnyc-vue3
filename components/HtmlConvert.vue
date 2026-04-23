@@ -70,6 +70,10 @@ const rawHtmlString = computed(() => {
   if (typeof content !== "string") {
     content = String(content)
   }
+
+  // Normalize line endings to prevent hydration mismatches
+  content = content.replace(/\r\n/g, "\n")
+
   // strip all tags and use as just a string
   if (props.stringify) {
     content = content.replace(/<[^>]*>/g, "")
