@@ -191,6 +191,7 @@ useSeoMeta({
                   sizes="lg:672px md:885px sm:709px xs:517px xxs:316px"
                   :alt="eventData?.image?.title || eventData?.title"
                   class="event-body__image-frame mb-4"
+                  loading="eager"
                 />
                 <p v-if="eventData?.image?.credit" class="event-body__credit">
                   {{ eventData?.image?.credit }}
