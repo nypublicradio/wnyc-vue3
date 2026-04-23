@@ -40,9 +40,9 @@ const { data: pagedata, error, status } = await useFetchWrapper(...curationFetch
 
 definePageMeta({
   layout: "default",
-  layoutTransition: {
-    name: "login",
-  },
+  // layoutTransition: {
+  //   name: "login",
+  // },
 })
 
 // Auto-refresh handled by useFetchWrapper
