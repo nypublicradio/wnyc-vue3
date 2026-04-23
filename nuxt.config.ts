@@ -110,11 +110,6 @@ export default defineNuxtConfig({
   app: {
     head: {
       link: [
-        // Analytics & Tracking
-        { rel: 'preconnect', href: 'https://www.googletagmanager.com' },
-        // Ads
-        { rel: 'preconnect', href: 'https://securepubads.g.doubleclick.net' },
-        { rel: 'preconnect', href: 'https://cm.g.doubleclick.net' },
         // APIs & Backend
         { rel: 'preconnect', href: 'https://vuycervrdrtycpjzhqxg.supabase.co' },
         { rel: 'preconnect', href: 'https://firebase.googleapis.com' },
