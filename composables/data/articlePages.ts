@@ -236,6 +236,7 @@ export async function normalizeWagtailPage (article: Record<string, any | undefi
       topperDescription: article?.description,
       topperBackground: article?.topperBackground,
     },
+    canDownloadEpisodes: article?.canDownloadEpisodes || false,
     // curated images
     listingImage: article.listingImage ?? article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
     socialImage: article.socialImage ?? article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,

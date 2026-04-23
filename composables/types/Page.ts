@@ -129,6 +129,7 @@ export interface ArticlePage extends Page {
   transcript?: string
   embedCode?: string
   topper?: Topper
+  canDownloadEpisodes?: boolean
 
   // Event-specific fields
   contentType?: string
