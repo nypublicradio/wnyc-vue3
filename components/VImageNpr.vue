@@ -148,10 +148,7 @@ const theSrc = computed(() => {
 const theSrcFull = computed(() => {
   if (!props.src) return ""
   return props.src
-    .replace(
-      "s={width}",
-      props.maxWidth !== Infinity ? `s=${props.maxWidth}` : ""
-    )
+    .replace("s={width}", props.maxWidth !== Infinity ? `s=${props.maxWidth}` : "")
     .replace("{quality}", props.quality)
     .replace("{format}", props.format)
 })
@@ -284,10 +281,7 @@ onMounted(async () => {
       class="v-image-link"
       @click="props.to ? emit('image-click', props.to) : null"
     >
-      <div
-        class="v-image-holder"
-        :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`"
-      >
+      <div class="v-image-holder" :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`">
         <div v-if="isVertical" class="bg">
           <nuxt-img
             :format="props.format"
@@ -298,6 +292,7 @@ onMounted(async () => {
             :height="props.height"
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
             :loading="props.loading"
+            :preload="{ fetchPriority: props.loading === 'eager' ? 'high' : 'low' }"
           />
         </div>
         <img
@@ -351,6 +346,7 @@ onMounted(async () => {
                 style="width: 100%; height: auto"
                 :alt="props.isDecorative ? '' : props.alt"
                 loading="eager"
+                :preload="{ fetchPriority: 'high' }"
                 :quality="70"
                 :width="computedEnlargeWidth"
                 :height="computedEnlargeHeight"
