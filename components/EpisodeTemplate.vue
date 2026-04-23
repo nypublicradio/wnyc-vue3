@@ -333,6 +333,7 @@ const getDotMenuItems = (bucketItem) => {
             :allowVerticalEffect="false"
             :ratio="[1, 1]"
             :alt="props.episodeData?.image?.altText"
+            loading="eager"
             class="episode-page-image flex-none w-7rem md:w-12rem"
           >
             <!-- <template #caption>
