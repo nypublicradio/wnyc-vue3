@@ -55,7 +55,8 @@
     transition: color var(--p-transition-duration);
     -webkit-transition: color var(--p-transition-duration);
     &:hover,
-    &:active {
+    &:active,
+    &:focus {
       color: var(--link-button-hover-color);
     }
     &:visited {
