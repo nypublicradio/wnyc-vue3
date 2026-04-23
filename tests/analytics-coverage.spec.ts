@@ -22,8 +22,9 @@ const expectedPageViewFiles = [
   'pages/saved.vue',
   'pages/signup.vue',
   'pages/staff/[slug].vue',
-  'pages/story/[slug].vue',
-  'pages/story/photos/[gallerySlug].vue',
+  'pages/story/[slug]/index.vue',
+  'pages/story/[slug]/photos/[gallerySlug].vue',
+  'pages/story/[slug]/transcript.vue',
 ]
 
 const walkFiles = (dir) =>
