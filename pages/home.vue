@@ -32,11 +32,13 @@ const curationFetchArgs = [
   },
 ]
 
-const { data: latestNewsUpdatesData, error: error2 } = await useFetchWrapper(
-  ...newsFetchArgs
-)
-
-const { data: pagedata, error, status } = await useFetchWrapper(...curationFetchArgs)
+const [
+  { data: latestNewsUpdatesData, error: error2 },
+  { data: pagedata, error, status }
+] = await Promise.all([
+  useFetchWrapper(...newsFetchArgs),
+  useFetchWrapper(...curationFetchArgs)
+])
 
 definePageMeta({
   layout: "default",
@@ -88,14 +90,14 @@ onMounted(() => {
           class="station-holder desktop item col-6 md:col-4 xl:col-2"
           :key="brand.label"
         >
-          <BrandCard :brand="brand" />
+          <LazyBrandCard :brand="brand" />
         </div>
       </div>
     </section>
 
-    <DonateBanner v-if="!isApp" class="mt-6" />
+    <LazyDonateBanner v-if="!isApp" class="mt-6" />
 
-    <SponsorBanner
+    <LazySponsorBanner
       v-if="isApp"
       :style="`margin-bottom:${currentEpisode ? '-20px' : '0'}`"
     />
