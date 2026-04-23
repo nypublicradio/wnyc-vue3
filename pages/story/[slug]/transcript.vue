@@ -59,10 +59,10 @@ onMounted(() => {
   }
 })
 
-const theSlug = computed(
-  () =>
-    episode.value?.showSlug || episode.value?.show || episode.value?.headers?.brand?.slug
-)
+// const theSlug = computed(
+//   () =>
+//     episode.value?.showSlug || episode.value?.show || episode.value?.headers?.brand?.slug
+// )
 const backToEpisodePath = computed(() => `${mediaTypeRoutes.story}${route.params.slug}`)
 // handle returning / routing to the full episode page
 const handleReturnToEpisode = () => {
