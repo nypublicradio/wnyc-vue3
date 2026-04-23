@@ -36,7 +36,7 @@ const getWagtailEpisodes = async (showData: any, page = 1, pageSize = '10', show
         }
 
         // Transform curated content to normalize episodes
-        const transformedContent = await transformCuratedContent(showData.body, 'default', showSlug)
+        const transformedContent = await transformCuratedContent(showData.body, 'default', showSlug, showData)
 
         // Extract all episodes from the transformed curated lists
         const allEpisodes: any[] = []
