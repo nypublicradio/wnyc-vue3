@@ -23,6 +23,10 @@ const props = defineProps({
     default: null,
     required: false,
   },
+  loading: {
+    type: String,
+    default: "lazy",
+  },
 })
 
 const reactiveItems = toRef(props.list, "listItems")
@@ -54,6 +58,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
             lg: [353, 235],
             xl: [437, 292],
           }"
+          :loading="props.loading"
           @on-click="dynamicNavigation(article)"
         />
       </template>

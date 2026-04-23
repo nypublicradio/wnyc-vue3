@@ -75,9 +75,7 @@ onMounted(() => {
     </section>
     <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
     <section v-if="status === 'success'">
-      <LazyVStreamfield
-        :streamfieldBlocks="pagedata?.new_home_template?.curatedContent"
-      />
+      <VStreamfield :streamfieldBlocks="pagedata?.new_home_template?.curatedContent" />
     </section>
     <section v-else>
       <layouts-horizontal-feature-ad-skeleton />
