@@ -247,7 +247,7 @@ useSeoMeta({
 <template>
   <NuxtLoadingIndicator />
   <NuxtLayout>
-    <NuxtPage />
+    <NuxtPage :transition="isApp ? { name: 'page', mode: 'out-in' } : false" />
   </NuxtLayout>
   <div id="anchor"></div>
   <VProgressBar />
