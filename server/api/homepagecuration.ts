@@ -27,7 +27,7 @@ const getNewHomeTemplate = async () => {
 
 		const resData = humps.camelizeKeys(res)
 		//console.log('resData = ', resData.curatedContent[0].value.list.listItems)
-		const transformedCuratedContent = await transformCuratedContent(resData.curatedContent)
+		const transformedCuratedContent = await transformCuratedContent(resData.curatedContent, 'default', null, resData)
 
 		return {
 			...resData,
