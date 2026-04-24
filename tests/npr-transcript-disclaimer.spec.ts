@@ -9,7 +9,7 @@ describe('NPR transcript disclaimer', () => {
       'utf8'
     )
     const wnycStorySource = readFileSync(
-      join(process.cwd(), 'pages/story/[slug].vue'),
+      join(process.cwd(), 'pages/story/[slug]/index.vue'),
       'utf8'
     )
 

@@ -238,7 +238,8 @@ const isDownloadAvailable = (bucketItem) => {
     return false
   }
   // check to see if the CMS has "Can download episodes" = true
-  if (props.show?.canDownloadEpisodes === false) {
+  // We use strict falsy check so undefined safely blocks downloads too!
+  if (!props.show || !props.show?.canDownloadEpisodes) {
     return false
   }
   // has audio file to download
