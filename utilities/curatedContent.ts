@@ -60,7 +60,7 @@ async function handleNprCdsItem (listItem: any, componentType: string, showSlug?
 			meta: {
 				slug: listItem.url,
 			},
-			canDownloadEpisodes: allData?.canDownloadEpisodes || false // support the download button based on the show preferences
+			canDownloadEpisodes: allData?.canDownloadEpisodes ?? undefined // support the download button based on the show preferences
 		}
 	}
 
@@ -95,7 +95,7 @@ async function handleOtherContentType (listItem: any, allData?: any[]) {
 		}
 	}
 	// support the download button based on the show preferences
-	mergedItem.canDownloadEpisodes = allData?.canDownloadEpisodes || false
+	mergedItem.canDownloadEpisodes = allData?.canDownloadEpisodes ?? undefined
 
 	return mergedItem.contentType === 'episode'
 		? await normalizeSimplecastListItem(mergedItem)
