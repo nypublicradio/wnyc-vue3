@@ -23,6 +23,7 @@ const currentEpisodeHolder = useCurrentEpisodeHolder()
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isStreamLoading = useIsStreamLoading()
+const scheduleHolderRef = ref(null)
 
 const route = useRoute()
 const router = useRouter()
@@ -45,13 +46,35 @@ watch(currentEpisodeHolder, async (oldData, newData) => {
 })
 
 // watcher for triggering a play of the live stream from a route variable
+
 watch(
   () => router.currentRoute.value.query,
   (newQuery) => {
+    // Prevent the watcher from firing when navigating away from the page
+    if (router.currentRoute.value.name !== "live") return
+
     // checking if the slug is in the query
     if (newQuery.slug) {
       routeSlug.value = newQuery.slug
       getStationBySlugAndPlayIt(newQuery.slug, newQuery.autoplay)
+    }
+    // page scrolling
+    if (import.meta.client) {
+      if (newQuery.schedule) {
+        setTimeout(() => {
+          window.scrollTo({
+            top: scheduleHolderRef?.value?.offsetTop + 22,
+            behavior: "smooth",
+          })
+        }, 300)
+      } else {
+        if (window.scrollY !== 0) {
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          })
+        }
+      }
     }
   },
   { immediate: true }
@@ -113,14 +136,9 @@ useHead({
 <template>
   <div class="page live-page">
     <div class="top flex flex-column gap-3 style-mode-dark mb-3">
-      <HorizontalScrollFeature
-        :data="allCurrentStations"
-        class="live-stations-holder"
-      >
+      <HorizontalScrollFeature :data="allCurrentStations" class="live-stations-holder">
         <template #default>
-          <div
-            class="live-stations flex pb-2 md:w-full md:justify-content-center"
-          >
+          <div class="live-stations flex pb-2 md:w-full md:justify-content-center">
             <div
               v-for="(station, index) in allCurrentStations"
               class="station-holder"
@@ -146,17 +164,12 @@ useHead({
                   @click="switchStation(station)"
                 >
                   <template #default>
-                    <div
-                      class="flex gap-1 align-items-center overflow-hidden w-full"
-                    >
+                    <div class="flex gap-1 align-items-center overflow-hidden w-full">
                       <div
                         v-if="currentEpisode?.station === station.station"
                         class="flex-shrink-0"
                       >
-                        <i
-                          v-if="isStreamLoading"
-                          class="pi pi-spin pi-spinner mr-2"
-                        ></i>
+                        <i v-if="isStreamLoading" class="pi pi-spin pi-spinner mr-2"></i>
                         <WnycLoader
                           v-else
                           class="pr-2"
@@ -224,12 +237,10 @@ useHead({
     <!-- <pre class="overflow-hidden">{{ currentEpisodeHolder }}</pre> -->
     <section class="schedule-holder">
       <div class="grid grid-nogutter m-auto">
-        <div class="col w-full md:pr-2 lg:pr-4">
+        <div class="col w-full md:pr-2 lg:pr-4" ref="scheduleHolderRef">
           <Schedule />
         </div>
-        <div
-          class="col-fixed hidden xl:block xl:w-19rem justify-content-center"
-        >
+        <div class="col-fixed hidden xl:block xl:w-19rem justify-content-center">
           <story-htlAd
             layout="rectangle"
             slotClass="htlad-wnyc_livepage_rectangle"
