@@ -17,14 +17,14 @@ const allMenuData = [
                 },
                 {
                     label: "Daily Schedule",
-                    url: "/live"
+                    url: "/live?schedule=true",
                 },
             ],
         ],
     },
     {
         label: "Daily Schedule",
-        url: "/live",
+        url: "/live?schedule=true",
         id: "8",
         icon: "",
         hasSubmenu: false,
@@ -34,7 +34,7 @@ const allMenuData = [
             [
                 {
                     label: "Schedule",
-                    url: "/live"
+                    url: "/live?schedule=true",
                 },
             ],
         ],
