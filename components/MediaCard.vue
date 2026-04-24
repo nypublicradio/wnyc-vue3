@@ -233,6 +233,40 @@ const handleDownload = async (bucketItem) => {
   progress.value = await fetchAndStoreMp3(bucketItem)
 }
 
+//////////////////////////////////////////////////////////////////
+// 1. Initialize the download flag.
+// If the backend already provided it directly (e.g. Wagtail Show Pages), we use it immediately.
+const canDownloadEpisodes = ref(props.data?.canDownloadEpisodes)
+
+// 2. Determine if we need to fetch the show's download rules.
+const showIdentifier = computed(() => {
+  if (canDownloadEpisodes.value !== undefined && canDownloadEpisodes.value !== null) {
+    return null
+  }
+  return (
+    props.data?.showSlug ||
+    props.data?.showId ||
+    props.data?.ancestry?.[0]?.slug ||
+    props.data?.show?.slug
+  )
+})
+
+// 3. Lazily fetch using our deduplicating composable
+watchEffect(async () => {
+  if (showIdentifier.value) {
+    const isDownloadable = await useCanDownloadEpisodes(showIdentifier.value)
+    if (isDownloadable !== undefined && isDownloadable !== null) {
+      canDownloadEpisodes.value = isDownloadable
+    }
+  }
+})
+
+// Finally, determine if the download button should be shown
+const isDownloadAvailable = (bucketItem) => {
+  return hasAudio(bucketItem.audio) && canDownloadEpisodes.value && !isDownloaded.value
+}
+/////////////////////////////////////////////////////////////////
+
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
   if (hasAudio(bucketItem?.audio)) {
@@ -250,9 +284,7 @@ const getDotMenuItems = (bucketItem) => {
             },
           ]
         : []),
-      ...(hasAudio(bucketItem?.audio) &&
-      bucketItem?.canDownloadEpisodes &&
-      !isDownloaded.value
+      ...(isDownloadAvailable(bucketItem)
         ? [
             {
               label: `Download ${
@@ -425,13 +457,14 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
         />
       </div>
       <div class="content col">
+        <!-- <pre class="text-xs">{{ props.data }}</pre> -->
         <div
           class="content-flex flex gap-2 flex-column justify-content-between w-full h-full"
         >
           <div class="top flex gap-2 flex-column w-full">
-            <pre class="text-xs absolute bottom-0">
-canDownloadEpisodes:{{ props.data?.canDownloadEpisodes }}</pre
-            >
+            <!-- <pre class="text-xs absolute bottom-0">
+canDownloadEpisodes:{{ canDownloadEpisodes }}</pre
+            > -->
             <div class="text flex gap-2 flex-column align-items-start">
               <LiveBadge v-if="props.showLive && !props.saved" class="align-self-start" />
               <p v-if="props.showTitle" :class="props.showTitleClasses">

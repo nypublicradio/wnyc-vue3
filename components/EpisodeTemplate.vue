@@ -233,11 +233,12 @@ const getEpisodeImage = () => {
 const theEpImage = computed(() => getEpisodeImage())
 
 const isDownloadAvailable = (bucketItem) => {
+  console.log("bucketItem", bucketItem)
+  console.log("props.show", props.show)
   // don't show download if the page is a story page
   if (route.fullPath.includes("/story/")) {
     return false
   }
-  console.log("props.show", props.show)
   // check to see if the CMS has "Can download episodes" = true
   if (!props.show || props.show?.canDownloadEpisodes === false) {
     return false

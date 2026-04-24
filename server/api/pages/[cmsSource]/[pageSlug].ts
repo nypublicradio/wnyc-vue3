@@ -19,7 +19,7 @@ const getPublisherPageData = async (pageSlug: string) => {
 }
 
 // getting page data from the wagtail api
-const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean) => {
+const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean, isDownloadRulesOnly?: boolean) => {
     // if the pageSlug is a url (www.example.com or example.com), just return null
     if (/^(www\.)?[^/]+\.[a-z]{2,}$/i.test(pageSlug)) {
         return {}
@@ -37,6 +37,11 @@ const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean) => {
     try {
         const res = await axios(options)
         const resData = humps.camelizeKeys(res.data)
+
+        if (isDownloadRulesOnly) {
+            return { canDownloadEpisodes: resData.canDownloadEpisodes ?? false }
+        }
+
         // Add cmsSource to the data so normalizeArticlePage knows which normalizer to use
         resData.cmsSource = cmsSources.WAGTAIL
         // Transform curated content if it exists
@@ -69,10 +74,10 @@ const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean) => {
 }
 
 // get page data from the proper CMS
-const getPageData = async (pageSlug: string, cmsSource: string, isShowOnly?: boolean) => {
+const getPageData = async (pageSlug: string, cmsSource: string, isShowOnly?: boolean, isDownloadRulesOnly?: boolean) => {
     switch (cmsSource) {
         case cmsSources.WAGTAIL:
-            return await getWagtailPageData(pageSlug, isShowOnly)
+            return await getWagtailPageData(pageSlug, isShowOnly, isDownloadRulesOnly)
         case cmsSources.PUBLISHER:
             return await getPublisherPageData(pageSlug)
         default:
@@ -90,8 +95,10 @@ export default defineEventHandler(async (event) => {
     const showOnly: string | undefined = query.showOnly as string | undefined
 
     const isShowOnly = showOnly === 'true'
+    const isDownloadRulesOnly = query.downloadRulesOnly === 'true'
+
     if (pageSlug && cmsSource) {
-        const PageData = await getPageData(pageSlug, cmsSource, isShowOnly)
+        const PageData = await getPageData(pageSlug, cmsSource, isShowOnly, isDownloadRulesOnly)
 
         return PageData
     } else {
