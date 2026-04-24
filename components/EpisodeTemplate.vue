@@ -233,8 +233,9 @@ const isDownloadAvailable = (bucketItem) => {
   if (route.fullPath.includes("/story/")) {
     return false
   }
+  console.log("props.show", props.show)
   // check to see if the CMS has "Can download episodes" = true
-  if (props.show?.canDownloadEpisodes === false) {
+  if (!props.show || props.show?.canDownloadEpisodes === false) {
     return false
   }
   // has audio file to download

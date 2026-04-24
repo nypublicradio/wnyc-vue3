@@ -26,7 +26,6 @@ const getNewHomeTemplate = async () => {
 		})
 
 		const resData = humps.camelizeKeys(res)
-		//console.log('resData = ', resData.curatedContent[0].value.list.listItems)
 		const transformedCuratedContent = await transformCuratedContent(resData.curatedContent, 'default', null, resData)
 
 		return {
@@ -52,8 +51,8 @@ export default defineCachedEventHandler(async () => {
 	}
 }
 	, {
-		maxAge: 300,
-		swr: true,
+		//maxAge: 300,
+		swr: false,
 		name: 'homepage-curation'
 	}
 )

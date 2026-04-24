@@ -798,6 +798,7 @@ interface NprArticle {
   editorialLastModifiedDateTime?: string
   teaser?: string
   showTitle?: string
+  showSlug?: string
   webPages?: NprWebPage[]
   images?: NprImage[]
   assets?: Record<string, NprAsset>
@@ -1034,6 +1035,7 @@ export async function normalizeNprPage (article: NprArticle, componentType = "de
       ...(derivedShowSlug ? { showSlug: derivedShowSlug } : {}),
     },
     showTitle: showInfo.title,
+    showSlug: derivedShowSlug,
     body: textBody,
     rawBody: textBody,
     link: article.webPages?.[0]?.href ?? '/',
