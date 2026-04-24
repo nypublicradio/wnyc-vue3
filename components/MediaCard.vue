@@ -249,7 +249,9 @@ const getDotMenuItems = (bucketItem) => {
             },
           ]
         : []),
-      ...(hasAudio(bucketItem?.audio) && !isDownloaded.value
+      ...(hasAudio(bucketItem?.audio) &&
+      bucketItem?.canDownloadEpisodes &&
+      !isDownloaded.value
         ? [
             {
               label: `Download ${
@@ -364,6 +366,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
 </script>
 
 <template>
+  <!-- <pre>{{ props.data }}</pre> -->
   <div
     class="media-card"
     :style="`cursor: ${props.isSegment ? 'default !important' : ''}`"

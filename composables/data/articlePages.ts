@@ -236,6 +236,7 @@ export async function normalizeWagtailPage (article: Record<string, any | undefi
       topperDescription: article?.description,
       topperBackground: article?.topperBackground,
     },
+    canDownloadEpisodes: article?.canDownloadEpisodes || false,
     // curated images
     listingImage: article.listingImage ?? article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
     socialImage: article.socialImage ?? article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
@@ -289,6 +290,7 @@ export async function normalizeWagtailListItem (article: Record<string, any | un
     rawBody: getWagtailRawBody(article.body),
     audio: article.audio,
     hasAudio: article.audio ? true : false,
+    canDownloadEpisodes: article?.canDownloadEpisodes || false,
     // for comments
     estimatedDuration: undefined,
     readingTime: article.readingTime,
@@ -320,7 +322,6 @@ export async function normalizeWagtailListItem (article: Record<string, any | un
 export async function normalizeSimplecastListItem (article: Record<string, any | undefined>): ArticlePage {
   if (typeof article === 'undefined')
     return null
-  //console.log("normalizeSimplecastListItem", article)
   const config = useRuntimeConfig()
   // Simplecast uses UUIDs as episode IDs - preserve the original UUID for API calls
   const simplecastId = article.id || article.episodeId || article.uuid
@@ -359,6 +360,7 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
     body: article.body,
     audio: article.enclosureUrl,
     hasAudio: article.enclosureUrl ? true : false,
+    canDownloadEpisodes: article?.canDownloadEpisodes || false,
     // for comments
     estimatedDuration: article.duration,
     sortDate: article.publishedAt,
@@ -495,6 +497,7 @@ export async function normalizeSimplecastPage (article: SimplecastArticle): Prom
     rawBody: bodyText,
     audio: audioUrl,
     hasAudio: Boolean(audioUrl),
+    canDownloadEpisodes: article?.canDownloadEpisodes || false,
     listingImage: image,
     socialImage: image,
     disableComments: undefined,
@@ -584,6 +587,7 @@ export async function normalizePublisherPage (article: Record<string, any | unde
     rawBody: article.attributes.body,
     audio: article.attributes.audio,
     hasAudio: article.attributes.audio ? true : false,
+    canDownloadEpisodes: article.attributes.audioMayDownload || false,
     // curated images
     listingImage: article.attributes.imageMain, // This may need tweaking
     socialImage: article.attributes.imageMain, // This may need tweaking
@@ -645,6 +649,7 @@ export async function normalizePublisherListItem (article: Record<string, any | 
     body: article.attributes.body,
     audio: article.attributes.audio,
     hasAudio: article.attributes.audio ? true : false,
+    canDownloadEpisodes: article.attributes?.audioMayDownload || false,
     estimatedDuration: duration,
     show: article.attributes.show,
     showTitle: article.attributes.showTitle,
