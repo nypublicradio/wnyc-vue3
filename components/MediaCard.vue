@@ -233,19 +233,6 @@ const handleDownload = async (bucketItem) => {
   progress.value = await fetchAndStoreMp3(bucketItem)
 }
 
-const isDownloadAvailable = async (bucketItem) => {
-  // if canDownloadEpisodes is set to false, it may be because it is part of a curation that does not have access to the show preferences, so lets's fetch the show and check.
-  console.log("bucketItem", bucketItem)
-  if (hasAudio(bucketItem?.audio && !isDownloaded.value)) {
-    // this has audio
-    if (!bucketItem.canDownloadEpisodes || bucketItem.canDownloadEpisodes === false) {
-      const trueSlug = await getTrueSlug(bucketItem?.slug)
-
-      return false
-    }
-  }
-}
-
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
   if (hasAudio(bucketItem?.audio)) {
@@ -263,7 +250,9 @@ const getDotMenuItems = (bucketItem) => {
             },
           ]
         : []),
-      ...(isDownloadAvailable(bucketItem)
+      ...(hasAudio(bucketItem?.audio) &&
+      bucketItem?.canDownloadEpisodes &&
+      !isDownloaded.value
         ? [
             {
               label: `Download ${
@@ -440,6 +429,9 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
           class="content-flex flex gap-2 flex-column justify-content-between w-full h-full"
         >
           <div class="top flex gap-2 flex-column w-full">
+            <pre class="text-xs absolute bottom-0">
+canDownloadEpisodes:{{ props.data?.canDownloadEpisodes }}</pre
+            >
             <div class="text flex gap-2 flex-column align-items-start">
               <LiveBadge v-if="props.showLive && !props.saved" class="align-self-start" />
               <p v-if="props.showTitle" :class="props.showTitleClasses">
