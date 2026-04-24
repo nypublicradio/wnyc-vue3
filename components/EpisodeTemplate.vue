@@ -233,8 +233,6 @@ const getEpisodeImage = () => {
 const theEpImage = computed(() => getEpisodeImage())
 
 const isDownloadAvailable = (bucketItem) => {
-  console.log("bucketItem", bucketItem)
-  console.log("props.show", props.show)
   // don't show download if the page is a story page
   if (route.fullPath.includes("/story/")) {
     return false

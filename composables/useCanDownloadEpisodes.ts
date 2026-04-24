@@ -4,6 +4,12 @@ import { getTrueSlug } from "~/utilities/helpers"
 // It deduplicates concurrent requests for the same show slug.
 const pendingRequests = new Map<string, Promise<boolean>>()
 
+// handles caching of show download settings to prevent multiple requests for the same show slug.
+// this is called from the MediaCard component.
+// 1. If another card is already fetching this exact slug, share the promise!
+// 2. Otherwise, start a new native $fetch
+// 3. Put it in the shared map
+// 4. Clear it after 15 minutes since show download settings rarely change
 export const useCanDownloadEpisodes = (slug: string): Promise<boolean> => {
   if (!slug) return Promise.resolve(false)
 
@@ -11,8 +17,9 @@ export const useCanDownloadEpisodes = (slug: string): Promise<boolean> => {
   const config = useRuntimeConfig()
 
   // 1. If another card is already fetching this exact slug, share the promise!
-  if (pendingRequests.has(slug)) {
-    return pendingRequests.get(slug)!
+  const existingRequest = pendingRequests.get(slug)
+  if (existingRequest) {
+    return existingRequest
   }
 
   // 2. Otherwise, start a new native $fetch
@@ -27,6 +34,7 @@ export const useCanDownloadEpisodes = (slug: string): Promise<boolean> => {
       //console.log("###### useCanDownloadEpisodes", res)
       return res?.canDownloadEpisodes ?? false
     } catch (error) {
+      console.error("useCanDownloadEpisodes", error)
       return false
     }
   })()
