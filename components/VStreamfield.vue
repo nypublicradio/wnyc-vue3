@@ -124,6 +124,7 @@ onMounted(() => {
                 severity="secondary"
                 class="px-5"
                 :label="block?.value?.seeMoreLink.label"
+                tabindex="-1"
               />
             </VFlexibleLink>
           </div>

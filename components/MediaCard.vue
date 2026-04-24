@@ -452,6 +452,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
           :allowVerticalEffect="props.allowVerticalEffect"
           tabindex="-1"
           :loading="props.loading"
+          isDecorative
           @is-image-loaded="isImageLoaded = true"
         />
       </div>
