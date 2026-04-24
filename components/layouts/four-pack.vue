@@ -31,6 +31,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  loading: {
+    type: String,
+    default: "lazy",
+  },
 })
 
 const reactiveItems = toRef(props.list, "listItems")
@@ -74,6 +78,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
           :isHorizontal="isLgBreakpoint"
           imgCol="w-7rem md:w-12rem lg:w-full"
           :allowVerticalEffect="!props.square"
+          :loading="props.loading"
           @on-click="dynamicNavigation(item)"
         />
       </template>

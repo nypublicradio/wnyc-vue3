@@ -13,21 +13,32 @@ const route = useRoute()
 const router = useRouter()
 const toast = useToast()
 
-const { data: episode, status, error } = await useFetchWrapper(
-  () =>
-    `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
-  {
-    key: `index-episode-${route.params.cmsSource}-${route.params.slug}`,
-    onResponseError() {
-      toast.add({
-        severity: "error",
-        summary: "We are having a problem loading this episode. Please try again later.",
-        life: 6000,
-        closable: true,
-      })
-    },
-  }
-)
+const [
+  { data: episode, status, error },
+  { data: redirectsData }
+] = await Promise.all([
+  useFetchWrapper(
+    () =>
+      `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
+    {
+      key: `index-episode-${route.params.cmsSource}-${route.params.slug}`,
+      onResponseError() {
+        toast.add({
+          severity: "error",
+          summary: "We are having a problem loading this episode. Please try again later.",
+          life: 6000,
+          closable: true,
+        })
+      },
+    }
+  ),
+  useFetchWrapper(
+    () => `${config.public.BFF_URL}/api/show-slug-redirects`,
+    {
+      key: "show-slug-redirects",
+    }
+  )
+])
 
 const filteredTopStories = computed(() => getFilteredTopStories(episode.value))
 
@@ -75,12 +86,7 @@ const { data: showSlug } = await useFetchWrapper(
 )
 
 // Redirect table for old publisher show slugs
-const { data: redirectsData } = await useFetchWrapper(
-  () => `${config.public.BFF_URL}/api/show-slug-redirects`,
-  {
-    key: "show-slug-redirects",
-  }
-)
+// (Fetch moved to Promise.all above for parallel execution)
 
 // Resolve the show slug: redirect table first, then simplecast, then raw fallback
 const resolvedShowSlug = computed(() => {

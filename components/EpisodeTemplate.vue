@@ -44,6 +44,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  showNprTranscriptDisclaimer: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
@@ -341,6 +345,7 @@ const getDotMenuItems = (bucketItem) => {
             :allowVerticalEffect="false"
             :ratio="[1, 1]"
             :alt="props.episodeData?.image?.altText"
+            loading="eager"
             class="episode-page-image flex-none w-7rem md:w-12rem"
           >
             <!-- <template #caption>
@@ -599,6 +604,7 @@ const getDotMenuItems = (bucketItem) => {
             :article="props.episodeData"
             :isDisableComments="props.episodeData?.cmsSource !== 'WAGTAIL'"
             :showAd="!props.show"
+            :show-npr-transcript-disclaimer="props.showNprTranscriptDisclaimer"
           />
         </div>
         <div class="bottom-holder">
@@ -615,6 +621,7 @@ const getDotMenuItems = (bucketItem) => {
           :article="props.episodeData"
           :isDisableComments="props.episodeData?.cmsSource !== 'WAGTAIL'"
           :showAd="!props.show"
+          :show-npr-transcript-disclaimer="props.showNprTranscriptDisclaimer"
         />
       </div>
     </div>

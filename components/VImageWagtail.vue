@@ -271,6 +271,7 @@ const handleProvider = computed(() => {
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
             :modifiers="props.modifiers"
             :loading="props.loading"
+            :preload="{ fetchPriority: props.loading === 'eager' ? 'high' : 'low' }"
           />
         </div>
         <nuxt-img
@@ -292,6 +293,7 @@ const handleProvider = computed(() => {
           :alt="props.isDecorative ? '' : props.alt"
           :quality="String(props.quality)"
           :loading="props.loading"
+          :preload="{ fetchPriority: props.loading === 'eager' ? 'high' : 'low' }"
           :modifiers="props.modifiers"
           @load="handleImageLoad"
           @error="emit('image-error')"
@@ -330,6 +332,7 @@ const handleProvider = computed(() => {
                 style="width: 100%; height: auto"
                 :alt="props.isDecorative ? '' : props.alt"
                 loading="eager"
+                :preload="{ fetchPriority: 'high' }"
                 :quality="70"
                 :width="computedEnlargeWidth"
                 :height="computedEnlargeHeight"

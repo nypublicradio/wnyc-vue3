@@ -52,9 +52,12 @@
     -webkit-touch-callout: none; /* disable the iOS long press action */
     -webkit-user-select: none; /* disable text selection */
     color: var(--link-button-color);
+    transition: color var(--p-transition-duration);
+    -webkit-transition: color var(--p-transition-duration);
     &:hover,
-    &:active {
-      color: var(--link-button-color);
+    &:active,
+    &:focus {
+      color: var(--link-button-hover-color);
     }
     &:visited {
       color: var(--link-button-color);
@@ -299,4 +302,13 @@ $spacing-base: 0.25; //  matches prime-flex
 @mixin v-image-bg-blur($radius: 38) {
   filter: blur(20px); /* Fallback for browsers that don't support SVG filters */
   filter: url(#v-image-blur-filter); /* Safari-compatible inline SVG filter reference */
+}
+
+//button focus ring
+@mixin focus-ring-defaults {
+  outline-color: var(--p-focus-ring-color);
+  outline-width: var(--p-focus-ring-width);
+  outline-offset: var(--p-focus-ring-offset);
+  outline-style: var(--p-focus-ring-style);
+  border-radius: 2px;
 }

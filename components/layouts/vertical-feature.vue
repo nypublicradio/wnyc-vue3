@@ -23,6 +23,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  loading: {
+    type: String,
+    default: "lazy",
+  },
 })
 // TODO: use new smarter ratio calc
 const reactiveItems = toRef(props.list, "listItems")
@@ -123,6 +127,7 @@ const listTextClasses = props.isThin ? "text-sm" : "text-base lg:text-base"
         :showTitleClasses="listTextClasses"
         :size="featureSizes"
         :allowVerticalEffect="!isSquare"
+        :loading="props.loading"
         @on-click="dynamicNavigation(reactiveItems[0])"
       />
       <skeleton-media-card
@@ -154,6 +159,7 @@ const listTextClasses = props.isThin ? "text-sm" : "text-base lg:text-base"
             :showTitleClasses="listTextClasses"
             :allowVerticalEffect="false"
             :ratio="[1, 1]"
+            :loading="props.loading"
             :size="{
               xs: [112, 112],
               md: [208, 208],
