@@ -68,6 +68,11 @@ export default defineNuxtConfig({
 
   nitro: {
     routeRules: {
+      '/home': { swr: 60 },
+      // Cache ALL shows and any nested episode pages under a show for 15 minutes
+      '/browse/shows/**': { swr: 900 },
+      '/npr/**': { swr: 900 },
+      '/events/**': { swr: 900 },
       '/confirm': { ssr: false },
     },
     prerender: {
@@ -110,11 +115,6 @@ export default defineNuxtConfig({
   app: {
     head: {
       link: [
-        // Analytics & Tracking
-        { rel: 'preconnect', href: 'https://www.googletagmanager.com' },
-        // Ads
-        { rel: 'preconnect', href: 'https://securepubads.g.doubleclick.net' },
-        { rel: 'preconnect', href: 'https://cm.g.doubleclick.net' },
         // APIs & Backend
         { rel: 'preconnect', href: 'https://vuycervrdrtycpjzhqxg.supabase.co' },
         { rel: 'preconnect', href: 'https://firebase.googleapis.com' },
@@ -126,11 +126,8 @@ export default defineNuxtConfig({
       ]
     },
     //pageTransition: { name: 'rotate', mode: 'out-in' },
-    pageTransition: {
-      name: "page",
-      mode: "out-in", // default
-    },
-    layoutTransition: true,
+    pageTransition: false,
+    layoutTransition: false,
   },
 
   css: [

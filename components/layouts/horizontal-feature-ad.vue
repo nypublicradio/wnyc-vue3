@@ -20,6 +20,10 @@ const props = defineProps({
     default: null,
     required: false,
   },
+  loading: {
+    type: String,
+    default: "lazy",
+  },
 })
 
 const reactiveItems = toRef(props.list, "listItems")
@@ -31,12 +35,8 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
 const isSquare = ref(false)
 const featureItem = reactiveItems.value?.[0]
 if (featureItem) {
-  const imgHeight = Number(
-    featureItem.imageFullHeight || featureItem.image?.height
-  )
-  const imgWidth = Number(
-    featureItem.imageFullWidth || featureItem.image?.width
-  )
+  const imgHeight = Number(featureItem.imageFullHeight || featureItem.image?.height)
+  const imgWidth = Number(featureItem.imageFullWidth || featureItem.image?.width)
   if (featureItem.cmsSource === mediaTypes.SIMPLECAST) {
     isSquare.value = true
   } else if (
@@ -65,9 +65,7 @@ const featureSizes = computed(() => {
 
 <template>
   <div class="layout layout-horizontal-feature-ad">
-    <div
-      class="ad mb-5 col-12 flex align-items-center justify-content-center lg:hidden"
-    >
+    <div class="ad mb-5 col-12 flex align-items-center justify-content-center lg:hidden">
       <story-htlAd
         layout="rectangle"
         slotClass="htlad-wnyc_homepage_rectangle"
@@ -91,6 +89,7 @@ const featureSizes = computed(() => {
         imgCol="w-6"
         :size="featureSizes"
         :allowVerticalEffect="!isSquare"
+        :loading="props.loading"
         @on-click="dynamicNavigation(reactiveItems[0])"
       />
       <skeleton-media-card
@@ -126,6 +125,7 @@ const featureSizes = computed(() => {
           :isHorizontal="isLgBreakpoint"
           imgCol="w-7rem md:w-12rem lg:w-full"
           :size="{ xs: [112, 112], md: [176, 176], lg: [412, 275] }"
+          :loading="props.loading"
           @on-click="dynamicNavigation(article)"
         />
       </template>

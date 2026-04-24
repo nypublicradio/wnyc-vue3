@@ -419,7 +419,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
           :ratio="props.ratio"
           :allowVerticalEffect="props.allowVerticalEffect"
           tabindex="-1"
-          :loading="props.inCarousel ? 'eager' : props.loading"
+          :loading="props.loading"
           @is-image-loaded="isImageLoaded = true"
         />
       </div>

@@ -92,7 +92,7 @@ onMounted(() => {
       />
     </div>
     <div v-else-if="streamfieldBlocks">
-      <template v-for="block in streamfieldBlocks">
+      <template v-for="(block, index) in streamfieldBlocks">
         <!-- Streamfield Document is not ready on the back end at this time
         Keeping it here for future reference -->
         <!-- <StreamfieldDocument
@@ -103,7 +103,7 @@ onMounted(() => {
           :id="slugify(block?.value?.title)"
         /> -->
         <div
-          :key="`${block.id}-curated-list`"
+          :key="`${block.id}-curated-list-${index}`"
           v-if="block.type === 'curated_list' && block?.value?.list?.listItems?.length"
           :class="verticalSpacingClasses"
           :id="slugify(block?.value?.label)"
@@ -113,6 +113,7 @@ onMounted(() => {
             :list="block?.value?.list"
             :label="block?.value?.label"
             :seeMore="block?.value?.seeMoreLink"
+            :loading="index === 0 ? 'eager' : 'lazy'"
           />
           <div
             v-if="block?.value?.seeMoreLink"

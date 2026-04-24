@@ -17,6 +17,10 @@ const props = defineProps({
     default: null,
     required: false,
   },
+  loading: {
+    type: String,
+    default: "lazy",
+  },
 })
 </script>
 
@@ -26,5 +30,6 @@ const props = defineProps({
     :list="props.list"
     :cardClass="props.cardClass"
     :seeMore="props.seeMore"
+    :loading="props.loading"
   />
 </template>
