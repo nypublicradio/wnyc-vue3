@@ -92,7 +92,7 @@ onMounted(() => {
       />
     </div>
     <div v-else-if="streamfieldBlocks">
-      <template v-for="block in streamfieldBlocks">
+      <template v-for="(block, index) in streamfieldBlocks">
         <!-- Streamfield Document is not ready on the back end at this time
         Keeping it here for future reference -->
         <!-- <StreamfieldDocument
@@ -103,7 +103,7 @@ onMounted(() => {
           :id="slugify(block?.value?.title)"
         /> -->
         <div
-          :key="`${block.id}-curated-list`"
+          :key="`${block.id}-curated-list-${index}`"
           v-if="block.type === 'curated_list' && block?.value?.list?.listItems?.length"
           :class="verticalSpacingClasses"
           :id="slugify(block?.value?.label)"
@@ -113,18 +113,21 @@ onMounted(() => {
             :list="block?.value?.list"
             :label="block?.value?.label"
             :seeMore="block?.value?.seeMoreLink"
+            :loading="index === 0 ? 'eager' : 'lazy'"
           />
-          <VFlexibleLink
+          <div
             v-if="block?.value?.seeMoreLink"
-            :to="getRouteOrLink(block?.value?.seeMoreLink.url)"
-            raw
+            class="flex justify-content-center mt-4 w-full"
           >
-            <Button
-              severity="secondary"
-              class="mt-4 px-5 mx-auto block"
-              :label="block?.value?.seeMoreLink.label"
-            />
-          </VFlexibleLink>
+            <VFlexibleLink :to="getRouteOrLink(block?.value?.seeMoreLink.url)" raw>
+              <Button
+                severity="secondary"
+                class="px-5"
+                :label="block?.value?.seeMoreLink.label"
+                tabindex="-1"
+              />
+            </VFlexibleLink>
+          </div>
         </div>
 
         <StreamfieldCtaBlock

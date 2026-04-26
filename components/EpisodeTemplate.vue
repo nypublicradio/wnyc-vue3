@@ -156,14 +156,8 @@ const handleShare = () => {
 
 //handle the transcript of the episode
 const handleTranscript = () => {
-  if (route.params.cmsSource) {
-    navigateTo(`./${route.params.slug}/transcript`)
-  } else {
-    // Fallback for old route structure
-    navigateTo(
-      `./${route.params.slug}/transcript?src=${route.query.src}&type=${route.query.type}`
-    )
-  }
+  const basePath = route.path.replace(/\/$/, "")
+  navigateTo(`${basePath}/transcript`)
 }
 
 // handle comments button click
@@ -238,6 +232,20 @@ const getEpisodeImage = () => {
 
 const theEpImage = computed(() => getEpisodeImage())
 
+const isDownloadAvailable = (bucketItem) => {
+  // don't show download if the page is a story page
+  if (route.fullPath.includes("/story/")) {
+    return false
+  }
+  // check to see if the CMS has "Can download episodes" = true
+  // We use strict falsy check so undefined safely blocks downloads too!
+  if (!props.show || !props.show?.canDownloadEpisodes) {
+    return false
+  }
+  // has audio file to download
+  return hasAudio(bucketItem?.audio)
+}
+
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
   return [
@@ -254,7 +262,7 @@ const getDotMenuItems = (bucketItem) => {
           },
         ]
       : []),
-    ...(hasAudio(bucketItem?.audio)
+    ...(isDownloadAvailable(bucketItem)
       ? [
           {
             label: `Download ${
@@ -337,6 +345,7 @@ const getDotMenuItems = (bucketItem) => {
             :allowVerticalEffect="false"
             :ratio="[1, 1]"
             :alt="props.episodeData?.image?.altText"
+            loading="eager"
             class="episode-page-image flex-none w-7rem md:w-12rem"
           >
             <!-- <template #caption>
@@ -387,7 +396,6 @@ const getDotMenuItems = (bucketItem) => {
                 class="flex align-items-center gap-2"
               >
                 <PlayButton
-                  v-if="!hasSegments && hasAudio(props.episodeData?.audio)"
                   :label="getMinutes(props.episodeData?.estimatedDuration, 1)"
                   :data="props.episodeData"
                   severity="primary"
@@ -435,7 +443,7 @@ const getDotMenuItems = (bucketItem) => {
                 </Button>
 
                 <Button
-                  v-if="hasAudio(props.episodeData?.audio)"
+                  v-if="isDownloadAvailable(props.episodeData)"
                   :text="false"
                   :label="isMobileBtn ? '' : 'Download'"
                   :size="isMobileBtn ? '' : 'small'"

@@ -32,17 +32,19 @@ const curationFetchArgs = [
   },
 ]
 
-const { data: latestNewsUpdatesData, error: error2 } = await useFetchWrapper(
-  ...newsFetchArgs
-)
-
-const { data: pagedata, error, status } = await useFetchWrapper(...curationFetchArgs)
+const [
+  { data: latestNewsUpdatesData, error: error2 },
+  { data: pagedata, error, status }
+] = await Promise.all([
+  useFetchWrapper(...newsFetchArgs),
+  useFetchWrapper(...curationFetchArgs)
+])
 
 definePageMeta({
   layout: "default",
-  layoutTransition: {
-    name: "login",
-  },
+  // layoutTransition: {
+  //   name: "login",
+  // },
 })
 
 // Auto-refresh handled by useFetchWrapper
@@ -75,9 +77,7 @@ onMounted(() => {
     </section>
     <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
     <section v-if="status === 'success'">
-      <LazyVStreamfield
-        :streamfieldBlocks="pagedata?.new_home_template?.curatedContent"
-      />
+      <VStreamfield :streamfieldBlocks="pagedata?.new_home_template?.curatedContent" />
     </section>
     <section v-else>
       <layouts-horizontal-feature-ad-skeleton />
@@ -90,14 +90,14 @@ onMounted(() => {
           class="station-holder desktop item col-6 md:col-4 xl:col-2"
           :key="brand.label"
         >
-          <BrandCard :brand="brand" />
+          <LazyBrandCard :brand="brand" />
         </div>
       </div>
     </section>
 
-    <DonateBanner v-if="!isApp" class="mt-6" />
+    <LazyDonateBanner v-if="!isApp" class="mt-6" />
 
-    <SponsorBanner
+    <LazySponsorBanner
       v-if="isApp"
       :style="`margin-bottom:${currentEpisode ? '-20px' : '0'}`"
     />

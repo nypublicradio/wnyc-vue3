@@ -14,7 +14,7 @@ interface NprAsset {
 /**
  * Helper to handle NPR CDS items.
  */
-async function handleNprCdsItem (listItem: any, componentType: string, showSlug?: string) {
+async function handleNprCdsItem (listItem: any, componentType: string, showSlug?: string, allData?: any[]) {
 	// Content can be either an object directly or an array with one element
 	const nprDocument: NprDocument = listItem.content
 		? (Array.isArray(listItem.content) ? listItem.content[0] : listItem.content)
@@ -60,6 +60,7 @@ async function handleNprCdsItem (listItem: any, componentType: string, showSlug?
 			meta: {
 				slug: listItem.url,
 			},
+			canDownloadEpisodes: allData?.canDownloadEpisodes ?? undefined // support the download button based on the show preferences
 		}
 	}
 
@@ -70,7 +71,7 @@ async function handleNprCdsItem (listItem: any, componentType: string, showSlug?
 /**
  * Helper to handle other content types.
  */
-async function handleOtherContentType (listItem: any) {
+async function handleOtherContentType (listItem: any, allData?: any[]) {
 	const isEventItem = listItem.contentType === 'event_page' || listItem.type === 'event'
 	const normalizedImage = listItem.image
 		?? listItem.listingImage
@@ -93,6 +94,8 @@ async function handleOtherContentType (listItem: any) {
 			mergedItem.episodeId = simplecastEpisodeId
 		}
 	}
+	// support the download button based on the show preferences
+	mergedItem.canDownloadEpisodes = allData?.canDownloadEpisodes ?? undefined
 
 	return mergedItem.contentType === 'episode'
 		? await normalizeSimplecastListItem(mergedItem)
@@ -119,7 +122,7 @@ interface NprDocument {
  * @param showSlug - Optional show slug to add to NPR content
  * @returns Transformed curated content with normalized list items
  */
-export async function transformCuratedContent (curatedContent: any[], componentType = 'default', showSlug?: string) {
+export async function transformCuratedContent (curatedContent: any[], componentType = 'default', showSlug?: string, allData?: any[]) {
 	try {
 		return await Promise.all(
 			curatedContent.map(async (item) => {
@@ -133,9 +136,9 @@ export async function transformCuratedContent (curatedContent: any[], componentT
 					item.value.list.listItems.map(async (listItem) => {
 						try {
 							if (listItem.contentType === 'npr_cds_item') {
-								return await handleNprCdsItem(listItem, componentType, showSlug)
+								return await handleNprCdsItem(listItem, componentType, showSlug, allData)
 							} else {
-								return await handleOtherContentType(listItem)
+								return await handleOtherContentType(listItem, allData)
 							}
 						} catch (error) {
 							console.error('Error transforming list item:', error, listItem)

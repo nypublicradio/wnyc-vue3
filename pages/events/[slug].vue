@@ -9,20 +9,28 @@ const config = useRuntimeConfig()
 const route = useRoute()
 const toast = useToast()
 
-const { data: event, status, error } = await useFetchWrapper(
-  () => `${config.public.BFF_URL}/api/events/${route.params.slug}`,
-  {
-    key: `event-${route.params.slug}`,
-    onResponseError() {
-      toast.add({
-        severity: "error",
-        summary: "We are having a problem loading this event. Please try again later.",
-        life: 6000,
-        closable: true,
-      })
-    },
-  }
-)
+const [
+  { data: event, status, error },
+  { data: moreEvents }
+] = await Promise.all([
+  useFetchWrapper(
+    () => `${config.public.BFF_URL}/api/events/${route.params.slug}`,
+    {
+      key: `event-${route.params.slug}`,
+      onResponseError() {
+        toast.add({
+          severity: "error",
+          summary: "We are having a problem loading this event. Please try again later.",
+          life: 6000,
+          closable: true,
+        })
+      },
+    }
+  ),
+  useFetchWrapper(
+    `${config.public.BFF_URL}/api/events/list?limit=4`
+  )
+])
 
 onMounted(() => {
   if (!event.value) return
@@ -39,10 +47,6 @@ onMounted(() => {
 })
 
 const eventData = computed(() => event.value || {})
-
-const { data: moreEvents } = await useFetchWrapper(
-  `${config.public.BFF_URL}/api/events/list?limit=4`
-)
 
 const title = computed(() => eventData.value?.title)
 const {
@@ -191,6 +195,7 @@ useSeoMeta({
                   sizes="lg:672px md:885px sm:709px xs:517px xxs:316px"
                   :alt="eventData?.image?.title || eventData?.title"
                   class="event-body__image-frame mb-4"
+                  loading="eager"
                 />
                 <p v-if="eventData?.image?.credit" class="event-body__credit">
                   {{ eventData?.image?.credit }}

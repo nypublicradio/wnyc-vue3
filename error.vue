@@ -33,6 +33,9 @@ function handleGoHome() {
         <nuxt-img
           src="/404_tote.webp"
           alt="404"
+          preload
+          fetchpriority="high"
+          loading="eager"
           class="flex-none w-15rem lg:w-27rem"
           sizes="xs:438px"
         />

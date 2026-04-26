@@ -21,6 +21,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  loading: {
+    type: String,
+    default: "lazy",
+  },
 })
 </script>
 
@@ -31,6 +35,6 @@ const props = defineProps({
     :list="props.list"
     :max-items="props.maxItems"
     :see-more="props.seeMore"
+    :loading="props.loading"
   />
 </template>
-

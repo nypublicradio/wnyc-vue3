@@ -41,6 +41,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  loading: {
+    type: String,
+    default: "lazy",
+  },
 })
 </script>
 
@@ -56,5 +60,6 @@ const props = defineProps({
     :square="props.square"
     :seeMore="props.seeMore"
     :isThin="props.isThin"
+    :loading="props.loading"
   />
 </template>
