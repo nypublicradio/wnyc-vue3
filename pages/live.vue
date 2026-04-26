@@ -29,6 +29,28 @@ const route = useRoute()
 const router = useRouter()
 const routeSlug = ref(route.query.slug)
 
+const samePageNavTrigger = useState("useSamePageNavTrigger", () => 0)
+
+const performScroll = (newQuery, delay = 300) => {
+  if (import.meta.client) {
+    if (newQuery.schedule) {
+      setTimeout(() => {
+        window.scrollTo({
+          top: scheduleHolderRef?.value?.offsetTop + 22,
+          behavior: "smooth",
+        })
+      }, delay)
+    } else {
+      if (window.scrollY !== 0) {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        })
+      }
+    }
+  }
+}
+
 // updates the stream to the current station when the page loads ONCE with this watcher
 watch(
   currentEpisodeHolder,
@@ -59,26 +81,17 @@ watch(
       getStationBySlugAndPlayIt(newQuery.slug, newQuery.autoplay)
     }
     // page scrolling
-    if (import.meta.client) {
-      if (newQuery.schedule) {
-        setTimeout(() => {
-          window.scrollTo({
-            top: scheduleHolderRef?.value?.offsetTop + 22,
-            behavior: "smooth",
-          })
-        }, 300)
-      } else {
-        if (window.scrollY !== 0) {
-          window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-          })
-        }
-      }
-    }
+    performScroll(newQuery)
   },
   { immediate: true }
 )
+
+// watcher for same-page navigation clicks (e.g., clicking menu link while already on that page)
+watch(samePageNavTrigger, () => {
+  if (router.currentRoute.value.name === "live") {
+    performScroll(router.currentRoute.value.query, 0)
+  }
+})
 
 onMounted(async () => {
   // check if there is a route slug
