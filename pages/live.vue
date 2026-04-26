@@ -23,10 +23,51 @@ const currentEpisodeHolder = useCurrentEpisodeHolder()
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isStreamLoading = useIsStreamLoading()
+const scheduleHolderRef = ref(null)
+const isPageMounted = ref(false)
 
 const route = useRoute()
 const router = useRouter()
 const routeSlug = ref(route.query.slug)
+
+// state used for triggering same-page navigation scroll to Top/Schedule
+const samePageNavTrigger = useState("useSamePageNavTrigger", () => 0)
+
+// centralize the scrolling logic for the page
+const performScroll = (newQuery, delay = 300) => {
+  if (import.meta.client) {
+    // the actual scrolling code
+    const doScroll = () => {
+      if (newQuery.schedule) {
+        setTimeout(() => {
+          window.scrollTo({
+            top: scheduleHolderRef?.value?.offsetTop + 22,
+            behavior: "smooth",
+          })
+        }, delay)
+      } else {
+        if (window.scrollY !== 0) {
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          })
+        }
+      }
+    }
+
+    if (!isPageMounted.value) {
+      const unwatch = watch(isPageMounted, (mounted) => {
+        if (mounted) {
+          // Delay an extra moment on initial mount to let layout settle
+          setTimeout(doScroll, 150)
+          unwatch()
+        }
+      })
+    } else {
+      doScroll()
+    }
+  }
+}
 
 // updates the stream to the current station when the page loads ONCE with this watcher
 watch(
@@ -45,17 +86,30 @@ watch(currentEpisodeHolder, async (oldData, newData) => {
 })
 
 // watcher for triggering a play of the live stream from a route variable
+
 watch(
   () => router.currentRoute.value.query,
   (newQuery) => {
+    // Prevent the watcher from firing when navigating away from the page
+    if (router.currentRoute.value.name !== "live") return
+
     // checking if the slug is in the query
     if (newQuery.slug) {
       routeSlug.value = newQuery.slug
       getStationBySlugAndPlayIt(newQuery.slug, newQuery.autoplay)
     }
+    // page scrolling
+    performScroll(newQuery)
   },
   { immediate: true }
 )
+
+// watcher for same-page navigation clicks (e.g., clicking menu link while already on that page)
+watch(samePageNavTrigger, () => {
+  if (router.currentRoute.value.name === "live") {
+    performScroll(router.currentRoute.value.query, 0)
+  }
+})
 
 onMounted(async () => {
   // check if there is a route slug
@@ -79,6 +133,11 @@ onMounted(async () => {
     //await fetchSchedule()
     scrollToActiveStation("instant")
   }
+
+  // set mounted state for the performScroll watcher
+  nextTick(() => {
+    isPageMounted.value = true
+  })
 
   // send GA page view
   const { $analytics } = useNuxtApp()
@@ -113,14 +172,9 @@ useHead({
 <template>
   <div class="page live-page">
     <div class="top flex flex-column gap-3 style-mode-dark mb-3">
-      <HorizontalScrollFeature
-        :data="allCurrentStations"
-        class="live-stations-holder"
-      >
+      <HorizontalScrollFeature :data="allCurrentStations" class="live-stations-holder">
         <template #default>
-          <div
-            class="live-stations flex pb-2 md:w-full md:justify-content-center"
-          >
+          <div class="live-stations flex pb-2 md:w-full md:justify-content-center">
             <div
               v-for="(station, index) in allCurrentStations"
               class="station-holder"
@@ -146,17 +200,12 @@ useHead({
                   @click="switchStation(station)"
                 >
                   <template #default>
-                    <div
-                      class="flex gap-1 align-items-center overflow-hidden w-full"
-                    >
+                    <div class="flex gap-1 align-items-center overflow-hidden w-full">
                       <div
                         v-if="currentEpisode?.station === station.station"
                         class="flex-shrink-0"
                       >
-                        <i
-                          v-if="isStreamLoading"
-                          class="pi pi-spin pi-spinner mr-2"
-                        ></i>
+                        <i v-if="isStreamLoading" class="pi pi-spin pi-spinner mr-2"></i>
                         <WnycLoader
                           v-else
                           class="pr-2"
@@ -224,12 +273,10 @@ useHead({
     <!-- <pre class="overflow-hidden">{{ currentEpisodeHolder }}</pre> -->
     <section class="schedule-holder">
       <div class="grid grid-nogutter m-auto">
-        <div class="col w-full md:pr-2 lg:pr-4">
+        <div class="col w-full md:pr-2 lg:pr-4" ref="scheduleHolderRef">
           <Schedule />
         </div>
-        <div
-          class="col-fixed hidden xl:block xl:w-19rem justify-content-center"
-        >
+        <div class="col-fixed hidden xl:block xl:w-19rem justify-content-center">
           <story-htlAd
             layout="rectangle"
             slotClass="htlad-wnyc_livepage_rectangle"

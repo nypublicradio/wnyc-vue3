@@ -46,6 +46,7 @@ const isFavorited = ref(false)
 const isShowFollowed = ref(false)
 const isShowFollowable = ref(true)
 const showDownload = ref(true)
+const route = useRoute()
 
 // get true slug from id
 const getTrueSlugFromRedirects = async (link, isolateReturn = true) => {
@@ -359,6 +360,15 @@ const moreFromClick = async () => {
     title
   )
   emit("close-panel")
+
+  // if you are routing to the same page scroll to top of the page
+  if (route.params.slug === finalSlug) {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    })
+  }
+
   navigateTo(`${mediaTypeRoutes.show}${finalSlug}`)
 }
 </script>
