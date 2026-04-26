@@ -24,29 +24,45 @@ const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isStreamLoading = useIsStreamLoading()
 const scheduleHolderRef = ref(null)
+const isPageMounted = ref(false)
 
 const route = useRoute()
 const router = useRouter()
 const routeSlug = ref(route.query.slug)
 
+// state used for triggering same-page navigation scroll to Top/Schedule
 const samePageNavTrigger = useState("useSamePageNavTrigger", () => 0)
 
 const performScroll = (newQuery, delay = 300) => {
   if (import.meta.client) {
-    if (newQuery.schedule) {
-      setTimeout(() => {
-        window.scrollTo({
-          top: scheduleHolderRef?.value?.offsetTop + 22,
-          behavior: "smooth",
-        })
-      }, delay)
-    } else {
-      if (window.scrollY !== 0) {
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth",
-        })
+    const doScroll = () => {
+      if (newQuery.schedule) {
+        setTimeout(() => {
+          window.scrollTo({
+            top: scheduleHolderRef?.value?.offsetTop + 22,
+            behavior: "smooth",
+          })
+        }, delay)
+      } else {
+        if (window.scrollY !== 0) {
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          })
+        }
       }
+    }
+
+    if (!isPageMounted.value) {
+      const unwatch = watch(isPageMounted, (mounted) => {
+        if (mounted) {
+          // Delay an extra moment on initial mount to let layout settle
+          setTimeout(doScroll, 150)
+          unwatch()
+        }
+      })
+    } else {
+      doScroll()
     }
   }
 }
@@ -115,6 +131,11 @@ onMounted(async () => {
     //await fetchSchedule()
     scrollToActiveStation("instant")
   }
+
+  // set mounted state for the performScroll watcher
+  nextTick(() => {
+    isPageMounted.value = true
+  })
 
   // send GA page view
   const { $analytics } = useNuxtApp()
