@@ -33,8 +33,10 @@ const routeSlug = ref(route.query.slug)
 // state used for triggering same-page navigation scroll to Top/Schedule
 const samePageNavTrigger = useState("useSamePageNavTrigger", () => 0)
 
+// centralize the scrolling logic for the page
 const performScroll = (newQuery, delay = 300) => {
   if (import.meta.client) {
+    // the actual scrolling code
     const doScroll = () => {
       if (newQuery.schedule) {
         setTimeout(() => {
