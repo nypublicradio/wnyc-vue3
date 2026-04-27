@@ -166,7 +166,7 @@ const getLivestreams = async (slug?: string | null) => {
  */
 export default defineEventHandler(async (event) => {
     const res = event?.node?.res
-    res.setHeader('Cache-Control', 'max-age=120, stale-while-revalidate')
+    res.setHeader('Cache-Control', 'no-store')
     const slug = getQuery(event).slug as string | undefined
     const streams = await getLivestreams(slug)
     return streams

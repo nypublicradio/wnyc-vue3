@@ -270,7 +270,10 @@ export default function useLiveStream () {
         // delay plus 30 seconds to make sure the event has ended and the next one has started so when the  next fetch happens, we get the updated schedule displayed
         const delay =
           (await getTimeDifference(liveScheduleData.value[0].attributes.end)) + 30000
-        timeout = workerSetTimeout(refreshData, delay)
+        timeout = workerSetTimeout(async () => {
+          await refreshData()
+          await fetchSchedule()
+        }, delay)
       }
     } catch (error) {
       globalToast.value = {
