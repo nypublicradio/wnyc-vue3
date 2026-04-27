@@ -67,7 +67,7 @@ const WNYC_TIMEZONE = 'America/New_York'
 interface CacheEntry {
     data: any
     etag: string
-    timestamp: number
+    expiresAt: number
 }
 
 const scheduleCache = new Map<string, CacheEntry>()
@@ -456,6 +456,55 @@ const requestDependsOnCurrentTime = (
     }
 }
 
+const getNextScheduleBoundaryMs = (schedule: any[], nowMs = Date.now()) => {
+    if (!Array.isArray(schedule)) {
+        return null
+    }
+
+    const futureBoundaries = schedule
+        .flatMap((episode: any) => [
+            episode?.attributes?.start,
+            episode?.attributes?.end,
+        ])
+        .map((dateString: string) => new Date(dateString).getTime())
+        .filter((time: number) => Number.isFinite(time) && time > nowMs)
+
+    if (futureBoundaries.length === 0) {
+        return null
+    }
+
+    return Math.min(...futureBoundaries)
+}
+
+const getResponseCacheTtl = (
+    schedule: any[],
+    isCurrentTimeDependent: boolean,
+    nowMs = Date.now()
+) => {
+    if (!isCurrentTimeDependent) {
+        return CACHE_TTL
+    }
+
+    const nextBoundaryMs = getNextScheduleBoundaryMs(schedule, nowMs)
+    if (!nextBoundaryMs) {
+        return 0
+    }
+
+    return Math.max(0, Math.min(CACHE_TTL, nextBoundaryMs - nowMs))
+}
+
+const setCacheHeaders = (res: any, etag: string, ttlMs: number) => {
+    const maxAgeSeconds = Math.floor(ttlMs / 1000)
+
+    if (maxAgeSeconds <= 0) {
+        res.setHeader('Cache-Control', 'no-store')
+        return
+    }
+
+    res.setHeader('ETag', etag)
+    res.setHeader('Cache-Control', `public, max-age=${maxAgeSeconds}, s-maxage=${maxAgeSeconds}, must-revalidate`)
+}
+
 // Helper function to encapsulate main schedule logic
 const handleScheduleRequest = async (
     slug: string,
@@ -469,18 +518,17 @@ const handleScheduleRequest = async (
     const cacheKey = `${slug}-${filterMode}-${startDate || ''}-${endDate || ''}`
     const cachedEntry = scheduleCache.get(cacheKey)
     const now = Date.now()
-    const shouldUseResponseCache = !requestDependsOnCurrentTime(filterMode, startDate, endDate)
+    const isCurrentTimeDependent = requestDependsOnCurrentTime(filterMode, startDate, endDate)
 
     // If cache is valid and client has current version, return 304
-    if (shouldUseResponseCache && cachedEntry && (now - cachedEntry.timestamp) < CACHE_TTL) {
+    if (cachedEntry && now < cachedEntry.expiresAt) {
+        const ttlMs = cachedEntry.expiresAt - now
         if (clientEtag === cachedEntry.etag) {
             res.statusCode = 304
-            res.setHeader('ETag', cachedEntry.etag)
-            res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300, stale-while-revalidate=600')
+            setCacheHeaders(res, cachedEntry.etag, ttlMs)
             return null
         }
-        res.setHeader('ETag', cachedEntry.etag)
-        res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300, stale-while-revalidate=600')
+        setCacheHeaders(res, cachedEntry.etag, ttlMs)
         return cachedEntry.data
     }
 
@@ -554,19 +602,17 @@ const handleScheduleRequest = async (
     const transformedData = normalizeSchedule(rewrittenData)
     const dataString = JSON.stringify(transformedData)
     const etag = `"${createHash('md5').update(dataString).digest('hex')}"`
+    const cacheTtl = getResponseCacheTtl(transformedData, isCurrentTimeDependent, now)
 
-    if (shouldUseResponseCache) {
+    if (cacheTtl > 0) {
         scheduleCache.set(cacheKey, {
             data: transformedData,
             etag,
-            timestamp: now
+            expiresAt: now + cacheTtl
         })
-
-        res.setHeader('ETag', etag)
-        res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300, stale-while-revalidate=600')
-    } else {
-        res.setHeader('Cache-Control', 'no-store')
     }
+
+    setCacheHeaders(res, etag, cacheTtl)
 
     return transformedData
 }
