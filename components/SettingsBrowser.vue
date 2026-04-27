@@ -36,6 +36,7 @@ const { allNavigationData } = await useNavigationData()
   }
 
   .menu {
+    max-width: $contentWidth;
     gap: 4rem;
 
     @include media("<1010px") {
@@ -53,7 +54,10 @@ const { allNavigationData } = await useNavigationData()
     flex-wrap: wrap;
 
     .menu-holder {
-      min-width: 290px;
+      min-width: 262px;
+      @include media("<lg") {
+        min-width: 252px;
+      }
 
       .menu-btn {
         .p-button-label {
