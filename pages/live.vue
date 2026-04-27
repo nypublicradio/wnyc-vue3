@@ -41,7 +41,7 @@ const performScroll = (newQuery, delay = 300) => {
       if (newQuery.schedule) {
         setTimeout(() => {
           window.scrollTo({
-            top: scheduleHolderRef?.value?.offsetTop + 22,
+            top: scheduleHolderRef?.value?.offsetTop + 10,
             behavior: "smooth",
           })
         }, delay)
