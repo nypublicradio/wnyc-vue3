@@ -536,7 +536,8 @@ html.style-mode-dark {
 .p-button-link {
   &:hover {
     .p-button-label {
-      text-decoration-color: var(--p-button-link-hover-color);
+      text-decoration-color: var(--p-link-500);
+      color: var(--p-link-500);
     }
   }
   .p-button-label {
