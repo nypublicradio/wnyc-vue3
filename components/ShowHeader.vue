@@ -82,7 +82,7 @@ if (import.meta.client) {
 
 // finds first episode with audio to play
 const firstEpisodeWithAudio = () => {
-  let allListItems = []
+  const allListItems = []
   const listItems = show.value?.body?.filter((item) => item.type === "curated_list")
 
   listItems?.forEach((item) => {
