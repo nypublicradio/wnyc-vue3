@@ -161,6 +161,9 @@ const getLivestream = async (slug: string) => {
 	}
 }
 
+/**
+ * Calculates a whats-on cache TTL that expires when the current item ends.
+ */
 const getWhatsOnCacheTtl = (livestream: any, nowMs = Date.now()) => {
 	const endTime = new Date(livestream?.timeEnd).getTime()
 	if (!Number.isFinite(endTime) || endTime <= nowMs) {
@@ -170,6 +173,9 @@ const getWhatsOnCacheTtl = (livestream: any, nowMs = Date.now()) => {
 	return Math.max(0, Math.min(WHATSON_CACHE_TTL, endTime - nowMs))
 }
 
+/**
+ * Applies response cache headers for whats-on API responses.
+ */
 const setWhatsOnCacheHeaders = (res: any, ttlMs: number) => {
 	const maxAgeSeconds = Math.floor(ttlMs / 1000)
 

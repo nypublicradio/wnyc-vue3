@@ -439,6 +439,9 @@ const filterByDateRange = (scheduleData: any, startDate: string, endDate: string
     }
 }
 
+/**
+ * Checks whether the requested schedule view changes as the current time advances.
+ */
 const requestDependsOnCurrentTime = (
     filterMode: string,
     startDate: string | undefined,
@@ -456,6 +459,9 @@ const requestDependsOnCurrentTime = (
     }
 }
 
+/**
+ * Finds the next schedule start or end boundary after the supplied timestamp.
+ */
 const getNextScheduleBoundaryMs = (schedule: any[], nowMs = Date.now()) => {
     if (!Array.isArray(schedule)) {
         return null
@@ -476,6 +482,9 @@ const getNextScheduleBoundaryMs = (schedule: any[], nowMs = Date.now()) => {
     return Math.min(...futureBoundaries)
 }
 
+/**
+ * Calculates how long the normalized schedule response can be cached.
+ */
 const getResponseCacheTtl = (
     schedule: any[],
     isCurrentTimeDependent: boolean,
@@ -493,6 +502,9 @@ const getResponseCacheTtl = (
     return Math.max(0, Math.min(CACHE_TTL, nextBoundaryMs - nowMs))
 }
 
+/**
+ * Applies response cache headers for schedule API responses.
+ */
 const setCacheHeaders = (res: any, etag: string, ttlMs: number) => {
     const maxAgeSeconds = Math.floor(ttlMs / 1000)
 

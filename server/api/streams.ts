@@ -168,6 +168,9 @@ const getLivestreams = async (slug?: string | null) => {
     return null
 }
 
+/**
+ * Calculates a livestream cache TTL that expires at the next stream end time.
+ */
 const getLivestreamCacheTtl = (streams: any, nowMs = Date.now()) => {
     const streamArray = Array.isArray(streams) ? streams : [streams]
     const endTimes = streamArray
@@ -182,6 +185,9 @@ const getLivestreamCacheTtl = (streams: any, nowMs = Date.now()) => {
     return Math.max(0, Math.min(LIVESTREAM_CACHE_TTL, Math.min(...endTimes) - nowMs))
 }
 
+/**
+ * Applies response cache headers for livestream API responses.
+ */
 const setLivestreamCacheHeaders = (res: any, ttlMs: number) => {
     const maxAgeSeconds = Math.floor(ttlMs / 1000)
 
