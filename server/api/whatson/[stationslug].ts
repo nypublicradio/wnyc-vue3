@@ -18,6 +18,14 @@ import { cmsSources } from '~/composables/globals'
 
 const config = useRuntimeConfig()
 
+interface WhatsOnCacheEntry {
+	data: any
+	expiresAt: number
+}
+
+const WHATSON_CACHE_TTL = 2 * 60 * 1000
+const whatsOnCache = new Map<string, WhatsOnCacheEntry>()
+
 // Station metadata mapping
 const STATION_METADATA = {
     'wnyc-fm939': {
@@ -152,6 +160,26 @@ const getLivestream = async (slug: string) => {
 		throw error
 	}
 }
+
+const getWhatsOnCacheTtl = (livestream: any, nowMs = Date.now()) => {
+	const endTime = new Date(livestream?.timeEnd).getTime()
+	if (!Number.isFinite(endTime) || endTime <= nowMs) {
+		return 0
+	}
+
+	return Math.max(0, Math.min(WHATSON_CACHE_TTL, endTime - nowMs))
+}
+
+const setWhatsOnCacheHeaders = (res: any, ttlMs: number) => {
+	const maxAgeSeconds = Math.floor(ttlMs / 1000)
+
+	if (maxAgeSeconds <= 0) {
+		res.setHeader('Cache-Control', 'no-store')
+		return
+	}
+
+	res.setHeader('Cache-Control', `public, max-age=${maxAgeSeconds}, s-maxage=${maxAgeSeconds}, must-revalidate`)
+}
 // Fetch the livestream data from the API
 // const getLivestreamHlsMetadataTemp = async () => {
 
@@ -194,12 +222,30 @@ export default defineEventHandler(async (event) => {
 	//getLivestreamHlsMetadataTemp()
 
 	const res = event?.node?.res
-	res.setHeader('Cache-Control', 'no-store')
 
 	const slug: string | undefined = event?.context?.params?.stationslug;
 	if (slug) {
 		try {
-			return await getLivestream(slug);
+			const now = Date.now()
+			const cachedEntry = whatsOnCache.get(slug)
+
+			if (cachedEntry && now < cachedEntry.expiresAt) {
+				setWhatsOnCacheHeaders(res, cachedEntry.expiresAt - now)
+				return cachedEntry.data
+			}
+
+			const livestream = await getLivestream(slug);
+			const cacheTtl = getWhatsOnCacheTtl(livestream, now)
+
+			if (cacheTtl > 0) {
+				whatsOnCache.set(slug, {
+					data: livestream,
+					expiresAt: now + cacheTtl,
+				})
+			}
+
+			setWhatsOnCacheHeaders(res, cacheTtl)
+			return livestream;
 		} catch (error) {
 			console.error(`Failed to get livestream for slug "${slug}":`, error)
 			throw createError({
