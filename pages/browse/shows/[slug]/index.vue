@@ -90,7 +90,6 @@ useSeoMeta({
       <FetchError v-if="status === 'error'" />
     </section>
     <template v-if="!error">
-      <!-- <pre>{{ show }}</pre> -->
       <ShowHeader :show="show" />
 
       <div class="md:hidden mt-4 mb-3">
