@@ -439,6 +439,23 @@ const filterByDateRange = (scheduleData: any, startDate: string, endDate: string
     }
 }
 
+const requestDependsOnCurrentTime = (
+    filterMode: string,
+    startDate: string | undefined,
+    endDate: string | undefined
+) => {
+    switch (filterMode) {
+        case 'specificDate':
+            return !startDate || isToday(startDate)
+        case 'dateRange':
+            return !startDate || !endDate || includesCurrentDate(startDate, endDate)
+        case 'next24hours':
+        case 'all':
+        default:
+            return true
+    }
+}
+
 // Helper function to encapsulate main schedule logic
 const handleScheduleRequest = async (
     slug: string,
@@ -452,9 +469,10 @@ const handleScheduleRequest = async (
     const cacheKey = `${slug}-${filterMode}-${startDate || ''}-${endDate || ''}`
     const cachedEntry = scheduleCache.get(cacheKey)
     const now = Date.now()
+    const shouldUseResponseCache = !requestDependsOnCurrentTime(filterMode, startDate, endDate)
 
     // If cache is valid and client has current version, return 304
-    if (cachedEntry && (now - cachedEntry.timestamp) < CACHE_TTL) {
+    if (shouldUseResponseCache && cachedEntry && (now - cachedEntry.timestamp) < CACHE_TTL) {
         if (clientEtag === cachedEntry.etag) {
             res.statusCode = 304
             res.setHeader('ETag', cachedEntry.etag)
@@ -537,14 +555,18 @@ const handleScheduleRequest = async (
     const dataString = JSON.stringify(transformedData)
     const etag = `"${createHash('md5').update(dataString).digest('hex')}"`
 
-    scheduleCache.set(cacheKey, {
-        data: transformedData,
-        etag,
-        timestamp: now
-    })
+    if (shouldUseResponseCache) {
+        scheduleCache.set(cacheKey, {
+            data: transformedData,
+            etag,
+            timestamp: now
+        })
 
-    res.setHeader('ETag', etag)
-    res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300, stale-while-revalidate=600')
+        res.setHeader('ETag', etag)
+        res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300, stale-while-revalidate=600')
+    } else {
+        res.setHeader('Cache-Control', 'no-store')
+    }
 
     return transformedData
 }

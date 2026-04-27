@@ -193,6 +193,9 @@ export default defineEventHandler(async (event) => {
 
 	//getLivestreamHlsMetadataTemp()
 
+	const res = event?.node?.res
+	res.setHeader('Cache-Control', 'no-store')
+
 	const slug: string | undefined = event?.context?.params?.stationslug;
 	if (slug) {
 		try {
