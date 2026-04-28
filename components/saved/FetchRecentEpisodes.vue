@@ -31,7 +31,7 @@ const { data: episodes, status, error } = await useAsyncData(
     )
 
     // if redirect.to is an external url (http/https) skip the rest and return empty array
-    if (redirect && redirect.to.startsWith("http")) {
+    if (redirect?.to.startsWith("http")) {
       return []
     }
 
