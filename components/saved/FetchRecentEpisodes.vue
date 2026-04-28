@@ -15,51 +15,53 @@ const props = defineProps({
 const config = useRuntimeConfig()
 
 // 1. Fetch global redirects once per SSR payload (cached globally)
-const { data: cachedRedirects } = await useFetchWrapper(
-  "/api/show-slug-redirects",
-  {
-    key: "global-show-redirects",
-  }
-)
+const { data: cachedRedirects } = await useFetchWrapper("/api/show-slug-redirects", {
+  key: "global-show-redirects",
+})
 
 // 2. Fetch show info & episodes in a single consolidated pass
-const {
-  data: episodes,
-  status,
-  error,
-} = await useAsyncData(`recent-episodes-${props.show?.slug}`, async () => {
-  // Resolve redirect slug natively
-  const redirect = cachedRedirects.value?.find(
-    (redirectItem) =>
-      redirectItem.from.endsWith(`/${props.show.slug}`) ||
-      redirectItem.from === props.show.slug
-  )
-  const slug = redirect ? isolateSlug(redirect.to) : props.show.slug
+const { data: episodes, status, error } = await useAsyncData(
+  `recent-episodes-${props.show?.slug}`,
+  async () => {
+    // Resolve redirect slug natively
+    const redirect = cachedRedirects.value?.find(
+      (redirectItem) =>
+        redirectItem.from.endsWith(`/${props.show?.slug}`) ||
+        redirectItem.from === props.show?.slug
+    )
 
-  // Fetch Wagtail show config safely
-  const showInfo = await $fetch(
-    `${config.public.BFF_URL}/api/pages/wagtail/${slug}?showOnly=true`
-  ).catch((e) => {
-    if (e.response?.status === 404) return null
-    throw e
-  })
+    // if redirect.to is an external url (http/https) skip the rest and return empty array
+    if (redirect?.to.startsWith("http")) {
+      return []
+    }
 
-  const podcastId = showInfo?.linkedDataSource?.[0]?.value?.id
-  if (!podcastId) return []
+    const slug = redirect ? isolateSlug(redirect.to) : props.show?.slug
 
-  // Fetch the recent episodes
-  const episodeData = await $fetch(
-    `${config.public.BFF_URL}/api/v3/show/${podcastId}/episodes`,
-    { query: { offset: 0, limit: props.episodesPerShow } }
-  ).catch((e) => {
-    if (e.response?.status === 404) return null
-    throw e
-  })
+    // Fetch Wagtail show config safely
+    const showInfo = await $fetch(
+      `${config.public.BFF_URL}/api/pages/wagtail/${slug}?showOnly=true`
+    ).catch((e) => {
+      if (e.response?.status === 404) return null
+      throw e
+    })
+    // get the Simple cast podcast ID
+    const podcastId = showInfo?.linkedDataSource?.[0]?.value?.id
+    if (!podcastId) return []
 
-  // Return the formatted array payload straight into `episodes.value`
-  const items = episodeData?.data || []
-  return items.map((ep) => ({ ...ep, showTitle: showInfo?.title }))
-})
+    // Fetch the recent episodes from the podcastId
+    const episodeData = await $fetch(
+      `${config.public.BFF_URL}/api/v3/show/${podcastId}/episodes`,
+      { query: { offset: 0, limit: props.episodesPerShow } }
+    ).catch((e) => {
+      if (e.response?.status === 404) return null
+      throw e
+    })
+
+    // Return the formatted array payload straight into `episodes.value`
+    const items = episodeData?.data || []
+    return items.map((ep) => ({ ...ep, showTitle: showInfo?.title }))
+  }
+)
 </script>
 <template>
   <div v-if="status === 'pending'">
@@ -75,7 +77,7 @@ const {
       class="my-5"
     />
   </div>
-  <div v-else-if="episodes && episodes.length > 0" :key="props.show.media_id">
+  <div v-else-if="episodes?.length > 0" :key="props.show?.media_id">
     <MediaCard
       v-for="episode in episodes"
       :key="episode.id"
