@@ -20,6 +20,7 @@
  * - filterMode: 'next24hours' | 'specificDate' | 'dateRange' | 'all' (default: 'all')
  * - startDate: (optional) ISO date string for filtering (YYYY-MM-DD) - interpreted in America/New_York timezone (EST/EDT)
  * - endDate: (optional) ISO date string for filtering (YYYY-MM-DD) - interpreted in America/New_York timezone (EST/EDT), used with dateRange mode
+ * - lookbackMinutes: (optional) include recently-ended episodes for live metadata gap handling
  * 
  * Timezone Handling:
  * - All date parameters are interpreted in America/New_York timezone (EST/EDT)
@@ -72,6 +73,7 @@ interface CacheEntry {
 
 const scheduleCache = new Map<string, CacheEntry>()
 const CACHE_TTL = 5 * 60 * 1000 // 5 minutes in milliseconds
+const MAX_LOOKBACK_MINUTES = 60
 
 // Transform v2 data structure to match old schedule endpoint format
 const normalizeSchedule = (scheduleData: any): any[] => {
@@ -240,15 +242,20 @@ const getScheduleFromS3 = async (bucketName: string, key: string) => {
 }
 
 // Remove past episodes that have already aired
-const removePastEpisodes = (scheduleData: any) => {
+const getLookbackStart = (now: Date, lookbackMinutes: number) => (
+    new Date(now.getTime() - Math.max(0, lookbackMinutes) * 60 * 1000)
+)
+
+const removePastEpisodes = (scheduleData: any, lookbackMinutes = 0) => {
     if (!scheduleData.episodes || !Array.isArray(scheduleData.episodes)) {
         return scheduleData
     }
 
     const now = new Date()
+    const lookbackStart = getLookbackStart(now, lookbackMinutes)
     const filteredEpisodes = scheduleData.episodes.filter((episode: any) => {
         const endTime = new Date(episode.endTime)
-        return endTime > now
+        return endTime > lookbackStart
     })
 
     return {
@@ -274,19 +281,20 @@ const includesCurrentDate = (startDate: string, endDate: string): boolean => {
 }
 
 // Filter episodes for the next 24 hours
-const filterNext24Hours = (scheduleData: any) => {
+const filterNext24Hours = (scheduleData: any, lookbackMinutes = 0) => {
     if (!scheduleData.episodes || !Array.isArray(scheduleData.episodes)) {
         return scheduleData
     }
 
     const now = new Date()
+    const lookbackStart = getLookbackStart(now, lookbackMinutes)
     const next24Hours = new Date(now.getTime() + 24 * 60 * 60 * 1000)
 
     const filteredEpisodes = scheduleData.episodes.filter((episode: any) => {
         const startTime = new Date(episode.startTime)
         const endTime = new Date(episode.endTime)
         // Include episodes that start within the next 24 hours or are currently airing
-        return endTime > now && startTime < next24Hours
+        return endTime > lookbackStart && startTime < next24Hours
     })
 
     return {
@@ -517,17 +525,29 @@ const setCacheHeaders = (res: any, etag: string, ttlMs: number) => {
     res.setHeader('Cache-Control', `public, max-age=${maxAgeSeconds}, s-maxage=${maxAgeSeconds}, must-revalidate`)
 }
 
+const parseLookbackMinutes = (lookbackMinutes: unknown) => {
+    const rawValue = Array.isArray(lookbackMinutes) ? lookbackMinutes[0] : lookbackMinutes
+    const parsedValue = Number(rawValue)
+
+    if (!Number.isFinite(parsedValue) || parsedValue <= 0) {
+        return 0
+    }
+
+    return Math.min(MAX_LOOKBACK_MINUTES, Math.floor(parsedValue))
+}
+
 // Helper function to encapsulate main schedule logic
 const handleScheduleRequest = async (
     slug: string,
     filterMode: string,
     startDate: string | undefined,
     endDate: string | undefined,
+    lookbackMinutes: number,
     res: any,
     clientEtag: string | undefined
 ) => {
     // Generate cache key based on slug and filter parameters
-    const cacheKey = `${slug}-${filterMode}-${startDate || ''}-${endDate || ''}`
+    const cacheKey = `${slug}-${filterMode}-${startDate || ''}-${endDate || ''}-${lookbackMinutes}`
     const cachedEntry = scheduleCache.get(cacheKey)
     const now = Date.now()
     const isCurrentTimeDependent = requestDependsOnCurrentTime(filterMode, startDate, endDate)
@@ -574,7 +594,7 @@ const handleScheduleRequest = async (
     const getFilteredData = () => {
         switch (filterMode) {
             case 'next24hours':
-                return filterNext24Hours(scheduleData)
+                return filterNext24Hours(scheduleData, lookbackMinutes)
             case 'specificDate': {
                 if (!startDate) {
                     throw createError({
@@ -585,7 +605,7 @@ const handleScheduleRequest = async (
                 validateDateRange(scheduleData, startDate)
                 let filtered = filterByDate(scheduleData, startDate)
                 if (isToday(startDate)) {
-                    filtered = removePastEpisodes(filtered)
+                    filtered = removePastEpisodes(filtered, lookbackMinutes)
                 }
                 return filtered
             }
@@ -599,13 +619,13 @@ const handleScheduleRequest = async (
                 validateDateRange(scheduleData, startDate, endDate)
                 let filteredRange = filterByDateRange(scheduleData, startDate, endDate)
                 if (includesCurrentDate(startDate, endDate)) {
-                    filteredRange = removePastEpisodes(filteredRange)
+                    filteredRange = removePastEpisodes(filteredRange, lookbackMinutes)
                 }
                 return filteredRange
             }
             case 'all':
             default:
-                return removePastEpisodes(scheduleData)
+                return removePastEpisodes(scheduleData, lookbackMinutes)
         }
     }
 
@@ -636,6 +656,7 @@ export default defineEventHandler(async (event) => {
     const filterMode = (query?.filterMode as string) || 'all'
     const startDate = query?.startDate as string | undefined
     const endDate = query?.endDate as string | undefined
+    const lookbackMinutes = parseLookbackMinutes(query?.lookbackMinutes)
 
     if (!slug) {
         throw createError({
@@ -646,7 +667,7 @@ export default defineEventHandler(async (event) => {
 
     try {
         const clientEtag = event.node.req.headers['if-none-match']
-        return await handleScheduleRequest(slug, filterMode, startDate, endDate, res, clientEtag)
+        return await handleScheduleRequest(slug, filterMode, startDate, endDate, lookbackMinutes, res, clientEtag)
     } catch (error: any) {
         console.error('Error fetching schedule from S3:', error)
         throw createError({
