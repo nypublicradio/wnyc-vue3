@@ -16,6 +16,7 @@ const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
 import { useVImage } from '~/composables/useVImage'
+import { getCurrentEpisodeSelectionFromSchedule, LIVE_SCHEDULE_LOOKBACK_MINUTES } from '~/server/utils/liveSchedule'
 
 interface LivestreamCacheEntry {
     data: any
@@ -53,24 +54,6 @@ const STATION_METADATA = {
     },
 }
 
-// Helper function to get the current episode from schedule data
-const getCurrentEpisodeFromSchedule = (scheduleData: any) => {
-    if (!scheduleData || !Array.isArray(scheduleData)) {
-        return null
-    }
-
-    const now = new Date()
-
-    // Find the episode that is currently airing
-    const currentEpisode = scheduleData.find((episode: any) => {
-        const startTime = new Date(episode.attributes.start)
-        const endTime = new Date(episode.attributes.end)
-        return now >= startTime && now < endTime
-    })
-
-    return currentEpisode || scheduleData[0] // Fallback to first episode if no current match
-}
-
 // currently a combination between the whatson API and the schedule API to populate the live stream data
 const getLivestreams = async (slug?: string | null) => {
     try {
@@ -98,11 +81,12 @@ const getLivestreams = async (slug?: string | null) => {
                 }
                 const stationImage = { cmsSource: 'publisher', template: metadata.imageLogo || templatizePublisherImageUrl(stream.image_logo), url: stream.image_logo }
                 // Fetch schedule data from the schedule API
-                const scheduleUrl = `${config.public.BFF_URL}/api/schedule/${slug}?filterMode=next24hours`
+                const scheduleUrl = `${config.public.BFF_URL}/api/schedule/${slug}?filterMode=next24hours&lookbackMinutes=${LIVE_SCHEDULE_LOOKBACK_MINUTES}`
                 const scheduleRes = await axios(scheduleUrl)
 
                 // Get the current episode from the schedule
-                const currentEpisode = getCurrentEpisodeFromSchedule(scheduleRes.data)
+                const currentEpisodeSelection = getCurrentEpisodeSelectionFromSchedule(scheduleRes.data)
+                const currentEpisode = currentEpisodeSelection?.episode
 
                 if (!currentEpisode) {
                     return null
@@ -149,7 +133,8 @@ const getLivestreams = async (slug?: string | null) => {
                     showSchedule: {
                         'iso-start-time': attrs.start,
                         'iso-end-time': attrs.end,
-                    }
+                    },
+                    cacheUntilMs: currentEpisodeSelection.cacheUntilMs,
                 }
             } catch (err: any) {
                 console.error('Error in scheduleUrl fetch:', err)
@@ -159,16 +144,27 @@ const getLivestreams = async (slug?: string | null) => {
 
         // Filter out any null results from failed fetches
         const validResults = resData.filter(Boolean)
-        const camelized = humps.camelizeKeys(validResults)
+        const cacheUntilTimes = validResults
+            .map((stream: any) => stream.cacheUntilMs)
+            .filter((time: number) => Number.isFinite(time))
+        const data = validResults.map(({ cacheUntilMs, ...stream }: any) => stream)
+        const camelized = humps.camelizeKeys(data)
         // If a specific slug was requested, return the single object instead of an array
-        return slug ? (camelized[0] ?? null) : camelized
+        return {
+            data: slug ? (camelized[0] ?? null) : camelized,
+            cacheUntilMs: cacheUntilTimes.length ? Math.min(...cacheUntilTimes) : null,
+        }
     } catch (e) {
         console.error('Error in getLivestreams:', e)
     }
     return null
 }
 
-const getLivestreamCacheTtl = (streams: any, nowMs = Date.now()) => {
+const getLivestreamCacheTtl = (streams: any, nowMs = Date.now(), cacheUntilMs?: number | null) => {
+    if (Number.isFinite(cacheUntilMs) && cacheUntilMs! > nowMs) {
+        return Math.max(0, Math.min(LIVESTREAM_CACHE_TTL, cacheUntilMs! - nowMs))
+    }
+
     const streamArray = Array.isArray(streams) ? streams : [streams]
     const endTimes = streamArray
         .map((stream: any) => stream?.timeEnd)
@@ -209,8 +205,9 @@ export default defineEventHandler(async (event) => {
         return cachedEntry.data
     }
 
-    const streams = await getLivestreams(slug)
-    const cacheTtl = getLivestreamCacheTtl(streams, now)
+    const livestreamResult = await getLivestreams(slug)
+    const streams = livestreamResult?.data ?? null
+    const cacheTtl = getLivestreamCacheTtl(streams, now, livestreamResult?.cacheUntilMs)
 
     if (cacheTtl > 0) {
         livestreamCache.set(cacheKey, {
