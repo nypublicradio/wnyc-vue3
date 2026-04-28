@@ -78,7 +78,7 @@ watch(
   { once: true }
 )
 // fetches the schedule currentEpisodeHolder changes
-watch(currentEpisodeHolder, async (oldData, newData) => {
+watch(currentEpisodeHolder, async (newData) => {
   if (newData) {
     await fetchSchedule()
     scrollToActiveStation()

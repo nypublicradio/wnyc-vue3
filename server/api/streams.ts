@@ -17,6 +17,14 @@ import axios from 'axios'
 import humps from 'humps'
 import { useVImage } from '~/composables/useVImage'
 
+interface LivestreamCacheEntry {
+    data: any
+    expiresAt: number
+}
+
+const LIVESTREAM_CACHE_TTL = 2 * 60 * 1000
+const livestreamCache = new Map<string, LivestreamCacheEntry>()
+
 // Station metadata mapping
 const STATION_METADATA = {
     'wnyc-fm939': {
@@ -161,13 +169,63 @@ const getLivestreams = async (slug?: string | null) => {
 }
 
 /**
+ * Calculates a livestream cache TTL that expires at the next stream end time.
+ */
+const getLivestreamCacheTtl = (streams: any, nowMs = Date.now()) => {
+    const streamArray = Array.isArray(streams) ? streams : [streams]
+    const endTimes = streamArray
+        .map((stream: any) => stream?.timeEnd)
+        .map((dateString: string) => new Date(dateString).getTime())
+        .filter((time: number) => Number.isFinite(time) && time > nowMs)
+
+    if (endTimes.length === 0) {
+        return 0
+    }
+
+    return Math.max(0, Math.min(LIVESTREAM_CACHE_TTL, Math.min(...endTimes) - nowMs))
+}
+
+/**
+ * Applies response cache headers for livestream API responses.
+ */
+const setLivestreamCacheHeaders = (res: any, ttlMs: number) => {
+    const maxAgeSeconds = Math.floor(ttlMs / 1000)
+
+    if (maxAgeSeconds <= 0) {
+        res.setHeader('Cache-Control', 'no-store')
+        return
+    }
+
+    res.setHeader('Cache-Control', `public, max-age=${maxAgeSeconds}, s-maxage=${maxAgeSeconds}, must-revalidate`)
+}
+
+/**
  * Compress and simplify the global streams data.
  * Reachable /api/streams
  */
 export default defineEventHandler(async (event) => {
     const res = event?.node?.res
-    res.setHeader('Cache-Control', 'max-age=120, stale-while-revalidate')
     const slug = getQuery(event).slug as string | undefined
+    const cacheKey = slug || 'all'
+    const now = Date.now()
+    const cachedEntry = livestreamCache.get(cacheKey)
+
+    if (cachedEntry && now < cachedEntry.expiresAt) {
+        setLivestreamCacheHeaders(res, cachedEntry.expiresAt - now)
+        return cachedEntry.data
+    }
+
     const streams = await getLivestreams(slug)
+    const cacheTtl = getLivestreamCacheTtl(streams, now)
+
+    if (cacheTtl > 0) {
+        livestreamCache.set(cacheKey, {
+            data: streams,
+            expiresAt: now + cacheTtl,
+        })
+    }
+
+    setLivestreamCacheHeaders(res, cacheTtl)
+
     return streams
 })
