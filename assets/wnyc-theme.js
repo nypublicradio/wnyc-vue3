@@ -1256,8 +1256,8 @@ const MyPreset = definePreset(Aura, {
           },
           link: {
             color: '{text.color}',
-            hoverColor: '{link.500}',
-            activeColor: '{link.500}'
+            hoverColor: '{link.400}',
+            activeColor: '{link.400}'
           },
         },
       },
