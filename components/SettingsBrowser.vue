@@ -37,6 +37,7 @@ const { allNavigationData } = await useNavigationData()
 
   .menu {
     max-width: $contentWidth;
+    margin: auto;
     gap: 4rem;
 
     @include media("<1010px") {
