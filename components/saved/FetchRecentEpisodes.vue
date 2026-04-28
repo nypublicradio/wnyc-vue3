@@ -77,7 +77,7 @@ const { data: episodes, status, error } = await useAsyncData(
       class="my-5"
     />
   </div>
-  <div v-else-if="episodes && episodes?.length > 0" :key="props.show.media_id">
+  <div v-else-if="episodes?.length > 0" :key="props.show.media_id">
     <MediaCard
       v-for="episode in episodes"
       :key="episode.id"
