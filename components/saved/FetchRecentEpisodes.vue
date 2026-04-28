@@ -26,8 +26,8 @@ const { data: episodes, status, error } = await useAsyncData(
     // Resolve redirect slug natively
     const redirect = cachedRedirects.value?.find(
       (redirectItem) =>
-        redirectItem.from.endsWith(`/${props.show.slug}`) ||
-        redirectItem.from === props.show.slug
+        redirectItem.from.endsWith(`/${props.show?.slug}`) ||
+        redirectItem.from === props.show?.slug
     )
 
     // if redirect.to is an external url (http/https) skip the rest and return empty array
@@ -35,7 +35,7 @@ const { data: episodes, status, error } = await useAsyncData(
       return []
     }
 
-    const slug = redirect ? isolateSlug(redirect.to) : props.show.slug
+    const slug = redirect ? isolateSlug(redirect.to) : props.show?.slug
 
     // Fetch Wagtail show config safely
     const showInfo = await $fetch(
@@ -77,7 +77,7 @@ const { data: episodes, status, error } = await useAsyncData(
       class="my-5"
     />
   </div>
-  <div v-else-if="episodes?.length > 0" :key="props.show.media_id">
+  <div v-else-if="episodes?.length > 0" :key="props.show?.media_id">
     <MediaCard
       v-for="episode in episodes"
       :key="episode.id"
