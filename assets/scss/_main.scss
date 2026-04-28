@@ -536,8 +536,7 @@ html.style-mode-dark {
 .p-button-link {
   &:hover {
     .p-button-label {
-      text-decoration-color: var(--p-link-500);
-      color: var(--p-link-500);
+      text-decoration-color: var(--p-button-link-hover-color);
     }
   }
   .p-button-label {
@@ -552,13 +551,13 @@ html.style-mode-dark {
   }
   &.p-button-secondary.link {
     .p-button-label {
-      text-decoration-color: var(--link-button-color);
-      color: var(--link-button-color);
+      text-decoration-color: var(--p-button-hyperlink-color);
+      color: var(--p-button-hyperlink-color);
     }
     &:hover {
       .p-button-label {
-        text-decoration-color: var(--p-link-700) !important;
-        color: var(--p-link-700) !important;
+        text-decoration-color: var(--p-button-hyperlink-hover-color) !important;
+        color: var(--p-button-hyperlink-hover-color) !important;
       }
     }
   }
