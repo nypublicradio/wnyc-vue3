@@ -19,8 +19,6 @@ const eventFields = [
     'event_location',
     'venue_name',
     'event_url',
-    'seo_title',
-    'search_description',
     'social_image',
     'social_title',
     'social_text',
