@@ -15,7 +15,7 @@
 import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
-import { getCurrentEpisodeSelectionFromSchedule, LIVE_SCHEDULE_LOOKBACK_MINUTES } from '~/server/utils/liveSchedule'
+import { getCurrentEpisodeSelectionFromSchedule } from '~/server/utils/liveSchedule'
 
 const config = useRuntimeConfig()
 
@@ -74,7 +74,7 @@ const getLivestream = async (slug: string) => {
 		}
 		
 		// Fetch schedule data from the schedule API
-		const scheduleUrl = `${config.public.BFF_URL}/api/schedule/${slug}?filterMode=next24hours&lookbackMinutes=${LIVE_SCHEDULE_LOOKBACK_MINUTES}`
+		const scheduleUrl = `${config.public.BFF_URL}/api/schedule/${slug}?filterMode=next24hours&includePreviousEpisode=true`
 		const scheduleRes = await axios(scheduleUrl)
 		
 		// Get the current episode from the schedule
@@ -152,8 +152,8 @@ const getLivestream = async (slug: string) => {
  * Calculates a whats-on cache TTL that expires when the current item ends.
  */
 const getWhatsOnCacheTtl = (livestream: any, nowMs = Date.now(), cacheUntilMs?: number | null) => {
-	if (Number.isFinite(cacheUntilMs) && cacheUntilMs! > nowMs) {
-		return Math.max(0, Math.min(WHATSON_CACHE_TTL, cacheUntilMs! - nowMs))
+	if (typeof cacheUntilMs === 'number' && Number.isFinite(cacheUntilMs) && cacheUntilMs > nowMs) {
+		return Math.max(0, Math.min(WHATSON_CACHE_TTL, cacheUntilMs - nowMs))
 	}
 
 	const endTime = new Date(livestream?.timeEnd).getTime()

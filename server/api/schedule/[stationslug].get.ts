@@ -20,7 +20,7 @@
  * - filterMode: 'next24hours' | 'specificDate' | 'dateRange' | 'all' (default: 'all')
  * - startDate: (optional) ISO date string for filtering (YYYY-MM-DD) - interpreted in America/New_York timezone (EST/EDT)
  * - endDate: (optional) ISO date string for filtering (YYYY-MM-DD) - interpreted in America/New_York timezone (EST/EDT), used with dateRange mode
- * - lookbackMinutes: (optional) include recently-ended episodes for live metadata gap handling
+ * - includePreviousEpisode: (optional) include the most recently ended episode for live metadata gap handling
  * 
  * Timezone Handling:
  * - All date parameters are interpreted in America/New_York timezone (EST/EDT)
@@ -73,7 +73,6 @@ interface CacheEntry {
 
 const scheduleCache = new Map<string, CacheEntry>()
 const CACHE_TTL = 5 * 60 * 1000 // 5 minutes in milliseconds
-const MAX_LOOKBACK_MINUTES = 60
 
 // Transform v2 data structure to match old schedule endpoint format
 const normalizeSchedule = (scheduleData: any): any[] => {
@@ -241,26 +240,58 @@ const getScheduleFromS3 = async (bucketName: string, key: string) => {
     }
 }
 
-// Remove past episodes that have already aired
-const getLookbackStart = (now: Date, lookbackMinutes: number) => (
-    new Date(now.getTime() - Math.max(0, lookbackMinutes) * 60 * 1000)
-)
+function getEpisodeStartMs (episode: any) {
+    return new Date(episode.startTime).getTime()
+}
 
-const removePastEpisodes = (scheduleData: any, lookbackMinutes = 0) => {
+function getEpisodeEndMs (episode: any) {
+    return new Date(episode.endTime).getTime()
+}
+
+function getPreviousEpisode (episodes: any[], now: Date) {
+    const nowMs = now.getTime()
+    return [...episodes]
+        .filter((episode: any) => {
+            const endMs = getEpisodeEndMs(episode)
+            return Number.isFinite(endMs) && endMs <= nowMs
+        })
+        .sort((a: any, b: any) => getEpisodeEndMs(b) - getEpisodeEndMs(a))[0]
+}
+
+function includePreviousEpisodeIfRequested (
+    scheduleData: any,
+    filteredEpisodes: any[],
+    now: Date,
+    includePreviousEpisode: boolean
+) {
+    if (!includePreviousEpisode) {
+        return filteredEpisodes
+    }
+
+    const previousEpisode = getPreviousEpisode(scheduleData.episodes, now)
+    if (!previousEpisode || filteredEpisodes.includes(previousEpisode)) {
+        return filteredEpisodes
+    }
+
+    return [previousEpisode, ...filteredEpisodes]
+        .sort((a: any, b: any) => getEpisodeStartMs(a) - getEpisodeStartMs(b))
+}
+
+// Remove past episodes that have already aired
+function removePastEpisodes (scheduleData: any, includePreviousEpisode = false) {
     if (!scheduleData.episodes || !Array.isArray(scheduleData.episodes)) {
         return scheduleData
     }
 
     const now = new Date()
-    const lookbackStart = getLookbackStart(now, lookbackMinutes)
     const filteredEpisodes = scheduleData.episodes.filter((episode: any) => {
         const endTime = new Date(episode.endTime)
-        return endTime > lookbackStart
+        return endTime > now
     })
 
     return {
         ...scheduleData,
-        episodes: filteredEpisodes
+        episodes: includePreviousEpisodeIfRequested(scheduleData, filteredEpisodes, now, includePreviousEpisode)
     }
 }
 
@@ -281,25 +312,24 @@ const includesCurrentDate = (startDate: string, endDate: string): boolean => {
 }
 
 // Filter episodes for the next 24 hours
-const filterNext24Hours = (scheduleData: any, lookbackMinutes = 0) => {
+function filterNext24Hours (scheduleData: any, includePreviousEpisode = false) {
     if (!scheduleData.episodes || !Array.isArray(scheduleData.episodes)) {
         return scheduleData
     }
 
     const now = new Date()
-    const lookbackStart = getLookbackStart(now, lookbackMinutes)
     const next24Hours = new Date(now.getTime() + 24 * 60 * 60 * 1000)
 
     const filteredEpisodes = scheduleData.episodes.filter((episode: any) => {
         const startTime = new Date(episode.startTime)
         const endTime = new Date(episode.endTime)
         // Include episodes that start within the next 24 hours or are currently airing
-        return endTime > lookbackStart && startTime < next24Hours
+        return endTime > now && startTime < next24Hours
     })
 
     return {
         ...scheduleData,
-        episodes: filteredEpisodes
+        episodes: includePreviousEpisodeIfRequested(scheduleData, filteredEpisodes, now, includePreviousEpisode)
     }
 }
 
@@ -525,29 +555,18 @@ const setCacheHeaders = (res: any, etag: string, ttlMs: number) => {
     res.setHeader('Cache-Control', `public, max-age=${maxAgeSeconds}, s-maxage=${maxAgeSeconds}, must-revalidate`)
 }
 
-const parseLookbackMinutes = (lookbackMinutes: unknown) => {
-    const rawValue = Array.isArray(lookbackMinutes) ? lookbackMinutes[0] : lookbackMinutes
-    const parsedValue = Number(rawValue)
-
-    if (!Number.isFinite(parsedValue) || parsedValue <= 0) {
-        return 0
-    }
-
-    return Math.min(MAX_LOOKBACK_MINUTES, Math.floor(parsedValue))
-}
-
 // Helper function to encapsulate main schedule logic
 const handleScheduleRequest = async (
     slug: string,
     filterMode: string,
     startDate: string | undefined,
     endDate: string | undefined,
-    lookbackMinutes: number,
+    includePreviousEpisode: boolean,
     res: any,
     clientEtag: string | undefined
 ) => {
     // Generate cache key based on slug and filter parameters
-    const cacheKey = `${slug}-${filterMode}-${startDate || ''}-${endDate || ''}-${lookbackMinutes}`
+    const cacheKey = `${slug}-${filterMode}-${startDate || ''}-${endDate || ''}-${includePreviousEpisode}`
     const cachedEntry = scheduleCache.get(cacheKey)
     const now = Date.now()
     const isCurrentTimeDependent = requestDependsOnCurrentTime(filterMode, startDate, endDate)
@@ -594,7 +613,7 @@ const handleScheduleRequest = async (
     const getFilteredData = () => {
         switch (filterMode) {
             case 'next24hours':
-                return filterNext24Hours(scheduleData, lookbackMinutes)
+                return filterNext24Hours(scheduleData, includePreviousEpisode)
             case 'specificDate': {
                 if (!startDate) {
                     throw createError({
@@ -605,7 +624,7 @@ const handleScheduleRequest = async (
                 validateDateRange(scheduleData, startDate)
                 let filtered = filterByDate(scheduleData, startDate)
                 if (isToday(startDate)) {
-                    filtered = removePastEpisodes(filtered, lookbackMinutes)
+                    filtered = removePastEpisodes(filtered, includePreviousEpisode)
                 }
                 return filtered
             }
@@ -619,13 +638,13 @@ const handleScheduleRequest = async (
                 validateDateRange(scheduleData, startDate, endDate)
                 let filteredRange = filterByDateRange(scheduleData, startDate, endDate)
                 if (includesCurrentDate(startDate, endDate)) {
-                    filteredRange = removePastEpisodes(filteredRange, lookbackMinutes)
+                    filteredRange = removePastEpisodes(filteredRange, includePreviousEpisode)
                 }
                 return filteredRange
             }
             case 'all':
             default:
-                return removePastEpisodes(scheduleData, lookbackMinutes)
+                return removePastEpisodes(scheduleData, includePreviousEpisode)
         }
     }
 
@@ -656,7 +675,7 @@ export default defineEventHandler(async (event) => {
     const filterMode = (query?.filterMode as string) || 'all'
     const startDate = query?.startDate as string | undefined
     const endDate = query?.endDate as string | undefined
-    const lookbackMinutes = parseLookbackMinutes(query?.lookbackMinutes)
+    const includePreviousEpisode = query?.includePreviousEpisode === 'true'
 
     if (!slug) {
         throw createError({
@@ -667,7 +686,7 @@ export default defineEventHandler(async (event) => {
 
     try {
         const clientEtag = event.node.req.headers['if-none-match']
-        return await handleScheduleRequest(slug, filterMode, startDate, endDate, lookbackMinutes, res, clientEtag)
+        return await handleScheduleRequest(slug, filterMode, startDate, endDate, includePreviousEpisode, res, clientEtag)
     } catch (error: any) {
         console.error('Error fetching schedule from S3:', error)
         throw createError({

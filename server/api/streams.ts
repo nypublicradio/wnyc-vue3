@@ -16,7 +16,7 @@ const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
 import { useVImage } from '~/composables/useVImage'
-import { getCurrentEpisodeSelectionFromSchedule, LIVE_SCHEDULE_LOOKBACK_MINUTES } from '~/server/utils/liveSchedule'
+import { getCurrentEpisodeSelectionFromSchedule } from '~/server/utils/liveSchedule'
 
 interface LivestreamCacheEntry {
     data: any
@@ -81,7 +81,7 @@ const getLivestreams = async (slug?: string | null) => {
                 }
                 const stationImage = { cmsSource: 'publisher', template: metadata.imageLogo || templatizePublisherImageUrl(stream.image_logo), url: stream.image_logo }
                 // Fetch schedule data from the schedule API
-                const scheduleUrl = `${config.public.BFF_URL}/api/schedule/${slug}?filterMode=next24hours&lookbackMinutes=${LIVE_SCHEDULE_LOOKBACK_MINUTES}`
+                const scheduleUrl = `${config.public.BFF_URL}/api/schedule/${slug}?filterMode=next24hours&includePreviousEpisode=true`
                 const scheduleRes = await axios(scheduleUrl)
 
                 // Get the current episode from the schedule
@@ -147,7 +147,11 @@ const getLivestreams = async (slug?: string | null) => {
         const cacheUntilTimes = validResults
             .map((stream: any) => stream.cacheUntilMs)
             .filter((time: number) => Number.isFinite(time))
-        const data = validResults.map(({ cacheUntilMs, ...stream }: any) => stream)
+        const data = validResults.map((stream: any) => {
+            const streamData = { ...stream }
+            delete streamData.cacheUntilMs
+            return streamData
+        })
         const camelized = humps.camelizeKeys(data)
         // If a specific slug was requested, return the single object instead of an array
         return {
@@ -164,8 +168,8 @@ const getLivestreams = async (slug?: string | null) => {
  * Calculates a livestream cache TTL that expires at the next stream end time.
  */
 const getLivestreamCacheTtl = (streams: any, nowMs = Date.now(), cacheUntilMs?: number | null) => {
-    if (Number.isFinite(cacheUntilMs) && cacheUntilMs! > nowMs) {
-        return Math.max(0, Math.min(LIVESTREAM_CACHE_TTL, cacheUntilMs! - nowMs))
+    if (typeof cacheUntilMs === 'number' && Number.isFinite(cacheUntilMs) && cacheUntilMs > nowMs) {
+        return Math.max(0, Math.min(LIVESTREAM_CACHE_TTL, cacheUntilMs - nowMs))
     }
 
     const streamArray = Array.isArray(streams) ? streams : [streams]
