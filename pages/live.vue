@@ -41,7 +41,7 @@ const performScroll = (newQuery, delay = 300) => {
       if (newQuery.schedule) {
         setTimeout(() => {
           window.scrollTo({
-            top: scheduleHolderRef?.value?.offsetTop + 22,
+            top: scheduleHolderRef?.value?.offsetTop + 10,
             behavior: "smooth",
           })
         }, delay)
@@ -78,7 +78,7 @@ watch(
   { once: true }
 )
 // fetches the schedule currentEpisodeHolder changes
-watch(currentEpisodeHolder, async (oldData, newData) => {
+watch(currentEpisodeHolder, async (newData) => {
   if (newData) {
     await fetchSchedule()
     scrollToActiveStation()
