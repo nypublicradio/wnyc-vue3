@@ -521,7 +521,6 @@ html.style-mode-dark {
   .p-button-link.p-button-secondary:hover {
     background: transparent;
     border-color: transparent;
-    color: var(--p-button-secondary-text-color);
   }
 }
 // makes the white buttons user the light ripple effect so you can see it.
@@ -554,7 +553,8 @@ html.style-mode-dark {
       text-decoration-color: var(--link-button-color);
       color: var(--link-button-color);
     }
-    &:hover {
+    &:hover,
+    &:active {
       .p-button-label {
         text-decoration-color: var(--link-button-hover-color);
         color: var(--link-button-hover-color);

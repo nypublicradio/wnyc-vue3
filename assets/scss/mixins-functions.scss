@@ -58,6 +58,7 @@
     &:active,
     &:focus {
       color: var(--link-button-hover-color);
+      text-decoration: underline !important;
     }
     &:visited {
       color: var(--link-button-color);
