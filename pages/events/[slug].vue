@@ -242,7 +242,7 @@ useSeoMeta({
                 <p v-if="eventLocation" class="event-rail__address">
                   {{ eventLocation }}
                 </p>
-                <VFlexibleLink v-if="mapsUrl" :to="mapsUrl" raw>
+                <VFlexibleLink v-if="mapsUrl" :to="mapsUrl">
                   <span class="event-rail__link">Open in Google Maps</span>
                 </VFlexibleLink>
               </div>
@@ -264,7 +264,7 @@ useSeoMeta({
 
               <div v-if="eventData?.url" class="event-rail__section">
                 <h3>Event URL</h3>
-                <VFlexibleLink :to="eventData?.url" raw>
+                <VFlexibleLink :to="eventData?.url">
                   <span class="event-rail__link">{{ eventData?.url }}</span>
                 </VFlexibleLink>
               </div>
