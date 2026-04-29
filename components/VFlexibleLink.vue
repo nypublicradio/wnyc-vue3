@@ -127,18 +127,12 @@ const isAnchor = computed(() => {
     transition: all var(--p-transition-duration);
   }
   &:hover {
-    color: var(--link-button-hover-color);
+    color: var(--p-button-hyperlink-hover-color);
     text-decoration: var(--link-button-text-hover-decoration);
     * {
-      color: var(--link-button-hover-color);
+      color: var(--p-button-hyperlink-hover-color);
       text-decoration: var(--link-button-text-hover-decoration);
     }
-  }
-  &:focus {
-    outline-color: var(--p-focus-ring-color);
-    outline-offset: var(--p-focus-ring-offset);
-    box-shadow: var(--p-focus-ring-shadow);
-    outline-style: var(--p-focus-ring-style);
   }
 }
 .flexible-link.null {
