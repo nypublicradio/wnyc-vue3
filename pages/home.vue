@@ -32,13 +32,15 @@ const curationFetchArgs = [
   },
 ]
 
-const [
-  { data: latestNewsUpdatesData, error: error2 },
-  { data: pagedata, error, status }
-] = await Promise.all([
-  useFetchWrapper(...newsFetchArgs),
-  useFetchWrapper(...curationFetchArgs)
-])
+const newsFetchResult = useFetchWrapper(...newsFetchArgs)
+const curationFetchResult = useFetchWrapper(...curationFetchArgs)
+
+if (import.meta.server) {
+  await Promise.all([newsFetchResult, curationFetchResult])
+}
+
+const { data: latestNewsUpdatesData, error: error2 } = newsFetchResult
+const { data: pagedata, error, status } = curationFetchResult
 
 definePageMeta({
   layout: "default",

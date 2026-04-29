@@ -6,12 +6,26 @@ import { normalizeGalleryPage } from "~/composables/data/galleryPages"
 const route = useRoute()
 //const router = useRouter()
 
-const gallery = await usePageById(route.params.gallerySlug).then(({ data }) =>
-  normalizeGalleryPage(data.value)
+const config = useRuntimeConfig()
+const galleryFetchResult = useFetchWrapper(
+  () => `${config.public.AVIARY_BASE_API}pages/${route.params.gallerySlug}/`,
+  { key: `gallery-${route.params.gallerySlug}` }
 )
 
-const shareUrl = ref(gallery.url)
-const shareTitle = ref(gallery.title)
+if (import.meta.server) {
+  await galleryFetchResult
+}
+
+const { data: galleryData, status, error } = galleryFetchResult
+
+const gallery = computed(() => {
+  if (!galleryData.value) return null
+  const transformedData = transformResponseData(galleryData.value)
+  return normalizeGalleryPage(transformedData)
+})
+
+const shareUrl = computed(() => gallery.value?.url || "")
+const shareTitle = computed(() => gallery.value?.title || "")
 
 onMounted(() => {
   // send GA page view

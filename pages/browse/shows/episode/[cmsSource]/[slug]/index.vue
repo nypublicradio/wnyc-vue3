@@ -13,32 +13,36 @@ const route = useRoute()
 const router = useRouter()
 const toast = useToast()
 
-const [
-  { data: episode, status, error },
-  { data: redirectsData }
-] = await Promise.all([
-  useFetchWrapper(
-    () =>
-      `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
-    {
-      key: `index-episode-${route.params.cmsSource}-${route.params.slug}`,
-      onResponseError() {
-        toast.add({
-          severity: "error",
-          summary: "We are having a problem loading this episode. Please try again later.",
-          life: 6000,
-          closable: true,
-        })
-      },
-    }
-  ),
-  useFetchWrapper(
-    () => `${config.public.BFF_URL}/api/show-slug-redirects`,
-    {
-      key: "show-slug-redirects",
-    }
-  )
-])
+const episodeFetchResult = useFetchWrapper(
+  () =>
+    `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
+  {
+    key: `index-episode-${route.params.cmsSource}-${route.params.slug}`,
+    onResponseError() {
+      toast.add({
+        severity: "error",
+        summary: "We are having a problem loading this episode. Please try again later.",
+        life: 6000,
+        closable: true,
+      })
+    },
+  }
+)
+const redirectsFetchResult = useFetchWrapper(
+  () => `${config.public.BFF_URL}/api/show-slug-redirects`,
+  {
+    key: "show-slug-redirects",
+  }
+)
+
+if (import.meta.server) {
+  await Promise.all([episodeFetchResult, redirectsFetchResult])
+}
+
+const { data: episode, status, error } = episodeFetchResult
+const { data: redirectsData } = redirectsFetchResult
+
+const safeEpisode = computed(() => (episode.value && typeof episode.value === 'object' && !Array.isArray(episode.value)) ? episode.value : null)
 
 const filteredTopStories = computed(() => getFilteredTopStories(episode.value))
 
@@ -75,7 +79,7 @@ const theSlug = computed(
     null
 )
 
-const { data: showSlug } = await useFetchWrapper(
+const showSlugFetchResult = useFetchWrapper(
   () =>
     theSlug.value
       ? `${config.public.BFF_URL}/api/v2/show/${theSlug.value}?slugOnly=true`
@@ -84,6 +88,10 @@ const { data: showSlug } = await useFetchWrapper(
     key: `v2-show-only-${theSlug.value}`,
   }
 )
+if (import.meta.server) {
+  await showSlugFetchResult
+}
+const { data: showSlug } = showSlugFetchResult
 
 // Redirect table for old publisher show slugs
 // (Fetch moved to Promise.all above for parallel execution)
@@ -107,7 +115,7 @@ const resolvedShowSlug = computed(() => {
   return episode.value?.show?.slug || episode.value?.headers?.brand?.slug || null
 })
 
-const { data: show, status: showStatus } = await useFetchWrapper(
+const showFetchResult = useFetchWrapper(
   () =>
     resolvedShowSlug.value
       ? `${config.public.BFF_URL}/api/pages/wagtail/${resolvedShowSlug.value}?showOnly=true`
@@ -116,29 +124,35 @@ const { data: show, status: showStatus } = await useFetchWrapper(
     key: `wagtail-show-only-${resolvedShowSlug.value}`,
   }
 )
+if (import.meta.server) {
+  await showFetchResult
+}
+const { data: show, status: showStatus } = showFetchResult
+
+const safeShow = computed(() => (show.value && typeof show.value === 'object' && !Array.isArray(show.value)) ? show.value : null)
 
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Browse", route: "/browse" },
   {
-    label: show.value?.title,
+    label: safeShow.value?.title || "Show",
     route: `/browse/shows/${resolvedShowSlug.value}`,
   },
-  { label: episode.value?.title },
+  { label: safeEpisode.value?.title },
 ])
 
-const title = `${episode.value?.title} | WNYC`
-const tease =
-  episode.value?.tease ?? getFirstSentence(stripHtmlTags(episode.value?.tease))
-const description =
-  episode.value?.description ??
-  getFirstSentence(stripHtmlTags(episode.value?.description))
+const title = computed(() => safeEpisode.value?.title ? `${safeEpisode.value.title} | WNYC` : 'WNYC')
+const tease = computed(() =>
+  safeEpisode.value?.tease ?? getFirstSentence(stripHtmlTags(safeEpisode.value?.tease)))
+const description = computed(() =>
+  safeEpisode.value?.description ??
+  getFirstSentence(stripHtmlTags(safeEpisode.value?.description)))
 useHead({
   title,
 })
 useSeoMeta({
   title,
-  description: tease ?? description,
+  description: () => tease.value ?? description.value,
 })
 </script>
 
@@ -151,8 +165,8 @@ useSeoMeta({
       </section>
       <EpisodeTemplate
         :pending="status !== 'success'"
-        :episodeData="episode"
-        :show="show"
+        :episodeData="safeEpisode"
+        :show="safeShow"
         :showPending="showStatus === 'pending'"
       >
         <template #bottom>

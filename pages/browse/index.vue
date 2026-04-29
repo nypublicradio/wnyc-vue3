@@ -7,13 +7,19 @@ import { useIsApp } from "~/composables/states"
 const config = useRuntimeConfig()
 const isApp = useIsApp()
 const route = useRoute()
+const showsFetchResult = useFetchWrapper(`${config.public.BFF_URL}/api/v3/shows`, {
+  key: "v3-shows",
+})
+
+if (import.meta.server) {
+  await showsFetchResult
+}
+
 const {
   data: shows,
   status,
   error,
-} = await useFetchWrapper(`${config.public.BFF_URL}/api/v3/shows`, {
-  key: "v3-shows",
-})
+} = showsFetchResult
 
 const router = useRouter()
 const searchFieldValue = ref("")

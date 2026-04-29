@@ -14,35 +14,45 @@ import { usePreviewData } from "~/composables/states"
 const previewData = usePreviewData()
 const isPreview = Boolean(route.query.preview)
 
-let page
-if (isPreview) {
-  if (!previewData.value || !previewData.value.data) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: "Preview data not found",
-      fatal: true,
-    })
+const slug = `/${route?.params?.slug as string}`
+const pageFetchResult = useFetchWrapper(
+  `${config.public.BFF_URL}/api/pages/wagtail/find`,
+  {
+    key: `page-${slug}`,
+    query: { html_path: slug },
   }
-  page = previewData.value.data
-} else {
-  const slug = `/${route?.params?.slug as string}`
-  const { data, error } = await useFetchWrapper(
-    `${config.public.BFF_URL}/api/pages/wagtail/find`,
-    {
-      key: `page-${slug}`,
-      query: { html_path: slug },
+)
+
+if (import.meta.server && !isPreview) {
+  await pageFetchResult
+}
+
+const { data, error, status } = pageFetchResult
+
+if (status.value !== 'pending' && !isPreview && (error.value || !data.value)) {
+  throw createError({
+    statusCode: error.value?.statusCode || 404,
+    statusMessage: error.value?.message || "Page Not Found",
+    fatal: true,
+  })
+}
+
+const page = computed(() => {
+  if (isPreview) {
+    if (!previewData.value || !previewData.value.data) {
+      return null
     }
-  )
-
-  if (error.value || !data.value) {
-    throw createError({
-      statusCode: error.value?.statusCode || 404,
-      statusMessage: error.value?.message || "Page Not Found",
-      fatal: true,
-    })
+    return previewData.value.data
   }
+  return data.value ? normalizeFindPageResponse(data) : null
+})
 
-  page = normalizeFindPageResponse(data)
+if (isPreview && !previewData.value?.data) {
+  throw createError({
+    statusCode: 404,
+    statusMessage: "Preview data not found",
+    fatal: true,
+  })
 }
 </script>
 

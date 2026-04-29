@@ -506,47 +506,55 @@ const getDotMenuItems = (bucketItem) => {
           </div>
         </div>
       </div>
-      <!-- v-else-if="props.pending" -->
-      <div v-else-if="props.pending" class="flex gap-3 col pr-2 lg:pr-4 mt-1 mb-6">
-        <Skeleton
-          width="100%"
-          borderRadius="0px"
-          class="h-7rem md:h-12rem w-7rem md:w-12rem flex-none"
-        />
-        <div class="flex flex-column gap-2 md:gap-3 w-full">
-          <div class="flex flex-column gap-1">
-            <Skeleton width="90%" borderRadius="16px" class="h-1rem md:h-2rem" />
-            <Skeleton width="65%" borderRadius="16px" class="h-1rem md:h-2rem" />
-          </div>
-          <div class="article-metadata">
-            <div class="flex gap-2 align-items-center mb-1">
-              <Skeleton
-                height="12px"
-                width="120px"
-                borderRadius="16px"
-                class="opacity-70"
-              />
-              <Skeleton height="8px" width="8px" borderRadius="50%" class="opacity-50" />
-              <Skeleton
-                height="12px"
-                width="70px"
-                borderRadius="16px"
-                class="opacity-70"
-              />
+
+      <div v-else-if="props.pending">
+        <div class="flex gap-3 col pr-2 lg:pr-4 mt-1 mb-6">
+          <Skeleton
+            width="100%"
+            borderRadius="0px"
+            class="h-7rem md:h-12rem w-7rem md:w-12rem flex-none"
+          />
+          <div class="flex flex-column gap-2 md:gap-3 w-full">
+            <div class="flex flex-column gap-1">
+              <Skeleton width="90%" borderRadius="16px" class="h-1rem md:h-2rem" />
+              <Skeleton width="65%" borderRadius="16px" class="h-1rem md:h-2rem" />
+            </div>
+            <div class="article-metadata">
+              <div class="flex gap-2 align-items-center mb-1">
+                <Skeleton
+                  height="12px"
+                  width="120px"
+                  borderRadius="16px"
+                  class="opacity-70"
+                />
+                <Skeleton
+                  height="8px"
+                  width="8px"
+                  borderRadius="50%"
+                  class="opacity-50"
+                />
+                <Skeleton
+                  height="12px"
+                  width="70px"
+                  borderRadius="16px"
+                  class="opacity-70"
+                />
+              </div>
+            </div>
+            <div class="button-holder flex align-items-center gap-2 flex-wrap">
+              <Skeleton height="33px" width="90px" borderRadius="16px" class="z-2" />
+              <Skeleton height="33px" width="33px" borderRadius="16px" class="z-2" />
+              <Skeleton height="33px" width="33px" borderRadius="16px" class="z-2" />
+
+              <slot>
+                <div class="flex align-items-center gap-4">
+                  <Skeleton class="ml-2" height="22px" width="5px" borderRadius="16px" />
+                </div>
+              </slot>
             </div>
           </div>
-          <div class="button-holder flex align-items-center gap-2 flex-wrap">
-            <Skeleton height="33px" width="90px" borderRadius="16px" class="z-2" />
-            <Skeleton height="33px" width="33px" borderRadius="16px" class="z-2" />
-            <Skeleton height="33px" width="33px" borderRadius="16px" class="z-2" />
-
-            <slot>
-              <div class="flex align-items-center gap-4">
-                <Skeleton class="ml-2" height="22px" width="5px" borderRadius="16px" />
-              </div>
-            </slot>
-          </div>
         </div>
+        <skeleton-text class="w-full" />
       </div>
       <div class="col-fixed hidden xl:block w-20rem"></div>
     </div>

@@ -22,32 +22,22 @@ const props = defineProps({
   },
 })
 
-const widths = [
-  "100%",
-  "92%",
-  "85%",
-  "97%",
-  "78%",
-  "88%",
-  "95%",
-  "82%",
-  "90%",
-  "75%",
-]
+const widths = ["100%", "98%", "85%", "97%", "78%", "88%", "95%", "82%", "90%", "75%"]
 const gap = Math.min(props.gapMin + 2, props.gapMax)
 </script>
 
 <template>
-  <Skeleton
-    v-for="(line, index) in props.lines"
-    :key="`sk-text-${index}`"
-    :height="props.height"
-    :width="widths[index % widths.length]"
-    :borderRadius="props.radius"
-    class="mb-1"
-    :class="gap === index ? 'mb-5' : ''"
-    v-bind="{ ...$props, ...$attrs }"
-  />
+  <div v-bind="$attrs">
+    <Skeleton
+      v-for="(line, index) in props.lines"
+      :key="`sk-text-${index}`"
+      :height="props.height"
+      :width="widths[index % widths.length]"
+      :borderRadius="props.radius"
+      class="mb-1"
+      :class="gap === index ? 'mb-5' : ''"
+    />
+  </div>
 </template>
 
 <style lang="scss" scoped>

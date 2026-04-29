@@ -1,5 +1,5 @@
 <script setup>
-import { checkIsFavorited, slugify, getFirstSentence } from "~/utilities/helpers"
+import { slugify, getFirstSentence } from "~/utilities/helpers"
 import { useIsApp } from "~/composables/states"
 import { useFetchWrapper } from "~/composables/useFetchWrapper"
 
@@ -15,9 +15,13 @@ const showFetchArgs = [
   },
 ]
 
-const { data: show, status, error } = isApp.value
-  ? useFetchWrapper(...showFetchArgs)
-  : await useFetchWrapper(...showFetchArgs)
+const showFetchResult = useFetchWrapper(...showFetchArgs)
+if (import.meta.server) {
+  await showFetchResult
+}
+const { data: show, status, error } = showFetchResult
+
+const safeShow = computed(() => (show.value && typeof show.value === 'object' && !Array.isArray(show.value)) ? show.value : null)
 
 // Auto-refresh handled by useFetchWrapper
 
@@ -29,13 +33,7 @@ const sectionAnchorData = computed(
     })) ?? []
 )
 
-// if user is logged in, check if item is already favorited
-const isFavorited = ref(false)
-onMounted(() => {
-  watchEffect(async () => {
-    isFavorited.value = await checkIsFavorited(route.params.slug)
-  })
-})
+
 
 // scrolls to the selected section from the jump link buttons
 const scrollToSection = (sectionId, behavior = "smooth", offset = 90) => {
@@ -55,7 +53,7 @@ const scrollToSection = (sectionId, behavior = "smooth", offset = 90) => {
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Browse", route: "/browse" },
-  { label: show?.value?.title },
+  { label: safeShow?.value?.title || "Show" },
 ])
 
 onMounted(() => {
@@ -68,8 +66,9 @@ onMounted(() => {
   })
 })
 
-const title = `${show.value?.title} | WNYC`
-const description = getFirstSentence(show.value?.summary)
+const title = computed(() => safeShow.value?.title ? `${safeShow.value.title} | WNYC` : 'WNYC')
+const description = computed(() => getFirstSentence(safeShow.value?.summary))
+
 useHead({
   title,
 })
@@ -91,7 +90,7 @@ useSeoMeta({
     </section>
     <template v-if="!error">
       <!-- <pre>{{ show }}</pre> -->
-      <ShowHeader :show="show" />
+      <ShowHeader :show="safeShow" />
 
       <div class="md:hidden mt-4 mb-3">
         <story-htlAd
@@ -161,12 +160,12 @@ useSeoMeta({
             </div>
             <div v-if="!isApp">
               <div class="block lg:hidden mt-8">
-                <ShowSummary :show="show" />
+                <ShowSummary :show="safeShow" />
               </div>
             </div>
           </div>
           <div class="col-fixed hidden lg:block w-20rem">
-            <ShowSummary :show="show" />
+            <ShowSummary :show="safeShow" />
           </div>
         </div>
       </section>

@@ -19,7 +19,7 @@ definePageMeta({
   pageTransition: false,
 })
 const cmsSource = computed(() => route.params.cmsSource || "publisher")
-const { data: episode, status, error } = await useFetchWrapper(
+const episodeFetchResult = useFetchWrapper(
   () =>
     `${config.public.BFF_URL}/api/v2/show/episode/${cmsSource.value}/${route.params.slug}`,
   {
@@ -35,6 +35,12 @@ const { data: episode, status, error } = await useFetchWrapper(
     },
   }
 )
+
+if (import.meta.server) {
+  await episodeFetchResult
+}
+
+const { data: episode, status, error } = episodeFetchResult
 
 onMounted(() => {
   if (!episode.value) return
@@ -144,18 +150,19 @@ onUnmounted(() => {
   clearTimeout(scrollTimeout)
 })
 
-const title = `${episode.value?.title} | WNYC`
-const tease =
-  episode.value?.tease ?? getFirstSentence(stripHtmlTags(episode.value?.tease))
-const description =
+const title = computed(() => episode.value?.title ? `${episode.value.title} | WNYC` : 'WNYC')
+const tease = computed(() =>
+  episode.value?.tease ?? getFirstSentence(stripHtmlTags(episode.value?.tease)))
+const description = computed(() =>
   episode.value?.description ??
-  getFirstSentence(stripHtmlTags(episode.value?.description))
+  getFirstSentence(stripHtmlTags(episode.value?.description)))
+
 useHead({
   title,
 })
 useSeoMeta({
   title,
-  description: tease ?? description,
+  description: () => tease.value ?? description.value,
 })
 </script>
 

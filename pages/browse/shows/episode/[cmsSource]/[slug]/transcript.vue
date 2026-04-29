@@ -19,11 +19,7 @@ definePageMeta({
   pageTransition: false,
 })
 
-const {
-  data: episode,
-  status,
-  error,
-} = await useFetchWrapper(
+const episodeFetchResult = useFetchWrapper(
   () =>
     `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
   {
@@ -39,6 +35,18 @@ const {
     },
   }
 )
+
+if (import.meta.server) {
+  await episodeFetchResult
+}
+
+const {
+  data: episode,
+  status,
+  error,
+} = episodeFetchResult
+
+const safeEpisode = computed(() => (episode.value && typeof episode.value === 'object' && !Array.isArray(episode.value)) ? episode.value : null)
 
 onMounted(() => {
   if (!episode.value) return
@@ -116,7 +124,7 @@ const getEpisodeImage = () => {
   return epImage
 }
 
-const { data: showSlug } = await useFetchWrapper(
+const showSlugFetchResult = useFetchWrapper(
   () =>
     theSlug.value
       ? `${config.public.BFF_URL}/api/v2/show/${theSlug.value}?slugOnly=true`
@@ -126,7 +134,13 @@ const { data: showSlug } = await useFetchWrapper(
   }
 )
 
-const { data: show, status: showStatus } = await useFetchWrapper(
+if (import.meta.server) {
+  await showSlugFetchResult
+}
+
+const { data: showSlug } = showSlugFetchResult
+
+const showFetchResult = useFetchWrapper(
   () =>
     showSlug.value?.show?.slug
       ? `${config.public.BFF_URL}/api/pages/wagtail/${showSlug.value?.show?.slug}?showOnly=true`
@@ -135,6 +149,14 @@ const { data: show, status: showStatus } = await useFetchWrapper(
     key: `wagtail-show-only-${showSlug.value?.show?.slug}`,
   }
 )
+
+if (import.meta.server) {
+  await showFetchResult
+}
+
+const { data: show, status: showStatus } = showFetchResult
+
+const safeShow = computed(() => (show.value && typeof show.value === 'object' && !Array.isArray(show.value)) ? show.value : null)
 
 // episode image resize on scroll
 const handleScroll = () => {
@@ -155,10 +177,10 @@ const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Browse", route: "/browse" },
   {
-    label: showSlug.value?.show?.title,
+    label: safeShow.value?.title || showSlug.value?.show?.title || "Show",
     route: `/browse/shows/${showSlug.value?.show?.slug}`,
   },
-  { label: episode.value?.title, route: backToEpisodePath.value },
+  { label: safeEpisode.value?.title, route: backToEpisodePath.value },
   { label: "Transcript" },
 ])
 
@@ -171,18 +193,18 @@ onUnmounted(() => {
   clearTimeout(scrollTimeout)
 })
 
-const title = `${episode.value?.title} | WNYC`
-const tease =
-  episode.value?.tease ?? getFirstSentence(stripHtmlTags(episode.value?.tease))
-const description =
-  episode.value?.description ??
-  getFirstSentence(stripHtmlTags(episode.value?.description))
+const title = computed(() => safeEpisode.value?.title ? `${safeEpisode.value.title} | WNYC` : 'WNYC')
+const tease = computed(() =>
+  safeEpisode.value?.tease ?? getFirstSentence(stripHtmlTags(safeEpisode.value?.tease)))
+const description = computed(() =>
+  safeEpisode.value?.description ??
+  getFirstSentence(stripHtmlTags(safeEpisode.value?.description)))
 useHead({
   title,
 })
 useSeoMeta({
   title,
-  description: tease ?? description,
+  description: () => tease.value ?? description.value,
 })
 </script>
 
@@ -233,7 +255,7 @@ useSeoMeta({
                   class="text-xl -mt-1 md:mt-0 line-height-1 md:line-height-2"
                   :class="isMinimized ? 'mt-0 md:text-2xl' : 'mt-2 md:text-4xl'"
                 >
-                  {{ episode?.title }}
+                  {{ safeEpisode?.title }}
                 </h1>
               </div>
             </div>
@@ -276,7 +298,7 @@ useSeoMeta({
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col pr-2 lg:pr-4">
           <div v-if="status === 'success'">
-            <div v-if="episode?.transcript">
+            <div v-if="safeEpisode?.transcript">
               <div class="flex align-items-center gap-1">
                 <h2>Transcript</h2>
                 <Button
@@ -287,8 +309,8 @@ useSeoMeta({
                 />
               </div>
               <HtmlConvert
-                :htmlContent="episode?.transcript"
-                :key="`transcript-${episode?.id || route.params.slug}`"
+                :htmlContent="safeEpisode?.transcript"
+                :key="`transcript-${safeEpisode?.id || route.params.slug}`"
               />
             </div>
           </div>
@@ -298,7 +320,7 @@ useSeoMeta({
           </div>
         </div>
         <div class="col-fixed hidden lg:block w-20rem">
-          <ShowSummary v-if="showStatus === 'pending' || show" :show="show" />
+          <ShowSummary v-if="showStatus === 'pending' || safeShow" :show="safeShow" />
         </div>
       </div>
     </section>

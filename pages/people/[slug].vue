@@ -6,26 +6,31 @@ const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
 const { getEpisodeFallBackImage, getUserFallBackImage } = useFallbackImages()
-const personName = ref(null)
-const {
-  data: pagedata,
-  status,
-  error,
-} = await useFetchWrapper(
+const pageFetchResult = useFetchWrapper(
   () => `${config.public.BFF_URL}/api/people/publisher/${route.params.slug}`,
   {
     key: `publisher-people-page-${route.params.slug}`,
   }
 )
 
+if (import.meta.server) {
+  await pageFetchResult
+}
+
+const {
+  data: pagedata,
+  status,
+  error,
+} = pageFetchResult
+
+const personName = computed(() => pagedata.value?.name || '')
+
 watch(pagedata, (val) => {
   if (val) {
-    personName.value = pagedata?.value.name
     // set fallback image based on dark or light mode
     if (pagedata.value && !pagedata.value.photoID) {
       pagedata.value.photoID = getUserFallBackImage()
     }
-    //newPageData.value = pagedata.value
   }
 })
 

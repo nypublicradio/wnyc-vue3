@@ -18,7 +18,7 @@ const loadMoreRefVisible = ref(false)
 const loadMoreRef = ref(null)
 const isInitialObserver = ref(true)
 
-const { data: events, status, error } = await useFetchWrapper(
+const eventsFetchResult = useFetchWrapper(
   `${config.public.BFF_URL}/api/events/list`,
   { 
     key: "events-list",
@@ -32,6 +32,12 @@ const { data: events, status, error } = await useFetchWrapper(
     },
   }
 )
+
+if (import.meta.server) {
+  await eventsFetchResult
+}
+
+const { data: events, status, error } = eventsFetchResult
 
 onMounted(() => {
   const { $analytics } = useNuxtApp()

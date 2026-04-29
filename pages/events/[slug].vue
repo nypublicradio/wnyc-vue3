@@ -9,28 +9,30 @@ const config = useRuntimeConfig()
 const route = useRoute()
 const toast = useToast()
 
-const [
-  { data: event, status, error },
-  { data: moreEvents }
-] = await Promise.all([
-  useFetchWrapper(
-    () => `${config.public.BFF_URL}/api/events/${route.params.slug}`,
-    {
-      key: `event-${route.params.slug}`,
-      onResponseError() {
-        toast.add({
-          severity: "error",
-          summary: "We are having a problem loading this event. Please try again later.",
-          life: 6000,
-          closable: true,
-        })
-      },
-    }
-  ),
-  useFetchWrapper(
-    `${config.public.BFF_URL}/api/events/list?limit=4`
-  )
-])
+const eventFetchResult = useFetchWrapper(
+  () => `${config.public.BFF_URL}/api/events/${route.params.slug}`,
+  {
+    key: `event-${route.params.slug}`,
+    onResponseError() {
+      toast.add({
+        severity: "error",
+        summary: "We are having a problem loading this event. Please try again later.",
+        life: 6000,
+        closable: true,
+      })
+    },
+  }
+)
+const moreEventsFetchResult = useFetchWrapper(
+  `${config.public.BFF_URL}/api/events/list?limit=4`
+)
+
+if (import.meta.server) {
+  await Promise.all([eventFetchResult, moreEventsFetchResult])
+}
+
+const { data: event, status, error } = eventFetchResult
+const { data: moreEvents } = moreEventsFetchResult
 
 onMounted(() => {
   if (!event.value) return
@@ -102,8 +104,8 @@ const breadcrumbs = computed(() => [
   { label: title.value || "Event" },
 ])
 
-const pageTitle = `${eventData.value?.title} | WNYC`
-const description = getFirstSentence(eventData.value?.description)
+const pageTitle = computed(() => eventData.value?.title ? `${eventData.value.title} | WNYC` : 'WNYC')
+const description = computed(() => getFirstSentence(eventData.value?.description))
 useHead({
   title: pageTitle,
 })

@@ -7,24 +7,34 @@ import { useGlobalToast } from "~/composables/states"
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
-const authorName = ref(null)
+
 const { getUserFallBackImage } = useFallbackImages()
 const staffSlug = route.params.slug
 const newPageData = ref(null)
-const {
-  data: pagedata,
-  status,
-  error,
-} = await useFetchWrapper(
+const pageFetchResult = useFetchWrapper(
   () => `${config.public.BFF_URL}/api/staff/wagtail/${route.params.slug}`,
   {
     key: `wagtail-people-page-${route.params.slug}`,
   }
 )
 
+if (import.meta.server) {
+  await pageFetchResult
+}
+
+const {
+  data: pagedata,
+  status,
+  error,
+} = pageFetchResult
+
+const authorName = computed(() => 
+  pagedata.value?.authorData?.[0] 
+    ? `${pagedata.value.authorData[0].firstName} ${pagedata.value.authorData[0].lastName}` 
+    : '')
+
 watch(pagedata, (val) => {
   if (val) {
-    authorName.value = `${pagedata.value?.authorData[0]?.firstName} ${pagedata.value?.authorData[0]?.lastName}`
     // set fallback image based on dark or light mode
     if (pagedata.value && !pagedata.value.authorData.photoID) {
       pagedata.value.authorData.photoID = getUserFallBackImage()

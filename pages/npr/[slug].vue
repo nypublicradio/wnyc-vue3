@@ -9,11 +9,7 @@ const config = useRuntimeConfig()
 const storySource = "NPR"
 //const breadcrumbs = computed(() => [{ label: "Home", route: "/home" }])
 
-const {
-  data: storyData,
-  status,
-  error,
-} = await useFetchWrapper(
+const storyFetchResult = useFetchWrapper(
   () => `${config.public.BFF_URL}/api/npr/${route.params.slug}`,
   {
     key: `npr-story-${route.params.slug}`,
@@ -28,6 +24,16 @@ const {
     },
   }
 )
+
+if (import.meta.server) {
+  await storyFetchResult
+}
+
+const {
+  data: storyData,
+  status,
+  error,
+} = storyFetchResult
 
 onMounted(() => {
   if (!storyData.value) return
@@ -63,17 +69,18 @@ const breadcrumbs = computed(() => [
 
 const hasNprAudio = computed(() => hasAudio(storyData.value?.audio))
 
-const title = `${storyData.value?.title} | WNYC`
-const description = storyData.value?.description
-const canonicalUrl = storyData.value?.link
+const title = computed(() => storyData.value?.title ? `${storyData.value.title} | WNYC` : 'WNYC')
+const description = computed(() => storyData.value?.description)
+const canonicalUrl = computed(() => storyData.value?.link)
+
 useHead(() => ({
-  title,
-  link: [{ rel: "canonical", href: canonicalUrl }],
+  title: title.value,
+  link: [{ rel: "canonical", href: canonicalUrl.value }],
 }))
 useSeoMeta({
   title,
   description,
-  ogUrl: canonicalUrl,
+  ogUrl: () => canonicalUrl.value,
   ogTitle: title,
   ogDescription: description,
 })

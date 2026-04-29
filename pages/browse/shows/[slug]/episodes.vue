@@ -1,7 +1,6 @@
 <script setup>
 import { useIntersectionObserver } from "@vueuse/core"
 import {
-  checkIsFavorited,
   trackClickEvent,
   dynamicNavigation,
   getFirstSentence,
@@ -18,28 +17,30 @@ const meta = ref(null)
 const pendingMore = ref(false)
 const loadMoreRef = ref(null)
 
-// Await the initial show data fetch for SSR
-const {
-  data: show,
-  status,
-  error,
-} = await useFetchWrapper(
+// Fetch the initial show data
+const showFetchResult = useFetchWrapper(
   `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}?showOnly=true`,
   {
     key: `show-episodes-page-${route.params.slug}`,
   }
 )
+if (import.meta.server) {
+  await showFetchResult
+}
+const {
+  data: show,
+  status,
+  error,
+} = showFetchResult
+
+const safeShow = computed(() => (show.value && typeof show.value === 'object' && !Array.isArray(show.value)) ? show.value : null)
 
 const podcastId = computed(
   () => show.value?.linkedDataSource?.[0]?.value?.id ?? null
 )
 
-// Await the initial episodes data fetch for SSR
-const {
-  data: episodeData,
-  status: scStatus,
-  error: scError,
-} = await useFetchWrapper(
+// Fetch the initial episodes data
+const episodeFetchResult = useFetchWrapper(
   () =>
     podcastId.value
       ? `${config.public.BFF_URL}/api/v3/show/${podcastId.value}/episodes`
@@ -49,6 +50,14 @@ const {
     query: { offset: 0, limit },
   }
 )
+if (import.meta.server) {
+  await episodeFetchResult
+}
+const {
+  data: episodeData,
+  status: scStatus,
+  error: scError,
+} = episodeFetchResult
 
 // Sync initial fetched data into our mutable refs for client-side pagination
 watch(
@@ -132,12 +141,7 @@ const { stop } = useIntersectionObserver(
   }
 )
 
-const isFavorited = ref(false)
-onMounted(() => {
-  watchEffect(async () => {
-    isFavorited.value = await checkIsFavorited(route.params.slug)
-  })
-})
+
 
 const hasError = computed(() => {
   const e1 = error.value
@@ -161,7 +165,7 @@ const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Browse", route: "/browse" },
   {
-    label: show.value?.title,
+    label: safeShow.value?.title || "Show",
     route: `/browse/shows/${route.params.slug}`,
   },
   {
@@ -169,8 +173,9 @@ const breadcrumbs = computed(() => [
   },
 ])
 
-const title = `${show.value?.title} | WNYC`
-const description = getFirstSentence(show.value?.summary)
+const title = computed(() => safeShow.value?.title ? `${safeShow.value.title} | WNYC` : 'WNYC')
+const description = computed(() => getFirstSentence(safeShow.value?.summary))
+
 useHead({
   title,
 })
@@ -193,7 +198,7 @@ onUnmounted(() => stop())
       <FetchError v-if="hasError" />
     </section>
 
-    <ShowHeader :show="show" />
+    <ShowHeader :show="safeShow" />
 
     <section class="py-4">
       <div class="grid">
@@ -244,7 +249,7 @@ onUnmounted(() => stop())
           <div ref="loadMoreRef" class="w-full h-1rem"></div>
         </div>
         <div class="col-fixed hidden lg:block w-20rem">
-          <ShowSummary :show="show" />
+          <ShowSummary :show="safeShow" />
         </div>
       </div>
     </section>

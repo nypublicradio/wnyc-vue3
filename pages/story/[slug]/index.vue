@@ -10,11 +10,7 @@ const storySource = "WNYC"
 
 const breadcrumbs = computed(() => [{ label: "Home", route: "/home" }])
 
-const {
-  data: storyData,
-  status,
-  error,
-} = await useFetchWrapper(
+const storyFetchResult = useFetchWrapper(
   () =>
     `${config.public.BFF_URL}/api/story/${cmsSources.PUBLISHER}/${route.params.slug}`,
   {
@@ -30,6 +26,16 @@ const {
     },
   }
 )
+
+if (import.meta.server) {
+  await storyFetchResult
+}
+
+const {
+  data: storyData,
+  status,
+  error,
+} = storyFetchResult
 
 onMounted(() => {
   if (!storyData.value) return
@@ -49,13 +55,15 @@ onMounted(() => {
   })
 })
 
-useHead(() => ({
-  title: `${storyData.value?.title} | WNYC`,
-  meta: [
-    { name: "og:title", content: `${storyData.value?.title} | WNYC` },
-    { name: "twitter:title", content: `${storyData.value?.title} | WNYC` },
-  ],
-}))
+const title = computed(() => storyData.value?.title ? `${storyData.value.title} | WNYC` : 'WNYC')
+
+useHead({
+  title,
+})
+useSeoMeta({
+  title,
+  ogTitle: title,
+})
 </script>
 
 <template>
