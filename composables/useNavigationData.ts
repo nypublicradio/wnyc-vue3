@@ -282,7 +282,7 @@ export default async function useNavigationData () {
                 } else {
                     // Client-side web mode: use $fetch directly (avoids payload hydration conflicts)
                     try {
-                        const clientData = await $fetch('/api/navigation')
+                        const clientData = await $fetch(`${config.public.BFF_URL}/api/navigation`)
                         nData = { value: clientData }
                         error = { value: null }
                         status = { value: 'success' }
