@@ -64,7 +64,7 @@ const resolveUrlFunctions = (items, appDownloadLink = '') => {
 
 //normalize for menu function for Wagtail menu data
 const normalizeWagtailMenuData = (menuData = []) => {
-
+    if (!menuData || !Array.isArray(menuData)) return []
     return menuData.map((item) => ({
         label: item.value.title,
         url: stripWNYCUrl(item.value.url),
@@ -78,6 +78,7 @@ const normalizeWagtailMenuData = (menuData = []) => {
 
 // normalize for menu function for station data
 const normalizeStationsMenuData = (menuData = []) => {
+    if (!menuData || !Array.isArray(menuData)) return []
     return menuData.map((item) => ({
         label: item.station,
         url: `/live?slug=${item.slug}`,
@@ -91,7 +92,7 @@ const normalizeStationsMenuData = (menuData = []) => {
 
 // normalize for menu function for shows data
 const normalizeShowsMenuData = (menuData, limit) => {
-    if (!menuData?.featuredShowsInMenu) return []
+    if (!menuData || !menuData.featuredShowsInMenu || !Array.isArray(menuData.featuredShowsInMenu)) return []
     return menuData.featuredShowsInMenu.slice(0, limit).map((item) => ({
         label: item.title,
         url: `${mediaTypeRoutes.show}${item.slug}`,
@@ -127,7 +128,7 @@ async function fetchNavigationDataDirect () {
 
     try {
         let allShows = null
-        if (process.env.ENV === 'prod') {
+        if (config.public.ENV === 'prod' || config.public.environment === 'prod') {
             allShows = 90
         } else {
             allShows = 20
@@ -249,8 +250,6 @@ export default async function useNavigationData () {
                     // Server-side: use $fetch to avoid HTTP requests (prevents circular dependencies during SSR/health checks)
                     try {
                         const serverData = await $fetch('/api/navigation')
-                        console.log('serverData:', serverData)
-                        console.log('serverData.legal_links:', serverData.data.wagtailResponse.legal_links)
                         nData = { value: serverData }
                         error = { value: null }
                         status = { value: 'success' }
@@ -258,8 +257,6 @@ export default async function useNavigationData () {
                         // Retry once on server before giving up
                         try {
                             const serverData = await $fetch('/api/navigation')
-                            console.log('serverData:', serverData)
-                            console.log('serverData.legal_links:', serverData.data.wagtailResponse.legal_links)
                             nData = { value: serverData }
                             error = { value: null }
                             status = { value: 'success' }
