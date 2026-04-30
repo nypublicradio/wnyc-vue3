@@ -110,7 +110,23 @@ const firstEpisodeWithAudio = () => {
 }
 // computed properties to identify what is currently loaded
 const isLoadedEpisode = computed(() => {
-  return !isLiveStream.value && currentEpisode.value?.showTitle === props.show?.title
+  if (isLiveStream.value || !currentEpisode.value) return false
+
+  // 1. Standard check: do the show titles match?
+  if (currentEpisode?.value?.showTitle === props.show?.title) return true
+
+  // 2. Archives check: is the current episode in the show's curated lists?
+  if (currentEpisode.value.id && props.show?.body) {
+    const listItems = props.show.body.filter((item) => item.type === "curated_list")
+    for (const item of listItems) {
+      const items = item.value?.list?.listItems
+      if (items && items.some((ep) => ep.id === currentEpisode.value.id)) {
+        return true
+      }
+    }
+  }
+
+  return false
 })
 
 const isLoadedLiveStream = computed(() => {
