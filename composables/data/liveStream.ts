@@ -221,7 +221,12 @@ export default function useLiveStream () {
 
   function getScheduleRefreshDelay (schedule) {
     const nowMs = Date.now()
+    const firstEntryStartMs = new Date(schedule?.[0]?.attributes?.start).getTime()
     const firstEntryEndMs = new Date(schedule?.[0]?.attributes?.end).getTime()
+
+    if (Number.isFinite(firstEntryStartMs) && firstEntryStartMs > nowMs) {
+      return firstEntryStartMs - nowMs
+    }
 
     if (Number.isFinite(firstEntryEndMs) && firstEntryEndMs > nowMs) {
       return firstEntryEndMs - nowMs + 30000
