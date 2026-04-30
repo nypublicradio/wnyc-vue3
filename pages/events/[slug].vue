@@ -101,7 +101,7 @@ const breadcrumbs = computed(() => [
   { label: "Events", route: "/events" },
   { label: title.value || "Event" },
 ])
-const pageTitle = `${eventData.value?.title} | WNYC`
+const pageTitle = eventData.value?.seoTitle || `${eventData.value?.title} | WNYC`
 const description = getFirstSentence(eventData.value?.description)
 const searchDescription = eventData.value?.meta?.searchDescription || description
 const socialDescription = eventData.value?.socialText || description
