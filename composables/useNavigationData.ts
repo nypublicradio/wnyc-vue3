@@ -251,8 +251,6 @@ export default async function useNavigationData () {
                     // Server-side: use $fetch to avoid HTTP requests (prevents circular dependencies during SSR/health checks)
                     try {
                         const serverData = await $fetch(`${config.public.BFF_URL}/api/navigation`)
-                        console.log('serverData', serverData)
-                        console.log('serverData?.data?.wagtailResponse?.legal_links', serverData?.data?.wagtailResponse?.legal_links)
                         nData = { value: serverData }
                         error = { value: null }
                         status = { value: 'success' }
@@ -260,8 +258,6 @@ export default async function useNavigationData () {
                         // Retry once on server before giving up
                         try {
                             const serverData = await $fetch(`${config.public.BFF_URL}/api/navigation`)
-                            console.log('serverData AGAIN', serverData)
-                            console.log('serverData?.data?.wagtailResponse?.legal_links AGAIN', serverData?.data?.wagtailResponse?.legal_links)
                             nData = { value: serverData }
                             error = { value: null }
                             status = { value: 'success' }
