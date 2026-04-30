@@ -103,8 +103,8 @@ const breadcrumbs = computed(() => [
 ])
 const pageTitle = `${eventData.value?.title} | WNYC`
 const description = getFirstSentence(eventData.value?.description)
-const searchDescription = eventData.value?.meta?.searchDescription ?? description
-const socialDescription = eventData.value?.socialText ?? description
+const searchDescription = eventData.value?.meta?.searchDescription || description
+const socialDescription = eventData.value?.socialText || description
 useHead({
   title: pageTitle,
 })
