@@ -24,7 +24,7 @@ function hasValidTimes (episode: ScheduleEpisode) {
 }
 // easy BFF location to store the link to the schedule PDF
 export function getSchedulePdfLink () {
-    return "https://media.wnyc.org/media/resources/2025/Mar/31/wnyc-schedule.pdf"
+    return "https://media.wnyc.org/media/resources/2026/Apr/29/wnyc-schedule.pdf"
 }
 
 export function getCurrentEpisodeSelectionFromSchedule (
