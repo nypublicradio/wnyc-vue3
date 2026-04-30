@@ -249,7 +249,7 @@ export default async function useNavigationData () {
                 if (import.meta.server) {
                     // Server-side: use $fetch to avoid HTTP requests (prevents circular dependencies during SSR/health checks)
                     try {
-                        const serverData = await $fetch(`${config.public.BFF_URL}/api/navigation`)
+                        const serverData = await $fetch('/api/navigation')
                         console.log('serverData:', serverData)
                         console.log('serverData.legal_links:', serverData.data.wagtailResponse.legal_links)
                         nData = { value: serverData }
@@ -258,7 +258,7 @@ export default async function useNavigationData () {
                     } catch (err) {
                         // Retry once on server before giving up
                         try {
-                            const serverData = await $fetch(`${config.public.BFF_URL}/api/navigation`)
+                            const serverData = await $fetch('/api/navigation')
                             console.log('serverData:', serverData)
                             console.log('serverData.legal_links:', serverData.data.wagtailResponse.legal_links)
                             nData = { value: serverData }

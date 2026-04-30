@@ -103,6 +103,7 @@ const submitForm = (email) => {
         <NyprLogosBracket />
       </div>
       <Divider class="mt-4" />
+      <pre class="text-xs text-white">{{ footerLegalLinksData }}</pre>
       <div
         class="grid justify-content-between align-items-center mt-4 gap-4 grid-nogutter"
       >
