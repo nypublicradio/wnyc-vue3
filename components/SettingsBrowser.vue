@@ -17,7 +17,6 @@ const { allNavigationData } = await useNavigationData()
       <ExpandedMenuItem
         v-for="item in allNavigationData"
         :key="item.id"
-        :item="item"
         :class="`menu-holder ${item.class}`"
         :menuData="item"
         @emit-click="settingsSideBarBrowser = false"
