@@ -67,14 +67,14 @@ export default defineNuxtConfig({
   ssr: process.env.NUXT_SSR === 'true',
 
   nitro: {
-    routeRules: {
+    routeRules: process.env.NODE_ENV === 'production' ? {
       '/home': { swr: 60 },
       // Cache ALL shows and any nested episode pages under a show for 15 minutes
       '/browse/shows/**': { swr: 900 },
       '/npr/**': { swr: 900 },
       '/events/**': { swr: 900 },
       '/confirm': { ssr: false },
-    },
+    } : {},
     prerender: {
       // Disable prerendering when SSR is false (SPA mode for mobile)
       //crawlLinks: process.env.NUXT_SSR === 'true',
