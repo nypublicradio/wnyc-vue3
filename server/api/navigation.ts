@@ -22,7 +22,7 @@ async function getNavigationData () {
         // Use aggressive timeouts to prevent health check failures during slow API responses
         const API_TIMEOUT = 5000 // 5 second timeout for external APIs
         let allShows = null
-        if (process.env.ENV === 'prod') {
+        if (config.public.ENV === 'prod' || config.public.environment === 'prod') {
             allShows = 90
         } else {
             allShows = 20
@@ -31,13 +31,13 @@ async function getNavigationData () {
         const [wagtail, donate, stations, shows] = await Promise.allSettled([
             axios.get(config.public.HEADER_NAVIGATION_API as string, {
                 headers: {
-                    'X-CMS-Site': process.env.CMS_SITE,
+                    'X-CMS-Site': config.public.cmsSite,
                 },
                 timeout: API_TIMEOUT
             }),
             axios.get(config.public.SYSTEM_MESSAGES_API as string, {
                 headers: {
-                    'X-CMS-Site': process.env.CMS_SITE,
+                    'X-CMS-Site': config.public.cmsSite,
                 },
                 timeout: API_TIMEOUT
             }),
@@ -48,11 +48,17 @@ async function getNavigationData () {
             ]),
             axios.get(`${config.public.AVIARY_BASE_API}curated_lists/${allShows}/`, {
                 headers: {
-                    'X-CMS-Site': process.env.CMS_SITE,
+                    'X-CMS-Site': config.public.cmsSite,
                 },
                 timeout: API_TIMEOUT
             }),
         ])
+
+        // Log failures for debugging purposes
+        if (wagtail.status === 'rejected') console.error('Navigation API: Wagtail fetch failed:', wagtail.reason?.message)
+        if (donate.status === 'rejected') console.error('Navigation API: Donate fetch failed:', donate.reason?.message)
+        if (stations.status === 'rejected') console.error('Navigation API: Stations fetch failed:', stations.reason?.message)
+        if (shows.status === 'rejected') console.error('Navigation API: Shows fetch failed:', shows.reason?.message)
 
         return {
             wagtailResponse: wagtail.status === 'fulfilled' ? wagtail.value.data : null,
