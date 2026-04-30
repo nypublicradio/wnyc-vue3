@@ -128,7 +128,7 @@ async function fetchNavigationDataDirect () {
 
     try {
         let allShows = null
-        if (config.public.ENV === 'prod' || config.public.environment === 'prod') {
+        if (config.public.ENV === 'prod') {
             allShows = 90
         } else {
             allShows = 20
@@ -242,6 +242,7 @@ export default async function useNavigationData () {
         }
 
         const doFetch = async () => {
+            const config = useRuntimeConfig()
             // Start fetch (no module-level guard to avoid cross-request contamination in SSR)
             try {
                 let nData, error, status
@@ -249,14 +250,18 @@ export default async function useNavigationData () {
                 if (import.meta.server) {
                     // Server-side: use $fetch to avoid HTTP requests (prevents circular dependencies during SSR/health checks)
                     try {
-                        const serverData = await $fetch('/api/navigation')
+                        const serverData = await $fetch(`${config.public.BFF_URL}/api/navigation`)
+                        console.log('serverData', serverData)
+                        console.log('serverData?.data?.wagtailResponse?.legal_links', serverData?.data?.wagtailResponse?.legal_links)
                         nData = { value: serverData }
                         error = { value: null }
                         status = { value: 'success' }
                     } catch (err) {
                         // Retry once on server before giving up
                         try {
-                            const serverData = await $fetch('/api/navigation')
+                            const serverData = await $fetch(`${config.public.BFF_URL}/api/navigation`)
+                            console.log('serverData AGAIN', serverData)
+                            console.log('serverData?.data?.wagtailResponse?.legal_links AGAIN', serverData?.data?.wagtailResponse?.legal_links)
                             nData = { value: serverData }
                             error = { value: null }
                             status = { value: 'success' }

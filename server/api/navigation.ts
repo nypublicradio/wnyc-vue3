@@ -22,12 +22,12 @@ async function getNavigationData () {
         // Use aggressive timeouts to prevent health check failures during slow API responses
         const API_TIMEOUT = 5000 // 5 second timeout for external APIs
         let allShows = null
-        if (config.public.ENV === 'prod' || config.public.environment === 'prod') {
+        if (config.public.ENV === 'prod') {
             allShows = 90
         } else {
             allShows = 20
         }
-        
+
         const [wagtail, donate, stations, shows] = await Promise.allSettled([
             axios.get(config.public.HEADER_NAVIGATION_API as string, {
                 headers: {
@@ -80,7 +80,7 @@ async function getNavigationData () {
 export default defineEventHandler(async (event) => {
     const res = event?.node?.res
     res.setHeader('Cache-Control', 'max-age=120, stale-while-revalidate')
-    
+
     try {
         const data = await getNavigationData()
         return { data }
