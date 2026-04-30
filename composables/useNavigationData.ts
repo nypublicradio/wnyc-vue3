@@ -207,7 +207,7 @@ async function fetchNavigationDataDirect () {
  *   - error: Any error that occurred during fetching
  */
 export default async function useNavigationData () {
-
+    const config = useRuntimeConfig()
     // Define shared state (always run this to ensure state is available on both server and client)
     const headerNavigationData = useState("headerNavigationData", () => [])
     const allNavigationData = useState("allNavigationData", () => [])
@@ -249,7 +249,7 @@ export default async function useNavigationData () {
                 if (import.meta.server) {
                     // Server-side: use $fetch to avoid HTTP requests (prevents circular dependencies during SSR/health checks)
                     try {
-                        const serverData = await $fetch('/api/navigation')
+                        const serverData = await $fetch(`${config.public.BFF_URL}/api/navigation`)
                         nData = { value: serverData }
                         error = { value: null }
                         status = { value: 'success' }
@@ -281,7 +281,7 @@ export default async function useNavigationData () {
                 } else {
                     // Client-side web mode: use $fetch directly (avoids payload hydration conflicts)
                     try {
-                        const clientData = await $fetch('/api/navigation')
+                        const clientData = await $fetch(`${config.public.BFF_URL}/api/navigation`)
                         nData = { value: clientData }
                         error = { value: null }
                         status = { value: 'success' }
