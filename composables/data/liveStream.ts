@@ -105,6 +105,8 @@ export async function updateAllLiveStreams (init = true) {
 
 let timeout = null
 let scheduleAbortController = null
+const STREAM_REFRESH_RETRY_MIN_MS = 10000
+const STREAM_REFRESH_RETRY_JITTER_MS = 20000
 
 // base liveStream composable
 export default function useLiveStream () {
@@ -221,6 +223,26 @@ export default function useLiveStream () {
 
   function getScheduleRefreshDelay (schedule) {
     const nowMs = Date.now()
+    const currentStreamEndMs = new Date(currentEpisodeHolder.value?.timeEnd).getTime()
+    const currentScheduleEntry = schedule.find((entry) => {
+      const startMs = new Date(entry?.attributes?.start).getTime()
+      const endMs = new Date(entry?.attributes?.end).getTime()
+
+      return Number.isFinite(startMs) &&
+        Number.isFinite(endMs) &&
+        startMs <= nowMs &&
+        endMs > nowMs
+    })
+
+    if (
+      currentScheduleEntry &&
+      Number.isFinite(currentStreamEndMs) &&
+      currentStreamEndMs <= nowMs
+    ) {
+      return STREAM_REFRESH_RETRY_MIN_MS +
+        Math.floor(Math.random() * STREAM_REFRESH_RETRY_JITTER_MS)
+    }
+
     const firstEntryStartMs = new Date(schedule?.[0]?.attributes?.start).getTime()
     const firstEntryEndMs = new Date(schedule?.[0]?.attributes?.end).getTime()
 
