@@ -101,9 +101,10 @@ const breadcrumbs = computed(() => [
   { label: "Events", route: "/events" },
   { label: title.value || "Event" },
 ])
-
-const pageTitle = `${eventData.value?.title} | WNYC`
+const pageTitle = eventData.value?.meta?.seoTitle || `${eventData.value?.title} | WNYC`
 const description = getFirstSentence(eventData.value?.description)
+const searchDescription = eventData.value?.meta?.searchDescription || description
+const socialDescription = eventData.value?.socialText || description
 useHead({
   title: pageTitle,
 })
@@ -115,8 +116,8 @@ if (eventData.value?.preventSearchIndexing) {
 useSeoMeta({
   title: pageTitle,
   ogTitle: pageTitle,
-  description,
-  ogDescription: description,
+  description: searchDescription,
+  ogDescription: socialDescription,
 })
 </script>
 
