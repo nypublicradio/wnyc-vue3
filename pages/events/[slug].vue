@@ -106,6 +106,8 @@ const breadcrumbs = computed(() => [
 
 const pageTitle = computed(() => eventData.value?.title ? `${eventData.value.title} | WNYC` : 'WNYC')
 const description = computed(() => getFirstSentence(eventData.value?.description))
+const searchDescription = computed(() => eventData.value?.meta?.searchDescription || description)
+const socialDescription = computed(() => eventData.value?.socialText || description)
 useHead({
   title: pageTitle,
 })
@@ -117,8 +119,8 @@ if (eventData.value?.preventSearchIndexing) {
 useSeoMeta({
   title: pageTitle,
   ogTitle: pageTitle,
-  description,
-  ogDescription: description,
+  description: searchDescription,
+  ogDescription: socialDescription,
 })
 </script>
 
@@ -244,7 +246,7 @@ useSeoMeta({
                 <p v-if="eventLocation" class="event-rail__address">
                   {{ eventLocation }}
                 </p>
-                <VFlexibleLink v-if="mapsUrl" :to="mapsUrl" raw>
+                <VFlexibleLink v-if="mapsUrl" :to="mapsUrl">
                   <span class="event-rail__link">Open in Google Maps</span>
                 </VFlexibleLink>
               </div>
@@ -266,7 +268,7 @@ useSeoMeta({
 
               <div v-if="eventData?.url" class="event-rail__section">
                 <h3>Event URL</h3>
-                <VFlexibleLink :to="eventData?.url" raw>
+                <VFlexibleLink :to="eventData?.url">
                   <span class="event-rail__link">{{ eventData?.url }}</span>
                 </VFlexibleLink>
               </div>

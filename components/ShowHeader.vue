@@ -23,7 +23,7 @@ import {
 //import { mediaTypeRoutes, mediaTypes } from "~/composables/globals"
 import useSleepTimer from "~/composables/useSleepTimer"
 import useLiveStream from "~/composables/data/liveStream"
-
+import { useToast } from "primevue/usetoast"
 const { getStationBySlugAndPlayIt } = useLiveStream()
 const props = defineProps({
   show: {
@@ -34,6 +34,7 @@ const props = defineProps({
 
 //const emit = defineEmits(["change", "click"]);
 const { show } = toRefs(props)
+const toast = useToast()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const currentEpisode = useCurrentEpisode()
 
@@ -81,8 +82,14 @@ if (import.meta.client) {
 
 // finds first episode with audio to play
 const firstEpisodeWithAudio = () => {
-  const curatedList = show.value?.body?.find((item) => item.type === "curated_list")
-  return curatedList?.value?.list?.listItems?.find((item) => {
+  const allListItems = []
+  const listItems = show.value?.body?.filter((item) => item.type === "curated_list")
+
+  listItems?.forEach((item) => {
+    allListItems.push(...item.value?.list?.listItems)
+  })
+
+  const firstPlayableEpisode = allListItems.find((item) => {
     if (hasAudio(item.audio)) {
       return true
     } else if (typeof item.audio === "string") {
@@ -91,10 +98,35 @@ const firstEpisodeWithAudio = () => {
       return false
     }
   })
+  if (!firstPlayableEpisode) {
+    toast.add({
+      severity: "info",
+      summary: "No playable episodes",
+      detail: "We couldn't find any playable audio for this show right now.",
+      life: 3000,
+    })
+  }
+  return firstPlayableEpisode
 }
 // computed properties to identify what is currently loaded
 const isLoadedEpisode = computed(() => {
-  return !isLiveStream.value && currentEpisode.value?.showTitle === props.show?.title
+  if (isLiveStream.value || !currentEpisode.value) return false
+
+  // 1. Standard check: do the show titles match?
+  if (currentEpisode?.value?.showTitle === props.show?.title) return true
+
+  // 2. Archives check: is the current episode in the show's curated lists?
+  if (currentEpisode.value.id && props.show?.body) {
+    const listItems = props.show.body.filter((item) => item.type === "curated_list")
+    for (const item of listItems) {
+      const items = item.value?.list?.listItems
+      if (items && items.some((ep) => ep.id === currentEpisode.value.id)) {
+        return true
+      }
+    }
+  }
+
+  return false
 })
 
 const isLoadedLiveStream = computed(() => {

@@ -50,10 +50,9 @@ const submitForm = (email) => {
               </div>
               <div>
                 <p class="blurb line-height-3 text-xs">
-                  Listener-supported WNYC is the home for independent journalism
-                  and courageous conversation on air and online. Broadcasting
-                  live from New York City on 93.9 FM and AM 820 and available
-                  online and on the go.
+                  Listener-supported WNYC is the home for independent journalism and
+                  courageous conversation on air and online. Broadcasting live from New
+                  York City on 93.9 FM and AM 820 and available online and on the go.
                 </p>
               </div>
             </div>
@@ -64,8 +63,8 @@ const submitForm = (email) => {
               <div class="newsletter">
                 <h2 class="mb-3">Sign up for our newsletter</h2>
                 <p class="line-height-3 text-xs">
-                  Sign up for for a weekly, behind-the-scenes update from the
-                  people behind your favorite shows.
+                  Sign up for for a weekly, behind-the-scenes update from the people
+                  behind your favorite shows.
                   <VFlexibleLink to="https://cloud.lists.wnyc.org/Preferences"
                     >See More
                   </VFlexibleLink>
@@ -77,8 +76,7 @@ const submitForm = (email) => {
                   :submission-status="submissionStatus"
                 >
                   By submitting your information, you're agreeing to receive
-                  communications from New York Public Radio in accordance with
-                  our
+                  communications from New York Public Radio in accordance with our
                   <VFlexibleLink to="/terms"> Terms </VFlexibleLink>.
                 </email-collector-form>
               </div>
@@ -105,10 +103,11 @@ const submitForm = (email) => {
         <NyprLogosBracket />
       </div>
       <Divider class="mt-4" />
+      <!-- <pre class="text-xs text-white">{{ footerLegalLinksData }}</pre> -->
       <div
         class="grid justify-content-between align-items-center mt-4 gap-4 grid-nogutter"
       >
-        <div class="flex flex-wrap gap-3 -ml-2">
+        <div v-if="footerLegalLinksData.length > 0" class="flex flex-wrap gap-3 -ml-2">
           <NavButton
             v-for="item in footerLegalLinksData"
             :key="item.id"
@@ -119,7 +118,7 @@ const submitForm = (email) => {
             size="small"
           />
         </div>
-        <p class="flex-none mt-1">
+        <p class="flex-none text-sm">
           &copy; {{ getYear() }} New York Public Radio. All rights reserved.
         </p>
       </div>

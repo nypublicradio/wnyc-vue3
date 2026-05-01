@@ -15,6 +15,7 @@
 import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
+import { getCurrentEpisodeSelectionFromSchedule } from '~/server/utils/liveSchedule'
 
 const config = useRuntimeConfig()
 
@@ -62,24 +63,6 @@ const templatizeImageUrl = (url: string) => {
     return `https://media.wnyc.org/i/%s/%s/%s/%s/${filename}`
 }
 
-// Helper function to get the current episode from schedule data
-const getCurrentEpisodeFromSchedule = (scheduleData: any) => {
-    if (!scheduleData || !Array.isArray(scheduleData)) {
-        return null
-    }
-    
-    const now = new Date()
-    
-    // Find the episode that is currently airing
-    const currentEpisode = scheduleData.find((episode: any) => {
-        const startTime = new Date(episode.attributes.start)
-        const endTime = new Date(episode.attributes.end)
-        return now >= startTime && now < endTime
-    })
-    
-    return currentEpisode || scheduleData[0] // Fallback to first episode if no current match
-}
-
 // Fetch the livestream data from the Schedule API
 const getLivestream = async (slug: string) => {
 	try {
@@ -91,11 +74,12 @@ const getLivestream = async (slug: string) => {
 		}
 		
 		// Fetch schedule data from the schedule API
-		const scheduleUrl = `${config.public.BFF_URL}/api/schedule/${slug}?filterMode=next24hours`
+		const scheduleUrl = `${config.public.BFF_URL}/api/schedule/${slug}?filterMode=next24hours&includePreviousEpisode=true`
 		const scheduleRes = await axios(scheduleUrl)
 		
 		// Get the current episode from the schedule
-		const currentEpisode = getCurrentEpisodeFromSchedule(scheduleRes.data)
+		const currentEpisodeSelection = getCurrentEpisodeSelectionFromSchedule(scheduleRes.data)
+		const currentEpisode = currentEpisodeSelection?.episode
 		
 		if (!currentEpisode) {
 			console.warn(`No current episode found for ${slug}`)
@@ -154,7 +138,10 @@ const getLivestream = async (slug: string) => {
 			}
 		}
 		
-		return humps.camelizeKeys(formattedData)
+		return {
+			data: humps.camelizeKeys(formattedData),
+			cacheUntilMs: currentEpisodeSelection.cacheUntilMs,
+		}
 	} catch (error) {
 		console.error(`Error fetching schedule data for ${slug}:`, error.message)
 		throw error
@@ -164,7 +151,11 @@ const getLivestream = async (slug: string) => {
 /**
  * Calculates a whats-on cache TTL that expires when the current item ends.
  */
-const getWhatsOnCacheTtl = (livestream: any, nowMs = Date.now()) => {
+const getWhatsOnCacheTtl = (livestream: any, nowMs = Date.now(), cacheUntilMs?: number | null) => {
+	if (typeof cacheUntilMs === 'number' && Number.isFinite(cacheUntilMs) && cacheUntilMs > nowMs) {
+		return Math.max(0, Math.min(WHATSON_CACHE_TTL, cacheUntilMs - nowMs))
+	}
+
 	const endTime = new Date(livestream?.timeEnd).getTime()
 	if (!Number.isFinite(endTime) || endTime <= nowMs) {
 		return 0
@@ -240,8 +231,9 @@ export default defineEventHandler(async (event) => {
 				return cachedEntry.data
 			}
 
-			const livestream = await getLivestream(slug);
-			const cacheTtl = getWhatsOnCacheTtl(livestream, now)
+			const livestreamResult = await getLivestream(slug);
+			const livestream = livestreamResult.data
+			const cacheTtl = getWhatsOnCacheTtl(livestream, now, livestreamResult.cacheUntilMs)
 
 			if (cacheTtl > 0) {
 				whatsOnCache.set(slug, {

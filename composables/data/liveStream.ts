@@ -105,6 +105,8 @@ export async function updateAllLiveStreams (init = true) {
 
 let timeout = null
 let scheduleAbortController = null
+const STREAM_REFRESH_RETRY_MIN_MS = 10000
+const STREAM_REFRESH_RETRY_JITTER_MS = 20000
 
 // base liveStream composable
 export default function useLiveStream () {
@@ -219,6 +221,47 @@ export default function useLiveStream () {
     return targetUtc - nowUtc
   }
 
+  function getScheduleRefreshDelay (schedule) {
+    const nowMs = Date.now()
+    const currentStreamEndMs = new Date(currentEpisodeHolder.value?.timeEnd).getTime()
+    const currentScheduleEntry = schedule.find((entry) => {
+      const startMs = new Date(entry?.attributes?.start).getTime()
+      const endMs = new Date(entry?.attributes?.end).getTime()
+
+      return Number.isFinite(startMs) &&
+        Number.isFinite(endMs) &&
+        startMs <= nowMs &&
+        endMs > nowMs
+    })
+
+    if (
+      currentScheduleEntry &&
+      Number.isFinite(currentStreamEndMs) &&
+      currentStreamEndMs <= nowMs
+    ) {
+      return STREAM_REFRESH_RETRY_MIN_MS +
+        Math.floor(Math.random() * STREAM_REFRESH_RETRY_JITTER_MS)
+    }
+
+    const firstEntryStartMs = new Date(schedule?.[0]?.attributes?.start).getTime()
+    const firstEntryEndMs = new Date(schedule?.[0]?.attributes?.end).getTime()
+
+    if (Number.isFinite(firstEntryStartMs) && firstEntryStartMs > nowMs) {
+      return firstEntryStartMs - nowMs
+    }
+
+    if (Number.isFinite(firstEntryEndMs) && firstEntryEndMs > nowMs) {
+      return firstEntryEndMs - nowMs + 30000
+    }
+
+    const nextStartMs = schedule
+      .map((entry) => new Date(entry?.attributes?.start).getTime())
+      .filter((time) => Number.isFinite(time) && time > nowMs)
+      .sort((a, b) => a - b)[0]
+
+    return Number.isFinite(nextStartMs) ? nextStartMs - nowMs : null
+  }
+
   // Function to clear all timeouts
   const clearAllTimeout = () => {
     if (timeout) {
@@ -265,15 +308,16 @@ export default function useLiveStream () {
 
       liveScheduleData.value = schedule
 
-      // init setTimeouts to refetch the schedule when the current event starts
+      // init timeout to refetch at the next schedule boundary
       if (liveScheduleData.value[0]) {
-        // delay plus 30 seconds to make sure the event has ended and the next one has started so when the  next fetch happens, we get the updated schedule displayed
-        const delay =
-          (await getTimeDifference(liveScheduleData.value[0].attributes.end)) + 30000
-        timeout = workerSetTimeout(async () => {
-          await refreshData()
-          await fetchSchedule()
-        }, delay)
+        const delay = getScheduleRefreshDelay(liveScheduleData.value)
+
+        if (delay !== null) {
+          timeout = workerSetTimeout(async () => {
+            await refreshData()
+            await fetchSchedule()
+          }, delay)
+        }
       }
     } catch (error) {
       globalToast.value = {
