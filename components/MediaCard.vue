@@ -484,7 +484,10 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                   :key="`tease-${props.data.id || props.data.slug || 'default'}`"
                 />
                 <div class="article-metadata w-full" v-if="!isEvent">
-                  <PipeData :hidePipe="props.hideDate" :class="props.pipeClasses">
+                  <PipeData
+                    :hidePipe="props.hideDate || !getDate(props.data)"
+                    :class="props.pipeClasses"
+                  >
                     <template #left>
                       {{
                         props.isSegment
