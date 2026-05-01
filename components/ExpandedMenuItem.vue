@@ -8,12 +8,9 @@ const props = defineProps({
 const emit = defineEmits(["emit-click"])
 </script>
 <template>
-  <div class="expanded-menu-item">
+  <div v-if="props.menuData?.items[0]?.length > 0" class="expanded-menu-item">
     <h2 class="menu-h2">{{ props.menuData.label }}</h2>
-    <div
-      v-if="props.menuData?.items?.length > 0"
-      class="flex flex-column gap-2 -ml-2"
-    >
+    <div class="flex flex-column gap-2 -ml-2">
       <NavButton
         v-for="item in props.menuData.items?.[0]"
         :label="item.label"

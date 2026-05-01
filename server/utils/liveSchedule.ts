@@ -22,6 +22,10 @@ function hasValidTimes (episode: ScheduleEpisode) {
     return Number.isFinite(getEpisodeStartMs(episode)) &&
         Number.isFinite(getEpisodeEndMs(episode))
 }
+// easy BFF location to store the link to the schedule PDF
+export function getSchedulePdfLink () {
+    return "https://media.wnyc.org/media/resources/2026/Apr/29/wnyc-schedule.pdf"
+}
 
 export function getCurrentEpisodeSelectionFromSchedule (
     scheduleData: ScheduleEpisode[] | null | undefined,

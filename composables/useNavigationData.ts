@@ -64,7 +64,7 @@ const resolveUrlFunctions = (items, appDownloadLink = '') => {
 
 //normalize for menu function for Wagtail menu data
 const normalizeWagtailMenuData = (menuData = []) => {
-
+    if (!menuData || !Array.isArray(menuData)) return []
     return menuData.map((item) => ({
         label: item.value.title,
         url: stripWNYCUrl(item.value.url),
@@ -78,6 +78,7 @@ const normalizeWagtailMenuData = (menuData = []) => {
 
 // normalize for menu function for station data
 const normalizeStationsMenuData = (menuData = []) => {
+    if (!menuData || !Array.isArray(menuData)) return []
     return menuData.map((item) => ({
         label: item.station,
         url: `/live?slug=${item.slug}`,
@@ -91,7 +92,7 @@ const normalizeStationsMenuData = (menuData = []) => {
 
 // normalize for menu function for shows data
 const normalizeShowsMenuData = (menuData, limit) => {
-    if (!menuData?.featuredShowsInMenu) return []
+    if (!menuData || !menuData.featuredShowsInMenu || !Array.isArray(menuData.featuredShowsInMenu)) return []
     return menuData.featuredShowsInMenu.slice(0, limit).map((item) => ({
         label: item.title,
         url: `${mediaTypeRoutes.show}${item.slug}`,
@@ -127,7 +128,7 @@ async function fetchNavigationDataDirect () {
 
     try {
         let allShows = null
-        if (process.env.ENV === 'prod') {
+        if (config.public.ENV === 'prod') {
             allShows = 90
         } else {
             allShows = 20
@@ -207,7 +208,6 @@ async function fetchNavigationDataDirect () {
  *   - error: Any error that occurred during fetching
  */
 export default async function useNavigationData () {
-
     // Define shared state (always run this to ensure state is available on both server and client)
     const headerNavigationData = useState("headerNavigationData", () => [])
     const allNavigationData = useState("allNavigationData", () => [])
@@ -242,6 +242,7 @@ export default async function useNavigationData () {
         }
 
         const doFetch = async () => {
+            const config = useRuntimeConfig()
             // Start fetch (no module-level guard to avoid cross-request contamination in SSR)
             try {
                 let nData, error, status
@@ -249,14 +250,14 @@ export default async function useNavigationData () {
                 if (import.meta.server) {
                     // Server-side: use $fetch to avoid HTTP requests (prevents circular dependencies during SSR/health checks)
                     try {
-                        const serverData = await $fetch('/api/navigation')
+                        const serverData = await $fetch(`${config.public.BFF_URL}/api/navigation`)
                         nData = { value: serverData }
                         error = { value: null }
                         status = { value: 'success' }
                     } catch (err) {
                         // Retry once on server before giving up
                         try {
-                            const serverData = await $fetch('/api/navigation')
+                            const serverData = await $fetch(`${config.public.BFF_URL}/api/navigation`)
                             nData = { value: serverData }
                             error = { value: null }
                             status = { value: 'success' }
@@ -281,7 +282,7 @@ export default async function useNavigationData () {
                 } else {
                     // Client-side web mode: use $fetch directly (avoids payload hydration conflicts)
                     try {
-                        const clientData = await $fetch('/api/navigation')
+                        const clientData = await $fetch(`${config.public.BFF_URL}/api/navigation`)
                         nData = { value: clientData }
                         error = { value: null }
                         status = { value: 'success' }
