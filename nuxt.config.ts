@@ -81,7 +81,7 @@ export default defineNuxtConfig({
       routes: process.env.NUXT_SSR === 'true' ? [
         '/browse/shows/brian-lehrer-show',
         '/browse/shows/all-of-it',
-        '/browse/shows/classical-music-happy-hour',
+        '/browse/shows/morning-edition',
         '/browse/shows/radiolab',
         '/browse/shows/on-the-media'
       ] : null,
