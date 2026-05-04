@@ -44,5 +44,11 @@ export function useFetchWrapper (request, options = {}) {
         })
     }
 
+    // Workaround: When Nuxt loads payload data from cache during client-side navigation, 
+    // it leaves status as 'idle' instead of 'success', causing skeletons to hang.
+    if (fetchResult.status.value === 'idle' && fetchResult.data.value) {
+        fetchResult.status.value = 'success'
+    }
+
     return fetchResult
 }
