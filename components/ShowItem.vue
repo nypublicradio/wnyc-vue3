@@ -4,6 +4,7 @@ import {
   checkIsFavorited,
   addToFavorites2,
   isolateSlug,
+  goToShowPage,
 } from "~/utilities/helpers"
 import { useCurrentEpisodeHolder } from "~/composables/states"
 
@@ -57,9 +58,7 @@ onMounted(() => {
 
 // check if the show is currently live
 const isCurrentlyLive = computed(() => {
-  return (
-    isolateSlug(currentEpisodeHolder.value?.detailsLink) === props.data?.slug
-  )
+  return isolateSlug(currentEpisodeHolder.value?.detailsLink) === props.data?.slug
 })
 
 // add item to favorites
@@ -100,42 +99,38 @@ const getDotMenuItems = (bucketItem) => {
 
 <template>
   <div
-    class="show-item flex justify-content-between align-items-center p-ripple cursor-pointer"
+    class="show-item flex justify-content-between align-items-center"
     :class="props.rootClass"
-    v-ripple
     v-if="props.data"
   >
-    <div
-      class="card-click flex w-full"
+    <NuxtLink
+      :to="goToShowPage(props.data, null, true)"
+      class="card-click flex w-full p-ripple cursor-pointer no-underline"
       :class="props.contentClass"
       @click="emit('on-click')"
       @keypress.enter.space="emit('on-click')"
       tabindex="0"
       aria-role="button"
       :aria-label="`${props.data.title} show details`"
+      v-ripple
     >
       <VImage
         :src="props.data.image"
         :size="props.size"
         :class="props.imageClass"
         style="background-color: var(--p-surface-25)"
+        isDecorative
       />
       <div class="flex gap-1 flex-column align-items-start">
         <LiveBadge v-if="isCurrentlyLive" class="mb-1" />
-        <h2
-          class="text-base md:text-lg line-height-2 truncate t2lines no-hyphens"
-        >
+        <h2 class="text-base md:text-lg line-height-2 truncate t2lines no-hyphens">
           {{ props.data.title }}
         </h2>
         <p class="font-meta" v-if="props.data?.producingOrganizations?.length">
-          {{
-            props.data.producingOrganizations
-              .map((org) => org.name)
-              .join(" and ")
-          }}
+          {{ props.data.producingOrganizations.map((org) => org.name).join(" and ") }}
         </p>
       </div>
-    </div>
+    </NuxtLink>
     <template v-if="!props.hideButtons">
       <DotMenu
         v-if="props.menu"

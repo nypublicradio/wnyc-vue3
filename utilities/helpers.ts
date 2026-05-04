@@ -1105,9 +1105,13 @@ export const goToEventPage = (story/* , log = true */) => {
   // }
 }
 /* centralized function to route to a show page */
-export const goToShowPage = (show, params = null) => {
+export const goToShowPage = (show, params = null, returnRoute = false) => {
+  const path = `${mediaTypeRoutes[mediaTypes.SHOW]}${show.meta?.slug ?? show.slug}`
+  if (returnRoute) {
+    return path
+  }
   navigateTo({
-    path: `${mediaTypeRoutes[mediaTypes.SHOW]}${show.meta?.slug ?? show.slug}`,
+    path,
     query: params,
   })
 }
