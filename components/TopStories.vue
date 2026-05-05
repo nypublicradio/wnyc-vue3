@@ -16,7 +16,6 @@ const reactiveArticles = toRef(props, "articles")
 
 <template>
   <div>
-    <pre>{{ reactiveArticles.curatedContent?.[0].value.list.listItems }}</pre>
     <div
       v-if="reactiveArticles?.length > 0"
       class="top-stories flex flex-column gap-3"
