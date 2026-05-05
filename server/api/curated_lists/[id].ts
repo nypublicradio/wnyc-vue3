@@ -18,13 +18,14 @@ export default defineCachedEventHandler(async (event) => {
         const mockCuratedContent = [{
             value: {
                 list: {
+                    title: camelized.title,
                     listItems: camelized.listItems
                 }
             }
         }]
 
         const transformed = await transformCuratedContent(mockCuratedContent)
-        const normalizedListItems = transformed[0].value.list.listItems
+        const normalizedListItems = transformed[0].value.list
 
         return normalizedListItems
     } catch (error) {
