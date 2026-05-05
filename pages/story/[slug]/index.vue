@@ -71,7 +71,6 @@ useHead(() => ({
       <EpisodeTemplate :pending="status !== 'success'" :episodeData="storyData">
         <template #bottom>
           <Divider class="mt-8 mb-5" />
-          <h2 class="mb-3">Top Stories From Gothamist</h2>
           <TopStories :articles="topStories" />
         </template>
       </EpisodeTemplate>
