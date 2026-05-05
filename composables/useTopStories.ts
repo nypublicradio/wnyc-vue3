@@ -7,19 +7,27 @@ export const useTopStories = () => {
   const config = useRuntimeConfig()
   const toast = useToast()
 
-  const { data: topStoriesData, status, error } = useFetchWrapper('/api/curated_lists/4')
+  let listId = '4'
+  if (config.public.ENV === 'prod') {
+    listId = '87'
+  }
+
+  const { data: topStoriesData, status, error } = useFetchWrapper(`/api/curated_lists/${listId}`)
 
   // Computed property to safely extract top_stories array
   const topStories = computed(() => {
-    return topStoriesData.value || []
+    return topStoriesData?.value || { listItems: [] }
   })
 
   // Function to get filtered stories excluding a specific article
   const getFilteredTopStories = (currentArticle?: Article) => {
-    const stories = topStoriesData.value || []
+    const stories = topStoriesData?.value || { listItems: [] }
     if (!currentArticle) return stories
 
-    return stories.filter((item) => item.id !== currentArticle.id)
+    return {
+      ...stories,
+      listItems: stories.listItems.filter((item: any) => item.id !== currentArticle.id)
+    }
   }
 
   // Watch for errors and show toast

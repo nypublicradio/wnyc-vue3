@@ -2,12 +2,12 @@
 import { dynamicNavigation } from "~/utilities/helpers"
 const props = defineProps({
   articles: {
-    type: Array,
-    default: () => [],
+    type: Object,
+    default: () => ({ listItems: [] }),
   },
-  headerTitle: {
+  headerTitleOverride: {
     type: String,
-    default: "Top Stories",
+    default: null,
   },
 })
 
@@ -17,12 +17,14 @@ const reactiveArticles = toRef(props, "articles")
 <template>
   <div>
     <div
-      v-if="reactiveArticles?.length > 0"
+      v-if="reactiveArticles?.listItems?.length > 0"
       class="top-stories flex flex-column gap-3"
     >
-      <h2 class="mb-3">{{ props.headerTitle }}</h2>
+      <h2 class="mb-3">
+        {{ props.headerTitleOverride ?? reactiveArticles?.title }}
+      </h2>
       <div
-        v-for="(article, index) in reactiveArticles"
+        v-for="(article, index) in reactiveArticles?.listItems"
         :key="`${article?.id}-${index}`"
         class=""
       >
