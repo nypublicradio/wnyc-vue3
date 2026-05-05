@@ -1,5 +1,7 @@
 <script setup>
-import { trackClickEvent, dynamicNavigation } from "~/utilities/helpers"
+import {
+  trackClickEvent
+} from "~/utilities/helpers"
 import { useFallbackImages } from "~/composables/useFallbackImages"
 import { useIntersectionObserver } from "@vueuse/core"
 import { useGlobalToast } from "~/composables/states"
@@ -174,7 +176,6 @@ watch(loadMoreRefVisible, (val) => {
                 imgCol="w-7rem"
                 :showBg="false"
                 :showBgMobile="false"
-                @on-click="dynamicNavigation(article)"
               />
             </div>
           </div>

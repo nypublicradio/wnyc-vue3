@@ -1,5 +1,5 @@
 <script setup>
-import { dynamicNavigation } from "~/utilities/helpers"
+
 import {
   //useFileSystem,
   useFileSystemLS,
@@ -23,11 +23,6 @@ const fileSystemLS = useFileSystemLS()
 //   },
 //   { deep: true }
 // )
-
-// handle the routing of the stored audio file IF network is connected
-const handleRoute = (file) => {
-  dynamicNavigation(file, true, true)
-}
 </script>
 
 <template>
@@ -41,7 +36,6 @@ const handleRoute = (file) => {
             :data="file"
             :key="`EI-${file.id}`"
             isInDownloads
-            @on-click="handleRoute(file)"
           >
             <!-- <div class="flex gap-2 z-2 align-items-center">
               <DownloadProgress class="mr-2" :isDownloaded="true" :progress="1" small />

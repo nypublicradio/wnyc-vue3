@@ -1,5 +1,7 @@
 <script setup>
-import { dynamicNavigation, isolateSlug } from "~/utilities/helpers"
+import {
+  isolateSlug
+} from "~/utilities/helpers"
 
 const props = defineProps({
   episodesPerShow: {
@@ -90,7 +92,6 @@ const { data: episodes, status, error } = await useAsyncData(
       :showBg="false"
       :showBgMobile="false"
       showTease
-      @on-click="dynamicNavigation(episode)"
     />
     <hr class="mt-5 mb-0" />
   </div>

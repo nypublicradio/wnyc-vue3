@@ -1024,7 +1024,7 @@ export const shouldTrackOutgoingGothamistClick = (storyLink) =>
   Boolean(storyLink) && storyLink.includes("gothamist.com")
 
 /* centralized function to route to a episode page */
-export const goToEpisodePage = (ep, params, log = true) => {
+export const goToEpisodePage = (ep, params, log = true, returnRoute = false) => {
   const cmsSource = ep.cmsSource || cmsSources.PUBLISHER
   // For Simplecast episodes, use UUID in URL path since Simplecast API requires UUIDs
   // For other sources, use slug
@@ -1032,10 +1032,14 @@ export const goToEpisodePage = (ep, params, log = true) => {
     ? ep.meta?.simplecastId
     : (ep.meta?.slug ?? ep.slug)
 
-  navigateTo({
+  const routeObj = {
     path: `${mediaTypeRoutes[mediaTypes.EPISODE]}${cmsSource}/${identifier}`,
     query: params,
-  })
+  }
+
+  if (returnRoute) return routeObj
+
+  navigateTo(routeObj)
 
   if (log) {
     saveRecentlyPlayed(ep)
@@ -1043,20 +1047,26 @@ export const goToEpisodePage = (ep, params, log = true) => {
 }
 
 /* centralized function to route to a live page */
-export const goToLivePage = (ep, params, log = true) => {
-  navigateTo({
+export const goToLivePage = (ep, params, log = true, returnRoute = false) => {
+  const routeObj = {
     path: `${mediaTypeRoutes[mediaTypes.LIVE]}`,
     query: params,
-  })
+  }
+  
+  if (returnRoute) return routeObj
+  
+  navigateTo(routeObj)
   if (log) {
     saveRecentlyPlayed(ep)
   }
 }
 
 /* centralized function to route to a story page */
-export const goToStoryPage = (story, params, log = true) => {
+export const goToStoryPage = (story, params, log = true, returnRoute = false) => {
   const theLink = story.url || story.link || stripApiSubdomain(story.meta?.htmlUrl)
   if (shouldOpenStoryInNewTab(Capacitor.getPlatform(), theLink, story.cmsSource)) {
+    if (returnRoute) return theLink
+    
     if (shouldTrackOutgoingGothamistClick(theLink)) {
       trackClickEvent(
         "Click Tracking - Outgoing Gothamist Story",
@@ -1067,10 +1077,13 @@ export const goToStoryPage = (story, params, log = true) => {
     // open in new tab if web and wagtail source (Gothamist)
     window.open(theLink, "_blank")
   } else {
-    navigateTo({
+    const routeObj = {
       path: `${mediaTypeRoutes[mediaTypes.STORY]}${story.media_id || story.id}`,
       query: params,
-    })
+    }
+    if (returnRoute) return routeObj
+    
+    navigateTo(routeObj)
   }
   if (log) {
     saveRecentlyPlayed(story)
@@ -1078,27 +1091,27 @@ export const goToStoryPage = (story, params, log = true) => {
 }
 
 /* centralized function to route to a story page */
-export const goToNprPage = (story, log = true) => {
-  // const theLink = story.url || story.link
-  // if (Capacitor.getPlatform() === "web" && theLink) {
-  //   // open in new tab to NPR.org if web
-  //   window.open(theLink, "_blank")
-  // } else {
-  navigateTo({
+export const goToNprPage = (story, log = true, returnRoute = false) => {
+  const routeObj = {
     path: `${mediaTypeRoutes[mediaTypes.NPR_EPISODE]}${story.media_id ?? story.id}`,
-  })
-  //}
+  }
+  
+  if (returnRoute) return routeObj
+  
+  navigateTo(routeObj)
   if (log) {
     saveRecentlyPlayed(story)
   }
 }
 
 /* centralized function to route to a event page */
-export const goToEventPage = (story/* , log = true */) => {
-
-  navigateTo({
+export const goToEventPage = (story/* , log = true */, returnRoute = false) => {
+  const routeObj = {
     path: `${mediaTypeRoutes[mediaTypes.EVENT]}${story.meta?.slug ?? story.slug ?? story.id}`,
-  })
+  }
+  if (returnRoute) return routeObj
+  
+  navigateTo(routeObj)
   // we are not saving events to recently played as of 3/26/2026
   // if (log) {
   //   saveRecentlyPlayed(story)
@@ -1107,17 +1120,24 @@ export const goToEventPage = (story/* , log = true */) => {
 /* centralized function to route to a show page */
 export const goToShowPage = (show, params = null, returnRoute = false) => {
   const path = `${mediaTypeRoutes[mediaTypes.SHOW]}${show.meta?.slug ?? show.slug}`
-  if (returnRoute) {
-    return path
-  }
-  navigateTo({
+  const routeObj = {
     path,
     query: params,
-  })
+  }
+  if (returnRoute) {
+    return routeObj
+  }
+  navigateTo(routeObj)
 }
 /* centralized function to route to a card page */
-export const goToUrlOverrideDestination = (item, params = null) => {
+export const goToUrlOverrideDestination = (item, params = null, returnRoute = false) => {
   const path = `${getRouteOrLink(item.url)}`
+  
+  if (returnRoute) {
+    if (path.startsWith("http")) return path
+    return { path, query: params }
+  }
+  
   // if the path is a full url, open in new tab
   if (path.startsWith("http")) {
     window.open(path, "_blank")
@@ -1205,45 +1225,39 @@ export const addToFavorites2 = async ({ item, isFavorited, message = isFavorited
 }
 
 // handles how to use the correct navigate method based on the item type
-export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = false) => {
+export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = false, returnRoute = false) => {
   const isNetworkConnected = useIsNetworkConnected()
-  if (isNetworkConnected.value) {
+  if (isNetworkConnected.value || returnRoute) {
     // if the item has a url, we ignore everything and route based on the url, because it is the override destination
     if (item.url) {
-      goToUrlOverrideDestination(item)
+      const res = goToUrlOverrideDestination(item, null, returnRoute)
+      if (returnRoute) return res
       return
     }
     switch (item.type || item.contentType) {
       case mediaTypes.LIVE:
-        goToLivePage(item, { slug: item.slug, type: item.type }, isSaveHistory)
-        break
+        return goToLivePage(item, { slug: item.slug, type: item.type }, isSaveHistory, returnRoute)
       case mediaTypes.EPISODE:
       case mediaTypes.SEGMENT:
       case mediaTypes.FULL:
-        goToEpisodePage(item, null, isSaveHistory)
-        break
+        return goToEpisodePage(item, null, isSaveHistory, returnRoute)
       case mediaTypes.STORY:
       case mediaTypes.ARTICLE:
       case mediaTypes.ARTICLE_PAGE:
-        item.audio
-          ? goToEpisodePage(item, null, isSaveHistory)
-          : goToStoryPage(item, { src: item.cmsSource, downloaded: isDownloaded, id: item.id, }, isSaveHistory)
-        break
+        return item.audio
+          ? goToEpisodePage(item, null, isSaveHistory, returnRoute)
+          : goToStoryPage(item, { src: item.cmsSource, downloaded: isDownloaded, id: item.id, }, isSaveHistory, returnRoute)
       case mediaTypes.SHOW:
-        goToShowPage(item)
-        break
+        return goToShowPage(item, null, returnRoute)
       case mediaTypes.NPR_EPISODE:
       case mediaTypes.NPR_ARTICLE:
-        goToNprPage(item)
-        break
+        return goToNprPage(item, isSaveHistory, returnRoute)
       case mediaTypes.EVENT:
-        goToEventPage(item)
-        break
+        return goToEventPage(item, returnRoute)
       case mediaTypes.CARD:
-        goToUrlOverrideDestination(item)
-        break
+        return goToUrlOverrideDestination(item, null, returnRoute)
       default:
-        goToEpisodePage(item, null, isSaveHistory)
+        return goToEpisodePage(item, null, isSaveHistory, returnRoute)
     }
   } else {
     const globalToast = useGlobalToast()

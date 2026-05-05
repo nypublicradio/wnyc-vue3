@@ -3,8 +3,8 @@ import { useToast } from "primevue/usetoast"
 import { useTopStories } from "~/composables/useTopStories"
 import { useIntersectionObserver } from "@vueuse/core"
 import { allSocialData } from "~/composables/navigationData.js"
-import { dynamicNavigation } from "~/utilities/helpers"
-const { topStories } = useTopStories()
+
+const { getFilteredTopStories, topStories } = useTopStories()
 const config = useRuntimeConfig()
 const toast = useToast()
 
@@ -138,10 +138,8 @@ useSeoMeta({
               imgCol="w-7rem md:w-12rem"
               titleClasses="text-sm md:text-lg"
               pipeClasses="text-xs md:text-base"
-              :allowVerticalEffect="false"
               :data="event"
-              :size="{ xs: [112, 112], md: [192, 192] }"
-              @on-click="dynamicNavigation(event)"
+              :size="{ xs: [112, 112], md: [176, 176] }"
             />
           </template>
           <template v-else>
@@ -186,8 +184,9 @@ useSeoMeta({
       </div>
     </section>
 
-    <section v-if="topStories" class="thinContent">
+    <section v-if="getFilteredTopStories" class="thinContent">
       <Divider class="mt-2 mb-5" />
+      <h2 class="mb-3">Top Stories From Gothamist</h2>
       <TopStories :articles="topStories" />
     </section>
 

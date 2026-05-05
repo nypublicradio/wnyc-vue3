@@ -2,9 +2,11 @@
 import { useToast } from "primevue/usetoast"
 import { useTopStories } from "~/composables/useTopStories"
 import { EVENT_BADGE_STYLES, useEventData } from "~/composables/useEventData"
-import { dynamicNavigation, getFirstSentence } from "~/utilities/helpers"
+import {
+  getFirstSentence
+} from "~/utilities/helpers"
 
-const { getFilteredTopStories,topStories } = useTopStories()
+const { getFilteredTopStories } = useTopStories()
 const config = useRuntimeConfig()
 const route = useRoute()
 const toast = useToast()
@@ -31,8 +33,6 @@ const [
     `${config.public.BFF_URL}/api/events/list?limit=4`
   )
 ])
-
-const filteredTopStories = computed(() => getFilteredTopStories(event?.value))
 
 onMounted(() => {
   if (!event.value) return
@@ -289,18 +289,17 @@ useSeoMeta({
             imgCol="w-7rem md:w-12rem"
             titleClasses="text-sm md:text-lg"
             pipeClasses="text-xs md:text-base"
-            :allowVerticalEffect="false"
             :data="eventItem"
-            :size="{ xs: [112, 112], md: [192, 192] }"
-            @on-click="dynamicNavigation(eventItem)"
+            :size="{ xs: [112, 112], md: [176, 176] }"
           />
         </div>
       </div>
     </section>
 
-    <section v-if="filteredTopStories" class="thinContent">
+    <section v-if="getFilteredTopStories" class="thinContent">
       <Divider class="mt-2 mb-5" />
-      <TopStories :articles="filteredTopStories" />
+      <h2 class="mb-3">Top Stories From Gothamist</h2>
+      <TopStories :articles="getFilteredTopStories()" />
     </section>
 
     <BackToTopButton />
