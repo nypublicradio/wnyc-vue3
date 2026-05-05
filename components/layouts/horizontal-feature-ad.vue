@@ -35,8 +35,12 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
 const isSquare = ref(false)
 const featureItem = reactiveItems.value?.[0]
 if (featureItem) {
-  const imgHeight = Number(featureItem.imageFullHeight || featureItem.image?.height)
-  const imgWidth = Number(featureItem.imageFullWidth || featureItem.image?.width)
+  const imgHeight = Number(
+    featureItem.imageFullHeight || featureItem.image?.height
+  )
+  const imgWidth = Number(
+    featureItem.imageFullWidth || featureItem.image?.width
+  )
   if (featureItem.cmsSource === mediaTypes.SIMPLECAST) {
     isSquare.value = true
   } else if (
@@ -65,7 +69,9 @@ const featureSizes = computed(() => {
 
 <template>
   <div class="layout layout-horizontal-feature-ad">
-    <div class="ad mb-5 col-12 flex align-items-center justify-content-center lg:hidden">
+    <div
+      class="ad mb-5 col-12 flex align-items-center justify-content-center lg:hidden"
+    >
       <story-htlAd
         layout="rectangle"
         slotClass="htlad-wnyc_homepage_rectangle"
@@ -124,7 +130,7 @@ const featureSizes = computed(() => {
           :data="article"
           :isHorizontal="isLgBreakpoint"
           imgCol="w-7rem md:w-12rem lg:w-full"
-          :size="{ xs: [112, 112], md: [176, 176], lg: [412, 275] }"
+          :size="{ xs: [112, 112], md: [192, 192], lg: [412, 275] }"
           :loading="props.loading"
           @on-click="dynamicNavigation(article)"
         />
@@ -137,7 +143,7 @@ const featureSizes = computed(() => {
           :isHorizontal="isLgBreakpoint"
           imgCol="w-7rem md:w-12rem lg:w-full"
           :class="{ 'md:hidden': index === 1 }"
-          :size="{ xs: [112, 112], md: [176, 176], lg: [412, 275] }"
+          :size="{ xs: [112, 112], md: [192, 192], lg: [412, 275] }"
         />
       </div>
     </div>

@@ -139,7 +139,7 @@ useSeoMeta({
               titleClasses="text-sm md:text-lg"
               pipeClasses="text-xs md:text-base"
               :data="event"
-              :size="{ xs: [112, 112], md: [176, 176] }"
+              :size="{ xs: [112, 112], md: [192, 192] }"
               @on-click="dynamicNavigation(event)"
             />
           </template>
