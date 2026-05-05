@@ -32,7 +32,7 @@ const [
   )
 ])
 
-const filteredTopStories = computed(() => getFilteredTopStories(event.value))
+const filteredTopStories = computed(() => getFilteredTopStories(event?.value))
 
 onMounted(() => {
   if (!event.value) return

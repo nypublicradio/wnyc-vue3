@@ -3,7 +3,7 @@ interface Article {
   readonly id: string | number
 }
 // ROOT LEVEL COMPOSABLE TO FETCH TOP STORIES
-export const useTopStories = async () => {
+export const useTopStories = () => {
   const config = useRuntimeConfig()
   const toast = useToast()
   const API_TIMEOUT = 5000
@@ -18,7 +18,7 @@ export const useTopStories = async () => {
 
   //const topStoriesRes = await axios(options)
 
-  const topStoriesData = await $fetch<any>('/api/curated_lists/4')
+  const { data: topStoriesData } = useFetchWrapper('/api/curated_lists/4')
 
   // const curationFetchArgs = [
   //   `${config.public.BFF_URL}/api/homepagecuration`,
@@ -37,15 +37,12 @@ export const useTopStories = async () => {
 
   // Computed property to safely extract top_stories array
   const topStories = computed(() => {
-    //reactiveArticles.curatedContent?.[0].value.list.listItems
-    //return topStoriesData.value?.new_home_template.curatedContent?.[0].value.list.listItems || []
-    return topStoriesData || []
+    return topStoriesData.value || []
   })
 
   // Function to get filtered stories excluding a specific article
   const getFilteredTopStories = (currentArticle?: Article) => {
-    //const stories = topStoriesData.value?.new_home_template.curatedContent?.[0].value.list.listItems || []
-    const stories = topStoriesData || []
+    const stories = topStoriesData.value || []
     if (!currentArticle) return stories
 
     return stories.filter((item) => item.id !== currentArticle.id)

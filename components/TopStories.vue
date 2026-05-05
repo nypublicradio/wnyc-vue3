@@ -16,8 +16,6 @@ const reactiveArticles = toRef(props, "articles")
 
 <template>
   <div>
-    reactiveArticles:
-    <pre>{{ reactiveArticles }}</pre>
     <div
       v-if="reactiveArticles?.length > 0"
       class="top-stories flex flex-column gap-3"
