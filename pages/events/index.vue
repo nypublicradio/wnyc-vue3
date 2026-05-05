@@ -1,10 +1,10 @@
 <script setup lang="js">
 import { useToast } from "primevue/usetoast"
-import { useTopStories } from "~/composables/useTopStories"
+//import { useTopStories } from "~/composables/useTopStories"
 import { useIntersectionObserver } from "@vueuse/core"
 import { allSocialData } from "~/composables/navigationData.js"
 import { dynamicNavigation } from "~/utilities/helpers"
-const { topStories } = useTopStories()
+//const { topStories } = useTopStories()
 const config = useRuntimeConfig()
 const toast = useToast()
 
@@ -185,10 +185,10 @@ useSeoMeta({
       </div>
     </section>
 
-    <section v-if="topStories" class="thinContent">
+    <!-- <section v-if="topStories" class="thinContent">
       <Divider class="mt-2 mb-5" />
       <TopStories :articles="topStories" />
-    </section>
+    </section> -->
 
     <BackToTopButton />
   </div>
