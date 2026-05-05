@@ -4,7 +4,7 @@ import { useTopStories } from "~/composables/useTopStories"
 import { EVENT_BADGE_STYLES, useEventData } from "~/composables/useEventData"
 import { dynamicNavigation, getFirstSentence } from "~/utilities/helpers"
 
-const { topStories } = useTopStories()
+const { getFilteredTopStories,topStories } = useTopStories()
 const config = useRuntimeConfig()
 const route = useRoute()
 const toast = useToast()
@@ -31,6 +31,8 @@ const [
     `${config.public.BFF_URL}/api/events/list?limit=4`
   )
 ])
+
+const filteredTopStories = computed(() => getFilteredTopStories(event.value))
 
 onMounted(() => {
   if (!event.value) return
@@ -319,9 +321,9 @@ useSeoMeta({
       </div>
     </section>
 
-    <section v-if="topStories" class="thinContent">
+    <section v-if="filteredTopStories" class="thinContent">
       <Divider class="mt-2 mb-5" />
-      <TopStories :articles="topStories" />
+      <TopStories :articles="filteredTopStories" />
     </section>
 
     <BackToTopButton />

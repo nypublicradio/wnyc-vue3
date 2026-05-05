@@ -1,7 +1,7 @@
 <script setup>
 import { cmsSources } from "~/composables/globals"
 import { useTopStories } from "~/composables/useTopStories"
-const { topStories } = useTopStories()
+const { getFilteredTopStories, topStories } = useTopStories()
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -29,6 +29,10 @@ const {
       }
     },
   }
+)
+
+const filteredTopStories = computed(() =>
+  getFilteredTopStories(storyData.value)
 )
 
 onMounted(() => {
@@ -71,7 +75,7 @@ useHead(() => ({
       <EpisodeTemplate :pending="status !== 'success'" :episodeData="storyData">
         <template #bottom>
           <Divider class="mt-8 mb-5" />
-          <TopStories :articles="topStories" />
+          <TopStories :articles="filteredTopStories" />
         </template>
       </EpisodeTemplate>
       <BackToTopButton />
