@@ -5,6 +5,10 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  headerTitle: {
+    type: String,
+    default: "Top Stories",
+  },
 })
 
 const reactiveArticles = toRef(props, "articles")
@@ -16,10 +20,10 @@ const reactiveArticles = toRef(props, "articles")
       v-if="reactiveArticles?.length > 0"
       class="top-stories flex flex-column gap-3"
     >
+      <h2 class="mb-3">{{ props.headerTitle }}</h2>
       <div
         v-for="(article, index) in reactiveArticles"
         :key="`${article?.id}-${index}`"
-        :class="props.cardClass"
         class=""
       >
         <MediaCard
@@ -33,12 +37,7 @@ const reactiveArticles = toRef(props, "articles")
       </div>
     </div>
     <div v-else class="flex flex-column gap-3">
-      <div
-        v-for="index in 5"
-        :key="`skeleton-top-stories-${index}`"
-        :class="props.cardClass"
-        class=""
-      >
+      <div v-for="index in 5" :key="`skeleton-top-stories-${index}`">
         <skeleton-media-card
           isHorizontal
           imgCol="w-7rem md:w-12rem"
