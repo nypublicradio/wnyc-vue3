@@ -4,7 +4,7 @@ import { useTopStories } from "~/composables/useTopStories"
 import { EVENT_BADGE_STYLES, useEventData } from "~/composables/useEventData"
 import { dynamicNavigation, getFirstSentence } from "~/utilities/helpers"
 
-const { getFilteredTopStories } = useTopStories()
+const { topStories } = useTopStories()
 const config = useRuntimeConfig()
 const route = useRoute()
 const toast = useToast()
@@ -319,9 +319,9 @@ useSeoMeta({
       </div>
     </section>
 
-    <section v-if="getFilteredTopStories" class="thinContent">
+    <section v-if="topStories" class="thinContent">
       <Divider class="mt-2 mb-5" />
-      <TopStories :articles="getFilteredTopStories()" />
+      <TopStories :articles="topStories" />
     </section>
 
     <BackToTopButton />

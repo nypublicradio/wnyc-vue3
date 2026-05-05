@@ -6,10 +6,12 @@ export const useTopStories = () => {
   const config = useRuntimeConfig()
   const toast = useToast()
 
-  const topStoriesFetchArgs = [
-    `${config.public.BFF_URL}/api/homepagetopstories`,
+  const curationFetchArgs = [
+    `${config.public.BFF_URL}/api/homepagecuration`,
     {
-      key: "top-stories",
+      key: "home-page-curation",
+      retry: 2,
+      retryDelay: 500,
     },
   ]
 
@@ -17,16 +19,17 @@ export const useTopStories = () => {
     data: topStoriesData,
     status,
     error,
-  } = useFetchWrapper(...topStoriesFetchArgs)
+  } = useFetchWrapper(...curationFetchArgs)
 
   // Computed property to safely extract top_stories array
   const topStories = computed(() => {
-    return topStoriesData.value?.top_stories || []
+    //reactiveArticles.curatedContent?.[0].value.list.listItems
+    return topStoriesData.value?.new_home_template.curatedContent?.[0].value.list.listItems || []
   })
 
   // Function to get filtered stories excluding a specific article
   const getFilteredTopStories = (currentArticle?: Article) => {
-    const stories = topStoriesData.value?.top_stories || []
+    const stories = topStoriesData.value?.new_home_template.curatedContent?.[0].value.list.listItems || []
     if (!currentArticle) return stories
 
     return stories.filter((item) => item.id !== currentArticle.id)

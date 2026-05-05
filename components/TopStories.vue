@@ -16,6 +16,7 @@ const reactiveArticles = toRef(props, "articles")
 
 <template>
   <div>
+    <pre>{{ reactiveArticles.curatedContent?.[0].value.list.listItems }}</pre>
     <div
       v-if="reactiveArticles?.length > 0"
       class="top-stories flex flex-column gap-3"
@@ -37,7 +38,13 @@ const reactiveArticles = toRef(props, "articles")
       </div>
     </div>
     <div v-else class="flex flex-column gap-3">
-      <div v-for="index in 5" :key="`skeleton-top-stories-${index}`">
+      <Skeleton
+        height="18px"
+        width="45%"
+        borderRadius="16px"
+        style="margin-bottom: 6px"
+      />
+      <div v-for="index in 4" :key="`skeleton-top-stories-${index}`">
         <skeleton-media-card
           isHorizontal
           imgCol="w-7rem md:w-12rem"
