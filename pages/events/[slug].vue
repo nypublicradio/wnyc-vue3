@@ -2,7 +2,9 @@
 import { useToast } from "primevue/usetoast"
 import { useTopStories } from "~/composables/useTopStories"
 import { EVENT_BADGE_STYLES, useEventData } from "~/composables/useEventData"
-import { dynamicNavigation, getFirstSentence } from "~/utilities/helpers"
+import {
+  getFirstSentence
+} from "~/utilities/helpers"
 
 const { getFilteredTopStories } = useTopStories()
 const config = useRuntimeConfig()
@@ -289,7 +291,6 @@ useSeoMeta({
             pipeClasses="text-xs md:text-base"
             :data="eventItem"
             :size="{ xs: [112, 112], md: [176, 176] }"
-            @on-click="dynamicNavigation(eventItem)"
           />
         </div>
       </div>

@@ -19,6 +19,7 @@ import {
   getReadingTime,
   getOrg,
   formatTime,
+  dynamicNavigation,
 } from "~/utilities/helpers"
 import {
   fetchAndStoreMp3,
@@ -160,6 +161,10 @@ const props = defineProps({
   loading: {
     type: String,
     default: "lazy",
+  },
+  isSaveHistory: {
+    type: Boolean,
+    default: true,
   },
 })
 const user = useCurrentUser()
@@ -380,6 +385,7 @@ const toggleDownloadedPlay = (file) => {
 
 // handle click event & emit
 const handleClick = () => {
+  dynamicNavigation(props.data, props.isSaveHistory, props.isInDownloads, false)
   emit("on-click")
 }
 
@@ -419,17 +425,18 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
       props.data?.mediaType,
     ]"
   >
-    <div
+    <nuxt-link
       v-if="!props.isSegment"
       v-ripple
       class="card-click w-full h-full absolute top-0 left-0 z-1 p-ripple"
+      :to="dynamicNavigation(props.data, props.isSaveHistory, props.isInDownloads, true)"
       @click.prevent="handleClick"
       @keypress.enter.space="handleClick"
       tabindex="0"
       aria-role="button"
       :aria-label="`${props.data?.showTitle} show details`"
       :title="props.data?.title"
-    ></div>
+    ></nuxt-link>
     <div class="holder flex flex-nogutter">
       <div
         v-if="isEvent"

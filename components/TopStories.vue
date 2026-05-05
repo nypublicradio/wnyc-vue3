@@ -1,5 +1,5 @@
 <script setup>
-import { dynamicNavigation } from "~/utilities/helpers"
+
 const props = defineProps({
   articles: {
     type: Array,
@@ -28,7 +28,6 @@ const reactiveArticles = toRef(props, "articles")
           imgCol="w-7rem md:w-12rem"
           :data="article"
           :size="{ xs: [112, 112], md: [176, 176] }"
-          @on-click="dynamicNavigation(article)"
         />
       </div>
     </div>

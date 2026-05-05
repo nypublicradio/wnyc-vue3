@@ -1,5 +1,5 @@
 <script setup>
-import { dynamicNavigation } from "~/utilities/helpers"
+
 import { mediaTypes } from "~/composables/globals"
 const props = defineProps({
   label: {
@@ -128,7 +128,6 @@ const listTextClasses = props.isThin ? "text-sm" : "text-base lg:text-base"
         :size="featureSizes"
         :allowVerticalEffect="!isSquare"
         :loading="props.loading"
-        @on-click="dynamicNavigation(reactiveItems[0])"
       />
       <skeleton-media-card
         v-else
@@ -164,7 +163,6 @@ const listTextClasses = props.isThin ? "text-sm" : "text-base lg:text-base"
               xs: [112, 112],
               md: [208, 208],
             }"
-            @on-click="dynamicNavigation(article)"
           />
         </template>
         <skeleton-media-card

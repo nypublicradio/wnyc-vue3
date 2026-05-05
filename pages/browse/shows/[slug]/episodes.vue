@@ -3,8 +3,7 @@ import { useIntersectionObserver } from "@vueuse/core"
 import {
   checkIsFavorited,
   trackClickEvent,
-  dynamicNavigation,
-  getFirstSentence,
+  getFirstSentence
 } from "~/utilities/helpers"
 import { useGlobalToast } from "~/composables/states"
 
@@ -217,7 +216,6 @@ onUnmounted(() => stop())
                 showTease
                 :showBg="true"
                 :showBgMobile="false"
-                @on-click="dynamicNavigation(ep)"
               />
             </template>
           </div>

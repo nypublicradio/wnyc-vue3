@@ -1,5 +1,5 @@
 <script setup>
-import { dynamicNavigation } from "~/utilities/helpers"
+
 const props = defineProps({
   label: {
     type: String,
@@ -46,7 +46,6 @@ const reactiveItems = toRef(props.list, "listItems")
           :data="article"
           :size="{ xs: [192, 192] }"
           :loading="props.loading"
-          @on-click="dynamicNavigation(article)"
         />
       </div>
     </div>

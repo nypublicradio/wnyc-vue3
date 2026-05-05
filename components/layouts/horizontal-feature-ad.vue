@@ -1,5 +1,5 @@
 <script setup>
-import { dynamicNavigation } from "~/utilities/helpers"
+
 import { useBreakpoints } from "~/composables/useBreakpoints"
 import { mediaTypes } from "~/composables/globals"
 const props = defineProps({
@@ -90,7 +90,6 @@ const featureSizes = computed(() => {
         :size="featureSizes"
         :allowVerticalEffect="!isSquare"
         :loading="props.loading"
-        @on-click="dynamicNavigation(reactiveItems[0])"
       />
       <skeleton-media-card
         v-else
@@ -126,7 +125,6 @@ const featureSizes = computed(() => {
           imgCol="w-7rem md:w-12rem lg:w-full"
           :size="{ xs: [112, 112], md: [176, 176], lg: [412, 275] }"
           :loading="props.loading"
-          @on-click="dynamicNavigation(article)"
         />
       </template>
       <div v-else class="w-full">

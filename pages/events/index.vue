@@ -3,7 +3,7 @@ import { useToast } from "primevue/usetoast"
 import { useTopStories } from "~/composables/useTopStories"
 import { useIntersectionObserver } from "@vueuse/core"
 import { allSocialData } from "~/composables/navigationData.js"
-import { dynamicNavigation } from "~/utilities/helpers"
+
 const { getFilteredTopStories, topStories } = useTopStories()
 const config = useRuntimeConfig()
 const toast = useToast()
@@ -140,7 +140,6 @@ useSeoMeta({
               pipeClasses="text-xs md:text-base"
               :data="event"
               :size="{ xs: [112, 112], md: [176, 176] }"
-              @on-click="dynamicNavigation(event)"
             />
           </template>
           <template v-else>
