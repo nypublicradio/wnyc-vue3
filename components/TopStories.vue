@@ -31,7 +31,7 @@ const reactiveArticles = toRef(props, "articles")
           isHorizontal
           imgCol="w-7rem md:w-12rem"
           :data="article"
-          :size="{ xs: [112, 112], md: [176, 176] }"
+          :size="{ xs: [112, 112], md: [192, 192] }"
           @on-click="dynamicNavigation(article)"
         />
       </div>
@@ -47,7 +47,7 @@ const reactiveArticles = toRef(props, "articles")
         <skeleton-media-card
           isHorizontal
           imgCol="w-7rem md:w-12rem"
-          :size="{ xs: [112, 112], md: [176, 176] }"
+          :size="{ xs: [112, 112], md: [192, 192] }"
         />
       </div>
     </div>
