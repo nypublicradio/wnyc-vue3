@@ -72,8 +72,8 @@ const readGuidelines = () => {
                 <div class="flex flex-column gap-1">
                   <h2>Have a question for the Mayor?</h2>
                   <p>
-                    Mayor Mamdani will be joining The Brian Lehrer Show every
-                    week to answer your questions.
+                    Mayor Mamdani will be joining The Brian Lehrer Show 
+                    to answer your questions.
                   </p>
                 </div>
               </div>
