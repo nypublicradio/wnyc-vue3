@@ -261,15 +261,11 @@ useSeoMeta({
   <!-- Inline SVG filter for Safari compatibility - Safari doesn't support data URI SVG filters -->
   <svg
     aria-hidden="true"
-    style="position: absolute; left: -9999px; top: -9999px; width: 0; height: 0; overflow: hidden; visibility: hidden; pointer-events: none;"
+    style="display: none;"
   >
     <defs>
       <filter
         id="v-image-blur-filter"
-        x="0"
-        y="0"
-        width="100%"
-        height="100%"
         color-interpolation-filters="sRGB"
       >
         <feGaussianBlur stdDeviation="38" result="blurred" />
