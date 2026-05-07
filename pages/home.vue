@@ -34,10 +34,10 @@ const curationFetchArgs = [
 
 const [
   { data: latestNewsUpdatesData, error: error2 },
-  { data: pagedata, error, status }
+  { data: pagedata, error, status },
 ] = await Promise.all([
   useFetchWrapper(...newsFetchArgs),
-  useFetchWrapper(...curationFetchArgs)
+  useFetchWrapper(...curationFetchArgs),
 ])
 
 definePageMeta({
@@ -75,7 +75,7 @@ onMounted(() => {
       </div>
       <!-- <VImage src="/fallback-ep.png" /> -->
     </section>
-    <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
+    <!-- <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" /> -->
     <section v-if="status === 'success'">
       <VStreamfield :streamfieldBlocks="pagedata?.new_home_template?.curatedContent" />
     </section>
