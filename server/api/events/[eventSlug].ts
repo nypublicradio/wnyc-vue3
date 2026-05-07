@@ -19,6 +19,12 @@ const eventFields = [
     'event_location',
     'venue_name',
     'event_url',
+    'seo_title',
+    'search_description',
+    'social_image',
+    'social_title',
+    'social_text',
+    'prevent_search_indexing',
     'body',
     'tags',
 ].join(',')
@@ -32,7 +38,7 @@ const getWagtailEventById = async (eventId: string) => {
             method: 'GET',
             url: `${config.public.AVIARY_BASE_API}pages/${eventId}/`,
             headers: {
-                'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+                'X-CMS-Site': config.public.cmsSite
             }
         }
         const res = await axios(option)
@@ -62,7 +68,7 @@ const getWagtailEventBySlug = async (slug: string) => {
                 limit: 1,
             },
             headers: {
-                'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+                'X-CMS-Site': config.public.cmsSite
             }
         }
         const res = await axios(option)

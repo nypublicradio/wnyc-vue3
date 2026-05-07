@@ -17,7 +17,6 @@ const { allNavigationData } = await useNavigationData()
       <ExpandedMenuItem
         v-for="item in allNavigationData"
         :key="item.id"
-        :item="item"
         :class="`menu-holder ${item.class}`"
         :menuData="item"
         @emit-click="settingsSideBarBrowser = false"
@@ -36,6 +35,8 @@ const { allNavigationData } = await useNavigationData()
   }
 
   .menu {
+    max-width: $contentWidth;
+    margin: auto;
     gap: 4rem;
 
     @include media("<1010px") {
@@ -53,7 +54,10 @@ const { allNavigationData } = await useNavigationData()
     flex-wrap: wrap;
 
     .menu-holder {
-      min-width: 290px;
+      min-width: 262px;
+      @include media("<lg") {
+        min-width: 252px;
+      }
 
       .menu-btn {
         .p-button-label {

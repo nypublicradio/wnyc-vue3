@@ -16,6 +16,15 @@ const config = useRuntimeConfig()
 import axios from 'axios'
 import humps from 'humps'
 import { useVImage } from '~/composables/useVImage'
+import { getCurrentEpisodeSelectionFromSchedule } from '~/server/utils/liveSchedule'
+
+interface LivestreamCacheEntry {
+    data: any
+    expiresAt: number
+}
+
+const LIVESTREAM_CACHE_TTL = 2 * 60 * 1000
+const livestreamCache = new Map<string, LivestreamCacheEntry>()
 
 // Station metadata mapping
 const STATION_METADATA = {
@@ -27,44 +36,26 @@ const STATION_METADATA = {
     },
     'wqxr': {
         name: 'WQXR 105.9 FM',
-        audio: 'https://fm1059.wqxr.org/wqxr',
-        hls: 'https://hls-live.wnyc.org/wqxrapp-hls.aac/playlist.m3u8',
+        audio: 'https://stream.wqxr.org/wqxr',
+        hls: 'https://hls-live.wnyc.org/wqxr48-hls/playlist.m3u8',
         imageLogo: 'https://media.wnyc.org/i/%s/%s/%s/%s/1/wqxr_1_1.png',
     },
     'q2': {
         name: 'New Sounds',
         audio: 'https://q2stream.wqxr.org/q2',
-        hls: 'https://hls-live.wnyc.org/q2app-hls.aac/playlist.m3u8',
+        hls: 'https://hls-live.wnyc.org/q248-hls/playlist.m3u8',
         imageLogo: 'https://media.wnyc.org/i/%s/%s/%s/%s/1/ns_showcard-newsounds-radio-1.jpg',
     },
     'wqxr-holiday-channel-on-wnyc': {
         name: 'WQXR Holiday Channel',
-        audio: 'https://holidaystream.wqxr.org/holiday',
-        hls: 'https://hls-live.wnyc.org/holidayapp-hls.aac/playlist.m3u8',
+        audio: 'https://stream.wqxr.org/qxr-special',
+        hls: 'https://hls-live.wnyc.org/qxr-special-hls.aac/playlist.m3u8',
         imageLogo: 'https://media.wnyc.org/i/%s/%s/%s/%s/1/wqxr_1_1.png',
     },
 }
 
-// Helper function to get the current episode from schedule data
-const getCurrentEpisodeFromSchedule = (scheduleData: any) => {
-    if (!scheduleData || !Array.isArray(scheduleData)) {
-        return null
-    }
-
-    const now = new Date()
-
-    // Find the episode that is currently airing
-    const currentEpisode = scheduleData.find((episode: any) => {
-        const startTime = new Date(episode.attributes.start)
-        const endTime = new Date(episode.attributes.end)
-        return now >= startTime && now < endTime
-    })
-
-    return currentEpisode || scheduleData[0] // Fallback to first episode if no current match
-}
-
 // currently a combination between the whatson API and the schedule API to populate the live stream data
-const getLivestreams = async () => {
+const getLivestreams = async (slug?: string | null) => {
     try {
         // calls v1 api to access source_tags
         const streams_v1_url = `${config.public.PUBLISHER_BASE_API}/v1/list/streams/`
@@ -72,8 +63,14 @@ const getLivestreams = async () => {
         // filters/selects the streams that include the new-wnyc-app source_tag
         const res_v1_filtered = res_v1.data.results.filter((item) => item.source_tags.includes('new-wnyc-app'))
 
+        // If a slug was requested, narrow the list to just that stream
+        const streamsToFetch = slug
+            ? res_v1_filtered.filter((stream: any) => stream.slug === slug)
+            : res_v1_filtered
+
         // Fetch schedule data for each stream
-        const resData = await Promise.all(res_v1_filtered.map(async (stream: any) => {
+        const resData = await Promise.all(streamsToFetch.map(async (stream: any) => {
+
             const { templatizePublisherImageUrl } = useVImage()
             try {
                 const slug = stream.slug
@@ -84,11 +81,12 @@ const getLivestreams = async () => {
                 }
                 const stationImage = { cmsSource: 'publisher', template: metadata.imageLogo || templatizePublisherImageUrl(stream.image_logo), url: stream.image_logo }
                 // Fetch schedule data from the schedule API
-                const scheduleUrl = `${config.public.BFF_URL}/api/schedule/${slug}?filterMode=next24hours`
+                const scheduleUrl = `${config.public.BFF_URL}/api/schedule/${slug}?filterMode=next24hours&includePreviousEpisode=true`
                 const scheduleRes = await axios(scheduleUrl)
 
                 // Get the current episode from the schedule
-                const currentEpisode = getCurrentEpisodeFromSchedule(scheduleRes.data)
+                const currentEpisodeSelection = getCurrentEpisodeSelectionFromSchedule(scheduleRes.data)
+                const currentEpisode = currentEpisodeSelection?.episode
 
                 if (!currentEpisode) {
                     return null
@@ -135,20 +133,70 @@ const getLivestreams = async () => {
                     showSchedule: {
                         'iso-start-time': attrs.start,
                         'iso-end-time': attrs.end,
-                    }
+                    },
+                    cacheUntilMs: currentEpisodeSelection.cacheUntilMs,
                 }
             } catch (err: any) {
+                console.error('Error in scheduleUrl fetch:', err)
                 return null
             }
         }))
 
         // Filter out any null results from failed fetches
         const validResults = resData.filter(Boolean)
-        return humps.camelizeKeys(validResults)
+        const cacheUntilTimes = validResults
+            .map((stream: any) => stream.cacheUntilMs)
+            .filter((time: number) => Number.isFinite(time))
+        const data = validResults.map((stream: any) => {
+            const streamData = { ...stream }
+            delete streamData.cacheUntilMs
+            return streamData
+        })
+        const camelized = humps.camelizeKeys(data)
+        // If a specific slug was requested, return the single object instead of an array
+        return {
+            data: slug ? (camelized[0] ?? null) : camelized,
+            cacheUntilMs: cacheUntilTimes.length ? Math.min(...cacheUntilTimes) : null,
+        }
     } catch (e) {
         console.error('Error in getLivestreams:', e)
     }
     return null
+}
+
+/**
+ * Calculates a livestream cache TTL that expires at the next stream end time.
+ */
+const getLivestreamCacheTtl = (streams: any, nowMs = Date.now(), cacheUntilMs?: number | null) => {
+    if (typeof cacheUntilMs === 'number' && Number.isFinite(cacheUntilMs) && cacheUntilMs > nowMs) {
+        return Math.max(0, Math.min(LIVESTREAM_CACHE_TTL, cacheUntilMs - nowMs))
+    }
+
+    const streamArray = Array.isArray(streams) ? streams : [streams]
+    const endTimes = streamArray
+        .map((stream: any) => stream?.timeEnd)
+        .map((dateString: string) => new Date(dateString).getTime())
+        .filter((time: number) => Number.isFinite(time) && time > nowMs)
+
+    if (endTimes.length === 0) {
+        return 0
+    }
+
+    return Math.max(0, Math.min(LIVESTREAM_CACHE_TTL, Math.min(...endTimes) - nowMs))
+}
+
+/**
+ * Applies response cache headers for livestream API responses.
+ */
+const setLivestreamCacheHeaders = (res: any, ttlMs: number) => {
+    const maxAgeSeconds = Math.floor(ttlMs / 1000)
+
+    if (maxAgeSeconds <= 0) {
+        res.setHeader('Cache-Control', 'no-store')
+        return
+    }
+
+    res.setHeader('Cache-Control', `public, max-age=${maxAgeSeconds}, s-maxage=${maxAgeSeconds}, must-revalidate`)
 }
 
 /**
@@ -157,7 +205,28 @@ const getLivestreams = async () => {
  */
 export default defineEventHandler(async (event) => {
     const res = event?.node?.res
-    res.setHeader('Cache-Control', 'max-age=120, stale-while-revalidate')
-    const streams = await getLivestreams()
+    const slug = getQuery(event).slug as string | undefined
+    const cacheKey = slug || 'all'
+    const now = Date.now()
+    const cachedEntry = livestreamCache.get(cacheKey)
+
+    if (cachedEntry && now < cachedEntry.expiresAt) {
+        setLivestreamCacheHeaders(res, cachedEntry.expiresAt - now)
+        return cachedEntry.data
+    }
+
+    const livestreamResult = await getLivestreams(slug)
+    const streams = livestreamResult?.data ?? null
+    const cacheTtl = getLivestreamCacheTtl(streams, now, livestreamResult?.cacheUntilMs)
+
+    if (cacheTtl > 0) {
+        livestreamCache.set(cacheKey, {
+            data: streams,
+            expiresAt: now + cacheTtl,
+        })
+    }
+
+    setLivestreamCacheHeaders(res, cacheTtl)
+
     return streams
 })

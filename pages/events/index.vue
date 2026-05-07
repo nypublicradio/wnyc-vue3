@@ -5,7 +5,6 @@ import { useIntersectionObserver } from "@vueuse/core"
 import { allSocialData } from "~/composables/navigationData.js"
 import { dynamicNavigation } from "~/utilities/helpers"
 const { getFilteredTopStories, topStories } = useTopStories()
-const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const toast = useToast()
 
@@ -19,18 +18,10 @@ const loadMoreRefVisible = ref(false)
 const loadMoreRef = ref(null)
 const isInitialObserver = ref(true)
 
-const { data: events, status, error } = useFetch(
+const { data: events, status, error } = await useFetchWrapper(
   `${config.public.BFF_URL}/api/events/list`,
   {
-    //transform: transformEvents,
-    onResponse () {
-
-      $analytics.sendPageView({
-        page_title: "Events Page",
-        page_type: "events_page",
-        content_group: "events",
-      })
-    },
+    key: "events-list",
     onResponseError() {
       toast.add({
         severity: "error",
@@ -41,6 +32,15 @@ const { data: events, status, error } = useFetch(
     },
   }
 )
+
+onMounted(() => {
+  const { $analytics } = useNuxtApp()
+  $analytics.sendPageView({
+    page_title: "Events Page",
+    page_type: "events_page",
+    content_group: "events",
+  })
+})
 
 watch(events, (newEvents) => {
   if (newEvents) {
@@ -90,6 +90,7 @@ const loadMore = async () => {
       life: 6000,
       closable: true,
     })
+    console.error("Error loading more events:", e)
   }
 }
 
@@ -104,18 +105,20 @@ const breadcrumbs = computed(() => [
   { label: "Events", route: "/events" },
 ])
 
-const greeneSpaceUrl = "https://thegreenespace.org"
+const greeneSpaceUrl = "/rent-the-greene-space"
+
+const title = "Events | WNYC"
+useHead({
+  title,
+})
+useSeoMeta({
+  title,
+  ogTitle: title,
+})
 </script>
 
 <template>
   <div class="event-page event-list-page">
-    <Html lang="en">
-      <Head>
-        <Title>Events | WNYC</Title>
-        <!-- <Meta name="og:title" :content="`${eventData?.title} | WNYC`" />
-        <Meta name="twitter:title" :content="`${eventData?.title} | WNYC`" /> -->
-      </Head>
-    </Html>
     <section>
       <div class="flex align-items-center">
         <Breadcrumbs :items="breadcrumbs" />
@@ -162,12 +165,12 @@ const greeneSpaceUrl = "https://thegreenespace.org"
         <aside class="events-rail">
           <h3 class="events-rail__title">Rent The Greene Space</h3>
           <p class="events-rail__copy">
-            Host your next event at WNYC and WQXR! The Greene Space will provide
-            you with the same turn-key service for broadcast quality audio and
-            video recording and live streaming that we use to power our own
-            radio stations, podcasts, and concerts.
+            Host your next event at WNYC and WQXR! The Greene Space will provide you with
+            the same turn-key service for broadcast quality audio and video recording and
+            live streaming that we use to power our own radio stations, podcasts, and
+            concerts.
           </p>
-          <VFlexibleLink :to="greeneSpaceUrl" raw class="events-rail__link">
+          <VFlexibleLink :to="greeneSpaceUrl" class="events-rail__link">
             Learn more
           </VFlexibleLink>
           <SocialButtons class="events-rail__social" :data="allSocialData" />

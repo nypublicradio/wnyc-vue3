@@ -1,9 +1,5 @@
 <script setup>
-import {
-  useCurrentUser,
-  useCurrentEpisode,
-  useIsApp,
-} from "~/composables/states"
+import { useCurrentUser, useCurrentEpisode, useIsApp } from "~/composables/states"
 import { cmsSources } from "~/composables/globals"
 import { useBreakpoints } from "~/composables/useBreakpoints"
 import { isAlreadyDownloaded, fetchAndStoreMp3 } from "~/utilities/file-system"
@@ -17,10 +13,7 @@ import SleepIcon from "~/components/icons/SleepIcon.vue"
 import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
 import CommentsIcon from "~/components/icons/CommentsIcon.vue"
 import { normalizeGalleryPage } from "~/composables/data/galleryPages"
-import {
-  useCommentCounts,
-  useUpdateCommentCounts,
-} from "~/composables/comments"
+import { useCommentCounts, useUpdateCommentCounts } from "~/composables/comments"
 import {
   getMinutes,
   trackClickEvent,
@@ -30,6 +23,7 @@ import {
   shareAPI,
   addToFavorites2,
   hasAudio,
+  getTrueSlug,
 } from "~/utilities/helpers"
 import useSleepTimer from "~/composables/useSleepTimer"
 
@@ -47,6 +41,10 @@ const props = defineProps({
     default: null,
   },
   showPending: {
+    type: Boolean,
+    default: false,
+  },
+  showNprTranscriptDisclaimer: {
     type: Boolean,
     default: false,
   },
@@ -70,9 +68,7 @@ const isWagtail = cmsSource.value === cmsSources.WAGTAIL
 const storySource = computed(() =>
   isWagtail
     ? `Gothamist${
-        props.episodeData?.section?.name
-          ? ` - ${props.episodeData?.section?.name}`
-          : ""
+        props.episodeData?.section?.name ? ` - ${props.episodeData?.section?.name}` : ""
       }`
     : props.episodeData?.headers?.brand?.title || "WNYC"
 )
@@ -149,11 +145,7 @@ const hasSegments = computed(() => Array.isArray(props.episodeData?.audio))
 
 // handle the download of the audio file or multiple files request and feed the progress
 const handleDownload = async (epD) => {
-  trackClickEvent(
-    "Click Tracking - Audio Download",
-    "EpisodeTemplate",
-    epD.title
-  )
+  trackClickEvent("Click Tracking - Audio Download", "EpisodeTemplate", epD.title)
   progress.value = await fetchAndStoreMp3(epD)
 }
 
@@ -164,14 +156,8 @@ const handleShare = () => {
 
 //handle the transcript of the episode
 const handleTranscript = () => {
-  if (route.params.cmsSource) {
-    navigateTo(`./${route.params.slug}/transcript`)
-  } else {
-    // Fallback for old route structure
-    navigateTo(
-      `./${route.params.slug}/transcript?src=${route.query.src}&type=${route.query.type}`
-    )
-  }
+  const basePath = route.path.replace(/\/$/, "")
+  navigateTo(`${basePath}/transcript`)
 }
 
 // handle comments button click
@@ -195,10 +181,12 @@ const togglePlayHere = (epData) => {
 }
 
 const isFavorited = ref(false)
-watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(
-    props.episodeData?.meta?.slug || route.params.slug
-  )
+onMounted(() => {
+  watchEffect(async () => {
+    isFavorited.value = await checkIsFavorited(
+      props.episodeData?.meta?.slug || route.params.slug
+    )
+  })
 })
 
 // add item to favorites
@@ -214,13 +202,14 @@ const handleAddToFavorites = (bucketItem) => {
 }
 
 // handles the click on the show image and dots menu
-const moreFromClick = () => {
+const moreFromClick = async () => {
+  const trueSlug = await getTrueSlug(theSlug.value)
   trackClickEvent(
     "Click Tracking - Show image",
-    `Episode slug page: ${theSlug.value}`,
+    `Episode slug page: ${trueSlug}`,
     theShowTitle.value
   )
-  navigateTo(`/browse/shows/${theSlug.value}`)
+  navigateTo(`/browse/shows/${trueSlug}`)
 }
 
 // get the image for the episode. if the episode image is the same as the show image, use the fallback image
@@ -243,6 +232,20 @@ const getEpisodeImage = () => {
 
 const theEpImage = computed(() => getEpisodeImage())
 
+const isDownloadAvailable = (bucketItem) => {
+  // don't show download if the page is a story page
+  if (route.fullPath.includes("/story/")) {
+    return false
+  }
+  // check to see if the CMS has "Can download episodes" = true
+  // We use strict falsy check so undefined safely blocks downloads too!
+  if (!props.show || !props.show?.canDownloadEpisodes) {
+    return false
+  }
+  // has audio file to download
+  return hasAudio(bucketItem?.audio)
+}
+
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
   return [
@@ -259,13 +262,11 @@ const getDotMenuItems = (bucketItem) => {
           },
         ]
       : []),
-    ...(hasAudio(bucketItem?.audio)
+    ...(isDownloadAvailable(bucketItem)
       ? [
           {
             label: `Download ${
-              bucketItem.segments && Array.isArray(bucketItem?.audio)
-                ? "All"
-                : ""
+              bucketItem.segments && Array.isArray(bucketItem?.audio) ? "All" : ""
             }`,
             //icon: 'pi pi-google',
             customIcon: DownloadIcon,
@@ -344,6 +345,7 @@ const getDotMenuItems = (bucketItem) => {
             :allowVerticalEffect="false"
             :ratio="[1, 1]"
             :alt="props.episodeData?.image?.altText"
+            loading="eager"
             class="episode-page-image flex-none w-7rem md:w-12rem"
           >
             <!-- <template #caption>
@@ -368,9 +370,7 @@ const getDotMenuItems = (bucketItem) => {
             </template> -->
           </VImage>
           <div class="flex flex-column gap-2 md:gap-3">
-            <h1
-              class="text-xl md:text-4xl -mt-1 md:mt-0 line-height-1 md:line-height-2"
-            >
+            <h1 class="text-xl md:text-4xl -mt-1 md:mt-0 line-height-1 md:line-height-2">
               {{ props.episodeData?.title }}
             </h1>
             <div
@@ -381,9 +381,7 @@ const getDotMenuItems = (bucketItem) => {
             </div>
             <!-- :hide-pipe="!!!props.episodeData?.showTitle" -->
             <PipeData class="text-sm">
-              <template #left>{{
-                props.episodeData?.showTitle || storySource
-              }}</template>
+              <template #left>{{ props.episodeData?.showTitle || storySource }}</template>
               <template #right>
                 <span class="nobreak inline-flex gap-1"
                   >{{ getDate(props.episodeData, "LLL d") }}
@@ -398,7 +396,6 @@ const getDotMenuItems = (bucketItem) => {
                 class="flex align-items-center gap-2"
               >
                 <PlayButton
-                  v-if="!hasSegments && hasAudio(props.episodeData?.audio)"
                   :label="getMinutes(props.episodeData?.estimatedDuration, 1)"
                   :data="props.episodeData"
                   severity="primary"
@@ -446,7 +443,7 @@ const getDotMenuItems = (bucketItem) => {
                 </Button>
 
                 <Button
-                  v-if="hasAudio(props.episodeData?.audio)"
+                  v-if="isDownloadAvailable(props.episodeData)"
                   :text="false"
                   :label="isMobileBtn ? '' : 'Download'"
                   :size="isMobileBtn ? '' : 'small'"
@@ -456,9 +453,7 @@ const getDotMenuItems = (bucketItem) => {
                   aria-label="download"
                   @click="handleDownload(props.episodeData)"
                 >
-                  <template #icon>
-                    <DownloadSmallIcon class="w-1rem h-1rem"
-                  /></template>
+                  <template #icon> <DownloadSmallIcon class="w-1rem h-1rem" /></template>
                 </Button>
 
                 <Button
@@ -473,9 +468,7 @@ const getDotMenuItems = (bucketItem) => {
                   aria-label="comments"
                   @click="handleComments()"
                 >
-                  <template #icon>
-                    <CommentsIcon class="w-1rem h-1rem"
-                  /></template>
+                  <template #icon> <CommentsIcon class="w-1rem h-1rem" /></template>
                 </Button>
 
                 <DotMenu
@@ -514,10 +507,7 @@ const getDotMenuItems = (bucketItem) => {
         </div>
       </div>
       <!-- v-else-if="props.pending" -->
-      <div
-        v-else-if="props.pending"
-        class="flex gap-3 col pr-2 lg:pr-4 mt-1 mb-6"
-      >
+      <div v-else-if="props.pending" class="flex gap-3 col pr-2 lg:pr-4 mt-1 mb-6">
         <Skeleton
           width="100%"
           borderRadius="0px"
@@ -525,16 +515,8 @@ const getDotMenuItems = (bucketItem) => {
         />
         <div class="flex flex-column gap-2 md:gap-3 w-full">
           <div class="flex flex-column gap-1">
-            <Skeleton
-              width="90%"
-              borderRadius="16px"
-              class="h-1rem md:h-2rem"
-            />
-            <Skeleton
-              width="65%"
-              borderRadius="16px"
-              class="h-1rem md:h-2rem"
-            />
+            <Skeleton width="90%" borderRadius="16px" class="h-1rem md:h-2rem" />
+            <Skeleton width="65%" borderRadius="16px" class="h-1rem md:h-2rem" />
           </div>
           <div class="article-metadata">
             <div class="flex gap-2 align-items-center mb-1">
@@ -544,12 +526,7 @@ const getDotMenuItems = (bucketItem) => {
                 borderRadius="16px"
                 class="opacity-70"
               />
-              <Skeleton
-                height="8px"
-                width="8px"
-                borderRadius="50%"
-                class="opacity-50"
-              />
+              <Skeleton height="8px" width="8px" borderRadius="50%" class="opacity-50" />
               <Skeleton
                 height="12px"
                 width="70px"
@@ -559,33 +536,13 @@ const getDotMenuItems = (bucketItem) => {
             </div>
           </div>
           <div class="button-holder flex align-items-center gap-2 flex-wrap">
-            <Skeleton
-              height="33px"
-              width="90px"
-              borderRadius="16px"
-              class="z-2"
-            />
-            <Skeleton
-              height="33px"
-              width="33px"
-              borderRadius="16px"
-              class="z-2"
-            />
-            <Skeleton
-              height="33px"
-              width="33px"
-              borderRadius="16px"
-              class="z-2"
-            />
+            <Skeleton height="33px" width="90px" borderRadius="16px" class="z-2" />
+            <Skeleton height="33px" width="33px" borderRadius="16px" class="z-2" />
+            <Skeleton height="33px" width="33px" borderRadius="16px" class="z-2" />
 
             <slot>
               <div class="flex align-items-center gap-4">
-                <Skeleton
-                  class="ml-2"
-                  height="22px"
-                  width="5px"
-                  borderRadius="16px"
-                />
+                <Skeleton class="ml-2" height="22px" width="5px" borderRadius="16px" />
               </div>
             </slot>
           </div>
@@ -647,6 +604,7 @@ const getDotMenuItems = (bucketItem) => {
             :article="props.episodeData"
             :isDisableComments="props.episodeData?.cmsSource !== 'WAGTAIL'"
             :showAd="!props.show"
+            :show-npr-transcript-disclaimer="props.showNprTranscriptDisclaimer"
           />
         </div>
         <div class="bottom-holder">
@@ -663,6 +621,7 @@ const getDotMenuItems = (bucketItem) => {
           :article="props.episodeData"
           :isDisableComments="props.episodeData?.cmsSource !== 'WAGTAIL'"
           :showAd="!props.show"
+          :show-npr-transcript-disclaimer="props.showNprTranscriptDisclaimer"
         />
       </div>
     </div>

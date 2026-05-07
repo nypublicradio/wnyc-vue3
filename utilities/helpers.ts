@@ -38,6 +38,10 @@ import { Share } from "@capacitor/share"
 import { Clipboard } from "@capacitor/clipboard"
 import { initDeviceId } from "~/utilities/device-id.js"
 import { deleteDirectory } from "~/utilities/file-system"
+import {
+  buildAudioEventParams,
+  buildClickEventParams,
+} from "~/utilities/analytics"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 import {
   AppTrackingTransparency,
@@ -74,9 +78,12 @@ export const slugify = (text) => {
 export const getRouteOrLink = (
   url: string,
   routingDomains: string[] = [
-    "www.wnyc.org",
+    "wnyc.org",
     "demo.wnyc.org",
+    "prod.wnyc.org",
+    "www.wnyc.org",
     "www.demo.wnyc.org",
+    "www.prod.wnyc.org",
   ]
 ) => {
   if (!url) return url
@@ -123,16 +130,9 @@ export const getOrg = (data) => {
   }
 }
 
-// returns the time since the episode was published, but checks for updated_date first
-export const whenTime = (data) => {
-  const res = data?.updatedDate
-    ? howLongAgo(data?.updatedDate)
-    : data?.publicationDate
-      ? howLongAgo(data?.publicationDate)
-      : data?.publishAt
-        ? howLongAgo(data?.publishAt)
-        : howLongAgo(data?.firstPublishedAt)
-  return res
+// returns the time since the episode was published
+export const whenTime = (date) => {
+  return howLongAgo(date)
 }
 
 // format ISO timestamp to return only the time
@@ -188,12 +188,13 @@ export const trackAudioEvent = (eventName, audioType, audioTitle, audioShow) => 
   const { $analytics } = useNuxtApp()
   const currentUser = useCurrentUser()
   const deviceId = useDeviceId()
-  $analytics.sendEvent(eventName, {
-    audio_type: audioType,
-    audio_title: audioTitle,
-    audio_show: audioShow,
-    user_id: currentUser.value?.id ?? deviceId.value,
-  })
+  $analytics.sendEvent(eventName, buildAudioEventParams({
+    audioType,
+    audioTitle,
+    audioShow,
+    currentUserId: currentUser.value?.id,
+    deviceId: deviceId.value,
+  }))
 }
 
 // function that tracks click events to google analytics
@@ -201,12 +202,13 @@ export const trackClickEvent = (category, component, label) => {
   const { $analytics } = useNuxtApp()
   const currentUser = useCurrentUser()
   const deviceId = useDeviceId()
-  $analytics.sendEvent("click_tracking", {
-    event_category: category,
+  $analytics.sendEvent("click_tracking", buildClickEventParams({
+    category,
     component,
-    event_label: label,
-    user_id: currentUser.value?.id ?? deviceId.value,
-  })
+    label,
+    currentUserId: currentUser.value?.id,
+    deviceId: deviceId.value,
+  }))
 }
 
 /**
@@ -232,7 +234,8 @@ export function howLongAgo (date) {
  * to get the desired date format for the header
  */
 export function getDate (data = null, formatString = "EEE, MMM do") {
-  const date = data?.updatedDate || data?.publicationDate
+  // checks FIRST for meta.firstPublishedAt that is stored in the Supabase DB meta column when saving and history.
+  const date = data?.meta?.firstPublishedAt || data?.updatedDate || data?.publicationDate
   if (date) {
     const currentDate = new Date()
     const inputDate = new Date(date)
@@ -244,7 +247,7 @@ export function getDate (data = null, formatString = "EEE, MMM do") {
       currentDate.getDate() === inputDate.getDate()
 
     if (isSameDay) {
-      return whenTime(data)
+      return whenTime(date)
     }
 
     // Add year to format string if it's not the current year
@@ -254,7 +257,8 @@ export function getDate (data = null, formatString = "EEE, MMM do") {
 
     return format(inputDate, formatString)
   } else {
-    return format(new Date(), formatString)
+    //return format(new Date(), formatString)
+    return null
   }
 }
 
@@ -293,7 +297,9 @@ export function capitalizeFirstLetter (str) {
  * helper function to change the global font size
  */
 export function setFontSize (size: string) {
-  if (!import.meta.client) return
+  const isApp = useIsApp()
+  // no font size for browser yet
+  if (!import.meta.client || !isApp.value) return
   document.documentElement.style.fontSize = size
 }
 
@@ -462,9 +468,8 @@ export const shareAPI = async (
   const shareData = {
     title: stripHtmlTags(content.socialTitle || content.title),
     text: stripHtmlTags(content.rawBody || content.description || content.title),
-    url: content.url || content.titleLink,
+    url: content.shareUrl || content.url || content.titleLink,
   }
-
   trackClickEvent("Click Tracking - Share", componentOfOrigin, shareData.title)
   // Native Mobile Sharing
   if (Capacitor.isNativePlatform()) {
@@ -926,9 +931,15 @@ export const saveFavorite = async (
     const title = media?.title
     const producingOrganizations = media?.producingOrganizations
     const authors = media?.authors
-    const meta = media?.meta
+    const meta = media?.meta ?? {}
     const audio = media?.audio ?? media?.hls
     const showTitle = media?.showTitle ?? media?.headers?.brand?.title ?? media?.station
+
+    // add firstPublishedAt if missing from meta
+    if (!meta.firstPublishedAt) {
+      meta.firstPublishedAt = media?.updatedDate || media?.publicationDate
+    }
+
     const itemToSave: SavedItem = {
       uid,
       type,
@@ -991,6 +1002,7 @@ export const togglePlayEpisode = (media, type = mediaTypes.EPISODE) => {
   if (currentEpisode.value?.id !== media.id) {
     currentEpisode.value = prepForPlayer(media)
     saveRecentlyPlayed(media, type)
+    return
   }
 
   togglePlayTrigger.value = !togglePlayTrigger.value
@@ -1004,6 +1016,13 @@ export const getCssVar = (name: string, px = false) => {
   return px ? val : Number(parseInt(val))
 }
 // ROUTING
+export const shouldOpenStoryInNewTab = (platform, storyLink, cmsSource) =>
+  platform === "web" && Boolean(storyLink) && cmsSource === cmsSources.WAGTAIL
+
+// returns true if the story link is from gothamist.com
+export const shouldTrackOutgoingGothamistClick = (storyLink) =>
+  Boolean(storyLink) && storyLink.includes("gothamist.com")
+
 /* centralized function to route to a episode page */
 export const goToEpisodePage = (ep, params, log = true) => {
   const cmsSource = ep.cmsSource || cmsSources.PUBLISHER
@@ -1037,7 +1056,14 @@ export const goToLivePage = (ep, params, log = true) => {
 /* centralized function to route to a story page */
 export const goToStoryPage = (story, params, log = true) => {
   const theLink = story.url || story.link || stripApiSubdomain(story.meta?.htmlUrl)
-  if (Capacitor.getPlatform() === "web" && theLink && story.cmsSource === cmsSources.WAGTAIL) {
+  if (shouldOpenStoryInNewTab(Capacitor.getPlatform(), theLink, story.cmsSource)) {
+    if (shouldTrackOutgoingGothamistClick(theLink)) {
+      trackClickEvent(
+        "Click Tracking - Outgoing Gothamist Story",
+        "Story",
+        story.title ?? theLink
+      )
+    }
     // open in new tab if web and wagtail source (Gothamist)
     window.open(theLink, "_blank")
   } else {
@@ -1068,15 +1094,15 @@ export const goToNprPage = (story, log = true) => {
 }
 
 /* centralized function to route to a event page */
-export const goToEventPage = (story, log = true) => {
+export const goToEventPage = (story/* , log = true */) => {
 
   navigateTo({
     path: `${mediaTypeRoutes[mediaTypes.EVENT]}${story.meta?.slug ?? story.slug ?? story.id}`,
   })
-  //}
-  if (log) {
-    saveRecentlyPlayed(story)
-  }
+  // we are not saving events to recently played as of 3/26/2026
+  // if (log) {
+  //   saveRecentlyPlayed(story)
+  // }
 }
 /* centralized function to route to a show page */
 export const goToShowPage = (show, params = null) => {
@@ -1189,6 +1215,7 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
         break
       case mediaTypes.EPISODE:
       case mediaTypes.SEGMENT:
+      case mediaTypes.FULL:
         goToEpisodePage(item, null, isSaveHistory)
         break
       case mediaTypes.STORY:
@@ -1387,7 +1414,7 @@ export const refreshData = async (refreshUser = false) => {
   // update the schedule data
   // watch on the live.vue handles this schedule data
 
-  // update currentEpisode LIVE STREAM data and prep for player and media session IF it is or has been played and the expanded player and media session are open 
+  // update currentEpisode LIVE STREAM data and prep for player and media session IF it is or has been played and the expanded player and media session are open
   if (currentEpisode.value && isLiveStream.value) {
     currentEpisode.value = prepForPlayer(currentEpisodeHolder.value)
     //update media session
@@ -1467,5 +1494,54 @@ export const toggleNativePullToRefresh = (enable: boolean) => {
 }
 // isolates the slug from the end of a url
 export const isolateSlug = (slug: string) => {
-  return slug.split("/").pop()
+  return slug?.split("/").filter(Boolean).pop()
+}
+
+// get the first sentence from a string of text
+export const getFirstSentence = (text: string): string => {
+  if (!text) return ''
+  const sentences = text.match(/(.*?[.?!])/)
+  return sentences ? sentences[0] : text
+}
+
+// return match redirects and return true slug
+export const getTrueSlug = async (slug: string, isolateReturn = true) => {
+  const config = useRuntimeConfig()
+  let newSlug = slug
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    slug
+  )
+  // if isUuid get slug from uuid
+  if (isUuid) {
+    try {
+      const showSlug: any = await $fetch(
+        `${config.public.BFF_URL}/api/v2/show/${slug}?slugOnly=true`
+      )
+      newSlug = showSlug.show.slug
+    } catch (error) {
+      const globalToast = useGlobalToast()
+      globalToast.value = {
+        severity: "error",
+        summary: "We are having a problem loading the show page. Please try again later.",
+        life: 6000,
+        closable: true,
+      }
+      console.error(`Error getting true slug from uuid: ${error}`)
+      return newSlug
+    }
+  }
+
+  // check redirect table
+  try {
+    // get the list of redirects
+    const redirectsData: any[] = await $fetch(
+      `${config.public.BFF_URL}/api/show-slug-redirects`
+    )
+    // find the redirect in the list
+    const redirect = redirectsData?.find((r) => isolateSlug(r.from) === newSlug)
+    return redirect ? isolateReturn ? isolateSlug(redirect.to) : redirect.to : newSlug
+  } catch (error) {
+    console.error(`Error getting true slug from id: ${error}`)
+    return newSlug
+  }
 }

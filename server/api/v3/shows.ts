@@ -14,31 +14,41 @@ const __getConfig = () => {
  */
 export const getShows = async () => {
     const config = __getConfig()
+    const limit = 20
+    let offset = 0
+    const allItems: ReturnType<typeof normalizeWagtailShow>[] = []
 
     try {
-        const options = {
-            method: 'GET',
-            url: `${config.public.AVIARY_BASE_API}pages/`,
-            params: {
-                type: 'shows.ShowPage',
-                show_on_index_listing: true,
-                fields: 'show_art,show_logo',
-                //fields: 'description,topper_display_title,linked_data_source,show_art,show_logo,topper_background,body,about_module,can_download_episodes,can_embed_episodes,in_page_navigation',
-                order: 'title',
-                site: 'demo.wnyc.org',
-            },
-            headers: {
-                'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
-            },
-            timeout: 15000, // 15 second timeout
+        while (true) {
+            const options = {
+                method: 'GET',
+                url: `${config.public.AVIARY_BASE_API}pages/`,
+                params: {
+                    type: 'shows.ShowPage',
+                    show_on_index_listing: true,
+                    fields: 'show_art,show_logo',
+                    //fields: 'description,topper_display_title,linked_data_source,show_art,show_logo,topper_background,body,about_module,can_download_episodes,can_embed_episodes,in_page_navigation',
+                    order: 'title',
+                    limit,
+                    offset,
+                },
+                headers: {
+                    'X-CMS-Site': config.public.cmsSite,
+                },
+                timeout: 15000, // 15 second timeout
+            }
+
+            const res = await axios(options)
+            const resData = humps.camelizeKeys(res.data)
+            const items = (resData.items || []).map(normalizeWagtailShow)
+            allItems.push(...items)
+
+            const totalCount = resData.meta?.totalCount ?? 0
+            offset += limit
+            if (offset >= totalCount) break
         }
 
-        const res = await axios(options)
-        const resData = humps.camelizeKeys(res.data)
-        // Normalize each show item
-        const shows = (resData.items || []).map(normalizeWagtailShow)
-
-        return shows
+        return allItems
     } catch (e: any) {
         console.error('Error fetching shows:', {
             message: e?.message,
@@ -68,7 +78,7 @@ export const getFeaturedShows = async (allShows: ReturnType<typeof normalizeWagt
             method: 'GET',
             url: `${config.public.AVIARY_BASE_API}curated_lists/${config.featuredShowsPageId}`,
             headers: {
-                'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+                'X-CMS-Site': config.public.cmsSite
             },
             timeout: 10000, // 10 second timeout
         }

@@ -15,8 +15,17 @@
 import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
+import { getCurrentEpisodeSelectionFromSchedule } from '~/server/utils/liveSchedule'
 
 const config = useRuntimeConfig()
+
+interface WhatsOnCacheEntry {
+	data: any
+	expiresAt: number
+}
+
+const WHATSON_CACHE_TTL = 2 * 60 * 1000
+const whatsOnCache = new Map<string, WhatsOnCacheEntry>()
 
 // Station metadata mapping
 const STATION_METADATA = {
@@ -54,24 +63,6 @@ const templatizeImageUrl = (url: string) => {
     return `https://media.wnyc.org/i/%s/%s/%s/%s/${filename}`
 }
 
-// Helper function to get the current episode from schedule data
-const getCurrentEpisodeFromSchedule = (scheduleData: any) => {
-    if (!scheduleData || !Array.isArray(scheduleData)) {
-        return null
-    }
-    
-    const now = new Date()
-    
-    // Find the episode that is currently airing
-    const currentEpisode = scheduleData.find((episode: any) => {
-        const startTime = new Date(episode.attributes.start)
-        const endTime = new Date(episode.attributes.end)
-        return now >= startTime && now < endTime
-    })
-    
-    return currentEpisode || scheduleData[0] // Fallback to first episode if no current match
-}
-
 // Fetch the livestream data from the Schedule API
 const getLivestream = async (slug: string) => {
 	try {
@@ -83,11 +74,12 @@ const getLivestream = async (slug: string) => {
 		}
 		
 		// Fetch schedule data from the schedule API
-		const scheduleUrl = `${config.public.BFF_URL}/api/schedule/${slug}?filterMode=next24hours`
+		const scheduleUrl = `${config.public.BFF_URL}/api/schedule/${slug}?filterMode=next24hours&includePreviousEpisode=true`
 		const scheduleRes = await axios(scheduleUrl)
 		
 		// Get the current episode from the schedule
-		const currentEpisode = getCurrentEpisodeFromSchedule(scheduleRes.data)
+		const currentEpisodeSelection = getCurrentEpisodeSelectionFromSchedule(scheduleRes.data)
+		const currentEpisode = currentEpisodeSelection?.episode
 		
 		if (!currentEpisode) {
 			console.warn(`No current episode found for ${slug}`)
@@ -146,11 +138,44 @@ const getLivestream = async (slug: string) => {
 			}
 		}
 		
-		return humps.camelizeKeys(formattedData)
+		return {
+			data: humps.camelizeKeys(formattedData),
+			cacheUntilMs: currentEpisodeSelection.cacheUntilMs,
+		}
 	} catch (error) {
 		console.error(`Error fetching schedule data for ${slug}:`, error.message)
 		throw error
 	}
+}
+
+/**
+ * Calculates a whats-on cache TTL that expires when the current item ends.
+ */
+const getWhatsOnCacheTtl = (livestream: any, nowMs = Date.now(), cacheUntilMs?: number | null) => {
+	if (typeof cacheUntilMs === 'number' && Number.isFinite(cacheUntilMs) && cacheUntilMs > nowMs) {
+		return Math.max(0, Math.min(WHATSON_CACHE_TTL, cacheUntilMs - nowMs))
+	}
+
+	const endTime = new Date(livestream?.timeEnd).getTime()
+	if (!Number.isFinite(endTime) || endTime <= nowMs) {
+		return 0
+	}
+
+	return Math.max(0, Math.min(WHATSON_CACHE_TTL, endTime - nowMs))
+}
+
+/**
+ * Applies response cache headers for whats-on API responses.
+ */
+const setWhatsOnCacheHeaders = (res: any, ttlMs: number) => {
+	const maxAgeSeconds = Math.floor(ttlMs / 1000)
+
+	if (maxAgeSeconds <= 0) {
+		res.setHeader('Cache-Control', 'no-store')
+		return
+	}
+
+	res.setHeader('Cache-Control', `public, max-age=${maxAgeSeconds}, s-maxage=${maxAgeSeconds}, must-revalidate`)
 }
 // Fetch the livestream data from the API
 // const getLivestreamHlsMetadataTemp = async () => {
@@ -193,10 +218,32 @@ export default defineEventHandler(async (event) => {
 
 	//getLivestreamHlsMetadataTemp()
 
+	const res = event?.node?.res
+
 	const slug: string | undefined = event?.context?.params?.stationslug;
 	if (slug) {
 		try {
-			return await getLivestream(slug);
+			const now = Date.now()
+			const cachedEntry = whatsOnCache.get(slug)
+
+			if (cachedEntry && now < cachedEntry.expiresAt) {
+				setWhatsOnCacheHeaders(res, cachedEntry.expiresAt - now)
+				return cachedEntry.data
+			}
+
+			const livestreamResult = await getLivestream(slug);
+			const livestream = livestreamResult.data
+			const cacheTtl = getWhatsOnCacheTtl(livestream, now, livestreamResult.cacheUntilMs)
+
+			if (cacheTtl > 0) {
+				whatsOnCache.set(slug, {
+					data: livestream,
+					expiresAt: now + cacheTtl,
+				})
+			}
+
+			setWhatsOnCacheHeaders(res, cacheTtl)
+			return livestream;
 		} catch (error) {
 			console.error(`Failed to get livestream for slug "${slug}":`, error)
 			throw createError({

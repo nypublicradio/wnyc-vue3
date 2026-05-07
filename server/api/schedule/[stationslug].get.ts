@@ -14,13 +14,13 @@
  * 
  * S3 Object Key Format: schedule-{STATIONSLUG}.json
  * Example: schedule-WNYC.json
- * 
  * Local Mock Data Path: server/data/schedules/schedule-{STATIONSLUG}.json
  * 
  * Query Parameters:
  * - filterMode: 'next24hours' | 'specificDate' | 'dateRange' | 'all' (default: 'all')
  * - startDate: (optional) ISO date string for filtering (YYYY-MM-DD) - interpreted in America/New_York timezone (EST/EDT)
  * - endDate: (optional) ISO date string for filtering (YYYY-MM-DD) - interpreted in America/New_York timezone (EST/EDT), used with dateRange mode
+ * - includePreviousEpisode: (optional) include the most recently ended episode for live metadata gap handling
  * 
  * Timezone Handling:
  * - All date parameters are interpreted in America/New_York timezone (EST/EDT)
@@ -58,7 +58,8 @@ import { zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz'
 import { mediaTypeRoutes } from '~/composables/globals'
 
 // S3 asset URL pattern to replace
-const S3_ASSET_URL_PATTERN = `https://s3.us-east-1.amazonaws.com/webstream-assets-${process.env.ENV}`
+// TODO: This should go back to using the env variable for the ENV once the dev rapid env is ready.
+const S3_ASSET_URL_PATTERN = 'https://s3.us-east-1.amazonaws.com/webstream-assets-prod'
 
 // Timezone for WNYC (America/New_York - handles both EST and EDT)
 const WNYC_TIMEZONE = 'America/New_York'
@@ -67,7 +68,7 @@ const WNYC_TIMEZONE = 'America/New_York'
 interface CacheEntry {
     data: any
     etag: string
-    timestamp: number
+    expiresAt: number
 }
 
 const scheduleCache = new Map<string, CacheEntry>()
@@ -105,6 +106,7 @@ const normalizeSchedule = (scheduleData: any): any[] => {
                 .replace(/\s+/g, '-')      // Replace spaces with hyphens
                 .replace(/-+/g, '-')       // Replace multiple hyphens with single
                 .replace(/^-|-$/g, '')     // Remove leading/trailing hyphens
+                .replace(/\bthe-\b/g, '')   // Remove "the" to match legacy slug format
             parentUrl = `https://www.wnyc.org${mediaTypeRoutes.show}${slug}`
         }
 
@@ -238,8 +240,45 @@ const getScheduleFromS3 = async (bucketName: string, key: string) => {
     }
 }
 
+function getEpisodeStartMs (episode: any) {
+    return new Date(episode.startTime).getTime()
+}
+
+function getEpisodeEndMs (episode: any) {
+    return new Date(episode.endTime).getTime()
+}
+
+function getPreviousEpisode (episodes: any[], now: Date) {
+    const nowMs = now.getTime()
+    return [...episodes]
+        .filter((episode: any) => {
+            const endMs = getEpisodeEndMs(episode)
+            return Number.isFinite(endMs) && endMs <= nowMs
+        })
+        .sort((a: any, b: any) => getEpisodeEndMs(b) - getEpisodeEndMs(a))[0]
+}
+
+function includePreviousEpisodeIfRequested (
+    scheduleData: any,
+    filteredEpisodes: any[],
+    now: Date,
+    includePreviousEpisode: boolean
+) {
+    if (!includePreviousEpisode) {
+        return filteredEpisodes
+    }
+
+    const previousEpisode = getPreviousEpisode(scheduleData.episodes, now)
+    if (!previousEpisode || filteredEpisodes.includes(previousEpisode)) {
+        return filteredEpisodes
+    }
+
+    return [previousEpisode, ...filteredEpisodes]
+        .sort((a: any, b: any) => getEpisodeStartMs(a) - getEpisodeStartMs(b))
+}
+
 // Remove past episodes that have already aired
-const removePastEpisodes = (scheduleData: any) => {
+function removePastEpisodes (scheduleData: any, includePreviousEpisode = false) {
     if (!scheduleData.episodes || !Array.isArray(scheduleData.episodes)) {
         return scheduleData
     }
@@ -252,7 +291,7 @@ const removePastEpisodes = (scheduleData: any) => {
 
     return {
         ...scheduleData,
-        episodes: filteredEpisodes
+        episodes: includePreviousEpisodeIfRequested(scheduleData, filteredEpisodes, now, includePreviousEpisode)
     }
 }
 
@@ -273,7 +312,7 @@ const includesCurrentDate = (startDate: string, endDate: string): boolean => {
 }
 
 // Filter episodes for the next 24 hours
-const filterNext24Hours = (scheduleData: any) => {
+function filterNext24Hours (scheduleData: any, includePreviousEpisode = false) {
     if (!scheduleData.episodes || !Array.isArray(scheduleData.episodes)) {
         return scheduleData
     }
@@ -290,7 +329,7 @@ const filterNext24Hours = (scheduleData: any) => {
 
     return {
         ...scheduleData,
-        episodes: filteredEpisodes
+        episodes: includePreviousEpisodeIfRequested(scheduleData, filteredEpisodes, now, includePreviousEpisode)
     }
 }
 
@@ -438,30 +477,109 @@ const filterByDateRange = (scheduleData: any, startDate: string, endDate: string
     }
 }
 
+/**
+ * Checks whether the requested schedule view changes as the current time advances.
+ */
+const requestDependsOnCurrentTime = (
+    filterMode: string,
+    startDate: string | undefined,
+    endDate: string | undefined
+) => {
+    switch (filterMode) {
+        case 'specificDate':
+            return !startDate || isToday(startDate)
+        case 'dateRange':
+            return !startDate || !endDate || includesCurrentDate(startDate, endDate)
+        case 'next24hours':
+        case 'all':
+        default:
+            return true
+    }
+}
+
+/**
+ * Finds the next schedule start or end boundary after the supplied timestamp.
+ */
+const getNextScheduleBoundaryMs = (schedule: any[], nowMs = Date.now()) => {
+    if (!Array.isArray(schedule)) {
+        return null
+    }
+
+    const futureBoundaries = schedule
+        .flatMap((episode: any) => [
+            episode?.attributes?.start,
+            episode?.attributes?.end,
+        ])
+        .map((dateString: string) => new Date(dateString).getTime())
+        .filter((time: number) => Number.isFinite(time) && time > nowMs)
+
+    if (futureBoundaries.length === 0) {
+        return null
+    }
+
+    return Math.min(...futureBoundaries)
+}
+
+/**
+ * Calculates how long the normalized schedule response can be cached.
+ */
+const getResponseCacheTtl = (
+    schedule: any[],
+    isCurrentTimeDependent: boolean,
+    nowMs = Date.now()
+) => {
+    if (!isCurrentTimeDependent) {
+        return CACHE_TTL
+    }
+
+    const nextBoundaryMs = getNextScheduleBoundaryMs(schedule, nowMs)
+    if (!nextBoundaryMs) {
+        return 0
+    }
+
+    return Math.max(0, Math.min(CACHE_TTL, nextBoundaryMs - nowMs))
+}
+
+/**
+ * Applies response cache headers for schedule API responses.
+ */
+const setCacheHeaders = (res: any, etag: string, ttlMs: number) => {
+    const maxAgeSeconds = Math.floor(ttlMs / 1000)
+
+    if (maxAgeSeconds <= 0) {
+        res.setHeader('Cache-Control', 'no-store')
+        return
+    }
+
+    res.setHeader('ETag', etag)
+    res.setHeader('Cache-Control', `public, max-age=${maxAgeSeconds}, s-maxage=${maxAgeSeconds}, must-revalidate`)
+}
+
 // Helper function to encapsulate main schedule logic
 const handleScheduleRequest = async (
     slug: string,
     filterMode: string,
     startDate: string | undefined,
     endDate: string | undefined,
+    includePreviousEpisode: boolean,
     res: any,
     clientEtag: string | undefined
 ) => {
     // Generate cache key based on slug and filter parameters
-    const cacheKey = `${slug}-${filterMode}-${startDate || ''}-${endDate || ''}`
+    const cacheKey = `${slug}-${filterMode}-${startDate || ''}-${endDate || ''}-${includePreviousEpisode}`
     const cachedEntry = scheduleCache.get(cacheKey)
     const now = Date.now()
+    const isCurrentTimeDependent = requestDependsOnCurrentTime(filterMode, startDate, endDate)
 
     // If cache is valid and client has current version, return 304
-    if (cachedEntry && (now - cachedEntry.timestamp) < CACHE_TTL) {
+    if (cachedEntry && now < cachedEntry.expiresAt) {
+        const ttlMs = cachedEntry.expiresAt - now
         if (clientEtag === cachedEntry.etag) {
             res.statusCode = 304
-            res.setHeader('ETag', cachedEntry.etag)
-            res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300, stale-while-revalidate=600')
+            setCacheHeaders(res, cachedEntry.etag, ttlMs)
             return null
         }
-        res.setHeader('ETag', cachedEntry.etag)
-        res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300, stale-while-revalidate=600')
+        setCacheHeaders(res, cachedEntry.etag, ttlMs)
         return cachedEntry.data
     }
 
@@ -495,7 +613,7 @@ const handleScheduleRequest = async (
     const getFilteredData = () => {
         switch (filterMode) {
             case 'next24hours':
-                return filterNext24Hours(scheduleData)
+                return filterNext24Hours(scheduleData, includePreviousEpisode)
             case 'specificDate': {
                 if (!startDate) {
                     throw createError({
@@ -506,7 +624,7 @@ const handleScheduleRequest = async (
                 validateDateRange(scheduleData, startDate)
                 let filtered = filterByDate(scheduleData, startDate)
                 if (isToday(startDate)) {
-                    filtered = removePastEpisodes(filtered)
+                    filtered = removePastEpisodes(filtered, includePreviousEpisode)
                 }
                 return filtered
             }
@@ -520,13 +638,13 @@ const handleScheduleRequest = async (
                 validateDateRange(scheduleData, startDate, endDate)
                 let filteredRange = filterByDateRange(scheduleData, startDate, endDate)
                 if (includesCurrentDate(startDate, endDate)) {
-                    filteredRange = removePastEpisodes(filteredRange)
+                    filteredRange = removePastEpisodes(filteredRange, includePreviousEpisode)
                 }
                 return filteredRange
             }
             case 'all':
             default:
-                return removePastEpisodes(scheduleData)
+                return removePastEpisodes(scheduleData, includePreviousEpisode)
         }
     }
 
@@ -535,15 +653,17 @@ const handleScheduleRequest = async (
     const transformedData = normalizeSchedule(rewrittenData)
     const dataString = JSON.stringify(transformedData)
     const etag = `"${createHash('md5').update(dataString).digest('hex')}"`
+    const cacheTtl = getResponseCacheTtl(transformedData, isCurrentTimeDependent, now)
 
-    scheduleCache.set(cacheKey, {
-        data: transformedData,
-        etag,
-        timestamp: now
-    })
+    if (cacheTtl > 0) {
+        scheduleCache.set(cacheKey, {
+            data: transformedData,
+            etag,
+            expiresAt: now + cacheTtl
+        })
+    }
 
-    res.setHeader('ETag', etag)
-    res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=300, stale-while-revalidate=600')
+    setCacheHeaders(res, etag, cacheTtl)
 
     return transformedData
 }
@@ -555,6 +675,7 @@ export default defineEventHandler(async (event) => {
     const filterMode = (query?.filterMode as string) || 'all'
     const startDate = query?.startDate as string | undefined
     const endDate = query?.endDate as string | undefined
+    const includePreviousEpisode = query?.includePreviousEpisode === 'true'
 
     if (!slug) {
         throw createError({
@@ -565,7 +686,7 @@ export default defineEventHandler(async (event) => {
 
     try {
         const clientEtag = event.node.req.headers['if-none-match']
-        return await handleScheduleRequest(slug, filterMode, startDate, endDate, res, clientEtag)
+        return await handleScheduleRequest(slug, filterMode, startDate, endDate, includePreviousEpisode, res, clientEtag)
     } catch (error: any) {
         console.error('Error fetching schedule from S3:', error)
         throw createError({

@@ -4,6 +4,8 @@ import Dialog from "primevue/dialog"
 import ProgressSpinner from "primevue/progressspinner"
 import { useFallbackImages } from "~/composables/useFallbackImages"
 
+defineOptions({ inheritAttrs: false })
+
 const { getEpisodeFallBackImage } = useFallbackImages()
 
 const props = defineProps({
@@ -146,6 +148,7 @@ const emit = defineEmits([
   "image-click",
   "image-enlarge-click",
   "image-load",
+  "image-error",
   "enlarge-image-load",
 ])
 
@@ -164,13 +167,18 @@ const computedWidth = computed(() => {
     ? Math.round(props.maxWidth / (props.maxHeight / props.height))
     : props.width
 })
+const computedHeight = computed(() => {
+  return props.sizes ? null : props.height
+})
 const computedEnlargeWidth = computed(() => {
+  if (import.meta.server) return props.maxWidth
   const modalFramePaddingOffset = 84
   return window.innerWidth * window.devicePixelRatio > props.maxWidth
     ? props.maxWidth
     : (window.innerWidth - modalFramePaddingOffset) * window.devicePixelRatio
 })
 const computedEnlargeHeight = computed(() => {
+  if (import.meta.server) return props.maxHeight
   const originalWidth = props.maxWidth
   const originalHeight = props.maxHeight
   const newWidth = computedEnlargeWidth.value / window.devicePixelRatio
@@ -244,12 +252,12 @@ const handleProvider = computed(() => {
       :to="props.to"
       :aria-hidden="props.isDecorative ? true : false"
       :tabindex="props.isDecorative ? -1 : 0"
-      style="width: auto; height: inherit"
+      class="v-image-link"
       @click="props.to ? emit('image-click', props.to) : null"
     >
       <div
         class="v-image-holder"
-        :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`"
+        :style="`${props.sizes ? `` : `aspect-ratio:${ratio[0]} / ${ratio[1]}`}`"
       >
         <div v-if="isVertical" class="bg">
           <nuxt-img
@@ -258,11 +266,12 @@ const handleProvider = computed(() => {
             class="blurred-bg-image"
             :src="computedSrc"
             :width="computedWidth"
-            :height="props.height"
+            :height="computedHeight"
             :quality="String(props.quality)"
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
             :modifiers="props.modifiers"
             :loading="props.loading"
+            :preload="{ fetchPriority: props.loading === 'eager' ? 'high' : 'low' }"
           />
         </div>
         <nuxt-img
@@ -273,7 +282,7 @@ const handleProvider = computed(() => {
           :class="isVertical ? 'is-vertical' : ''"
           :src="computedSrc"
           :width="computedWidth"
-          :height="props.height"
+          :height="computedHeight"
           :sizes="props.sizes"
           :densities="props.density"
           :style="[
@@ -284,9 +293,10 @@ const handleProvider = computed(() => {
           :alt="props.isDecorative ? '' : props.alt"
           :quality="String(props.quality)"
           :loading="props.loading"
+          :preload="{ fetchPriority: props.loading === 'eager' ? 'high' : 'low' }"
           :modifiers="props.modifiers"
           @load="handleImageLoad"
-          @error="handleImageLoad"
+          @error="emit('image-error')"
         />
         <slot class="slot caption" name="caption"></slot>
         <slot class="slot gallery" name="gallery"></slot>
@@ -305,47 +315,50 @@ const handleProvider = computed(() => {
               ></Button>
             </slot>
           </div>
-          <Dialog
-            v-model:visible="loadingEnlargedImage"
-            modal
-            dismissable-mask
-            :draggable="false"
-            header=" "
-            :style="{ width: '95vw' }"
-          >
-            <nuxt-img
-              :format="props.format"
-              :provider="handleProvider"
-              class="enlarged-image"
-              :src="computedSrc"
-              style="width: 100%; height: auto"
-              :alt="props.isDecorative ? '' : props.alt"
-              loading="eager"
-              :quality="70"
-              :width="computedEnlargeWidth"
-              :height="computedEnlargeHeight"
-              :modifiers="props.modifiers"
-              @load="enlargeLoad($event.target)"
-            />
-            <template #closeicon
-              ><slot class="slot close-icon" name="closeicon"></slot
-            ></template>
-          </Dialog>
-          <Teleport to="body">
-            <ProgressSpinner
-              v-if="loadingEnlargedImage && !loadedEnlargedImage"
-              style="
-                z-index: 1102;
-                position: fixed;
-                top: 0;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                margin: auto;
-              "
-              stroke-width="6"
-            />
-          </Teleport>
+          <ClientOnly>
+            <Dialog
+              v-model:visible="loadingEnlargedImage"
+              modal
+              dismissable-mask
+              :draggable="false"
+              header=" "
+              :style="{ width: '95vw' }"
+            >
+              <nuxt-img
+                :format="props.format"
+                :provider="handleProvider"
+                class="enlarged-image"
+                :src="computedSrc"
+                style="width: 100%; height: auto"
+                :alt="props.isDecorative ? '' : props.alt"
+                loading="eager"
+                :preload="{ fetchPriority: 'high' }"
+                :quality="70"
+                :width="computedEnlargeWidth"
+                :height="computedEnlargeHeight"
+                :modifiers="props.modifiers"
+                @load="enlargeLoad($event.target)"
+              />
+              <template #closeicon
+                ><slot class="slot close-icon" name="closeicon"></slot
+              ></template>
+            </Dialog>
+            <Teleport to="body">
+              <ProgressSpinner
+                v-if="loadingEnlargedImage && !loadedEnlargedImage"
+                style="
+                  z-index: 1102;
+                  position: fixed;
+                  top: 0;
+                  bottom: 0;
+                  left: 0;
+                  right: 0;
+                  margin: auto;
+                "
+                stroke-width="6"
+              />
+            </Teleport>
+          </ClientOnly>
         </template>
       </div>
     </VFlexibleLink>
@@ -354,6 +367,10 @@ const handleProvider = computed(() => {
 </template>
 
 <style lang="scss" scoped>
+.v-image-link {
+  width: auto;
+  height: inherit;
+}
 .v-image {
   line-height: 0;
   position: relative;

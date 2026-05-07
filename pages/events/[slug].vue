@@ -2,45 +2,51 @@
 import { useToast } from "primevue/usetoast"
 import { useTopStories } from "~/composables/useTopStories"
 import { EVENT_BADGE_STYLES, useEventData } from "~/composables/useEventData"
-import { dynamicNavigation } from "~/utilities/helpers"
+import { dynamicNavigation, getFirstSentence } from "~/utilities/helpers"
 
 const { getFilteredTopStories } = useTopStories()
-const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const route = useRoute()
 const toast = useToast()
 
-const { data: event, status, error } = useFetch(
-  `${config.public.BFF_URL}/api/events/${route.params.slug}`,
-  {
-    onResponse({ response }) {
-      const res = response._data
-      $analytics.sendPageView({
-        page_title: res.title,
-        page_type: "event_page",
-        content_group: "on_demand_event",
-        article_authors: res?.authors?.map((author) => author.name).join(","),
-        article_publish_date: res.publicationDate,
-        article_updated_date: res.updatedDate ? res.updatedDate : res.publicationDate,
-        article_title: res.title,
-      })
-    },
-    onResponseError() {
-      toast.add({
-        severity: "error",
-        summary: "We are having a problem loading this event. Please try again later.",
-        life: 6000,
-        closable: true,
-      })
-    },
-  }
-)
+const [
+  { data: event, status, error },
+  { data: moreEvents }
+] = await Promise.all([
+  useFetchWrapper(
+    () => `${config.public.BFF_URL}/api/events/${route.params.slug}`,
+    {
+      key: `event-${route.params.slug}`,
+      onResponseError() {
+        toast.add({
+          severity: "error",
+          summary: "We are having a problem loading this event. Please try again later.",
+          life: 6000,
+          closable: true,
+        })
+      },
+    }
+  ),
+  useFetchWrapper(
+    `${config.public.BFF_URL}/api/events/list?limit=4`
+  )
+])
+
+onMounted(() => {
+  if (!event.value) return
+  const { $analytics } = useNuxtApp()
+  $analytics.sendPageView({
+    page_title: event.value.title,
+    page_type: "event_page",
+    content_group: "on_demand_event",
+    article_authors: event.value?.authors?.map((author) => author.name).join(","),
+    article_publish_date: event.value.publicationDate,
+    article_updated_date: event.value.updatedDate ? event.value.updatedDate : event.value.publicationDate,
+    article_title: event.value.title,
+  })
+})
 
 const eventData = computed(() => event.value || {})
-
-const { data: moreEvents } = useFetch(
-  `${config.public.BFF_URL}/api/events/list?limit=4`
-)
 
 const title = computed(() => eventData.value?.title)
 const {
@@ -95,17 +101,28 @@ const breadcrumbs = computed(() => [
   { label: "Events", route: "/events" },
   { label: title.value || "Event" },
 ])
+const pageTitle = eventData.value?.meta?.seoTitle || `${eventData.value?.title} | WNYC`
+const description = getFirstSentence(eventData.value?.description)
+const searchDescription = eventData.value?.meta?.searchDescription || description
+const socialDescription = eventData.value?.socialText || description
+useHead({
+  title: pageTitle,
+})
+if (eventData.value?.preventSearchIndexing) {
+  useHead({
+    meta: [{name: "robots", content: "noindex" }],
+  })
+}
+useSeoMeta({
+  title: pageTitle,
+  ogTitle: pageTitle,
+  description: searchDescription,
+  ogDescription: socialDescription,
+})
 </script>
 
 <template>
   <div class="event-page">
-    <Html lang="en">
-      <Head>
-        <Title>{{ title }} | WNYC</Title>
-        <Meta name="og:title" :content="`${title} | WNYC`" />
-        <Meta name="twitter:title" :content="`${title} | WNYC`" />
-      </Head>
-    </Html>
     <FetchError v-if="error" />
     <template v-else>
       <section>
@@ -119,12 +136,8 @@ const breadcrumbs = computed(() => [
             <div class="event-hero__layout">
               <div class="event-hero__header">
                 <div class="event-hero__datebox" v-if="eventDayNumber">
-                  <span class="event-hero__datebox-day">{{
-                    eventDayNumber
-                  }}</span>
-                  <span class="event-hero__datebox-month">{{
-                    eventDateShort
-                  }}</span>
+                  <span class="event-hero__datebox-day">{{ eventDayNumber }}</span>
+                  <span class="event-hero__datebox-month">{{ eventDateShort }}</span>
                 </div>
                 <div class="event-hero__titlegroup">
                   <h1
@@ -164,30 +177,10 @@ const breadcrumbs = computed(() => [
             </div>
           </template>
           <template v-else>
-            <Skeleton
-              class="mb-2"
-              height="18px"
-              width="120px"
-              borderRadius="8px"
-            />
-            <Skeleton
-              class="mb-3"
-              height="48px"
-              width="85%"
-              borderRadius="16px"
-            />
-            <Skeleton
-              class="mb-2"
-              height="16px"
-              width="70%"
-              borderRadius="8px"
-            />
-            <Skeleton
-              class="mb-2"
-              height="16px"
-              width="60%"
-              borderRadius="8px"
-            />
+            <Skeleton class="mb-2" height="18px" width="120px" borderRadius="8px" />
+            <Skeleton class="mb-3" height="48px" width="85%" borderRadius="16px" />
+            <Skeleton class="mb-2" height="16px" width="70%" borderRadius="8px" />
+            <Skeleton class="mb-2" height="16px" width="60%" borderRadius="8px" />
           </template>
         </div>
       </section>
@@ -200,16 +193,10 @@ const breadcrumbs = computed(() => [
                 <VImage
                   v-if="eventData?.image"
                   :src="eventData?.image"
-                  :size="{
-                    xxs: [316, 210],
-                    xs: [517, 344],
-                    sm: [709, 472],
-                    md: [885, 589],
-                    lg: [672, 447],
-                    xl: [662, 440],
-                  }"
+                  sizes="lg:672px md:885px sm:709px xs:517px xxs:316px"
                   :alt="eventData?.image?.title || eventData?.title"
                   class="event-body__image-frame mb-4"
+                  loading="eager"
                 />
                 <p v-if="eventData?.image?.credit" class="event-body__credit">
                   {{ eventData?.image?.credit }}
@@ -256,7 +243,7 @@ const breadcrumbs = computed(() => [
                 <p v-if="eventLocation" class="event-rail__address">
                   {{ eventLocation }}
                 </p>
-                <VFlexibleLink v-if="mapsUrl" :to="mapsUrl" raw>
+                <VFlexibleLink v-if="mapsUrl" :to="mapsUrl">
                   <span class="event-rail__link">Open in Google Maps</span>
                 </VFlexibleLink>
               </div>
@@ -278,7 +265,7 @@ const breadcrumbs = computed(() => [
 
               <div v-if="eventData?.url" class="event-rail__section">
                 <h3>Event URL</h3>
-                <VFlexibleLink :to="eventData?.url" raw>
+                <VFlexibleLink :to="eventData?.url">
                   <span class="event-rail__link">{{ eventData?.url }}</span>
                 </VFlexibleLink>
               </div>

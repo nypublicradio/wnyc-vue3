@@ -15,11 +15,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <div
-    ref="el"
-    class="streamfield-embed streamfield-embed- instagram streamfield-paragraph mb-7"
-    v-html="block.value.embed"
-  />
+  <ClientOnly>
+    <div
+      ref="el"
+      class="streamfield-embed streamfield-embed- instagram streamfield-paragraph mb-7"
+      v-html="block.value.embed"
+    />
+  </ClientOnly>
 </template>
 
 <style lang="scss">

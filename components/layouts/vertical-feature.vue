@@ -23,6 +23,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  loading: {
+    type: String,
+    default: "lazy",
+  },
 })
 // TODO: use new smarter ratio calc
 const reactiveItems = toRef(props.list, "listItems")
@@ -41,22 +45,16 @@ const rectSizes = {
   lg: [885, 590],
   xl: [664, 443],
 }
-const leftCol = ref(props.isThin ? "col-12 md:col-8" : "lg:col-6")
-const rightCol = ref(props.isThin ? "col-12" : "lg:col-6")
+// Compute isSquare synchronously during setup so it runs during SSR
+// (onBeforeMount does NOT run on the server, causing hydration mismatches)
 const isSquare = ref(false)
-
-onBeforeMount(() => {
-  const featureItem = reactiveItems.value[0]
-  const imgHeight = Number(
-    featureItem.imageFullHeight || featureItem.image?.height
-  )
-  const imgWidth = Number(
-    featureItem.imageFullWidth || featureItem.image?.width
-  )
+const featureItem = reactiveItems.value?.[0]
+if (featureItem) {
+  const imgHeight = Number(featureItem.imageFullHeight || featureItem.image?.height)
+  const imgWidth = Number(featureItem.imageFullWidth || featureItem.image?.width)
   if (featureItem.cmsSource === mediaTypes.SIMPLECAST) {
     isSquare.value = true
   } else if (
-    featureItem &&
     imgHeight &&
     imgWidth &&
     !isNaN(imgHeight) &&
@@ -64,10 +62,16 @@ onBeforeMount(() => {
     imgHeight !== 0
   ) {
     isSquare.value = imgHeight === imgWidth
-  } else {
-    isSquare.value = false
   }
-})
+}
+
+// Initialize leftCol/rightCol with values consistent with isSquare
+const leftCol = ref(
+  props.isThin ? "col-12 md:col-8" : isSquare.value ? "lg:col-5" : "lg:col-5 xl:col-6"
+)
+const rightCol = ref(
+  props.isThin ? "col-12 lg:col-12" : isSquare.value ? "lg:col-7" : "lg:col-7 xl:col-6"
+)
 
 watch(isSquare, (newVal) => {
   leftCol.value = props.isThin
@@ -102,10 +106,7 @@ const listTextClasses = props.isThin ? "text-sm" : "text-base lg:text-base"
 </script>
 
 <template>
-  <div
-    class="layout layout-vertical-feature"
-    :class="{ 'is-thin': props.isThin }"
-  >
+  <div class="layout layout-vertical-feature" :class="{ 'is-thin': props.isThin }">
     <LayoutsTitleHeader
       :label="props.label || props.list.title"
       :seeMore="props.seeMore"
@@ -126,6 +127,7 @@ const listTextClasses = props.isThin ? "text-sm" : "text-base lg:text-base"
         :showTitleClasses="listTextClasses"
         :size="featureSizes"
         :allowVerticalEffect="!isSquare"
+        :loading="props.loading"
         @on-click="dynamicNavigation(reactiveItems[0])"
       />
       <skeleton-media-card
@@ -153,10 +155,11 @@ const listTextClasses = props.isThin ? "text-sm" : "text-base lg:text-base"
             :imgCol="listImgColClasses"
             :titleClasses="listTitleClasses"
             :teaseClasses="listTextClasses"
-            :pipeClasses="listTextClasses"
+            pipeClasses="text-xs"
             :showTitleClasses="listTextClasses"
             :allowVerticalEffect="false"
             :ratio="[1, 1]"
+            :loading="props.loading"
             :size="{
               xs: [112, 112],
               md: [208, 208],
@@ -251,4 +254,3 @@ const listTextClasses = props.isThin ? "text-sm" : "text-base lg:text-base"
   }
 }
 </style>
-

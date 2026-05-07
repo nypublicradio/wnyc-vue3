@@ -1,97 +1,149 @@
 <script setup>
 import { useToast } from "primevue/usetoast"
-import { togglePlayEpisode } from "~/utilities/helpers"
+import {
+  getFirstSentence,
+  isolateSlug,
+  stripHtmlTags,
+  togglePlayEpisode,
+} from "~/utilities/helpers"
 import { useTopStories } from "~/composables/useTopStories"
 const { getFilteredTopStories } = useTopStories()
-const { $analytics } = useNuxtApp()
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
 const toast = useToast()
 
-const {
-  data: episode,
-  status,
-  error,
-} = useFetch(
-  () =>
-    `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
-  {
-    key: `index-episode-${route.params.cmsSource}-${route.params.slug}`,
-    onResponse({ response }) {
-      const res = response._data
-      $analytics.sendPageView({
-        page_title: res.title,
-        page_type: "episode_page",
-        content_group: "on_demand_episode",
-        article_authors: res?.authors?.map((author) => author.name).join(","),
-        article_publish_date: res.publicationDate,
-        article_updated_date: res.updatedDate
-          ? res.updatedDate
-          : res.publicationDate,
-        article_title: res.title,
-      })
+const [
+  { data: episode, status, error },
+  { data: redirectsData }
+] = await Promise.all([
+  useFetchWrapper(
+    () =>
+      `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
+    {
+      key: `index-episode-${route.params.cmsSource}-${route.params.slug}`,
+      onResponseError() {
+        toast.add({
+          severity: "error",
+          summary: "We are having a problem loading this episode. Please try again later.",
+          life: 6000,
+          closable: true,
+        })
+      },
+    }
+  ),
+  useFetchWrapper(
+    () => `${config.public.BFF_URL}/api/show-slug-redirects`,
+    {
+      key: "show-slug-redirects",
+    }
+  )
+])
 
-      // check route param autoplay exists and if so, play the first segment
-      if (route.query.autoplay === "true") {
-        togglePlayEpisode(res.audio[0])
-        // remove the autoplay query param
-        router.replace({ query: { ...route.query, autoplay: null } })
-      }
-    },
-    onResponseError() {
-      toast.add({
-        severity: "error",
-        summary:
-          "We are having a problem loading this episode. Please try again later.",
-        life: 6000,
-        closable: true,
-      })
-    },
+const filteredTopStories = computed(() => getFilteredTopStories(episode.value))
+
+onMounted(() => {
+  if (!episode.value) return
+  const { $analytics } = useNuxtApp()
+  $analytics.sendPageView({
+    page_title: episode.value.title,
+    page_type: "episode_page",
+    content_group: "on_demand_episode",
+    article_authors: episode.value?.authors?.map((author) => author.name).join(","),
+    article_publish_date: episode.value.publicationDate,
+    article_updated_date: episode.value.updatedDate
+      ? episode.value.updatedDate
+      : episode.value.publicationDate,
+    article_title: episode.value.title,
+  })
+
+  // check route param autoplay exists and if so, play the first segment
+  if (route.query.autoplay === "true") {
+    togglePlayEpisode(episode.value.audio[0])
+    // remove the autoplay query param
+    router.replace({ query: { ...route.query, autoplay: null } })
+  }
+})
+
+// Simplecast episodes have showSlug/showId — fetch show info by UUID
+const theSlug = computed(
+  () =>
+    episode.value?.showSlug ||
+    episode.value?.showId ||
+    episode.value?.show?.slug ||
+    episode.value?.headers?.brand?.slug ||
+    null
+)
+
+const { data: showSlug } = await useFetchWrapper(
+  () =>
+    theSlug.value
+      ? `${config.public.BFF_URL}/api/v2/show/${theSlug.value}?slugOnly=true`
+      : null,
+  {
+    key: `v2-show-only-${theSlug.value}`,
   }
 )
 
-const episodeData = computed(() => episode.value)
-const theSlug = computed(
+// Redirect table for old publisher show slugs
+// (Fetch moved to Promise.all above for parallel execution)
+
+// Resolve the show slug: redirect table first, then simplecast, then raw fallback
+const resolvedShowSlug = computed(() => {
+  // 1. check redirect table for updated slug
+  const headerSlug = episode.value?.headers?.links?.find(
+    (link) => link.itemType === "show"
+  )?.slug
+
+  if (headerSlug) {
+    const redirect = redirectsData.value?.find((r) => isolateSlug(r.from) === headerSlug)
+    return redirect ? isolateSlug(redirect.to) : headerSlug
+  }
+
+  // 2. Simplecast path fallback
+  if (showSlug.value?.show?.slug) return showSlug.value.show.slug
+
+  // 3. Raw fallbacks
+  return episode.value?.show?.slug || episode.value?.headers?.brand?.slug || null
+})
+
+const { data: show, status: showStatus } = await useFetchWrapper(
   () =>
-    episodeData.value?.showSlug ||
-    episodeData.value?.showId ||
-    episodeData.value?.show?.slug ||
-    episodeData.value?.headers?.brand?.slug
-)
-
-const { data: showSlug } = useLazyFetch(() =>
-  theSlug.value
-    ? `${config.public.BFF_URL}/api/v2/show/${theSlug.value}?slugOnly=true`
-    : null
-)
-
-const { data: show, status: showStatus } = useLazyFetch(() =>
-  showSlug.value?.show?.slug
-    ? `${config.public.BFF_URL}/api/pages/wagtail/${showSlug.value?.show?.slug}?showOnly=true`
-    : null
+    resolvedShowSlug.value
+      ? `${config.public.BFF_URL}/api/pages/wagtail/${resolvedShowSlug.value}?showOnly=true`
+      : null,
+  {
+    key: `wagtail-show-only-${resolvedShowSlug.value}`,
+  }
 )
 
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
   { label: "Browse", route: "/browse" },
   {
-    label: showSlug.value?.show?.title,
-    route: `/browse/shows/${showSlug.value?.show?.slug}`,
+    label: show.value?.title,
+    route: `/browse/shows/${resolvedShowSlug.value}`,
   },
-  { label: episodeData.value?.title },
+  { label: episode.value?.title },
 ])
+
+const title = `${episode.value?.title} | WNYC`
+const tease =
+  episode.value?.tease ?? getFirstSentence(stripHtmlTags(episode.value?.tease))
+const description =
+  episode.value?.description ??
+  getFirstSentence(stripHtmlTags(episode.value?.description))
+useHead({
+  title,
+})
+useSeoMeta({
+  title,
+  description: tease ?? description,
+})
 </script>
 
 <template>
   <div class="episode-page">
-    <Html lang="en">
-      <Head>
-        <Title>{{ episodeData?.title }} | WNYC</Title>
-        <Meta name="og:title" :content="`${episodeData?.title} | WNYC`" />
-        <Meta name="twitter:title" :content="`${episodeData?.title} | WNYC`" />
-      </Head>
-    </Html>
     <FetchError v-if="error" />
     <template v-else>
       <section class="flex align-items-center">
@@ -99,14 +151,14 @@ const breadcrumbs = computed(() => [
       </section>
       <EpisodeTemplate
         :pending="status !== 'success'"
-        :episodeData="episodeData"
+        :episodeData="episode"
         :show="show"
-        :showPending="showStatus !== 'success'"
+        :showPending="showStatus === 'pending'"
       >
         <template #bottom>
           <Divider class="mt-8 mb-5" />
           <h2 class="mb-3">Top Stories From Gothamist</h2>
-          <TopStories :articles="getFilteredTopStories(episodeData)" />
+          <TopStories :articles="filteredTopStories" />
         </template>
       </EpisodeTemplate>
 
@@ -119,6 +171,7 @@ const breadcrumbs = computed(() => [
 .episode-page {
   min-height: 100vh;
 }
+
 .episode-page .segment-list .beforeHack {
   &::before {
     content: "";

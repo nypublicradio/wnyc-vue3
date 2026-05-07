@@ -36,7 +36,7 @@ const getWagtailEpisodes = async (showData: any, page = 1, pageSize = '10', show
         }
 
         // Transform curated content to normalize episodes
-        const transformedContent = await transformCuratedContent(showData.body, 'default', showSlug)
+        const transformedContent = await transformCuratedContent(showData.body, 'default', showSlug, showData)
 
         // Extract all episodes from the transformed curated lists
         const allEpisodes: any[] = []
@@ -119,7 +119,7 @@ const getWagtailShow = async (slug: string) => {
                 fields: 'description,topper_display_title,linked_data_source,show_art,show_logo,topper_background,body,about_module,can_download_episodes,can_embed_episodes,in_page_navigation',
             },
             headers: {
-                'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+                'X-CMS-Site': config.public.cmsSite
             }
         }
 

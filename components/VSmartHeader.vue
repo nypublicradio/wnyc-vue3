@@ -58,9 +58,10 @@ const props = defineProps({
 const headerHeightCssVar = ref(props.headerHeightCssVar)
 
 // scroll handlers
-let scroll = null
-if (import.meta.client) {
-  scroll = useScroll(
+const isMinimized = ref(props.reverse ? true : false)
+
+onMounted(() => {
+  const scroll = useScroll(
     props.targetWindowClass
       ? document.getElementsByClassName(props.targetWindowClass)[0]
       : window,
@@ -68,25 +69,26 @@ if (import.meta.client) {
       behavior: "smooth",
     }
   )
-}
 
-const isMinimized = ref(props.reverse ? true : false)
-
-watch([scroll?.y, scroll?.directions, scroll?.isScrolling], ([y, top, isScrolling]) => {
-  if (props.hide) {
-    return
-  }
-  if (isScrolling) {
-    const minimized =
-      y > props.heroBuffer && props.reverse
-        ? true
-        : top.top
-        ? false
-        : !top.top && y > props.heroBuffer
-        ? true
-        : false
-    isMinimized.value = props.reverse ? !minimized : minimized
-  }
+  watch(
+    [scroll.y, scroll.directions, scroll.isScrolling],
+    ([y, top, isScrolling]) => {
+      if (props.hide) {
+        return
+      }
+      if (isScrolling) {
+        const minimized =
+          y > props.heroBuffer && props.reverse
+            ? true
+            : top.top
+            ? false
+            : !top.top && y > props.heroBuffer
+            ? true
+            : false
+        isMinimized.value = props.reverse ? !minimized : minimized
+      }
+    }
+  )
 })
 
 watch(

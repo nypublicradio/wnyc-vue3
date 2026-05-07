@@ -11,7 +11,9 @@ const {
   data: shows,
   status,
   error,
-} = useLazyFetch(`${config.public.BFF_URL}/api/v3/shows`)
+} = await useFetchWrapper(`${config.public.BFF_URL}/api/v3/shows`, {
+  key: "v3-shows",
+})
 
 const router = useRouter()
 const searchFieldValue = ref("")
@@ -34,7 +36,11 @@ const options = computed(() => ({
   },
 }))
 
-const search = ref(null)
+const { results: searchResults } = useFuse(
+  searchFieldValue,
+  computed(() => shows.value?.all ?? []),
+  options
+)
 
 // clear the search field
 const clearSearchField = () => {
@@ -65,6 +71,7 @@ const toggleAllShows = () => {
 }
 
 watch(searchFieldValue, () => {
+  if (!import.meta.client) return
   // sets the scroll to the top of the page when search field is updated. a delay is needed to allow the search to complete
   setTimeout(() => {
     window.scrollTo(0, 0)
@@ -81,36 +88,18 @@ onMounted(() => {
   })
 })
 
-watch(
-  shows,
-  () => {
-    // init the search when shoes is populated
-    if (shows) {
-      search.value = useFuse(searchFieldValue, shows?.value?.all, options)
-    }
-  },
-  { once: true }
-)
+const title = "Browse Shows | WNYC"
+useHead({
+  title,
+})
+useSeoMeta({
+  title,
+  ogTitle: title,
+})
 </script>
 
 <template>
   <div class="browse-page">
-    <Html lang="en">
-      <Head>
-        <Title
-          >Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming
-          Radio, News</Title
-        >
-        <Meta
-          name="og:title"
-          content="Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-        <Meta
-          name="twitter:title"
-          content="Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-      </Head>
-    </Html>
     <div class="search z-2" :class="{ 'is-app': isApp }">
       <section class="thinContent">
         <h1 class="hidden md:block mb-3 md:mb-4">Browse All Shows</h1>
@@ -261,7 +250,7 @@ watch(
           </div>
           <div class="shows grid">
             <ShowItem
-              v-for="show in search.results"
+              v-for="show in searchResults"
               :data="show.item"
               :key="show.item.title"
               class="col-12 md:col-4 md:mb-5"
@@ -275,7 +264,7 @@ watch(
           </div>
           <!-- if no results show this -->
           <div
-            v-if="search.results.length === 0"
+            v-if="searchResults.length === 0"
             class="text-center flex flex-column gap-4 my-6"
           >
             <h2>No results for "{{ searchFieldValue }}"</h2>

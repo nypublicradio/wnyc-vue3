@@ -6,14 +6,19 @@ import {
     useAppDownloadLink,
 } from "~/composables/states"
 
-// Fetching guard to prevent concurrent fetches (thundering herd)
-let isFetching = false
-let fetchPromise: Promise<void> | null = null
-
-// strip https://www.wnyc.org from the url for local routes
+// strip any wnyc.org domain from the url for local routes
 const stripWNYCUrl = (url) => {
     if (url) {
-        const strippedUrl = url.replace('https://www.wnyc.org', '')
+        const strippedUrl = url.replace(/https?:\/\/(?:[a-zA-Z0-9-]+\.)*wnyc\.org/i, '')
+        return strippedUrl
+    }
+    return url
+}
+
+// strip https://www.wnyc.org/browse/shows/ from the url for local routes
+export const stripShowUrl = (url) => {
+    if (url) {
+        const strippedUrl = url.replace('https://www.wnyc.org/browse/shows/', '')
         return strippedUrl
     }
     return url
@@ -28,12 +33,12 @@ const resolveUrlFunctions = (items, appDownloadLink = '') => {
         if (typeof newItem.url === 'function') {
             newItem.url = newItem.url()
         }
-        
+
         // Replace app download link placeholder
         if (newItem.url === '__USE_APP_DOWNLOAD_LINK__') {
             newItem.url = appDownloadLink || '/mobile'
         }
-        
+
         // Replace logout command placeholder with actual function (client-side only)
         if (import.meta.client && newItem.command === '__LOGOUT_COMMAND__') {
             // Lazy load the logout function only on client side
@@ -59,7 +64,7 @@ const resolveUrlFunctions = (items, appDownloadLink = '') => {
 
 //normalize for menu function for Wagtail menu data
 const normalizeWagtailMenuData = (menuData = []) => {
-
+    if (!menuData || !Array.isArray(menuData)) return []
     return menuData.map((item) => ({
         label: item.value.title,
         url: stripWNYCUrl(item.value.url),
@@ -73,6 +78,7 @@ const normalizeWagtailMenuData = (menuData = []) => {
 
 // normalize for menu function for station data
 const normalizeStationsMenuData = (menuData = []) => {
+    if (!menuData || !Array.isArray(menuData)) return []
     return menuData.map((item) => ({
         label: item.station,
         url: `/live?slug=${item.slug}`,
@@ -86,7 +92,7 @@ const normalizeStationsMenuData = (menuData = []) => {
 
 // normalize for menu function for shows data
 const normalizeShowsMenuData = (menuData, limit) => {
-    if (!menuData?.featuredShowsInMenu) return []
+    if (!menuData || !menuData.featuredShowsInMenu || !Array.isArray(menuData.featuredShowsInMenu)) return []
     return menuData.featuredShowsInMenu.slice(0, limit).map((item) => ({
         label: item.title,
         url: `${mediaTypeRoutes.show}${item.slug}`,
@@ -116,28 +122,37 @@ function normalizeShowsResponseForMenu (shows: any[] | null) {
  * Fetch navigation data directly from external APIs (for app/static mode)
  * This replicates the server API logic for Capacitor builds
  */
-async function fetchNavigationDataDirect() {
+async function fetchNavigationDataDirect () {
     const config = useRuntimeConfig()
     const API_TIMEOUT = 5000
 
     try {
+        let allShows = null
+        if (config.public.ENV === 'prod') {
+            allShows = 90
+        } else {
+            allShows = 20
+        }
         const [wagtail, donate, stations, shows] = await Promise.allSettled([
             $fetch(config.public.HEADER_NAVIGATION_API as string, {
                 headers: {
-                    'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+                    'X-CMS-Site': config.public.cmsSite
                 },
                 timeout: API_TIMEOUT
             }),
             $fetch(config.public.SYSTEM_MESSAGES_API as string, {
                 headers: {
-                    'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+                    'X-CMS-Site': config.public.cmsSite
                 },
                 timeout: API_TIMEOUT
             }),
             $fetch(`${config.public.BFF_URL}/api/streams`, {
                 timeout: API_TIMEOUT
             }),
-            $fetch(`${config.public.AVIARY_BASE_API}curated_lists/20/`, {
+            $fetch(`${config.public.AVIARY_BASE_API}curated_lists/${allShows}/`, {
+                headers: {
+                    'X-CMS-Site': config.public.cmsSite
+                },
                 timeout: API_TIMEOUT
             }),
         ])
@@ -193,7 +208,6 @@ async function fetchNavigationDataDirect() {
  *   - error: Any error that occurred during fetching
  */
 export default async function useNavigationData () {
-
     // Define shared state (always run this to ensure state is available on both server and client)
     const headerNavigationData = useState("headerNavigationData", () => [])
     const allNavigationData = useState("allNavigationData", () => [])
@@ -205,28 +219,165 @@ export default async function useNavigationData () {
     }))
     const fetchStatus = useState("navigationFetchStatus", () => 'idle')
     const fetchError = useState("navigationFetchError", () => null)
-    
+    const fetchPromise = useState<Promise<void> | null>("navigationFetchPromise", () => null)
+
     // Get app download link outside conditional to ensure Nuxt context is available
     const appDownloadLink = useAppDownloadLink()
     const isApp = useIsApp()
 
     // Only fetch if we don't have data yet and not currently fetching
     if (headerNavigationData.value.length === 0) {
-        // If already fetching, wait for that fetch to complete (prevents thundering herd)
-        if (isFetching && fetchPromise) {
+        // Deduplicate concurrent calls: if a fetch is already in progress, await it instead of starting another
+        if (fetchPromise.value) {
+            await fetchPromise.value
+            return {
+                headerNavigationData,
+                allNavigationData,
+                footerNavigationData,
+                footerLegalLinksData,
+                donateButtonData,
+                status: fetchStatus,
+                error: fetchError
+            }
+        }
+
+        const doFetch = async () => {
+            const config = useRuntimeConfig()
+            // Start fetch (no module-level guard to avoid cross-request contamination in SSR)
             try {
-                // Add timeout to prevent waiting forever
-                await Promise.race([
-                    fetchPromise,
-                    new Promise((_, reject) => setTimeout(() => reject(new Error('Navigation fetch timeout')), 10000))
-                ])
-            } catch (err) {
-                // Timeout occurred, proceed with empty navigation
+                let nData, error, status
+
+                if (import.meta.server) {
+                    // Server-side: use $fetch to avoid HTTP requests (prevents circular dependencies during SSR/health checks)
+                    try {
+                        const serverData = await $fetch(`${config.public.BFF_URL}/api/navigation`)
+                        nData = { value: serverData }
+                        error = { value: null }
+                        status = { value: 'success' }
+                    } catch (err) {
+                        // Retry once on server before giving up
+                        try {
+                            const serverData = await $fetch(`${config.public.BFF_URL}/api/navigation`)
+                            nData = { value: serverData }
+                            error = { value: null }
+                            status = { value: 'success' }
+                        } catch (retryErr) {
+                            nData = { value: null }
+                            error = { value: err, retryErr }
+                            status = { value: 'error' }
+                        }
+                    }
+                } else if (isApp.value) {
+                    // App mode (Capacitor): fetch directly from external APIs (no server endpoint available)
+                    try {
+                        const directData = await fetchNavigationDataDirect()
+                        nData = { value: directData }
+                        error = { value: null }
+                        status = { value: 'success' }
+                    } catch (err) {
+                        nData = { value: null }
+                        error = { value: err }
+                        status = { value: 'error' }
+                    }
+                } else {
+                    // Client-side web mode: use $fetch directly (avoids payload hydration conflicts)
+                    try {
+                        const clientData = await $fetch(`${config.public.BFF_URL}/api/navigation`)
+                        nData = { value: clientData }
+                        error = { value: null }
+                        status = { value: 'success' }
+                    } catch (err) {
+                        nData = { value: null }
+                        error = { value: err }
+                        status = { value: 'error' }
+                    }
+                }
+
+                fetchStatus.value = status.value
+                fetchError.value = error.value
+
+                // If fetch failed or returned no data, use fallback nav (empty arrays set in catch)
+                if (error.value || !nData.value || !nData.value.data) {
+                    console.warn('Navigation data unavailable, using fallback:', error.value?.message || 'null response')
+                    throw new Error('Navigation data unavailable')
+                }
+
+                const bffData = nData.value.data
+
+                // IMPORTANT: Create a deep clone to avoid modifying the imported `allMenuData` object directly.
+                let workingHeaderNav = resolveUrlFunctions(allMenuData.map(item => ({ ...item })), appDownloadLink.value)
+                // Normalize and merge Stations
+                const stationsItems = normalizeStationsMenuData(bffData.stationsResponse)
+                if (workingHeaderNav[0]?.items?.[0]) {
+                    workingHeaderNav[0].items[0].splice(0, 0, ...stationsItems)
+                }
+
+                // Normalize and merge Shows
+                const showsItems = normalizeShowsMenuData(bffData.showsResponse, 5)
+                if (workingHeaderNav[2]?.items?.[0]) {
+                    workingHeaderNav[2].items[0].splice(0, 0, ...showsItems)
+                }
+
+                // Create the 'allNavigationData' state *before* header-specific modifications
+                // Clone again to ensure 'allNav' is independent from further 'workingHeaderNav' changes
+                const workingAllNav = resolveUrlFunctions(workingHeaderNav.map(item => ({ ...item })), appDownloadLink.value)
+                // Normalize and merge Wagtail Primary Navigation
+                const primaryNavItems = normalizeWagtailMenuData(bffData.wagtailResponse?.primary_navigation)
+                workingHeaderNav.splice(3, 0, ...primaryNavItems)
+
+                const collectionsMenuItem = workingAllNav.find((item) => item.label === "Collections")
+                if (collectionsMenuItem?.items) {
+                    collectionsMenuItem.items[0] = primaryNavItems
+                }
+
+                const legalLinkItems = normalizeWagtailMenuData(bffData.wagtailResponse?.legal_links)
+
+                workingHeaderNav = workingHeaderNav.filter((item) => item.inHeaderMenu !== false)
+
+                const donateButtonLabel = "WNYC App Donate Button"
+                const donateBanner = bffData.donateResponse?.product_banners?.find(
+                    (banner) => banner.value.title === donateButtonLabel
+                )
+
+                const finalDonateData = { buttonText: '', buttonLink: '' }
+                // change the donate link based on if it coming from the app or not. this is because in the Wagtail CMS, we can only have one product banner that controls the donate button. (https://cms.prod.nypr.digital/admin/settings/utils/systemmessagessettings/4/)
+                //example donate link:
+                // app:https://pledge.wnyc.org/support/wnyc-app/?utm_medium=wnyc-app&utm_source=donation-button&utm_campaign=give-now-button
+                // web: https://pledge.wnyc.org/support/wnyc/?utm_medium=wnyc&utm_source=donation-button&utm_campaign=give-now-button
+
+                if (donateBanner) {
+                    let link = donateBanner.value.button_link
+
+                    // Normalize the URL to web format first to avoid duplication
+                    link = link.replace('/support/wnyc-app', '/support/wnyc')
+                        .replace('utm_medium=wnyc-app', 'utm_medium=wnyc')
+
+                    // Convert to app format if we are in the app
+                    if (isApp.value) {
+                        link = link.replace('/support/wnyc', '/support/wnyc-app')
+                            .replace(/utm_medium=[^&]+/, 'utm_medium=wnyc-app')
+                    }
+
+                    finalDonateData.buttonLink = link
+                    finalDonateData.buttonText = donateBanner.value.button_text
+                }
+                const footerNavItems = workingAllNav.filter((item) => item.inFooterMenu !== false)
+
+                // Update shared state
+                headerNavigationData.value = workingHeaderNav
+                allNavigationData.value = workingAllNav
+                footerNavigationData.value = footerNavItems
+                footerLegalLinksData.value = legalLinkItems
+                donateButtonData.value = finalDonateData
+
+            } catch (fetchError) {
+                console.error("Failed to fetch or process navigation data:", fetchError)
+                // Send error to Sentry
                 if (import.meta.client) {
                     const { $sentry } = useNuxtApp()
-                    $sentry?.captureException(err, {
+                    $sentry?.captureException(fetchError, {
                         contexts: {
-                            fetchContext: {
+                            navigationContext: {
                                 function: 'useNavigationData',
                                 mode: import.meta.env.SSR ? 'ssr' : 'client',
                                 isApp: isApp.value
@@ -234,145 +385,17 @@ export default async function useNavigationData () {
                         }
                     })
                 }
+                headerNavigationData.value = []
+                allNavigationData.value = []
+                footerNavigationData.value = []
+                footerLegalLinksData.value = []
+                donateButtonData.value = { buttonText: '', buttonLink: '' }
             }
-        } else if (!isFetching) {
-            // Start fetch and set guard
-            isFetching = true
-            fetchPromise = (async () => {
-                try {
-                    let nData, error, status
-                    
-                    if (import.meta.server) {
-                        // Server-side: use $fetch to avoid HTTP requests (prevents circular dependencies during SSR/health checks)
-                        try {
-                            const serverData = await $fetch('/api/navigation')
-                            nData = { value: serverData }
-                            error = { value: null }
-                            status = { value: 'success' }
-                        } catch (err) {
-                            nData = { value: null }
-                            error = { value: err }
-                            status = { value: 'error' }
-                        }
-                    } else if (isApp.value) {
-                        // App mode (Capacitor): fetch directly from external APIs (no server endpoint available)
-                        try {
-                            const directData = await fetchNavigationDataDirect()
-                            nData = { value: directData }
-                            error = { value: null }
-                            status = { value: 'success' }
-                        } catch (err) {
-                            nData = { value: null }
-                            error = { value: err }
-                            status = { value: 'error' }
-                        }
-                    } else {
-                        // Client-side web mode: use useFetch for proper hydration
-                        const result = await useFetch('/api/navigation', {
-                            key: 'global-navigation-data',
-                        })
-                        nData = result.data
-                        error = result.error
-                        status = result.status
-                    }
-
-            fetchStatus.value = status.value
-            fetchError.value = error.value
-
-            // Check if there was a fetch error
-            if (error.value) {
-                throw new Error(`Navigation fetch failed: ${JSON.stringify(error.value)}`)
-            }
-
-            // Check if data is available before accessing nested properties
-            if (!nData.value) {
-                throw new Error('Navigation response is null')
-            }
-
-            if (!nData.value.data) {
-                throw new Error('Navigation data property is missing')
-            }
-
-            const bffData = nData.value.data
-
-            // IMPORTANT: Create a deep clone to avoid modifying the imported `allMenuData` object directly.
-            let workingHeaderNav = resolveUrlFunctions(allMenuData.map(item => ({ ...item })), appDownloadLink.value)
-            // Normalize and merge Stations
-            const stationsItems = normalizeStationsMenuData(bffData.stationsResponse)
-            if (workingHeaderNav[0]?.items?.[0]) {
-                workingHeaderNav[0].items[0].splice(0, 0, ...stationsItems)
-            }
-
-            // Normalize and merge Shows
-            const showsItems = normalizeShowsMenuData(bffData.showsResponse, 5)
-            if (workingHeaderNav[1]?.items?.[0]) {
-                workingHeaderNav[1].items[0].splice(0, 0, ...showsItems)
-            }
-
-            // Create the 'allNavigationData' state *before* header-specific modifications
-            // Clone again to ensure 'allNav' is independent from further 'workingHeaderNav' changes
-            const workingAllNav = resolveUrlFunctions(workingHeaderNav.map(item => ({ ...item })), appDownloadLink.value)
-            // Normalize and merge Wagtail Primary Navigation
-            const primaryNavItems = normalizeWagtailMenuData(bffData.wagtailResponse?.primary_navigation)
-            workingHeaderNav.splice(2, 0, ...primaryNavItems)
-
-            const collectionsMenuItem = workingAllNav.find((item) => item.label === "Collections")
-            if (collectionsMenuItem?.items) {
-                collectionsMenuItem.items[0] = primaryNavItems
-            }
-
-            const legalLinkItems = normalizeWagtailMenuData(bffData.wagtailResponse?.legal_links)
-
-            workingHeaderNav = workingHeaderNav.filter((item) => item.inHeaderMenu !== false)
-
-            const donateButtonLabel = isApp.value ? "WNYC App Donate Button" : "WNYC Donate Button"
-            const donateBanner = bffData.donateResponse?.product_banners?.find(
-                (banner) => banner.value.title === donateButtonLabel
-            )
-
-            const finalDonateData = { buttonText: '', buttonLink: '' }
-            if (donateBanner) {
-                finalDonateData.buttonText = donateBanner.value.button_text
-                finalDonateData.buttonLink = donateBanner.value.button_link
-            }
-            const footerNavItems = workingAllNav.filter((item) => item.inFooterMenu !== false)
-
-            // Update shared state
-            headerNavigationData.value = workingHeaderNav
-            allNavigationData.value = workingAllNav
-            footerNavigationData.value = footerNavItems
-            footerLegalLinksData.value = legalLinkItems
-            donateButtonData.value = finalDonateData
-
-                } catch (fetchError) {
-                    console.error("Failed to fetch or process navigation data:", fetchError)
-                    // Send error to Sentry
-                    if (import.meta.client) {
-                        const { $sentry } = useNuxtApp()
-                        $sentry?.captureException(fetchError, {
-                            contexts: {
-                                navigationContext: {
-                                    function: 'useNavigationData',
-                                    mode: import.meta.env.SSR ? 'ssr' : 'client',
-                                    isApp: isApp.value
-                                }
-                            }
-                        })
-                    }
-                    headerNavigationData.value = []
-                    allNavigationData.value = []
-                    footerNavigationData.value = []
-                    footerLegalLinksData.value = []
-                    donateButtonData.value = { buttonText: '', buttonLink: '' }
-                } finally {
-                    // Reset fetching guard
-                    isFetching = false
-                }
-            })()
-            
-            // Wait for the fetch to complete
-            await fetchPromise
         }
+
+        fetchPromise.value = doFetch()
+        await fetchPromise.value
+        fetchPromise.value = null
     }
 
     // Return the shared state and status

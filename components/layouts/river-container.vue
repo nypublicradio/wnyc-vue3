@@ -18,6 +18,10 @@ const props = defineProps({
     default: null,
     required: false,
   },
+  loading: {
+    type: String,
+    default: "lazy",
+  },
 })
 
 const reactiveItems = toRef(props.list, "listItems")
@@ -41,21 +45,14 @@ const reactiveItems = toRef(props.list, "listItems")
           imgCol="river-img-col"
           :data="article"
           :size="{ xs: [192, 192] }"
+          :loading="props.loading"
           @on-click="dynamicNavigation(article)"
         />
       </div>
     </div>
     <div v-else class="river-grid">
-      <div
-        v-for="index in 4"
-        :key="`skeleton-river-${index}`"
-        :class="props.cardClass"
-      >
-        <skeleton-media-card
-          isHorizontal
-          imgCol="river-img-col"
-          class="w-full"
-        />
+      <div v-for="index in 4" :key="`skeleton-river-${index}`" :class="props.cardClass">
+        <skeleton-media-card isHorizontal imgCol="river-img-col" class="w-full" />
       </div>
     </div>
   </div>

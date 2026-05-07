@@ -8,6 +8,7 @@ import {
   togglePlayEpisode,
   hasAudio,
   addToFavorites2,
+  isolateSlug,
 } from "~/utilities/helpers"
 import { useFallbackImages } from "~/composables/useFallbackImages"
 import {
@@ -17,11 +18,12 @@ import {
   useAppDownloadLink,
   useCurrentEpisodeHolder,
   useCurrentEpisode,
+  useIsLiveStream,
 } from "~/composables/states"
 //import { mediaTypeRoutes, mediaTypes } from "~/composables/globals"
 import useSleepTimer from "~/composables/useSleepTimer"
 import useLiveStream from "~/composables/data/liveStream"
-
+import { useToast } from "primevue/usetoast"
 const { getStationBySlugAndPlayIt } = useLiveStream()
 const props = defineProps({
   show: {
@@ -32,6 +34,7 @@ const props = defineProps({
 
 //const emit = defineEmits(["change", "click"]);
 const { show } = toRefs(props)
+const toast = useToast()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const currentEpisode = useCurrentEpisode()
 
@@ -42,9 +45,7 @@ const showImage = computed(
     show.value?.showArt ||
     show.value?.linkedDataSource?.value?.imageUrl
 )
-const topperTitle = computed(
-  () => show.value?.topper?.topperTitle || show.value?.title
-)
+const topperTitle = computed(() => show.value?.topper?.topperTitle || show.value?.title)
 const topperDescription = computed(() => show.value?.topper?.topperDescription)
 const topperBackground = computed(() => {
   if (show.value?.topper?.topperBackground.includes("background:")) {
@@ -67,21 +68,28 @@ const appDownloadLink = useAppDownloadLink()
 const isApp = useIsApp()
 const user = useCurrentUser()
 const isEpisodePlaying = useIsEpisodePlaying()
+const isLiveStream = useIsLiveStream()
 const { getEpisodeFallBackImage } = useFallbackImages()
 const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
 
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
-watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(route.params.slug)
-})
+if (import.meta.client) {
+  watchEffect(async () => {
+    isFavorited.value = await checkIsFavorited(route.params.slug)
+  })
+}
 
 // finds first episode with audio to play
 const firstEpisodeWithAudio = () => {
-  const curatedList = show.value?.body?.find(
-    (item) => item.type === "curated_list"
-  )
-  return curatedList?.value?.list?.listItems?.find((item) => {
+  const allListItems = []
+  const listItems = show.value?.body?.filter((item) => item.type === "curated_list")
+
+  listItems?.forEach((item) => {
+    allListItems.push(...item.value?.list?.listItems)
+  })
+
+  const firstPlayableEpisode = allListItems.find((item) => {
     if (hasAudio(item.audio)) {
       return true
     } else if (typeof item.audio === "string") {
@@ -90,17 +98,56 @@ const firstEpisodeWithAudio = () => {
       return false
     }
   })
+  if (!firstPlayableEpisode) {
+    toast.add({
+      severity: "info",
+      summary: "No playable episodes",
+      detail: "We couldn't find any playable audio for this show right now.",
+      life: 3000,
+    })
+  }
+  return firstPlayableEpisode
 }
+// computed properties to identify what is currently loaded
+const isLoadedEpisode = computed(() => {
+  if (isLiveStream.value || !currentEpisode.value) return false
+
+  // 1. Standard check: do the show titles match?
+  if (currentEpisode?.value?.showTitle === props.show?.title) return true
+
+  // 2. Archives check: is the current episode in the show's curated lists?
+  if (currentEpisode.value.id && props.show?.body) {
+    const listItems = props.show.body.filter((item) => item.type === "curated_list")
+    for (const item of listItems) {
+      const items = item.value?.list?.listItems
+      if (items && items.some((ep) => ep.id === currentEpisode.value.id)) {
+        return true
+      }
+    }
+  }
+
+  return false
+})
+
+const isLoadedLiveStream = computed(() => {
+  return (
+    isLiveStream.value &&
+    (currentEpisodeHolder.value?.title === props.show?.title ||
+      currentEpisode.value?.title === props.show?.title)
+  )
+})
+
 // check if the show is currently live
 const isCurrentlyLive = computed(() => {
-  return (
-    currentEpisodeHolder.value?.title === props.show.title ||
-    currentEpisode?.value?.title === props.show.title
-  )
+  return isolateSlug(currentEpisodeHolder.value?.detailsLink) === props.show?.meta?.slug
 })
 // handle the toggle play button at the top to play the most recent episode with audio and tracking
 const togglePlayMostRecentEpisode = () => {
-  if (isCurrentlyLive.value) {
+  if (isLoadedEpisode.value) {
+    togglePlayEpisode(currentEpisode.value)
+  } else if (isLoadedLiveStream.value) {
+    getStationBySlugAndPlayIt(currentEpisodeHolder.value.slug, true)
+  } else if (isCurrentlyLive.value) {
     getStationBySlugAndPlayIt(currentEpisodeHolder.value.slug, true)
   } else {
     const ep = firstEpisodeWithAudio()
@@ -109,6 +156,14 @@ const togglePlayMostRecentEpisode = () => {
     }
   }
 }
+
+// watch(
+//   currentEpisodeHolder,
+//   () => {
+//     currentEpisodeHolder.value.title = "All Of It with Alison Stewart"
+//   },
+//   { once: true }
+// )
 
 // add item to favorites
 const handleAddToFavorites = () => {
@@ -122,15 +177,14 @@ const handleAddToFavorites = () => {
     isFavorited.value = !isFavorited.value
   }
 }
+
+const isThisShowPlaying = computed(() => {
+  return isEpisodePlaying.value && (isLoadedEpisode.value || isLoadedLiveStream.value)
+})
 </script>
 
-
-
 <template>
-  <div
-    class="show-header-holder py-3 style-mode-dark"
-    :style="topperBackground"
-  >
+  <div class="show-header-holder py-3 style-mode-dark" :style="topperBackground">
     <section class="grid grid-nogutter m-auto">
       <div class="col-fixed hidden xxl:block w-20rem"></div>
       <div class="col">
@@ -147,6 +201,7 @@ const handleAddToFavorites = () => {
             :size="{ xs: [112, 112], md: [208, 208] }"
             class="flex-none show-image w-7rem md:w-13rem"
             :srcset="[2]"
+            loading="eager"
           />
           <Skeleton
             v-else
@@ -154,15 +209,9 @@ const handleAddToFavorites = () => {
             borderRadius="0px"
           />
           <div v-if="!isApp">
-            <div
-              v-if="show"
-              class="flex flex-column justify-content-start gap-2"
-            >
+            <div v-if="show" class="flex flex-column justify-content-start gap-2">
               <transition name="zoom">
-                <LiveBadge
-                  v-if="isCurrentlyLive"
-                  class="mb-1 align-self-start"
-                />
+                <LiveBadge v-if="isCurrentlyLive" class="mb-1 align-self-start" />
               </transition>
               <h2 class="line-height-1 text-2xl md:text-6xl">
                 {{ topperTitle }}
@@ -170,10 +219,7 @@ const handleAddToFavorites = () => {
               <!-- <p v-if="showScheduleSummary" class="mt-0 md:-mt-3">
                 {{ showScheduleSummary }}
               </p> -->
-              <p
-                v-if="topperDescription"
-                class="hidden md:block text-sm md:text-base"
-              >
+              <p v-if="topperDescription" class="hidden md:block text-sm md:text-base">
                 {{ topperDescription }}
               </p>
               <!-- desktop buttons -->
@@ -187,7 +233,7 @@ const handleAddToFavorites = () => {
                   @click="togglePlayMostRecentEpisode"
                 >
                   <template #icon>
-                    <PauseIcon v-if="isEpisodePlaying" />
+                    <PauseIcon v-if="isThisShowPlaying" />
                     <PlayIcon v-else />
                   </template>
                 </Button>
@@ -200,10 +246,7 @@ const handleAddToFavorites = () => {
                   @click="handleAddToFavorites"
                 >
                   <template #icon>
-                    <FollowIcon
-                      :active="isFavorited"
-                      style="height: 20px; width: 20px"
-                    />
+                    <FollowIcon :active="isFavorited" style="height: 20px; width: 20px" />
                   </template>
                 </Button>
 
@@ -225,9 +268,7 @@ const handleAddToFavorites = () => {
                   class=""
                   @click="
                     navigateTo(appDownloadLink, {
-                      external: appDownloadLink.startsWith('http')
-                        ? true
-                        : false,
+                      external: appDownloadLink.startsWith('http') ? true : false,
                     })
                   "
                 >
@@ -239,12 +280,7 @@ const handleAddToFavorites = () => {
             </div>
             <div v-else class="hidden md:flex flex-column gap-3 w-full">
               <div class="flex flex-column gap-0">
-                <Skeleton
-                  class="my-2"
-                  height="48px"
-                  width="65%"
-                  borderRadius="24px"
-                />
+                <Skeleton class="my-2" height="48px" width="65%" borderRadius="24px" />
                 <!-- <Skeleton
                   v-if="showScheduleSummary"
                   height="14px"
@@ -291,7 +327,7 @@ const handleAddToFavorites = () => {
             @click="togglePlayMostRecentEpisode"
           >
             <template #icon>
-              <PauseIcon v-if="isEpisodePlaying" />
+              <PauseIcon v-if="isThisShowPlaying" />
               <PlayIcon v-else />
             </template>
           </Button>

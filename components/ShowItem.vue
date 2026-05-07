@@ -1,10 +1,11 @@
 <script setup>
 import FollowIcon from "~/components/icons/FollowIcon.vue"
-import { checkIsFavorited, addToFavorites2 } from "~/utilities/helpers"
 import {
-  useCurrentEpisodeHolder,
-  useCurrentEpisode,
-} from "~/composables/states"
+  checkIsFavorited,
+  addToFavorites2,
+  isolateSlug,
+} from "~/utilities/helpers"
+import { useCurrentEpisodeHolder } from "~/composables/states"
 
 const emit = defineEmits(["on-click", "on-delete-favorite"])
 
@@ -45,18 +46,19 @@ const props = defineProps({
 
 const user = useCurrentUser()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
-const currentEpisode = useCurrentEpisode()
 
 // check if item is already favorited
 const isFavorited = ref(false)
-watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(props.data.slug)
+onMounted(() => {
+  watchEffect(async () => {
+    isFavorited.value = await checkIsFavorited(props.data.slug)
+  })
 })
 
-const handleIsLiveIndicator = computed(() => {
+// check if the show is currently live
+const isCurrentlyLive = computed(() => {
   return (
-    currentEpisodeHolder.value?.title === props.data.title ||
-    currentEpisode?.value?.title === props.data.title
+    isolateSlug(currentEpisodeHolder.value?.detailsLink) === props.data?.slug
   )
 })
 
@@ -119,7 +121,7 @@ const getDotMenuItems = (bucketItem) => {
         style="background-color: var(--p-surface-25)"
       />
       <div class="flex gap-1 flex-column align-items-start">
-        <LiveBadge v-if="handleIsLiveIndicator" class="mb-1" />
+        <LiveBadge v-if="isCurrentlyLive" class="mb-1" />
         <h2
           class="text-base md:text-lg line-height-2 truncate t2lines no-hyphens"
         >

@@ -6,9 +6,18 @@ export const useTopStories = () => {
   const config = useRuntimeConfig()
   const toast = useToast()
 
-  const { data: topStoriesData, status, error } = useLazyFetch(
-    `${config.public.BFF_URL}/api/homepagetopstories`
-  )
+  const topStoriesFetchArgs = [
+    `${config.public.BFF_URL}/api/homepagetopstories`,
+    {
+      key: "top-stories",
+    },
+  ]
+
+  const {
+    data: topStoriesData,
+    status,
+    error,
+  } = useFetchWrapper(...topStoriesFetchArgs)
 
   // Computed property to safely extract top_stories array
   const topStories = computed(() => {

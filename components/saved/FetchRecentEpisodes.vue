@@ -1,5 +1,6 @@
 <script setup>
-import { dynamicNavigation } from "~/utilities/helpers"
+import { dynamicNavigation, isolateSlug } from "~/utilities/helpers"
+
 const props = defineProps({
   episodesPerShow: {
     type: Number,
@@ -13,72 +14,70 @@ const props = defineProps({
 
 const config = useRuntimeConfig()
 
-// const { data: oldShow } = useFetch(
-//   `${config.public.BFF_URL}/api/show/${props.show.slug}`,
-//   {
-//     params: {
-//       pageSize: props.episodesPerShow,
-//     },
-//   }
-// )
-//console.log("props.show = ", props.show)
-const podcastId = ref(null)
-const episodes = ref(null)
-const pendingMore = ref(true)
-const { data: show, error } = useFetch(
-  `${config.public.BFF_URL}/api/pages/wagtail/${props.show.slug}?showOnly=true`,
-  {
-    onResponse(res) {
-      //console.log("res.response._data = ", res.response._data)
-      const pId = res.response._data.linkedDataSource?.[0]?.value?.id
-      if (pId) {
-        podcastId.value = pId
-      } else {
-        pendingMore.value = false
-      }
-    },
-  }
-)
+// 1. Fetch global redirects once per SSR payload (cached globally)
+const { data: cachedRedirects } = await useFetchWrapper("/api/show-slug-redirects", {
+  key: "global-show-redirects",
+})
 
-const { error: scError } = useFetch(
-  () =>
-    `${config.public.BFF_URL}/api/v3/show/${
-      podcastId.value
-    }/episodes?offset=0&limit=${props.episodesPerShow || 3}`,
-  {
-    onResponse(res) {
-      //meta.value = res.response._data.meta
-      //episodes.value = res.response._data.data
-      //console.log("res.response._data.data = ", res.response._data.data)
-      episodes.value = res.response._data.data
-      // missing show title added from show data
-      episodes.value.forEach((episode) => {
-        episode.showTitle = show.value.title
-      })
-      pendingMore.value = false
-    },
-    onError(error) {
-      //pendingMore.value = false
-      const globalToast = useGlobalToast()
-      globalToast.value = {
-        severity: "error",
-        summary:
-          "Sorry. We are having trouble loading more episodes. Please try again later.",
-        life: null,
-        closable: true,
-      }
-      console.error("error = ", error)
-    },
-    watch: [podcastId],
-    immediate: false,
+// 2. Fetch show info & episodes in a single consolidated pass
+const { data: episodes, status, error } = await useAsyncData(
+  `recent-episodes-${props.show?.slug}`,
+  async () => {
+    // Resolve redirect slug natively
+    const redirect = cachedRedirects.value?.find(
+      (redirectItem) =>
+        redirectItem.from.endsWith(`/${props.show?.slug}`) ||
+        redirectItem.from === props.show?.slug
+    )
+
+    // if redirect.to is an external url (http/https) skip the rest and return empty array
+    if (redirect?.to.startsWith("http")) {
+      return []
+    }
+
+    const slug = redirect ? isolateSlug(redirect.to) : props.show?.slug
+
+    // Fetch Wagtail show config safely
+    const showInfo = await $fetch(
+      `${config.public.BFF_URL}/api/pages/wagtail/${slug}?showOnly=true`
+    ).catch((e) => {
+      if (e.response?.status === 404) return null
+      throw e
+    })
+    // get the Simple cast podcast ID
+    const podcastId = showInfo?.linkedDataSource?.[0]?.value?.id
+    if (!podcastId) return []
+
+    // Fetch the recent episodes from the podcastId
+    const episodeData = await $fetch(
+      `${config.public.BFF_URL}/api/v3/show/${podcastId}/episodes`,
+      { query: { offset: 0, limit: props.episodesPerShow } }
+    ).catch((e) => {
+      if (e.response?.status === 404) return null
+      throw e
+    })
+
+    // Return the formatted array payload straight into `episodes.value`
+    const items = episodeData?.data || []
+    return items.map((ep) => ({ ...ep, showTitle: showInfo?.title }))
   }
 )
 </script>
 <template>
-  <div v-if="!pendingMore" :key="props.show.media_id">
-    <!-- {{ podcastId }} -->
-    <!-- <pre>{{ oldShow }}</pre> -->
-    <!-- <pre>{{ episodes }}</pre> -->
+  <div v-if="status === 'pending'">
+    <skeleton-media-card
+      v-for="i in props.episodesPerShow"
+      :key="`sk-${i}`"
+      showPlayButton
+      is-horizontal
+      imgCol="w-7rem h-7rem md:w-12rem md:h-12rem"
+      :size="[1, 1]"
+      :showBg="false"
+      :showBgMobile="false"
+      class="my-5"
+    />
+  </div>
+  <div v-else-if="episodes?.length > 0" :key="props.show?.media_id">
     <MediaCard
       v-for="episode in episodes"
       :key="episode.id"
@@ -95,18 +94,5 @@ const { error: scError } = useFetch(
     />
     <hr class="mt-5 mb-0" />
   </div>
-  <div v-else>
-    <skeleton-media-card
-      v-for="i in props.episodesPerShow"
-      :key="`sk-${i}`"
-      showPlayButton
-      is-horizontal
-      imgCol="w-7rem h-7rem md:w-12rem md:h-12rem"
-      :size="[1, 1]"
-      :showBg="false"
-      :showBgMobile="false"
-      class="my-5"
-    />
-  </div>
-  <FetchError v-if="scError || error" />
+  <FetchError v-if="error" />
 </template>

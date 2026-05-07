@@ -1,9 +1,10 @@
 <script setup>
-import VFlexibleLink from "./VFlexibleLink.vue"
 import Button from "primevue/button"
 import Dialog from "primevue/dialog"
 import ProgressSpinner from "primevue/progressspinner"
 import { computed, ref } from "vue"
+
+defineOptions({ inheritAttrs: false })
 
 const props = defineProps({
   /**
@@ -129,12 +130,15 @@ const emit = defineEmits([
   "image-click",
   "image-enlarge-click",
   "image-load",
+  "image-error",
   "enlarge-image-load",
 ])
 
 const refThisImg = ref(null)
-const thisWidth = ref(null)
+// SSR-safe default: use props.width if available, otherwise a sensible default
+const thisWidth = ref(props.width || 600)
 const theSrc = computed(() => {
+  if (!props.src) return ""
   return props.src
     .replace("{width}", props.width)
     .replace("{quality}", props.quality)
@@ -142,11 +146,9 @@ const theSrc = computed(() => {
 })
 
 const theSrcFull = computed(() => {
+  if (!props.src) return ""
   return props.src
-    .replace(
-      "s={width}",
-      props.maxWidth !== Infinity ? `s=${props.maxWidth}` : ""
-    )
+    .replace("s={width}", props.maxWidth !== Infinity ? `s=${props.maxWidth}` : "")
     .replace("{quality}", props.quality)
     .replace("{format}", props.format)
 })
@@ -166,12 +168,14 @@ const computedWidth = computed(() => {
     : props.width
 })
 const computedEnlargeWidth = computed(() => {
+  if (import.meta.server) return props.maxWidth
   const modalFramePaddingOffset = 84
   return window.innerWidth * window.devicePixelRatio > props.maxWidth
     ? props.maxWidth
     : (window.innerWidth - modalFramePaddingOffset) * window.devicePixelRatio
 })
 const computedEnlargeHeight = computed(() => {
+  if (import.meta.server) return props.maxHeight
   const originalWidth = props.maxWidth
   const originalHeight = props.maxHeight
   const newWidth = computedEnlargeWidth.value / window.devicePixelRatio
@@ -206,8 +210,7 @@ const getDimensions = () => {
         : props.width,
     }
   } else {
-    //console.log('thisWidth.value =  ', thisWidth.value)
-    let theWidth = thisWidth.value
+    let theWidth = thisWidth.value || props.width || 600
     if (props.maxWidth && props.maxWidth < theWidth) {
       theWidth = props.maxWidth
     }
@@ -259,6 +262,12 @@ onMounted(async () => {
       : typeof window === "undefined"
       ? props.defaultWidth
       : window.innerWidth
+
+  // Check if the native <img> is already loaded (e.g. cached after SSR hydration)
+  const img = refThisImg.value?.querySelector?.("img.native-image")
+  if (img?.complete && img.naturalHeight !== 0) {
+    emit("image-load")
+  }
 })
 </script>
 
@@ -269,13 +278,10 @@ onMounted(async () => {
       :to="props.to"
       :aria-hidden="props.isDecorative ? true : false"
       :tabindex="props.isDecorative ? -1 : 0"
-      style="width: auto; height: inherit"
+      class="v-image-link"
       @click="props.to ? emit('image-click', props.to) : null"
     >
-      <div
-        class="v-image-holder"
-        :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`"
-      >
+      <div class="v-image-holder" :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`">
         <div v-if="isVertical" class="bg">
           <nuxt-img
             :format="props.format"
@@ -286,6 +292,7 @@ onMounted(async () => {
             :height="props.height"
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
             :loading="props.loading"
+            :preload="{ fetchPriority: props.loading === 'eager' ? 'high' : 'low' }"
           />
         </div>
         <img
@@ -303,6 +310,7 @@ onMounted(async () => {
           :loading="loading"
           :srcset="srcset"
           @load="emit('image-load')"
+          @error="emit('image-error')"
         />
         <slot class="slot caption" name="caption"></slot>
         <slot class="slot gallery" name="gallery"></slot>
@@ -321,46 +329,49 @@ onMounted(async () => {
               ></Button>
             </slot>
           </div>
-          <Dialog
-            v-model:visible="loadingEnlargedImage"
-            modal
-            dismissable-mask
-            :draggable="false"
-            header=" "
-            :style="{ width: '95vw' }"
-          >
-            <nuxt-img
-              :format="props.format"
-              :provider="handleProvider"
-              class="enlarged-image"
-              :src="theSrcFull"
-              style="width: 100%; height: auto"
-              :alt="props.isDecorative ? '' : props.alt"
-              loading="eager"
-              :quality="70"
-              :width="computedEnlargeWidth"
-              :height="computedEnlargeHeight"
-              @load="enlargeLoad($event.target)"
-            />
-            <template #closeicon
-              ><slot class="slot close-icon" name="closeicon"></slot
-            ></template>
-          </Dialog>
-          <Teleport to="body">
-            <ProgressSpinner
-              v-if="loadingEnlargedImage && !loadedEnlargedImage"
-              style="
-                z-index: 1102;
-                position: fixed;
-                top: 0;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                margin: auto;
-              "
-              stroke-width="6"
-            />
-          </Teleport>
+          <ClientOnly>
+            <Dialog
+              v-model:visible="loadingEnlargedImage"
+              modal
+              dismissable-mask
+              :draggable="false"
+              header=" "
+              :style="{ width: '95vw' }"
+            >
+              <nuxt-img
+                :format="props.format"
+                :provider="handleProvider"
+                class="enlarged-image"
+                :src="theSrcFull"
+                style="width: 100%; height: auto"
+                :alt="props.isDecorative ? '' : props.alt"
+                loading="eager"
+                :preload="{ fetchPriority: 'high' }"
+                :quality="70"
+                :width="computedEnlargeWidth"
+                :height="computedEnlargeHeight"
+                @load="enlargeLoad($event.target)"
+              />
+              <template #closeicon
+                ><slot class="slot close-icon" name="closeicon"></slot
+              ></template>
+            </Dialog>
+            <Teleport to="body">
+              <ProgressSpinner
+                v-if="loadingEnlargedImage && !loadedEnlargedImage"
+                style="
+                  z-index: 1102;
+                  position: fixed;
+                  top: 0;
+                  bottom: 0;
+                  left: 0;
+                  right: 0;
+                  margin: auto;
+                "
+                stroke-width="6"
+              />
+            </Teleport>
+          </ClientOnly>
         </template>
       </div>
     </VFlexibleLink>
@@ -373,6 +384,10 @@ onMounted(async () => {
   line-height: 0;
   position: relative;
   height: inherit;
+  .v-image-link {
+    width: auto;
+    height: inherit;
+  }
   .v-image-holder {
     position: relative;
     overflow: hidden;

@@ -4,67 +4,158 @@ import {
   checkIsFavorited,
   trackClickEvent,
   dynamicNavigation,
+  getFirstSentence,
 } from "~/utilities/helpers"
 import { useGlobalToast } from "~/composables/states"
 
 const config = useRuntimeConfig()
 const route = useRoute()
-const podcastId = ref(null)
 
+const limit = 10
+const episodes = ref([])
 const meta = ref(null)
-const page = ref(1)
-const episodes = ref(null)
 
 const pendingMore = ref(false)
-const loadMoreRefVisible = ref(false)
 const loadMoreRef = ref(null)
-const isInitialObserver = ref(true)
 
+// Await the initial show data fetch for SSR
 const {
   data: show,
   status,
   error,
-} = useFetch(
+} = await useFetchWrapper(
   `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}?showOnly=true`,
   {
-    onResponse(res) {
-      podcastId.value = res.response._data.linkedDataSource[0].value.id
-    },
+    key: `show-episodes-page-${route.params.slug}`,
   }
 )
 
-const { status: scStatus, error: scError } = useFetch(
+const podcastId = computed(
+  () => show.value?.linkedDataSource?.[0]?.value?.id ?? null
+)
+
+// Await the initial episodes data fetch for SSR
+const {
+  data: episodeData,
+  status: scStatus,
+  error: scError,
+} = await useFetchWrapper(
   () =>
-    `${config.public.BFF_URL}/api/v3/show/${podcastId.value}/episodes?offset=${
-      meta.value?.pagination?.offset || 0
-    }&limit=${meta.value?.pagination?.limit || 10}`,
+    podcastId.value
+      ? `${config.public.BFF_URL}/api/v3/show/${podcastId.value}/episodes`
+      : null,
   {
-    onResponse(res) {
-      pendingMore.value = false
-      meta.value = res.response._data.meta
-      //episodes.value = res.response._data.data
-
-      episodes.value =
-        episodes.value?.length > 0
-          ? [...episodes.value, ...res.response._data.data]
-          : res.response._data.data
-    },
-    onError(error) {
-      pendingMore.value = false
-      const globalToast = useGlobalToast()
-      globalToast.value = {
-        severity: "error",
-        summary:
-          "Sorry. We are having trouble loading more episodes. Please try again later.",
-        life: null,
-        closable: true,
-      }
-      console.error("error = ", error)
-    },
-    watch: [podcastId],
-    immediate: false,
+    key: `episodes-${podcastId.value || route.params.slug}`,
+    query: { offset: 0, limit },
   }
 )
+
+// Sync initial fetched data into our mutable refs for client-side pagination
+watch(
+  episodeData,
+  (val) => {
+    if (val) {
+      episodes.value = val.data ?? []
+      meta.value = val.meta ?? null
+    }
+  },
+  { immediate: true }
+)
+
+const hasMore = computed(() => {
+  if (!meta.value?.pagination) return false
+
+  // Try to use the explicit hasMore boolean if provided by the BFF
+  if (typeof meta.value.hasMore === "boolean") {
+    return meta.value.hasMore
+  }
+
+  const totalCount =
+    meta.value.pagination.count ??
+    meta.value.totalCount ??
+    meta.value.pagination.totalCount
+  const nextOffset = meta.value.pagination.offset + limit
+
+  return !totalCount || nextOffset < totalCount
+})
+
+// Pagination handling
+const loadMore = async () => {
+  if (!hasMore.value || pendingMore.value) return
+
+  pendingMore.value = true
+
+  const nextOffset = meta.value.pagination.offset + limit
+
+  try {
+    const res = await $fetch(
+      `${config.public.BFF_URL}/api/v3/show/${podcastId.value}/episodes`,
+      { query: { offset: nextOffset, limit } }
+    )
+
+    if (res?.data) {
+      episodes.value = [...episodes.value, ...res.data]
+      meta.value = res.meta
+    }
+
+    trackClickEvent(
+      "Event Tracking - load more episodes",
+      "Shows Page",
+      show.value?.title
+    )
+  } catch (err) {
+    const globalToast = useGlobalToast()
+    globalToast.value = {
+      severity: "error",
+      summary:
+        "Sorry. We are having trouble loading more episodes. Please try again later.",
+      life: null,
+      closable: true,
+    }
+    console.error("Pagination error:", err)
+  } finally {
+    pendingMore.value = false
+  }
+}
+
+const { stop } = useIntersectionObserver(
+  loadMoreRef,
+  ([{ isIntersecting }]) => {
+    if (
+      isIntersecting &&
+      episodes.value?.length &&
+      hasMore.value &&
+      !pendingMore.value
+    ) {
+      loadMore()
+    }
+  }
+)
+
+const isFavorited = ref(false)
+onMounted(() => {
+  watchEffect(async () => {
+    isFavorited.value = await checkIsFavorited(route.params.slug)
+  })
+})
+
+const hasError = computed(() => {
+  const e1 = error.value
+  const e2 = scError.value
+  return (
+    (e1 && e1.statusCode !== 404 && e1.status !== 404) ||
+    (e2 && e2.statusCode !== 404 && e2.status !== 404)
+  )
+})
+
+onMounted(() => {
+  const { $analytics } = useNuxtApp()
+  $analytics.sendPageView({
+    page_title: "Browse Show Episodes",
+    page_type: "browse_shows_episodes_page",
+    content_group: "app_tab",
+  })
+})
 
 const breadcrumbs = computed(() => [
   { label: "Home", route: "/home" },
@@ -78,93 +169,28 @@ const breadcrumbs = computed(() => [
   },
 ])
 
-const { stop } = useIntersectionObserver(
-  loadMoreRef,
-  ([{ isIntersecting }]) => {
-    // so it does not trigger on initial load and before we have data
-    if (!isInitialObserver.value && episodes.value) {
-      loadMoreRefVisible.value = isIntersecting
-    } else {
-      isInitialObserver.value = false
-    }
-  }
-)
-
-// clean up the useIntersectionObserver
-onUnmounted(() => {
-  stop()
+const title = `${show.value?.title} | WNYC`
+const description = getFirstSentence(show.value?.summary)
+useHead({
+  title,
 })
-// load more episodes and track it
-const loadMore = () => {
-  page.value += 1
-  pendingMore.value = true
-  meta.value.pagination.offset += meta.value.pagination.limit
-  trackClickEvent(
-    "Event Tracking - load more episodes",
-    "Shows Page",
-    show.value?.show?.title
-  )
-}
-
-// if user is logged in, check if item is already favorited
-const isFavorited = ref(false)
-watchEffect(async () => {
-  isFavorited.value = await checkIsFavorited(route.params.slug)
+useSeoMeta({
+  title,
+  ogTitle: title,
+  description,
+  ogDescription: description,
 })
 
-// Watch for show data changes to update episodes and pagination
-watch(
-  show,
-  (newShow) => {
-    if (newShow?.episodes) {
-      page.value = newShow.episodes?.meta?.pagination?.page || 1
-      maxPages = newShow.episodes?.meta?.pagination?.pages || 0
-      episodes.value = newShow.episodes?.data
-    }
-  },
-  { immediate: true }
-)
-
-watch(loadMoreRefVisible, (val) => {
-  if (val) {
-    loadMore()
-  }
-})
-
-onMounted(() => {
-  // send GA page view
-  const { $analytics } = useNuxtApp()
-  $analytics.sendPageView({
-    page_title: "Browse Show Episodes",
-    page_type: "browse_shows_episodes_page",
-    content_group: "app_tab",
-  })
-})
+onUnmounted(() => stop())
 </script>
 
 <template>
   <div class="show-episodes-page pb-7">
     <section>
-      <Html lang="en">
-        <Head>
-          <Title
-            >Browse Shows | WNYC | New York Public Radio, Podcasts, Live
-            Streaming Radio, News</Title
-          >
-          <Meta
-            name="og:title"
-            content="Browse Show Episodes | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-          />
-          <Meta
-            name="twitter:title"
-            content="Browse Show Episodes | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-          />
-        </Head>
-      </Html>
       <div class="flex align-items-center">
         <Breadcrumbs :items="breadcrumbs" />
       </div>
-      <FetchError v-if="error || scError" />
+      <FetchError v-if="hasError" />
     </section>
 
     <ShowHeader :show="show" />
@@ -172,7 +198,7 @@ onMounted(() => {
     <section class="py-4">
       <div class="grid">
         <div class="col-fixed hidden xxl:block w-20rem"></div>
-        <div class="col pr-2 lg:pr-4">
+        <div class="col min-w-0 pr-2 lg:pr-4">
           <div class="flex flex-column gap-5">
             <h2 class="md:text-xl">All Episodes</h2>
             <template v-for="ep in episodes" :key="ep.id">
@@ -209,20 +235,20 @@ onMounted(() => {
               class="my-5"
             />
           </div>
-          <!-- v-if="meta?.pagination?.count < meta?.totalCount" -->
           <WnycLoader
-            ref="loadMoreRef"
+            v-if="pendingMore"
             spinner
             size="40px"
             class="mt-8 flex justify-content-center"
           />
-          <BackToTopButton />
+          <div ref="loadMoreRef" class="w-full h-1rem"></div>
         </div>
         <div class="col-fixed hidden lg:block w-20rem">
           <ShowSummary :show="show" />
         </div>
       </div>
     </section>
+    <BackToTopButton />
   </div>
 </template>
 

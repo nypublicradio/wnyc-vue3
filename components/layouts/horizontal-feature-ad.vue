@@ -20,25 +20,26 @@ const props = defineProps({
     default: null,
     required: false,
   },
+  loading: {
+    type: String,
+    default: "lazy",
+  },
 })
 
 const reactiveItems = toRef(props.list, "listItems")
 const { breakpoint } = useBreakpoints()
 const isLgBreakpoint = computed(() => breakpoint("<lg"))
-const isSquare = ref(false)
 
-onBeforeMount(() => {
-  const featureItem = reactiveItems.value[0]
-  const imgHeight = Number(
-    featureItem.imageFullHeight || featureItem.image?.height
-  )
-  const imgWidth = Number(
-    featureItem.imageFullWidth || featureItem.image?.width
-  )
+// Compute isSquare synchronously during setup so it runs during SSR
+// (onBeforeMount does NOT run on the server, causing hydration mismatches)
+const isSquare = ref(false)
+const featureItem = reactiveItems.value?.[0]
+if (featureItem) {
+  const imgHeight = Number(featureItem.imageFullHeight || featureItem.image?.height)
+  const imgWidth = Number(featureItem.imageFullWidth || featureItem.image?.width)
   if (featureItem.cmsSource === mediaTypes.SIMPLECAST) {
     isSquare.value = true
   } else if (
-    featureItem &&
     imgHeight &&
     imgWidth &&
     !isNaN(imgHeight) &&
@@ -46,10 +47,8 @@ onBeforeMount(() => {
     imgHeight !== 0
   ) {
     isSquare.value = imgHeight === imgWidth
-  } else {
-    isSquare.value = false
   }
-})
+}
 
 const squareSizes = {
   md: [443, 443],
@@ -66,9 +65,7 @@ const featureSizes = computed(() => {
 
 <template>
   <div class="layout layout-horizontal-feature-ad">
-    <div
-      class="ad mb-5 col-12 flex align-items-center justify-content-center lg:hidden"
-    >
+    <div class="ad mb-5 col-12 flex align-items-center justify-content-center lg:hidden">
       <story-htlAd
         layout="rectangle"
         slotClass="htlad-wnyc_homepage_rectangle"
@@ -92,6 +89,7 @@ const featureSizes = computed(() => {
         imgCol="w-6"
         :size="featureSizes"
         :allowVerticalEffect="!isSquare"
+        :loading="props.loading"
         @on-click="dynamicNavigation(reactiveItems[0])"
       />
       <skeleton-media-card
@@ -127,6 +125,7 @@ const featureSizes = computed(() => {
           :isHorizontal="isLgBreakpoint"
           imgCol="w-7rem md:w-12rem lg:w-full"
           :size="{ xs: [112, 112], md: [176, 176], lg: [412, 275] }"
+          :loading="props.loading"
           @on-click="dynamicNavigation(article)"
         />
       </template>

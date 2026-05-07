@@ -59,16 +59,24 @@ const routeBack = () => {
 }
 .p-breadcrumb ol {
   padding-left: 0;
-  overflow-x: auto;
+  //overflow-x: auto;
   // hide the scrollbar
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
 .p-breadcrumb li {
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   flex: none;
+  a {
+    &:focus-visible,
+    &:focus {
+      @include focus-ring-defaults;
+    }
+  }
+  &:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 .p-breadcrumb button {
   padding: 0;
@@ -78,7 +86,7 @@ const routeBack = () => {
 @include media("<md") {
   .p-breadcrumb {
     width: 100%;
-    overflow: hidden;
+    //overflow: hidden;
   }
 
   .p-breadcrumb ol {

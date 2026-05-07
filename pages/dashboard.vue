@@ -1,5 +1,19 @@
 <script setup>
 useHead({
+  title:
+    "User Account Dashboard | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+  meta: [
+    {
+      name: "og:title",
+      content:
+        "User Account Dashboard | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+    },
+    {
+      name: "twitter:title",
+      content:
+        "User Account Dashboard | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+    },
+  ],
   bodyAttrs: {
     class: "no-bottom-padding",
   },
@@ -7,22 +21,6 @@ useHead({
 </script>
 <template>
   <div class="dashboard-page">
-    <Html lang="en">
-      <Head>
-        <Title>
-          User Account Dashboard | WNYC | New York Public Radio, Podcasts, Live
-          Streaming Radio, News
-        </Title>
-        <Meta
-          name="og:title"
-          content="User Account Dashboard | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-        <Meta
-          name="twitter:title"
-          content="User Account Dashboard | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-      </Head>
-    </Html>
     <div class="pt-5 thinContent">
       <Settings />
     </div>

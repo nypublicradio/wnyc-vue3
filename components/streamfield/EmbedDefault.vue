@@ -7,7 +7,9 @@ defineProps<{
 </script>
 
 <template>
-  <div v-html="block.value.embed" />
+  <ClientOnly>
+    <div v-html="block.value.embed" />
+  </ClientOnly>
 </template>
 
 <style lang="scss">

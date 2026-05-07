@@ -52,6 +52,7 @@ export const mediaTypes = {
     SHOW: 'show',
     EVENT: 'event',
     EPISODE: 'episode',
+    FULL: 'full',
     SEGMENT: 'segment',
     STORY: 'story',
     ARTICLE_PAGE: 'article_page',
@@ -59,9 +60,13 @@ export const mediaTypes = {
     NPR_EPISODE: 'npr_episode',
     NPR_ARTICLE: 'npr_article',
     CARD: 'card',
+    STAFF: 'staff',
+    PEOPLE: 'people',
 }
 
 export const mediaTypeRoutes = {
+    [mediaTypes.STAFF]: '/staff/',
+    [mediaTypes.PEOPLE]: '/people/',
     [mediaTypes.LIVE]: '/live/',
     [mediaTypes.SHOW]: '/browse/shows/',
     [mediaTypes.EPISODE]: '/browse/shows/episode/',

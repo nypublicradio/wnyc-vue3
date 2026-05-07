@@ -42,6 +42,7 @@ ARG AVIARY_BASE_API
 ARG SIMPLECAST_URL
 ARG FEATURED_SHOWS_PAGE_ID
 ARG NUXT_SSR
+ARG CMS_SITE
 
 # Set ENV variables from build args so they're available during npm run build
 ENV ENV=${ENV}
@@ -84,6 +85,7 @@ ENV AVIARY_BASE_API=${AVIARY_BASE_API}
 ENV SIMPLECAST_URL=${SIMPLECAST_URL}
 ENV FEATURED_SHOWS_PAGE_ID=${FEATURED_SHOWS_PAGE_ID}
 ENV NUXT_SSR=${NUXT_SSR}
+ENV CMS_SITE=${CMS_SITE}
 
 WORKDIR /code
 
@@ -94,7 +96,9 @@ RUN npm ci
 RUN npm install sass
 
 COPY . .
-RUN npm run build
+ENV NUXT_TELEMETRY_DISABLED=1
+RUN timeout 300 npm run build; \
+    test -f .output/server/index.mjs || exit 1
 
 FROM node:18.18.2-slim AS app
 
@@ -121,8 +125,6 @@ COPY --chown=www:www public/robots* ./public/
 COPY --chown=www:www public/.well-known ./public/.well-known
 
 COPY --chown=www:www --from=build /code/.output/ ./.output/
-COPY --chown=www:www --from=build /code/.nuxt/ ./.nuxt/
-COPY --chown=www:www --from=build /code/node_modules/ ./node_modules/
 COPY --chown=www:www --from=build /code/package.json .
 COPY --chown=www:www --from=build /code/server/data/ ./server/data/
 
@@ -136,7 +138,7 @@ RUN mkdir -p /var/run/nginx/ && \
     chown -Rf www:www /etc/nginx && \
     chown -Rf www:www /run/nginx.pid && \
     chown -Rf www:www /app && \
-    chmod -R 777 /app/node_modules && \
+
     chmod -R 755 /app/scripts/entrypoint.sh
 
 ENV TZ=America/New_York

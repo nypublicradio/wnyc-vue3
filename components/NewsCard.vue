@@ -28,7 +28,12 @@ const emit = defineEmits(["on-click"])
 </script>
 
 <template>
-  <div v-if="newsData" class="news-card p-ripple" @click="emit('on-click')" v-ripple>
+  <div
+    v-if="newsData"
+    class="news-card p-ripple"
+    @click="emit('on-click')"
+    v-ripple
+  >
     <div>
       <VBadge
         :label="props.badgeLabel"
@@ -37,11 +42,17 @@ const emit = defineEmits(["on-click"])
       />
       <div class="news-title mt-2">
         <h2 class="text-sm md:text-base">{{ props.newsData?.cardTitle }}</h2>
-        <div class="flex align-items-center justify-content-between lg:text-base">
+        <div
+          class="flex align-items-center justify-content-between lg:text-base"
+        >
           <PipeData>
             <template #left>{{ props.sourceLabel }}</template>
             <template #right>
-              <span class="nobreak">{{ howLongAgo(props.newsData?.newsdate) }}</span>
+              <ClientOnly>
+                <span class="nobreak">{{
+                  howLongAgo(props.newsData?.newsdate)
+                }}</span>
+              </ClientOnly>
             </template>
           </PipeData>
           <PlayButton
@@ -83,7 +94,12 @@ const emit = defineEmits(["on-click"])
         />
       </div>
     </div>
-    <Skeleton class="md:hidden" height="28px" width="86px" borderRadius="15px" />
+    <Skeleton
+      class="md:hidden"
+      height="28px"
+      width="86px"
+      borderRadius="15px"
+    />
   </div>
 </template>
 

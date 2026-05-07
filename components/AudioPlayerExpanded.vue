@@ -4,6 +4,8 @@ import {
   shareAPI,
   checkIsFavorited,
   addToFavorites2,
+  isolateSlug,
+  getTrueSlug,
 } from "~/utilities/helpers"
 import {
   useCurrentEpisode,
@@ -41,26 +43,65 @@ const isApp = useIsApp()
 const { handleSleepTimer } = useSleepTimer()
 
 const isFavorited = ref(false)
+const isShowFollowed = ref(false)
+const isShowFollowable = ref(true)
 const showDownload = ref(true)
-watchEffect(async () => {
-  // hide share if it is a segment, which is only set in NPR direct show episodes
-  currentEpisode.value?.isSegment
-    ? (showShare.value = false)
-    : (showShare.value = true)
-  isFavorited.value = await checkIsFavorited(
-    currentEpisode.value.showSlug ||
-      currentEpisode.value.slug ||
-      currentEpisode.value.meta?.slug ||
-      null
-  )
-  // show/hide download button based on show title
-  const showsWithoutDownload = ["nyc now", "wnyc news"]
-  const showTitle = (
-    currentEpisode.value.showTitle || currentEpisode.value.title
-  )?.toLowerCase()
-  showDownload.value = showTitle
-    ? !showsWithoutDownload.includes(showTitle) || !isApp.value
-    : true
+const route = useRoute()
+
+// get true slug from id
+const getTrueSlugFromRedirects = async (link, isolateReturn = true) => {
+  const currentSlug = isolateSlug(link)
+  return await getTrueSlug(currentSlug, isolateReturn)
+}
+
+const trueSlug = ref(null)
+const trueTo = ref(null)
+
+const isLive = computed(() => {
+  return isLiveStream.value
+})
+
+watch(
+  currentEpisode,
+  async () => {
+    // initially populate the true slug
+    trueSlug.value = await getTrueSlugFromRedirects(
+      currentEpisode.value.detailsLink,
+      true
+    )
+    // initially populate the true "to" destination if LIVE only
+    if (isLive.value) {
+      trueTo.value = await getTrueSlugFromRedirects(
+        currentEpisode.value.detailsLink,
+        false
+      )
+      // handle if isShowFollowable
+      isShowFollowable.value = !trueTo.value.includes("http")
+    }
+  },
+  { immediate: true }
+)
+
+onMounted(() => {
+  watchEffect(async () => {
+    if (!user.value) return
+    // hide share if it is a segment, which is only set in NPR direct show episodes
+    currentEpisode.value?.isSegment ? (showShare.value = false) : (showShare.value = true)
+    isFavorited.value = await checkIsFavorited(
+      currentEpisode.value?.meta?.slug || currentEpisode.value?.slug
+    )
+    //const trueSlug = await getTrueSlugFromRedirects(currentEpisode.value.detailsLink)
+    isShowFollowed.value = await checkIsFavorited(trueSlug.value)
+
+    // show/hide download button based on show title
+    const showsWithoutDownload = ["nyc now", "wnyc news"]
+    const showTitle = (
+      currentEpisode.value.showTitle || currentEpisode.value.title
+    )?.toLowerCase()
+    showDownload.value = showTitle
+      ? !showsWithoutDownload.includes(showTitle) || !isApp.value
+      : true
+  })
 })
 
 onMounted(() => {
@@ -79,17 +120,41 @@ const handleAddToFavorites = () => {
     isFavorited.value = !isFavorited.value
   }
 }
+
 // add show to favorites
-const handleFollow = async (showSlug) => {
+const handleFollowLive = async () => {
   try {
-    const show = await $fetch(`${config.public.BFF_URL}/api/show/${showSlug}`)
+    let showData = null
+    if (user.value) {
+      // Step 1: get the trueSlug from the detailsLink declared on the root and set in the watch
+
+      // Step 2: fetch wagtail show data if we successfully resolved a true slug
+      if (trueSlug.value) {
+        showData = await $fetch(
+          `${config.public.BFF_URL}/api/pages/wagtail/${trueSlug.value}?showOnly=true`
+        ).catch(() => null)
+      }
+
+      if (!showData) {
+        console.warn("Unable to find the show properties.")
+        globalToast.value = {
+          severity: "warn",
+          summary: "Unable to find the show to follow.",
+          life: 3000,
+        }
+        return
+      }
+    }
+
+    // add show to favorites (this is not nested under the user check because this function handles the user prompt to login/create an account)
     addToFavorites2({
-      item: show.show,
-      isFavorited: isFavorited.value,
+      item: showData,
+      isFavorited: isShowFollowed.value,
       message: "Updated your followed shows.",
     })
+    // toggle the followed state if the user is logged in
     if (user.value) {
-      isFavorited.value = !isFavorited.value
+      isShowFollowed.value = !isShowFollowed.value
     }
   } catch (error) {
     console.error(`Error following this show: ${error}`)
@@ -109,9 +174,7 @@ const handleDownload = async () => {
     "Expanded Audio Player",
     currentEpisode.value.title
   )
-  progress.value[currentEpisode.value.id] = await fetchAndStoreMp3(
-    currentEpisode.value
-  )
+  progress.value[currentEpisode.value.id] = await fetchAndStoreMp3(currentEpisode.value)
 }
 
 // handle share button
@@ -138,26 +201,27 @@ const handleShare = () => {
 //   )
 // }
 
-const isLive = computed(() => {
-  return isLiveStream.value
-})
-
 // set the items for the Dot menu
 const getDotMenuItems = () => {
   return [
     ...(isLive.value
       ? [
-          {
-            label: `${isFavorited.value ? "Unfollow" : "Follow"} ${
-              currentEpisode.value.title
-            }`,
-            customIcon: FollowIcon,
-            active: isFavorited.value,
-            title: currentEpisode.value.title,
-            command: () => {
-              handleFollow(currentEpisode.value.showSlug)
-            },
-          },
+          ...(isShowFollowable.value
+            ? [
+                {
+                  label: `${isShowFollowed.value ? "Unfollow" : "Follow"} ${
+                    currentEpisode.value.title
+                  }`,
+                  customIcon: FollowIcon,
+                  active: isShowFollowed.value,
+                  title: currentEpisode.value.title,
+                  command: () => {
+                    handleFollowLive()
+                  },
+                },
+              ]
+            : []),
+
           ...(isApp.value
             ? [
                 {
@@ -197,9 +261,7 @@ const getDotMenuItems = () => {
             ? [
                 {
                   label: `${
-                    isFavorited.value
-                      ? "Unfavorite Episode"
-                      : "Favorite Episode"
+                    isFavorited.value ? "Unfavorite Episode" : "Favorite Episode"
                   }`,
                   customIcon: StarIcon,
                   active: isFavorited.value,
@@ -290,34 +352,23 @@ const moreFromClick = async () => {
     currentEpisode.value.meta?.showSlug ||
     currentEpisode.value.showId ||
     currentEpisode.value.show
-  let finalSlug = slug
-  // detect if the slug is a uuid
-  const isUuid =
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug)
-  if (isUuid) {
-    try {
-      const showSlug = await $fetch(
-        `${config.public.BFF_URL}/api/v2/show/${slug}?slugOnly=true`
-      )
-      finalSlug = showSlug.show.slug
-    } catch (error) {
-      globalToast.value = {
-        severity: "error",
-        summary:
-          "We are having a problem loading the show page. Please try again later.",
-        life: 6000,
-        closable: true,
-      }
-      console.error(`Error fetching show details in moreFromClick: ${error}`)
-      return
-    }
-  }
+  const finalSlug = await getTrueSlug(slug)
+
   trackClickEvent(
     `Click Tracking - Expanded Audio Player More from ${title}`,
     "Expanded Audio Player",
     title
   )
   emit("close-panel")
+
+  // if you are routing to the same page scroll to top of the page
+  if (route.params.slug === finalSlug) {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    })
+  }
+
   navigateTo(`${mediaTypeRoutes.show}${finalSlug}`)
 }
 </script>
@@ -327,10 +378,7 @@ const moreFromClick = async () => {
     <!-- <pre class="text-xs">{{ currentEpisode }}</pre> -->
     <div class="tools flex justify-content-between">
       <div v-if="isLive && isApp" class="flex gap-3">
-        <SleepTimerButton
-          @emit-click="handleSleepTimer"
-          :isActive="sleepTimerRunning"
-        />
+        <SleepTimerButton @emit-click="handleSleepTimer" :isActive="sleepTimerRunning" />
       </div>
       <div v-else class="flex gap-3">
         <Button
@@ -339,7 +387,7 @@ const moreFromClick = async () => {
           rounded
           aria-label="add to favorites"
           @click="handleAddToFavorites"
-          v-if="!currentEpisode.hideFavorite"
+          v-if="!currentEpisode.hideFavorite && !isLive"
         >
           <template #icon>
             <StarIcon :active="isFavorited" />
@@ -363,9 +411,7 @@ const moreFromClick = async () => {
           </template>
         </Button>
         <DownloadProgress
-          v-if="
-            progress[currentEpisode.id] || isAlreadyDownloaded(currentEpisode)
-          "
+          v-if="progress[currentEpisode.id] || isAlreadyDownloaded(currentEpisode)"
           class="flex align-items-center"
           :isDownloaded="isAlreadyDownloaded(currentEpisode)"
           :progress="progress[currentEpisode.id]"
@@ -385,8 +431,8 @@ const moreFromClick = async () => {
             <ShareIcon />
           </template>
         </Button>
-
         <DotMenu
+          v-if="getDotMenuItems().length > 0"
           :menuItems="getDotMenuItems()"
           size="large"
           class="-mr-2"
@@ -427,26 +473,19 @@ const moreFromClick = async () => {
     </div>
     <VImage
       v-if="
-        !!currentEpisode.onTodaysShowImageTemplate
-          ? false
-          : currentEpisode.player_image !== currentEpisode.image
+        Boolean(currentEpisode?.onTodaysShowImageTemplate)
+          ? currentEpisode?.player_image !== currentEpisode?.image
+          : false
       "
-      :src="currentEpisode.image || currentEpisode.image.template"
-      :alt="`${currentEpisode.title} featured image`"
-      :size="{
-        xs: [327, 218],
-        sm: [528, 352],
-        md: [672, 448],
-        lg: [896, 597],
-        xl: [1104, 736],
-        xxl: [1344, 896],
-      }"
+      :src="currentEpisode?.image || currentEpisode?.image?.template"
+      :alt="`${currentEpisode?.title} featured image`"
+      sizes="xs:327, sm:528, md:672"
       class="card-feature-image"
     >
       <template #caption>
         <VImageCaption
-          v-if="currentEpisode.image.caption"
-          :text="currentEpisode.image.caption"
+          v-if="currentEpisode?.image?.caption"
+          :text="currentEpisode?.image?.caption"
           class="caption"
         />
       </template>
@@ -459,14 +498,7 @@ const moreFromClick = async () => {
       v-if="currentEpisode.onTodaysShowImageTemplate"
       :src="{ template: currentEpisode.onTodaysShowImageTemplate }"
       :alt="`${currentEpisode.title} featured image`"
-      :size="{
-        xs: [327, 218],
-        sm: [528, 352],
-        md: [672, 448],
-        lg: [896, 597],
-        xl: [1104, 736],
-        xxl: [1344, 896],
-      }"
+      sizes="xs:327, sm:528, md:672"
       class="show-feature-image"
     >
       <template #caption>
@@ -515,9 +547,7 @@ const moreFromClick = async () => {
       ref="expandedFooterRef"
       v-if="
         !isLiveStream &&
-        (currentEpisode.showSlug ||
-          currentEpisode.meta?.showSlug ||
-          currentEpisode.show)
+        (currentEpisode.showSlug || currentEpisode.meta?.showSlug || currentEpisode.show)
       "
       class="expanded-footer"
     >
@@ -526,9 +556,7 @@ const moreFromClick = async () => {
         <Button
           text
           severity="secondary"
-          :label="`More from ${
-            currentEpisode.showTitle || currentEpisode.title
-          }`"
+          :label="`More from ${currentEpisode.showTitle || currentEpisode.title}`"
           :aria-label="`More from ${
             currentEpisode.showTitle || currentEpisode.title
           } button`"
@@ -550,8 +578,7 @@ const moreFromClick = async () => {
     .expanded-player {
       max-width: $thinContentWidth;
       padding-bottom: calc(
-        $bottomMenuHeight + $expandedFooterHeight + env(safe-area-inset-bottom) +
-          2rem
+        $bottomMenuHeight + $expandedFooterHeight + env(safe-area-inset-bottom) + 2rem
       );
       .expanded-footer {
         background: var(--persistent-player-bg);

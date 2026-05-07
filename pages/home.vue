@@ -1,5 +1,6 @@
 <script setup>
 import { useCurrentEpisode, useIsApp } from "~/composables/states"
+import { useFetchWrapper } from "~/composables/useFetchWrapper"
 // import { useTopStories } from "~/composables/useTopStories"
 // const { topStories } = useTopStories()
 import { brandCards } from "~/composables/globals.ts"
@@ -14,23 +15,39 @@ const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
 const isApp = useIsApp()
 
-const { data: latestNewsUpdatesData, error: error2 } = useLazyFetch(
-  `${config.public.BFF_URL}/api/homepagelatestnewsupdates`
-)
+const newsFetchArgs = [
+  `${config.public.BFF_URL}/api/homepagelatestnewsupdates`,
+  {
+    key: "home-latest-news-updates",
+    retry: 2,
+    retryDelay: 500,
+  },
+]
+const curationFetchArgs = [
+  `${config.public.BFF_URL}/api/homepagecuration`,
+  {
+    key: "home-page-curation",
+    retry: 2,
+    retryDelay: 500,
+  },
+]
 
-const {
-  data: pagedata,
-  error,
-  status,
-} = useLazyFetch(`${config.public.BFF_URL}/api/homepagecuration`)
+const [
+  { data: latestNewsUpdatesData, error: error2 },
+  { data: pagedata, error, status }
+] = await Promise.all([
+  useFetchWrapper(...newsFetchArgs),
+  useFetchWrapper(...curationFetchArgs)
+])
 
 definePageMeta({
   layout: "default",
-  layoutTransition: {
-    name: "login",
-  },
+  // layoutTransition: {
+  //   name: "login",
+  // },
 })
 
+// Auto-refresh handled by useFetchWrapper
 onMounted(() => {
   // send GA page view
   const { $analytics } = useNuxtApp()
@@ -44,46 +61,23 @@ onMounted(() => {
 
 <template>
   <div class="home">
-    <Html lang="en">
-      <Head>
-        <Title
-          >WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
-          News</Title
-        >
-        <Meta
-          name="og:title"
-          content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-        <Meta
-          name="twitter:title"
-          content="WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-      </Head>
-    </Html>
-
     <section class="mb-4 pt-0 md:my-4 md:pt-4">
       <div class="home-top grid grid-nogutter gap-4">
         <LiveFeature class="col-12 lg:col -mx-4 md:mx-0 w-screen md:w-full" />
         <div class="latestNewsHolder col">
           <FetchError v-if="error || error2" />
-          <h2 class="mt-4 mb-3 lg:mt-0 md:text-lg lg:text-xl">
-            Latest News Updates
-          </h2>
+          <h2 class="mt-4 mb-3 lg:mt-0 md:text-lg lg:text-xl">Latest News Updates</h2>
           <LatestNewsUpdates
-            :localNewscast="latestNewsUpdatesData?.local_newscast"
-            :nationalNewscast="latestNewsUpdatesData?.national_newscast"
+            :localNewscast="latestNewsUpdatesData?.local_newscast ?? null"
+            :nationalNewscast="latestNewsUpdatesData?.national_newscast ?? null"
           />
         </div>
       </div>
       <!-- <VImage src="/fallback-ep.png" /> -->
     </section>
-    <!-- <pre>{{ pagedata?.new_home_template.curatedContent }}</pre> -->
     <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
-    <!-- <pre>{{ pagedata?.new_home_template.curatedContent[0] }}</pre> -->
     <section v-if="status === 'success'">
-      <VStreamfield
-        :streamfieldBlocks="pagedata?.new_home_template.curatedContent"
-      />
+      <VStreamfield :streamfieldBlocks="pagedata?.new_home_template?.curatedContent" />
     </section>
     <section v-else>
       <layouts-horizontal-feature-ad-skeleton />
@@ -96,14 +90,14 @@ onMounted(() => {
           class="station-holder desktop item col-6 md:col-4 xl:col-2"
           :key="brand.label"
         >
-          <BrandCard :brand="brand" />
+          <LazyBrandCard :brand="brand" />
         </div>
       </div>
     </section>
 
-    <DonateBanner v-if="!isApp" class="mt-6" />
+    <LazyDonateBanner v-if="!isApp" class="mt-6" />
 
-    <SponsorBanner
+    <LazySponsorBanner
       v-if="isApp"
       :style="`margin-bottom:${currentEpisode ? '-20px' : '0'}`"
     />

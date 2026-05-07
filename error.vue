@@ -24,31 +24,51 @@ function handleGoHome() {
   clearError({ redirect: "/home" })
   refreshData()
 }
-
-//clear error and try again
-function handleTryAgain() {
-  //nuxt global
-  clearError()
-  refreshData()
-}
 </script>
 
 <template>
-  <div class="">
-    <div class="flex flex-column gap-3 py-4 px-5">
-      <h1>{{ error?.message }}</h1>
-      There was an error 😱
-
-      <br />
-      <div class="mt-3 flex gap-3 justify-content-center">
-        <Button
-          label="Try again"
-          severity="secondary"
-          aria-label="try again"
-          @click="handleTryAgain"
+  <div class="error">
+    <NuxtLayout>
+      <section class="flex flex-column md:flex-row gap-3 align-items-center">
+        <nuxt-img
+          src="/404_tote.webp"
+          alt="404"
+          preload
+          fetchpriority="high"
+          loading="eager"
+          class="flex-none w-15rem lg:w-27rem"
+          sizes="xs:438px"
         />
-        <Button label="Navigate home" aria-label="Navigate home" @click="handleGoHome" />
-      </div>
-    </div>
+        <div class="text-center md:text-left">
+          <div class="header">
+            <h1 v-if="error.statusCode === 404">Sorry, this page can't be found.</h1>
+            <h1 v-else>Sorry, something went wrong.</h1>
+          </div>
+          <div
+            class="mt-3 flex flex-column gap-3 justify-content-center lg:justify-content-start"
+          >
+            <p>
+              The page you're looking for isn't available. It may have been removed or the
+              link has expired.
+            </p>
+            <Button
+              severity="secondary"
+              variant="link"
+              class="link w-10rem jusify-self-start -ml-4"
+              label="Return home"
+              aria-label="Return home"
+              @click="handleGoHome"
+            />
+          </div>
+        </div>
+      </section>
+    </NuxtLayout>
+    <Drawers class="z-2" />
   </div>
 </template>
+
+<style scoped>
+.header h1 {
+  font-size: 2.25rem;
+}
+</style>

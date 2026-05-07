@@ -7,6 +7,7 @@
 import type { InformationPage } from "~/composables/types/Page"
 
 const route = useRoute()
+const config = useRuntimeConfig()
 
 /* preview */
 import { usePreviewData } from "~/composables/states"
@@ -18,50 +19,31 @@ if (isPreview) {
   if (!previewData.value || !previewData.value.data) {
     throw createError({
       statusCode: 404,
-      statusMessage: 'Preview data not found',
+      statusMessage: "Preview data not found",
       fatal: true,
     })
   }
   page = previewData.value.data
 } else {
-  // Fetch page data - middleware has already checked existence and set 404 if needed
   const slug = `/${route?.params?.slug as string}`
-  const { data, error } = await useFetch('/api/pages/wagtail/find', {
-    key: `page-${slug}`,
-    query: { html_path: slug },
-  })
-  
+  const { data, error } = await useFetchWrapper(
+    `${config.public.BFF_URL}/api/pages/wagtail/find`,
+    {
+      key: `page-${slug}`,
+      query: { html_path: slug },
+    }
+  )
+
   if (error.value || !data.value) {
     throw createError({
       statusCode: error.value?.statusCode || 404,
-      statusMessage: error.value?.message || 'Page Not Found',
+      statusMessage: error.value?.message || "Page Not Found",
       fatal: true,
     })
   }
-  
+
   page = normalizeFindPageResponse(data)
 }
-
-// const { $analytics } = useNuxtApp()
-
-// onMounted(() => {
-//   if (isPreview) return
-
-//   switch (page?.type) {
-//     case "information_page":
-//       $analytics.schedulePageView({
-//         page_type: "information_page",
-//         content_group: "static-page",
-//       })
-//       break
-//     default:
-//       throw createError({
-//         statusCode: 404,
-//         statusMessage: "Page Not Found",
-//         fatal: true,
-//       })
-//   }
-// })
 </script>
 
 <template>

@@ -36,7 +36,7 @@ const emit = defineEmits(["on-click"])
     >
       <slot name="icon">
         <div class="flex align-items-center icon">
-          <ReadIcon />
+          <ReadSmallIcon />
         </div>
       </slot>
       <slot>

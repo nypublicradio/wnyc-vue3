@@ -99,7 +99,6 @@ const handleMouseLeave = () => {
     @keydown.enter="handleMouseEnterKey"
     @mouseleave="handleMouseLeave"
     class="nav-button flex-none"
-    :class="[$attrs.class]"
     raw
     :to="props.route"
     :aria-haspopup="hasMenuSlot ? 'true' : 'false'"
@@ -112,6 +111,15 @@ const handleMouseLeave = () => {
         }
         closePopover()
         emit('emit-click')
+        
+        const route = useRoute()
+        // Vue Router does not natively fire watchers when clicking a link to the exact same route.
+        // We increment this global state so that target pages (like /live) can manually listen for 
+        // same-page clicks and re-trigger scrolling or other logic.
+        if (route.fullPath === props.route) {
+          useState('useSamePageNavTrigger', () => 0).value++
+        }
+
         trackClickEvent(
           `Click Tracking - ${props.label} Button`,
           props.trackingLocation,
@@ -135,10 +143,12 @@ const handleMouseLeave = () => {
         <slot name="image" />
       </template>
     </Button>
-    <Popover @click.prevent ref="op" appendTo="self" v-if="hasMenuSlot">
-      <!-- :pt="{ transition: { name: 'popover-transition' } }" -->
-      <slot name="menu" />
-    </Popover>
+    <ClientOnly>
+      <Popover @click.prevent ref="op" appendTo="self" v-if="hasMenuSlot">
+        <!-- :pt="{ transition: { name: 'popover-transition' } }" -->
+        <slot name="menu" />
+      </Popover>
+    </ClientOnly>
   </VFlexibleLink>
 </template>
 

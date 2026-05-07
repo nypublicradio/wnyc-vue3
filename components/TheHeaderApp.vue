@@ -1,7 +1,10 @@
 <script setup>
 import { trackClickEvent, getDate } from "~/utilities/helpers"
 
-import { useSettingSideBar, useIsNetworkConnected } from "~/composables/states.ts"
+import {
+  useSettingSideBar,
+  useIsNetworkConnected,
+} from "~/composables/states.ts"
 
 const config = useRuntimeConfig()
 const settingsSideBar = useSettingSideBar()
@@ -11,7 +14,12 @@ const donateButtonText = ref(null)
 const donateButtonLink = ref(null)
 
 // check if donate button should be visible and get the button link and text
-const { data: messageData } = await useFetch(`${config.public.SYSTEM_MESSAGES_API}`)
+const { data: messageData } = await useFetchWrapper(
+  `${config.public.SYSTEM_MESSAGES_API}`,
+  {
+    key: "donate-button",
+  }
+)
 if (messageData.value?.product_banners?.length > 0) {
   messageData.value.product_banners.forEach((banner) => {
     if (banner.value?.title === "WNYC App Donate Button") {

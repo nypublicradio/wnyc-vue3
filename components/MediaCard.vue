@@ -5,11 +5,7 @@ import TrashIcon from "~/components/icons/TrashIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 import SleepIcon from "~/components/icons/SleepIcon.vue"
 //import QueueIcon from "~/components/icons/QueueIcon.vue"
-import {
-  useIsNetworkConnected,
-  useCurrentUser,
-  useIsApp,
-} from "~/composables/states"
+import { useIsNetworkConnected, useCurrentUser, useIsApp } from "~/composables/states"
 import {
   checkIsFavorited,
   trackClickEvent,
@@ -161,10 +157,6 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  minContentWidth: {
-    type: Number,
-    default: 0,
-  },
   loading: {
     type: String,
     default: "lazy",
@@ -209,13 +201,13 @@ const getImage = computed(() => {
   }
 })
 
-watchEffect(async () => {
-  if (!props.data) return
-  isDownloaded.value = isAlreadyDownloaded(props.data)
-  isFavorited.value = await checkIsFavorited(
-    props.data?.meta?.slug || props.data?.slug
-  )
-  eventDate.value = props.data?.startDatetime
+onMounted(() => {
+  watchEffect(async () => {
+    if (!props.data) return
+    isDownloaded.value = isAlreadyDownloaded(props.data)
+    isFavorited.value = await checkIsFavorited(props.data?.meta?.slug || props.data?.slug)
+    eventDate.value = props.data?.startDatetime
+  })
 })
 
 // add item to favorites
@@ -236,13 +228,43 @@ const handleAddToFavorites = (bucketItem) => {
 const progress = ref({})
 // handle the download of the audio file request and feed the progress
 const handleDownload = async (bucketItem) => {
-  trackClickEvent(
-    "Click Tracking - Audio Download",
-    "Episode Item",
-    bucketItem.title
-  )
+  trackClickEvent("Click Tracking - Audio Download", "Episode Item", bucketItem.title)
   progress.value = await fetchAndStoreMp3(bucketItem)
 }
+
+//////////////////////////////////////////////////////////////////
+// 1. Initialize the download flag.
+// If the backend already provided it directly (e.g. Wagtail Show Pages), we use it immediately.
+const canDownloadEpisodes = ref(props.data?.canDownloadEpisodes)
+
+// 2. Determine if we need to fetch the show's download rules.
+const showIdentifier = computed(() => {
+  if (canDownloadEpisodes.value !== undefined && canDownloadEpisodes.value !== null) {
+    return null
+  }
+  return (
+    props.data?.showSlug ||
+    props.data?.showId ||
+    props.data?.ancestry?.[0]?.slug ||
+    props.data?.show?.slug
+  )
+})
+
+// 3. Lazily fetch using our deduplicating composable
+watchEffect(async () => {
+  if (showIdentifier.value) {
+    const isDownloadable = await useCanDownloadEpisodes(showIdentifier.value)
+    if (isDownloadable !== undefined && isDownloadable !== null) {
+      canDownloadEpisodes.value = isDownloadable
+    }
+  }
+})
+
+// Finally, determine if the download button should be shown
+const isDownloadAvailable = (bucketItem) => {
+  return hasAudio(bucketItem.audio) && canDownloadEpisodes.value && !isDownloaded.value
+}
+/////////////////////////////////////////////////////////////////
 
 // set the items for the Dot menu
 const getDotMenuItems = (bucketItem) => {
@@ -251,9 +273,7 @@ const getDotMenuItems = (bucketItem) => {
       ...(!props.isSegment
         ? [
             {
-              label: `${
-                isFavorited.value ? "Unfavorite Episode" : "Favorite Episode"
-              }`,
+              label: `${isFavorited.value ? "Unfavorite Episode" : "Favorite Episode"}`,
               customIcon: StarIcon,
               active: isFavorited.value,
               title: bucketItem?.title,
@@ -263,13 +283,11 @@ const getDotMenuItems = (bucketItem) => {
             },
           ]
         : []),
-      ...(hasAudio(bucketItem?.audio) && !isDownloaded.value
+      ...(isDownloadAvailable(bucketItem)
         ? [
             {
               label: `Download ${
-                bucketItem?.segments && Array.isArray(bucketItem?.audio)
-                  ? "All"
-                  : ""
+                bucketItem?.segments && Array.isArray(bucketItem?.audio) ? "All" : ""
               }`,
               //icon: 'pi pi-google',
               customIcon: DownloadIcon,
@@ -375,14 +393,15 @@ const handleHasAudio = computed(() => {
 
 // handle event code here - make event data available for template access
 const eventData = ref(isEvent ? useEventData(reactiveData) : null)
+// console.log("eventData", eventData.value)
+// console.log("reactiveData", reactiveData.value)
 </script>
 
 <template>
+  <!-- <pre class="text-xs">{{ props.data }}</pre> -->
   <div
     class="media-card"
-    :style="`cursor: ${props.isSegment ? 'default !important' : ''}; ${
-      props.inCarousel ? `--min-content-width: ${props.minContentWidth}px` : ''
-    }`"
+    :style="`cursor: ${props.isSegment ? 'default !important' : ''}`"
     :class="[
       {
         'show-image': props.showImage,
@@ -419,11 +438,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
         <p class="date day">{{ formatTime(eventDate, "d") }}</p>
         <p class="date month">{{ formatTime(eventDate, "MMM") }}</p>
       </div>
-      <div
-        class="image p-0 col-fixed"
-        :class="props.imgCol"
-        v-if="props.showImage"
-      >
+      <div class="image p-0 col-fixed" :class="props.imgCol" v-if="props.showImage">
         <VImage
           class="flex-none"
           :alt="`${props.data.title} media image`"
@@ -436,20 +451,19 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
           :ratio="props.ratio"
           :allowVerticalEffect="props.allowVerticalEffect"
           tabindex="-1"
-          :loading="props.inCarousel ? 'eager' : props.loading"
+          :loading="props.loading"
+          isDecorative
           @is-image-loaded="isImageLoaded = true"
         />
       </div>
       <div class="content col">
+        <!-- <pre class="text-xs">{{ props.data }}</pre> -->
         <div
           class="content-flex flex gap-2 flex-column justify-content-between w-full h-full"
         >
           <div class="top flex gap-2 flex-column w-full">
-            <div class="text flex gap-1 flex-column align-items-start">
-              <LiveBadge
-                v-if="props.showLive && !props.saved"
-                class="align-self-start"
-              />
+            <div class="text flex gap-2 flex-column align-items-start">
+              <LiveBadge v-if="props.showLive && !props.saved" class="align-self-start" />
               <p v-if="props.showTitle" :class="props.showTitleClasses">
                 {{ props.data?.org ?? props.data?.showTitle }}
               </p>
@@ -467,13 +481,11 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                   class="tease"
                   :class="props.teaseClasses"
                   :htmlClasses="props.teaseClasses"
-                  :key="`tease-${
-                    props.data.id || props.data.slug || 'default'
-                  }`"
+                  :key="`tease-${props.data.id || props.data.slug || 'default'}`"
                 />
                 <div class="article-metadata w-full" v-if="!isEvent">
                   <PipeData
-                    :hidePipe="props.hideDate"
+                    :hidePipe="props.hideDate || !getDate(props.data)"
                     :class="props.pipeClasses"
                   >
                     <template #left>
@@ -486,7 +498,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                       }}
                     </template>
                     <template #right v-if="!props.hideDate">
-                      {{ getDate(props.data) }}
+                      <ClientOnly>{{ getDate(props.data) }}</ClientOnly>
                     </template>
                   </PipeData>
 
@@ -565,10 +577,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                 <div class="flex gap-1 align-items-center">
                   <DownloadProgress
                     class="mr-2"
-                    v-if="
-                      (progress && Object.keys(progress).length > 0) ||
-                      isDownloaded
-                    "
+                    v-if="(progress && Object.keys(progress).length > 0) || isDownloaded"
                     :isDownloaded="isDownloaded"
                     :progress="progress"
                     small
@@ -641,10 +650,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                   labelClass="text-base md:text-sm"
                 />
               </div>
-              <div
-                v-if="eventData?.eventTypeBadges?.length"
-                class="flex gap-2 flex-wrap"
-              >
+              <div v-if="eventData?.eventTypeBadges?.length" class="flex gap-2 flex-wrap">
                 <VBadge
                   v-for="badge in eventData?.eventTypeBadges"
                   :key="badge.label"
@@ -877,30 +883,43 @@ $contentPaddingY: 1.25rem;
   /* Carousel Specific: Shrink to fit content */
   &.in-carousel {
     width: min-content;
-    max-width: 100%;
-    min-width: var(--min-content-width);
-
-    /* Force override of any other layout mode when in carousel */
     &.is-vertical .image,
     &.is-horizontal .image,
-    .holder .image {
-      /* Force strict image sizing behavior when in carousel */
-      flex: 0 0 auto !important;
-      display: flex !important;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
+    .holder {
+      .image {
+        /* Force strict image sizing behavior when in carousel */
+        flex: 0 0 auto !important;
+        width: auto !important;
+        max-width: none !important;
 
-      /* Override fixed dimensions from media queries */
-      max-width: none !important;
+        /* Strip intermediary layout constraints and safely pass 100% height down the hierarchy so the top-level PrimeFlex height class governs sizing */
+        :deep(.v-image-wrapper),
+        :deep(.image-loaded),
+        :deep(.image-loading),
+        :deep(.image-loader-container),
+        :deep(.v-image),
+        :deep(.v-image-link),
+        :deep(.v-image-holder),
+        :deep(.v-image-publisher-holder) {
+          height: 100% !important;
+          width: auto !important;
+          max-width: none !important;
+          max-height: none !important;
+        }
 
-      /* Ensure img child behaves */
-      :deep(img) {
-        height: 100%;
-        width: auto;
-        max-width: none;
-        object-fit: cover;
-        object-position: center center;
+        /* Disarm any inline layout-shifting aspect ratio constraints set directly via props */
+        :deep(.v-image-holder),
+        :deep(.v-image-publisher-holder) {
+          aspect-ratio: auto !important;
+        }
+
+        /* Ensure actual rendering logic allows height constraint to drive proportional auto widths */
+        :deep(img.image) {
+          width: auto !important;
+          height: 100% !important;
+          max-width: none !important;
+          max-height: none !important;
+        }
       }
     }
   }

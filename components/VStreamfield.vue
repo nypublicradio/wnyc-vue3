@@ -3,6 +3,38 @@ import { trackClickEvent, slugify, getRouteOrLink } from "~/utilities/helpers"
 import { cmsSources } from "~/composables/globals"
 import type { StreamfieldBlock } from "../composables/types/StreamfieldBlock"
 
+// Static imports for all layout components to avoid defineAsyncComponent hydration mismatches
+import LayoutRiverThin from "~/components/layouts/river-thin.vue"
+import LayoutRiver from "~/components/layouts/river.vue"
+import LayoutRiverContainer from "~/components/layouts/river-container.vue"
+import LayoutVerticalFeature from "~/components/layouts/vertical-feature.vue"
+import LayoutVerticalFeatureThin from "~/components/layouts/vertical-feature-thin.vue"
+import LayoutHorizontalFeatureAd from "~/components/layouts/horizontal-feature-ad.vue"
+import LayoutCarousel from "~/components/layouts/carousel.vue"
+import LayoutTextOnly from "~/components/layouts/text-only.vue"
+import LayoutTextOnlyThin from "~/components/layouts/text-only-thin.vue"
+import LayoutFourPack from "~/components/layouts/four-pack.vue"
+import LayoutFourPackThin from "~/components/layouts/four-pack-thin.vue"
+import LayoutThreePack from "~/components/layouts/three-pack.vue"
+import LayoutPersonalitiesBanner from "~/components/layouts/personalities-banner.vue"
+
+const layoutComponentMap: Record<string, Component> = {
+  "river-thin": LayoutRiverThin,
+  river: LayoutRiver,
+  "river-container": LayoutRiverContainer,
+  "vertical-feature": LayoutVerticalFeature,
+  "vertical-feature-thin": LayoutVerticalFeatureThin,
+  "horizontal-feature-ad": LayoutHorizontalFeatureAd,
+  carousel: LayoutCarousel,
+  "text-only": LayoutTextOnly,
+  "text-only-thin": LayoutTextOnlyThin,
+  "four-pack": LayoutFourPack,
+  "four-pack-thin": LayoutFourPackThin,
+  "three-pack": LayoutThreePack,
+  "personalities-banner": LayoutPersonalitiesBanner,
+  default: LayoutRiverThin,
+}
+
 const props = defineProps({
   article: {
     type: Object,
@@ -20,33 +52,13 @@ const props = defineProps({
 
 const streamfield = props.article?.body
 
-const layoutComponents = {}
 const defaultLayout = "river-thin"
 const headerClasses = "mb-3"
 const verticalSpacingClasses = "mb-6 md:mb-8"
-// dynamically import and Cache layout components to prevent re-creating them on each render
-const getLayoutComponent = (layout) => {
-  if (!layoutComponents[layout]) {
-    if (layout === "default") {
-      // setting "river" as default layout
-      layoutComponents[layout] = defineAsyncComponent(
-        () => import(`~/components/layouts/${defaultLayout}.vue`)
-      )
-    } else {
-      layoutComponents[layout] = defineAsyncComponent(async () => {
-        try {
-          return await import(`~/components/layouts/${layout}.vue`)
-        } catch (e) {
-          console.warn(
-            `Could not load streamfield layout ${layout}. Using the default streamfield layout.`,
-            e
-          )
-          return await import(`~/components/layouts/${defaultLayout}.vue`)
-        }
-      })
-    }
-  }
-  return layoutComponents[layout]
+
+// Helper function to get the appropriate layout component based on the block's layout value
+const getLayoutComponent = (layout: string) => {
+  return layoutComponentMap[layout] || layoutComponentMap[defaultLayout]
 }
 
 onMounted(() => {
@@ -80,7 +92,7 @@ onMounted(() => {
       />
     </div>
     <div v-else-if="streamfieldBlocks">
-      <template v-for="block in streamfieldBlocks">
+      <template v-for="(block, index) in streamfieldBlocks">
         <!-- Streamfield Document is not ready on the back end at this time
         Keeping it here for future reference -->
         <!-- <StreamfieldDocument
@@ -91,11 +103,8 @@ onMounted(() => {
           :id="slugify(block?.value?.title)"
         /> -->
         <div
-          :key="`${block.id}-curated-list`"
-          v-if="
-            block.type === 'curated_list' &&
-            block?.value?.list?.listItems?.length
-          "
+          :key="`${block.id}-curated-list-${index}`"
+          v-if="block.type === 'curated_list' && block?.value?.list?.listItems?.length"
           :class="verticalSpacingClasses"
           :id="slugify(block?.value?.label)"
         >
@@ -104,18 +113,21 @@ onMounted(() => {
             :list="block?.value?.list"
             :label="block?.value?.label"
             :seeMore="block?.value?.seeMoreLink"
+            :loading="index === 0 ? 'eager' : 'lazy'"
           />
-          <VFlexibleLink
+          <div
             v-if="block?.value?.seeMoreLink"
-            :to="getRouteOrLink(block?.value?.seeMoreLink.url)"
-            raw
+            class="flex justify-content-center mt-4 w-full"
           >
-            <Button
-              severity="secondary"
-              class="mt-4 px-5 mx-auto block"
-              :label="block?.value?.seeMoreLink.label"
-            />
-          </VFlexibleLink>
+            <VFlexibleLink :to="getRouteOrLink(block?.value?.seeMoreLink.url)" raw>
+              <Button
+                severity="secondary"
+                class="px-5"
+                :label="block?.value?.seeMoreLink.label"
+                tabindex="-1"
+              />
+            </VFlexibleLink>
+          </div>
         </div>
 
         <StreamfieldCtaBlock
@@ -212,7 +224,6 @@ onMounted(() => {
           :maxWidth="block.value.image.width"
           :maxHeight="block.value.image.height"
           sizes="xs:390px md:768px"
-          density="x1 x2"
         >
           <!--           <template #caption>
             <VImageCaption
@@ -244,10 +255,7 @@ onMounted(() => {
         <!-- image -->
 
         <!-- block-quote -->
-        <div
-          v-else-if="block.type === 'block_quote'"
-          class="streamfield-block-quote"
-        >
+        <div v-else-if="block.type === 'block_quote'" class="streamfield-block-quote">
           <blockquote>
             <HtmlConvert
               v-if="block.value.blockQuote"
@@ -293,9 +301,7 @@ onMounted(() => {
       </div>
       <!-- 1/2 way through the streamfield, insert the donation block -->
       <streamfield-donation
-        v-if="
-          props.showDonation && index === Math.floor(streamfield.length / 2)
-        "
+        v-if="props.showDonation && index === Math.floor(streamfield.length / 2)"
         @onClick="
           trackClickEvent(
             `story page id ${props.article.id}`,
@@ -309,12 +315,22 @@ onMounted(() => {
 </template>
 
 <style lang="scss">
+.streamfield {
+  img {
+    width: 100%;
+    height: auto;
+  }
+}
 .streamfield .streamfield-paragraph > * {
   @include html-formatting();
   margin-bottom: 1rem;
   &:last-child {
     margin-bottom: 0;
   }
+}
+
+.streamfield .block:last-child {
+  margin-bottom: 0 !important;
 }
 
 .streamfield .streamfield-block-quote {

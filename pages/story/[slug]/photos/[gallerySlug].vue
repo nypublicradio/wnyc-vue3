@@ -22,16 +22,17 @@ onMounted(() => {
     content_group: "app_tab",
   })
 })
+
+useHead(() => ({
+  title: `${shareTitle.value} | WNYC`,
+  meta: [
+    { name: "og:title", content: `${shareTitle.value} | WNYC` },
+    { name: "twitter:title", content: `${shareTitle.value} | WNYC` },
+  ],
+}))
 </script>
 <template>
   <div class="gallery-page">
-    <Html lang="en">
-      <Head>
-        <Title>{{ shareTitle }} | WNYC</Title>
-        <Meta name="og:title" :content="`${shareTitle} | WNYC`" />
-        <Meta name="twitter:title" :content="`${shareTitle} | WNYC`" />
-      </Head>
-    </Html>
     <section class="header flex align-items-center justify-content-between">
       <div class="flex align-items-center">
         <Button
@@ -131,9 +132,8 @@ onMounted(() => {
         >
           <VImage
             :src="img.image"
-            :ratio="[img.image.width, img.image.height]"
             sizes="xs:390px md:768px"
-            density="x1 x2"
+            :blindLoaderRatio="[16, 9]"
             :max-width="Number(img.image.width)"
             :max-height="Number(img.image.height)"
             :alt="img.image.alt"

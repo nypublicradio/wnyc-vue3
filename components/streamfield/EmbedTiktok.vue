@@ -15,9 +15,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <div
-    ref="el"
-    class="streamfield-embed streamfield-embed-tiktok streamfield-paragraph mb-7"
-    v-html="block.value.embed"
-  />
+  <ClientOnly>
+    <div
+      ref="el"
+      class="streamfield-embed streamfield-embed-tiktok streamfield-paragraph mb-7"
+      v-html="block.value.embed"
+    />
+  </ClientOnly>
 </template>

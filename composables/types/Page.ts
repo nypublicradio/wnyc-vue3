@@ -107,6 +107,7 @@ export interface ArticlePage extends Page {
   relatedLinks?: NavigationLink[]
   tags?: Tag[]
   url?: string
+  shareUrl?: string
   uuid: string
   section?: Tag
   body?: StreamfieldBlock[] | string
@@ -128,6 +129,7 @@ export interface ArticlePage extends Page {
   transcript?: string
   embedCode?: string
   topper?: Topper
+  canDownloadEpisodes?: boolean
 
   // Event-specific fields
   contentType?: string

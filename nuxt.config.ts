@@ -2,9 +2,10 @@ import { sentryVitePlugin } from "@sentry/vite-plugin"
 import MyPreset from "./assets/wnyc-theme.js"
 
 export default defineNuxtConfig({
+  //devtools: { enabled: true },
   modules: [
     "@nuxtjs/supabase",
-    "@nuxtjs/ionic",
+    ...(process.env.NUXT_SSR === "true" ? [] : ["@nuxtjs/ionic"]),
     "@nuxtjs/device",
     "@nuxt/image",
     "@hypernym/nuxt-gsap",
@@ -29,12 +30,17 @@ export default defineNuxtConfig({
     url: process.env.SUPABASE_URL,
     key: process.env.SUPABASE_KEY,
     redirect: false,
-    useSsrCookies: false,
+    useSsrCookies: process.env.NUXT_SSR === "true",
+    // Allow insecure cookies on localhost:
+    cookieOptions: {
+      secure: process.env.NODE_ENV === 'production',
+    }
   },
 
   image: {
     dir: "public/",
     screens: {
+      xxs: 375,
       xs: 390,
       sm: 640,
       md: 767,
@@ -46,6 +52,7 @@ export default defineNuxtConfig({
     wagtail: {
       baseURL: process.env.IMAGE_BASE_URL,
       screens: {
+        xxs: 375,
         xs: 390,
         sm: 640,
         md: 767,
@@ -60,10 +67,24 @@ export default defineNuxtConfig({
   ssr: process.env.NUXT_SSR === 'true',
 
   nitro: {
+    routeRules: process.env.NODE_ENV === 'production' ? {
+      '/home': { swr: 60 },
+      // Cache ALL shows and any nested episode pages under a show for 15 minutes
+      '/browse/shows/**': { swr: 900 },
+      '/npr/**': { swr: 900 },
+      '/events/**': { swr: 900 },
+      '/confirm': { ssr: false },
+    } : {},
     prerender: {
       // Disable prerendering when SSR is false (SPA mode for mobile)
-      crawlLinks: process.env.NUXT_SSR === 'true',
-      routes: process.env.NUXT_SSR === 'true' ? ['/'] : ['/'],
+      //crawlLinks: process.env.NUXT_SSR === 'true',
+      // routes: process.env.NUXT_SSR === 'true' ? [
+      //   '/browse/shows/brian-lehrer-show',
+      //   '/browse/shows/all-of-it',
+      //   '/browse/shows/classical-music-happy-hour',
+      //   '/browse/shows/radiolab',
+      //   '/browse/shows/on-the-media'
+      // ] : null,
       // Don't fail the build on prerender errors for client-only routes
       failOnError: false,
       // Ignore client-only routes that don't work with SSR
@@ -82,7 +103,8 @@ export default defineNuxtConfig({
 
   ionic: {
     integrations: {
-      router: process.env.NUXT_SSR === 'true',
+      router: false,
+      pwa: false,
     },
     css: {
       core: false,
@@ -91,31 +113,21 @@ export default defineNuxtConfig({
   },
 
   app: {
-    //pageTransition: { name: 'rotate', mode: 'out-in' },
-    pageTransition: {
-      name: "page",
-      mode: "out-in", // default
-    },
-    layoutTransition: true,
     head: {
-      title: "WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
-      meta: [
-        {
-          name: "viewport",
-          content:
-            "viewport-fit=cover, width=device-width, initial-scale=1, maximum-scale=1",
-        },
-        // { name: 'msapplication-TileColor', content: '#ffffff' },
-        // { name: 'theme-color', content: '#ffffff' }
-      ],
       link: [
-        {
-          rel: "icon",
-          type: "image/x-icon",
-          href: "https://media.wnyc.org/static/img/favicon_wnyc.ico?_=1553611630",
-        },
-      ],
+        // APIs & Backend
+        { rel: 'preconnect', href: 'https://vuycervrdrtycpjzhqxg.supabase.co' },
+        { rel: 'preconnect', href: 'https://firebase.googleapis.com' },
+        { rel: 'preconnect', href: 'https://api.wnyc.org' },
+        { rel: 'preconnect', href: 'https://api.prod.nypr.digital' },
+        { rel: 'preconnect', href: 'https://cms.prod.nypr.digital' },
+        // Audio & Assets
+        { rel: 'preconnect', href: 'https://assets.webstream.wnyc.org' },
+      ]
     },
+    //pageTransition: { name: 'rotate', mode: 'out-in' },
+    pageTransition: false,
+    layoutTransition: false,
   },
 
   css: [
@@ -128,6 +140,9 @@ export default defineNuxtConfig({
   //serverMiddleware: ['~/search/algolia-index'],
 
   vite: {
+    define: {
+      __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: true,
+    },
     css: {
       preprocessorOptions: {
         scss: {
@@ -185,8 +200,7 @@ export default defineNuxtConfig({
   },
 
   plugins: [
-    "~/plugins/router-guards.js",
-    "~/plugins/error-handler.js",
+    "~/plugins/router-guards.client.js",
     "~/plugins/firebase.client.js",
   ],
 
@@ -196,14 +210,13 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     // Server-only runtime values (read at runtime by Nitro)
-    cmsSite: process.env.CMS_SITE || 'demo.wnyc.org:443',
+
     aviaryBaseApi: process.env.AVIARY_BASE_API,
     simplecastUrl: process.env.SIMPLECAST_URL ?? 'https://api.simplecast.com',
     simplecastApiKey: process.env.SIMPLECAST_API_KEY,
     featuredShowsPageId: process.env.FEATURED_SHOWS_PAGE_ID,
     public: {
-      cmsSiteWnyc: process.env.CMS_SITE_WNYC ?? 'demo.wnyc.org:443',
-      cmsSiteGothamist: process.env.CMS_SITE_GOTHAMIST ?? 'demo.gothamist.com:443',
+      cmsSite: process.env.CMS_SITE ?? 'demo.wnyc.org:443',
       SENTRY_DSN: process.env["SENTRY_DSN"],
       SENTRY_ENV: process.env.SENTRY_ENV ?? "development",
       ENV: process.env.ENV ?? "prod",
@@ -242,7 +255,7 @@ export default defineNuxtConfig({
       FB_APP_ID_IOS: process.env.FB_APP_ID_IOS,
       FB_APP_ID_ANDROID: process.env.FB_APP_ID_ANDROID,
       ONESIGNAL_APP_ID: process.env.ONESIGNAL_APP_ID,
-      BFF_URL: process.env.BFF_URL ?? "https://demo.native-app.wnyc.org",
+      BFF_URL: process.env.BFF_URL ?? "https://demo.wnyc.org",
       GTM_ID: process.env.GTM_ID ?? "GTM-TKFJ684",
       environment: process.env.environment ?? "prod",
       supabaseUrl: process.env.SUPABASE_URL,
@@ -265,6 +278,7 @@ export default defineNuxtConfig({
       SPRINGBOARD_URL: process.env.SPRINGBOARD_URL ?? "https://nypr.hosted.jacksonriverdev.com",
       NEWSLETTER_API: process.env.NEWSLETTER_API ?? 'https://api.demo.nypr.digital/email-proxy/subscribe',
       NEWSLETTER_MULTI_LIST_IDS: 'WNYC Weekly Brief++WNYC Membership',
+      NUXT_SSR: process.env.NUXT_SSR === 'true' ? 'true' : 'false',
     },
   },
 

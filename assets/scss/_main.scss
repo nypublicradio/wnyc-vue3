@@ -40,16 +40,23 @@ figure {
 }
 
 a:focus-visible {
-  outline-color: var(--p-focus-ring-color);
-  outline-width: var(--p-focus-ring-width);
-  outline-offset: var(--p-focus-ring-offset);
-  outline-style: var(--p-focus-ring-style);
+  @include focus-ring-defaults;
 }
 
 * {
   -webkit-tap-highlight-color: transparent;
   scrollbar-color: unset transparent;
   scrollbar-width: thin;
+}
+
+.nuxt-loading-indicator {
+  //background: var(--p-primary-500) !important;
+  background: repeating-linear-gradient(
+    to right,
+    var(--p-primary-200) 0%,
+    var(--p-primary-400) 50%,
+    var(--p-primary-500) 100% 100%
+  ) !important;
 }
 
 html {
@@ -514,7 +521,6 @@ html.style-mode-dark {
   .p-button-link.p-button-secondary:hover {
     background: transparent;
     border-color: transparent;
-    color: var(--p-button-secondary-text-color);
   }
 }
 // makes the white buttons user the light ripple effect so you can see it.
@@ -544,13 +550,14 @@ html.style-mode-dark {
   }
   &.p-button-secondary.link {
     .p-button-label {
-      text-decoration-color: var(--link-button-color);
-      color: var(--link-button-color);
+      text-decoration-color: var(--p-button-hyperlink-color);
+      color: var(--p-button-hyperlink-color);
     }
-    &:hover {
+    &:hover,
+    &:active {
       .p-button-label {
-        text-decoration-color: var(--link-button-hover-color);
-        color: var(--link-button-hover-color);
+        text-decoration-color: var(--p-button-hyperlink-hover-color) !important;
+        color: var(--p-button-hyperlink-hover-color) !important;
       }
     }
   }
@@ -701,6 +708,15 @@ html.style-mode-dark {
           rgb(0, 0, 0) 100%
         );
       }
+    }
+  }
+}
+
+.p-breadcrumb {
+  .p-breadcrumb-item {
+    &:focus-visible,
+    &:focus {
+      @include focus-ring-defaults;
     }
   }
 }

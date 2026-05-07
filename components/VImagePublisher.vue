@@ -1,10 +1,11 @@
 <script setup>
-import VFlexibleLink from "./VFlexibleLink.vue"
 import Button from "primevue/button"
 import Image from "primevue/image"
 import ProgressSpinner from "primevue/progressspinner"
-import { computed, nextTick, onBeforeMount, onMounted, ref } from "vue"
+import { computed, nextTick, onMounted, ref } from "vue"
 import { useVImage } from "~/composables/useVImage"
+
+defineOptions({ inheritAttrs: false })
 
 /** * Responsive image component, generates a srcset with multiple image sizes for different display densities. */
 
@@ -124,6 +125,7 @@ const emit = defineEmits([
   "image-click",
   "keypress",
   "image-load",
+  "image-error",
   "image-enlarge-click",
 ])
 
@@ -139,11 +141,22 @@ const calcQuality = (quality, size) => {
   }
 }
 const refThisImg = ref(null)
-const thisWidth = ref(null)
-const srcFormatted = formatPublisherImageUrl(props.src)
-const srcRaw = formatRawPublisherImageUrl(props.src)
+// SSR-safe default: use props.width if available, otherwise a sensible default
+const thisWidth = ref(props.width || 600)
+const srcFormatted = computed(() =>
+  props.src ? formatPublisherImageUrl(props.src) : null
+)
+const srcRaw = computed(() =>
+  props.src ? formatRawPublisherImageUrl(props.src) : null
+)
 
-const isVertical = ref(false)
+// Initialize isVertical synchronously so server and client agree
+const isVertical = ref(
+  props.allowVerticalEffect &&
+    props.maxHeight >= props.maxWidth &&
+    props.maxHeight !== Infinity &&
+    props.maxWidth !== Infinity
+)
 const loadingEnlargedImage = ref(false)
 
 // a function that returns the dimensions of the image
@@ -159,8 +172,7 @@ const getDimensions = () => {
         : props.width,
     }
   } else {
-    //console.log('thisWidth.value =  ', thisWidth.value)
-    let theWidth = thisWidth.value
+    let theWidth = thisWidth.value || props.width || 600
 
     if (props.maxWidth && props.maxWidth < theWidth) {
       theWidth = props.maxWidth
@@ -174,7 +186,7 @@ const getDimensions = () => {
 
 // a function that formats the url template
 const computedSrc = () => {
-  const template = srcFormatted
+  const template = srcFormatted.value
 
   return template
     ? template
@@ -185,7 +197,7 @@ const computedSrc = () => {
 }
 
 const srcset = computed(() => {
-  const template = srcFormatted
+  const template = srcFormatted.value
   if (template) {
     // If this is just a plain string with no tokens,
     // we don't need to generate a srcset
@@ -227,19 +239,16 @@ const srcset = computed(() => {
   }
 })
 
-onBeforeMount(() => {
-  isVertical.value =
-    props.allowVerticalEffect &&
-    props.maxHeight >= props.maxWidth &&
-    props.maxHeight !== Infinity &&
-    props.maxWidth !== Infinity
-})
 // method to handle the click on the enlarge button and its loading states
 const enlarge = () => {
   loadingEnlargedImage.value = true
-  const img = document.getElementsByClassName("p-image-preview")
-  img[0].setAttribute("alt", props.alt)
-  img[0].setAttribute("src", srcRaw)
+  if (import.meta.client) {
+    const img = document.getElementsByClassName("p-image-preview")
+    if (img.length > 0) {
+      img[0].setAttribute("alt", props.alt)
+      img[0].setAttribute("src", srcRaw.value)
+    }
+  }
 }
 // method to close the enlarged image state
 const closeEnlarge = () => {
@@ -254,6 +263,12 @@ onMounted(async () => {
       : typeof window === "undefined"
       ? props.defaultWidth
       : window.innerWidth
+
+  // Check if the native <img> is already loaded (e.g. cached after SSR hydration)
+  const img = refThisImg.value?.querySelector?.("img.native-image")
+  if (img?.complete && img.naturalHeight !== 0) {
+    emit("image-load")
+  }
 })
 </script>
 
@@ -264,7 +279,7 @@ onMounted(async () => {
       :to="props.to"
       :aria-hidden="props.isDecorative ? true : false"
       :tabindex="props.isDecorative ? -1 : 0"
-      style="width: 100%; height: inherit"
+      class="v-image-link"
       @click="props.to ? emit('image-click', props.to) : null"
     >
       <div
@@ -298,6 +313,7 @@ onMounted(async () => {
             @hide="closeEnlarge"
             @keypress="emit('keypress', $event.target.value)"
             @load="emit('image-load')"
+            @error="emit('image-error')"
           >
             <template v-if="allowPreview" #previewicon>
               <ClientOnly>
@@ -313,21 +329,23 @@ onMounted(async () => {
             </template>
           </Image>
           <div v-if="loadingEnlargedImage">
-            <Teleport to=".p-component-overlay">
-              <ProgressSpinner
-                v-if="loadingEnlargedImage"
-                style="
-                  z-index: -1;
-                  position: fixed;
-                  top: 0;
-                  bottom: 0;
-                  left: 0;
-                  right: 0;
-                  margin: auto;
-                "
-                stroke-width="6"
-              />
-            </Teleport>
+            <ClientOnly>
+              <Teleport to=".p-component-overlay">
+                <ProgressSpinner
+                  v-if="loadingEnlargedImage"
+                  style="
+                    z-index: -1;
+                    position: fixed;
+                    top: 0;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    margin: auto;
+                  "
+                  stroke-width="6"
+                />
+              </Teleport>
+            </ClientOnly>
           </div>
         </template>
         <img
@@ -343,6 +361,7 @@ onMounted(async () => {
           :loading="props.loading"
           @keypress="emit('keypress', $event.target.value)"
           @load="emit('image-load')"
+          @error="emit('image-error')"
         />
         <slot class="slot caption" name="caption"></slot>
         <slot class="slot gallery" name="gallery"></slot>
@@ -353,6 +372,10 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
+.v-image-link {
+  width: 100%;
+  height: inherit;
+}
 .v-image-publisher {
   height: inherit;
   .v-image-publisher-holder {

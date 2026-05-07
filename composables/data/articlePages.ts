@@ -104,6 +104,7 @@ function getArticleLink (articleData): string {
 
 // Transform author data from the API into a simpler and typed format
 export function normalizeAuthor (author: Record<string, any>): Author {
+  const config = useRuntimeConfig()
   return {
     id: author.id,
     firstName: author.firstName,
@@ -118,6 +119,7 @@ export function normalizeAuthor (author: Record<string, any>): Author {
     email: author.email,
     slug: author.slug,
     url: author.slug && `/staff/${author.slug}`,
+    shareUrl: `${config.public.BFF_URL}${mediaTypeRoutes[mediaTypes.STAFF]}${author.slug}`,
     socialMediaProfile: author.socialMediaProfile,
   }
 }
@@ -168,6 +170,7 @@ function normalizePersonSocial (social: Record<string, any>): ISocial {
 
 // Transform person data from the API into a simpler and typed format
 export function normalizePerson (person: Record<string, any>): Person {
+  const config = useRuntimeConfig()
   const pa = person.attributes
   return {
     id: person.id,
@@ -180,6 +183,7 @@ export function normalizePerson (person: Record<string, any>): Person {
     email: pa.email,
     slug: pa.slug,
     url: `/people/${pa.slug}`,
+    shareUrl: `${config.public.BFF_URL}${mediaTypeRoutes[mediaTypes.PEOPLE]}${pa.slug}`,
     socialMediaProfile: pa.social.length > 0 ? pa.social.map(normalizePersonSocial) : null, // Fix: Wrap the normalizePersonSocial result in an array
     shows: pa.shows,
   }
@@ -190,6 +194,7 @@ export function normalizePerson (person: Record<string, any>): Person {
 export async function normalizeWagtailPage (article: Record<string, any | undefined>): ArticlePage {
   if (typeof article === 'undefined')
     return null
+  const config = useRuntimeConfig()
   return Object.assign({}, await normalizePage(article), {
     description: article.description,
     image: article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage ?? article.showArt,
@@ -215,7 +220,9 @@ export async function normalizeWagtailPage (article: Record<string, any | undefi
     sponsoredContent: article.sponsoredContent,
     relatedLinks: article.relatedLinks,
     tags: article.tags,
-    url: article.url,
+    //url: article.url,
+    url: null,
+    shareUrl: `${config.public.BFF_URL}${getWagtailArticleLink(article)}`,
     section: { name: article.ancestry?.[0].title, slug: article.ancestry?.[0].slug },
     body: article.body,
     rawBody: getWagtailRawBody(article.body),
@@ -229,6 +236,7 @@ export async function normalizeWagtailPage (article: Record<string, any | undefi
       topperDescription: article?.description,
       topperBackground: article?.topperBackground,
     },
+    canDownloadEpisodes: article?.canDownloadEpisodes || undefined,
     // curated images
     listingImage: article.listingImage ?? article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
     socialImage: article.socialImage ?? article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage,
@@ -277,10 +285,12 @@ export async function normalizeWagtailListItem (article: Record<string, any | un
     sponsoredContent: article.sponsoredContent,
     relatedLinks: article.relatedLinks,
     url: article.url,
+    shareUrl: article.url,
     section: { name: article.ancestry?.[0].title, slug: article.ancestry?.[0].slug },
     rawBody: getWagtailRawBody(article.body),
     audio: article.audio,
     hasAudio: article.audio ? true : false,
+    canDownloadEpisodes: article?.canDownloadEpisodes || undefined,
     // for comments
     estimatedDuration: undefined,
     readingTime: article.readingTime,
@@ -312,8 +322,7 @@ export async function normalizeWagtailListItem (article: Record<string, any | un
 export async function normalizeSimplecastListItem (article: Record<string, any | undefined>): ArticlePage {
   if (typeof article === 'undefined')
     return null
-  //console.log("normalizeSimplecastListItem", article)
-
+  const config = useRuntimeConfig()
   // Simplecast uses UUIDs as episode IDs - preserve the original UUID for API calls
   const simplecastId = article.id || article.episodeId || article.uuid
 
@@ -344,12 +353,14 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
     sponsoredContent: undefined,
     relatedLinks: undefined,
     url: article.url,
+    shareUrl: `${config.public.BFF_URL}${mediaTypeRoutes.simplecast}${simplecastId}`,
     link: `${mediaTypeRoutes.simplecast}${simplecastId}`,
     section: undefined,
     //rawBody: getWagtailRawBody(article.body),
     body: article.body,
     audio: article.enclosureUrl,
     hasAudio: article.enclosureUrl ? true : false,
+    canDownloadEpisodes: article?.canDownloadEpisodes || undefined,
     // for comments
     estimatedDuration: article.duration,
     sortDate: article.publishedAt,
@@ -433,7 +444,7 @@ async function getSimplecastDuration (article: SimplecastArticle): Promise<numbe
 export async function normalizeSimplecastPage (article: SimplecastArticle): Promise<ArticlePage> {
   if (typeof article === 'undefined')
     return null
-
+  const config = useRuntimeConfig()
   const duration = await getSimplecastDuration(article)
   const simplecastId = article.id
   const { showId, showTitle, showImageUrl } = getSimplecastShowInfo(article)
@@ -461,6 +472,7 @@ export async function normalizeSimplecastPage (article: SimplecastArticle): Prom
     meta: {
       firstPublishedAt: article.publishedAt && new Date(article.publishedAt),
       slug: article.slug,
+      simplecastId,
       type: article.type || 'episode',
     },
     title: article.title,
@@ -477,12 +489,15 @@ export async function normalizeSimplecastPage (article: SimplecastArticle): Prom
     sponsoredContent: undefined,
     relatedLinks: undefined,
     tags: getSimplecastTags(article),
-    url: article.episodeUrl,
+    //url: article.episodeUrl,
+    url: null,
+    shareUrl: `${config.public.BFF_URL}${mediaTypeRoutes.simplecast}${simplecastId}`,
     section: undefined,
     body: bodyText,
     rawBody: bodyText,
     audio: audioUrl,
     hasAudio: Boolean(audioUrl),
+    canDownloadEpisodes: article?.canDownloadEpisodes || undefined,
     listingImage: image,
     socialImage: image,
     disableComments: undefined,
@@ -524,6 +539,7 @@ export async function normalizePublisherPage (article: Record<string, any | unde
     })
   }
   const authors = article.attributes.appearances?.authors.map(normalizeAuthor)
+  const config = useRuntimeConfig()
   // Remove publisher author fields because we don't haven't built out the author pages for publisher
   authors.forEach((author) => {
     delete author.slug
@@ -563,12 +579,15 @@ export async function normalizePublisherPage (article: Record<string, any | unde
     sponsoredContent: undefined, //Does this exist in publisher?
     relatedLinks: undefined, //Does this exist in publisher?
     tags: article.attributes?.tags, // This may need tweaking
-    url: article.attributes.url,
+    //url: article.attributes.url,
+    url: null,
+    shareUrl: `${config.public.BFF_URL}${getPublisherArticleLink(article)}`,
     section: undefined, //Does this exist in publisher?
     body: article.attributes.body,
     rawBody: article.attributes.body,
     audio: article.attributes.audio,
     hasAudio: article.attributes.audio ? true : false,
+    canDownloadEpisodes: article.attributes.audioMayDownload || undefined,
     // curated images
     listingImage: article.attributes.imageMain, // This may need tweaking
     socialImage: article.attributes.imageMain, // This may need tweaking
@@ -625,10 +644,12 @@ export async function normalizePublisherListItem (article: Record<string, any | 
     contributingOrganizations: article.attributes?.producingOrganizations,
     publicationDate: article.attributes.publishAt && new Date(article.attributes.publishAt),
     url: article.attributes.url,
+    shareUrl: article.attributes.url,
     rawBody: null,
     body: article.attributes.body,
     audio: article.attributes.audio,
     hasAudio: article.attributes.audio ? true : false,
+    canDownloadEpisodes: article.attributes?.audioMayDownload || undefined,
     estimatedDuration: duration,
     show: article.attributes.show,
     showTitle: article.attributes.showTitle,
@@ -665,9 +686,9 @@ const getAuthorsFromBylineUrl = memoize(async (url: string): Promise<Author> => 
   }
   let image
   let biography = ''
-  const res = response.data?.resources[0]
-  if (res.assets !== undefined && res.assets !== null) {
-    for (const asset of Object.values(res.assets)) {
+  const res = response?.data?.resources[0]
+  if (res?.assets !== undefined && res?.assets !== null) {
+    for (const asset of Object.values(res?.assets)) {
       if (asset.profiles[0]?.href === '/v1/profiles/image') {
         image = asset.enclosures.filter((enclosure) => {
           return enclosure.rels.includes('primary')
@@ -679,7 +700,7 @@ const getAuthorsFromBylineUrl = memoize(async (url: string): Promise<Author> => 
     for (const layoutItem of Object.values(res.layout)) {
       const layoutId = layoutItem?.href?.substring(layoutItem.href.lastIndexOf("/") + 1)
       if (res?.profiles[0]?.href === '/v1/profiles/text') {
-        biography += response.data?.resources[layoutId]?.text ? `<p>${response.data?.resources[layoutId]?.text}</p>` : ''
+        biography += response?.data?.resources[layoutId]?.text ? `<p>${response?.data?.resources[layoutId]?.text}</p>` : ''
       }
     }
   }
@@ -715,7 +736,7 @@ const getShowInfoFromProgramUrl = memoize(async (url: string): Promise<{ title: 
 
   try {
     const response = await axios(options)
-    const resource = response.data?.resources?.[0]
+    const resource = response?.data?.resources?.[0]
     const showTitle = resource?.title || 'NPR'
     // Extract slug from nprWebsitePath (e.g., "/programs/all-things-considered/" -> "all-things-considered")
     const nprPath = resource?.nprWebsitePath
@@ -777,6 +798,7 @@ interface NprArticle {
   editorialLastModifiedDateTime?: string
   teaser?: string
   showTitle?: string
+  showSlug?: string
   webPages?: NprWebPage[]
   images?: NprImage[]
   assets?: Record<string, NprAsset>
@@ -856,7 +878,7 @@ const processNprLayout = async (article: NprArticle): Promise<string> => {
     // Try both camelCase and kebab-case formats since NPR API is inconsistent
     const camelCaseId = rawLayoutId ? convertNprImageId(rawLayoutId) : undefined
     const asset = rawLayoutId
-      ? (article.assets?.[camelCaseId] || article.assets?.[rawLayoutId])
+      ? (article?.assets?.[camelCaseId] || article?.assets?.[rawLayoutId])
       : undefined
 
     if (!asset?.profiles?.[0]) {
@@ -885,11 +907,11 @@ const processNprLayout = async (article: NprArticle): Promise<string> => {
 
 // Helper: Extract audio information from NPR assets
 const extractNprAudio = (article: NprArticle): { url?: string; duration?: number } => {
-  if (!article.assets) {
+  if (!article?.assets) {
     return {}
   }
 
-  for (const asset of Object.values(article.assets)) {
+  for (const asset of Object.values(article?.assets)) {
     const hasAudioProfile = asset.profiles?.some(p => p.href === '/v1/profiles/audio')
     const hasAudioEnclosure = asset.enclosures?.some(e => e.type?.startsWith('audio/'))
 
@@ -945,6 +967,7 @@ const extractImageDimensions = (image?: string): { w: number; h: number } => {
 
 // Normalize an article page object from NPR into a generic ArticlePage object.
 export async function normalizeNprPage (article: NprArticle, componentType = "default", showSlug?: string): Promise<ArticlePage> {
+  const config = useRuntimeConfig()
   const id = article.id
   const firstImageHref = article.images?.[0]?.href
   const rawImageId = firstImageHref?.substring(firstImageHref.lastIndexOf("/") + 1)
@@ -952,7 +975,7 @@ export async function normalizeNprPage (article: NprArticle, componentType = "de
   // Try both camelCase and kebab-case formats since NPR API is inconsistent
   const camelCaseId = rawImageId ? convertNprImageId(rawImageId) : undefined
   const firstImage = rawImageId
-    ? (article.assets?.[camelCaseId] || article.assets?.[rawImageId])
+    ? (article?.assets?.[camelCaseId] || article?.assets?.[rawImageId])
     : undefined
 
   /*   console.log('NPR Image Debug:', {
@@ -1012,9 +1035,11 @@ export async function normalizeNprPage (article: NprArticle, componentType = "de
       ...(derivedShowSlug ? { showSlug: derivedShowSlug } : {}),
     },
     showTitle: showInfo.title,
+    showSlug: derivedShowSlug,
     body: textBody,
     rawBody: textBody,
     link: article.webPages?.[0]?.href ?? '/',
+    shareUrl: `${config.public.BFF_URL}${mediaTypeRoutes[mediaTypes.NPR_ARTICLE]}${article.id}`,
     authors,
   })
 }
@@ -1171,6 +1196,7 @@ export function normalizeSearchResults (results: Record<string, any | undefined>
     relatedLinks: result.relatedLinks,
     tags: result.tags,
     url: result.url,
+    shareUrl: result.url,
     uuid: result.uuid,
     section: getSectionInfo(result),
     body: result.body,

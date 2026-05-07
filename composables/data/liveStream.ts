@@ -11,13 +11,25 @@ import {
   useCurrentUserProfile,
   useGlobalToast,
 } from "~/composables/states"
-import { clearTimeout, setTimeout } from "worker-timers"
+
+// worker-timers requires Web Workers (browser-only).
+// Fall back to global setTimeout/clearTimeout on the server to avoid SSR crashes.
+let workerSetTimeout: typeof globalThis.setTimeout = globalThis.setTimeout
+let workerClearTimeout: typeof globalThis.clearTimeout = globalThis.clearTimeout
+if (import.meta.client) {
+  import("worker-timers").then((mod) => {
+    workerSetTimeout = mod.setTimeout as any
+    workerClearTimeout = mod.clearTimeout as any
+  })
+}
 // Get a list of article pages using the Aviary /pages api
 export async function updateLiveStream (slug: string, save = true) {
   const config = useRuntimeConfig()
   //BFF - Uses Schedule API internally
+
   try {
-    const fetchData = await $fetch(`${config.public.BFF_URL}/api/whatson/${slug}`)
+    const fetchData = await $fetch(`${config.public.BFF_URL}/api/streams?slug=${slug}`)
+
     const currentEpisodeHolder = useCurrentEpisodeHolder()
     currentEpisodeHolder.value = fetchData
     if (save) {
@@ -93,6 +105,8 @@ export async function updateAllLiveStreams (init = true) {
 
 let timeout = null
 let scheduleAbortController = null
+const STREAM_REFRESH_RETRY_MIN_MS = 10000
+const STREAM_REFRESH_RETRY_JITTER_MS = 20000
 
 // base liveStream composable
 export default function useLiveStream () {
@@ -144,20 +158,27 @@ export default function useLiveStream () {
     }
   }
 
+  // format the time and round to the nearest quarter hour
+  const formatAndRoundTime = (dateArg) => {
+    const date = new Date(dateArg)
+
+    // 15 minutes in milliseconds
+    const ms = 1000 * 60 * 15
+
+    // Round the time to the nearest quarter hour mark
+    const roundedDate = new Date(Math.round(date.getTime() / ms) * ms)
+
+    return roundedDate.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    })
+  }
+
   // get the time for the schedule entry
   const getTheTime = (startArg, endArg, index) => {
-    const start = new Date(startArg)
-    const startTime = start.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    })
-    const end = new Date(endArg)
-    const endTime = end.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    })
+    const startTime = formatAndRoundTime(startArg)
+    const endTime = formatAndRoundTime(endArg)
     return index === 0 && isToday.value ? `Now Until ${endTime}` : startTime
   }
 
@@ -200,10 +221,51 @@ export default function useLiveStream () {
     return targetUtc - nowUtc
   }
 
+  function getScheduleRefreshDelay (schedule) {
+    const nowMs = Date.now()
+    const currentStreamEndMs = new Date(currentEpisodeHolder.value?.timeEnd).getTime()
+    const currentScheduleEntry = schedule.find((entry) => {
+      const startMs = new Date(entry?.attributes?.start).getTime()
+      const endMs = new Date(entry?.attributes?.end).getTime()
+
+      return Number.isFinite(startMs) &&
+        Number.isFinite(endMs) &&
+        startMs <= nowMs &&
+        endMs > nowMs
+    })
+
+    if (
+      currentScheduleEntry &&
+      Number.isFinite(currentStreamEndMs) &&
+      currentStreamEndMs <= nowMs
+    ) {
+      return STREAM_REFRESH_RETRY_MIN_MS +
+        Math.floor(Math.random() * STREAM_REFRESH_RETRY_JITTER_MS)
+    }
+
+    const firstEntryStartMs = new Date(schedule?.[0]?.attributes?.start).getTime()
+    const firstEntryEndMs = new Date(schedule?.[0]?.attributes?.end).getTime()
+
+    if (Number.isFinite(firstEntryStartMs) && firstEntryStartMs > nowMs) {
+      return firstEntryStartMs - nowMs
+    }
+
+    if (Number.isFinite(firstEntryEndMs) && firstEntryEndMs > nowMs) {
+      return firstEntryEndMs - nowMs + 30000
+    }
+
+    const nextStartMs = schedule
+      .map((entry) => new Date(entry?.attributes?.start).getTime())
+      .filter((time) => Number.isFinite(time) && time > nowMs)
+      .sort((a, b) => a - b)[0]
+
+    return Number.isFinite(nextStartMs) ? nextStartMs - nowMs : null
+  }
+
   // Function to clear all timeouts
   const clearAllTimeout = () => {
     if (timeout) {
-      clearTimeout(timeout)
+      workerClearTimeout(timeout)
       timeout = null
     }
   }
@@ -246,17 +308,21 @@ export default function useLiveStream () {
 
       liveScheduleData.value = schedule
 
-      // init setTimeouts to refetch the schedule when the current event starts
+      // init timeout to refetch at the next schedule boundary
       if (liveScheduleData.value[0]) {
-        // delay plus 30 seconds to make sure the event has ended and the next one has started so when the  next fetch happens, we get the updated schedule displayed
-        const delay =
-          (await getTimeDifference(liveScheduleData.value[0].attributes.end)) + 30000
-        timeout = setTimeout(refreshData, delay)
+        const delay = getScheduleRefreshDelay(liveScheduleData.value)
+
+        if (delay !== null) {
+          timeout = workerSetTimeout(async () => {
+            await refreshData()
+            await fetchSchedule()
+          }, delay)
+        }
       }
     } catch (error) {
       globalToast.value = {
         severity: "error",
-        summary: "Sorry. We are having trouble. Please try again later.",
+        summary: "Sorry. We are having trouble With the live stream. Please try again later.",
         life: null,
         closable: true,
       }
@@ -336,7 +402,7 @@ export default function useLiveStream () {
       if (error.status !== 500) {
         globalToast.value = {
           severity: "error",
-          summary: "Sorry. We are having trouble. Please try again later.",
+          summary: "Sorry. We are having trouble With the live stream. Please try again later.",
           life: null,
           closable: true,
         }
@@ -424,14 +490,14 @@ export default function useLiveStream () {
     )
 
     if (targetStation) {
-      setTimeout(() => {
+      workerSetTimeout(() => {
         switchStation(targetStation)
         if (autoplay) togglePlayHere()
       }, 100)
     } else {
       // Log error when station is not found
       console.error(`Station with slug "${querySlug}" not found in available stations.`)
-      
+
       // Show user-friendly error message
       const globalToast = useGlobalToast()
       globalToast.value = {
@@ -440,7 +506,7 @@ export default function useLiveStream () {
         life: 5000,
         closable: true,
       }
-      
+
       // Fallback to default station (first station or current episode holder)
       if (currentEpisodeHolder.value) {
         switchStation(currentEpisodeHolder.value, false)
@@ -458,6 +524,7 @@ export default function useLiveStream () {
     clearAllTimeout,
     getTimeDifference,
     getTheTime,
+    formatAndRoundTime,
     togglePlayHere,
     liveScheduleData,
     allLiveScheduleData,

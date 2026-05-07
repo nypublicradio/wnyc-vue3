@@ -21,17 +21,23 @@ async function getNavigationData () {
         // Fetch all data concurrently with individual error handling
         // Use aggressive timeouts to prevent health check failures during slow API responses
         const API_TIMEOUT = 5000 // 5 second timeout for external APIs
-        
+        let allShows = null
+        if (config.public.ENV === 'prod') {
+            allShows = 90
+        } else {
+            allShows = 20
+        }
+
         const [wagtail, donate, stations, shows] = await Promise.allSettled([
             axios.get(config.public.HEADER_NAVIGATION_API as string, {
                 headers: {
-                    'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+                    'X-CMS-Site': config.public.cmsSite,
                 },
                 timeout: API_TIMEOUT
             }),
             axios.get(config.public.SYSTEM_MESSAGES_API as string, {
                 headers: {
-                    'X-CMS-Site': config.cmsSite || 'demo.wnyc.org:443'
+                    'X-CMS-Site': config.public.cmsSite,
                 },
                 timeout: API_TIMEOUT
             }),
@@ -40,10 +46,19 @@ async function getNavigationData () {
                 $fetch('/api/streams').then(data => ({ data })),
                 new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), API_TIMEOUT))
             ]),
-            axios.get(`${config.public.AVIARY_BASE_API}curated_lists/20/`, {
+            axios.get(`${config.public.AVIARY_BASE_API}curated_lists/${allShows}/`, {
+                headers: {
+                    'X-CMS-Site': config.public.cmsSite,
+                },
                 timeout: API_TIMEOUT
             }),
         ])
+
+        // Log failures for debugging purposes
+        if (wagtail.status === 'rejected') console.error('Navigation API: Wagtail fetch failed:', wagtail.reason?.message)
+        if (donate.status === 'rejected') console.error('Navigation API: Donate fetch failed:', donate.reason?.message)
+        if (stations.status === 'rejected') console.error('Navigation API: Stations fetch failed:', stations.reason?.message)
+        if (shows.status === 'rejected') console.error('Navigation API: Shows fetch failed:', shows.reason?.message)
 
         return {
             wagtailResponse: wagtail.status === 'fulfilled' ? wagtail.value.data : null,
@@ -65,7 +80,7 @@ async function getNavigationData () {
 export default defineEventHandler(async (event) => {
     const res = event?.node?.res
     res.setHeader('Cache-Control', 'max-age=120, stale-while-revalidate')
-    
+
     try {
         const data = await getNavigationData()
         return { data }
