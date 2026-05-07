@@ -15,11 +15,13 @@ export function useFetchWrapper (request, options = {}) {
         key,
         autoRefresh = true,
         logKey = false,
+        shallow = true,
         ...rest
     } = options
 
     const fetchOptions = {
         key,
+        shallow,
         ...rest,
     }
 

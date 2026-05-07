@@ -89,6 +89,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
         :size="imgSizes"
         :ratio="imgRatio"
         isVertical
+        v-once
       />
     </div>
   </div>
