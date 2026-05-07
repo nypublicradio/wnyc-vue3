@@ -1,5 +1,4 @@
 <script setup>
-
 import { useBreakpoints } from "~/composables/useBreakpoints"
 import { mediaTypes } from "~/composables/globals"
 const props = defineProps({
@@ -35,8 +34,12 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
 const isSquare = ref(false)
 const featureItem = reactiveItems.value?.[0]
 if (featureItem) {
-  const imgHeight = Number(featureItem.imageFullHeight || featureItem.image?.height)
-  const imgWidth = Number(featureItem.imageFullWidth || featureItem.image?.width)
+  const imgHeight = Number(
+    featureItem.imageFullHeight || featureItem.image?.height
+  )
+  const imgWidth = Number(
+    featureItem.imageFullWidth || featureItem.image?.width
+  )
   if (featureItem.cmsSource === mediaTypes.SIMPLECAST) {
     isSquare.value = true
   } else if (
@@ -65,7 +68,9 @@ const featureSizes = computed(() => {
 
 <template>
   <div class="layout layout-horizontal-feature-ad">
-    <div class="ad mb-5 col-12 flex align-items-center justify-content-center lg:hidden">
+    <div
+      class="ad mb-5 col-12 flex align-items-center justify-content-center lg:hidden"
+    >
       <story-htlAd
         layout="rectangle"
         slotClass="htlad-wnyc_homepage_rectangle"
@@ -103,7 +108,7 @@ const featureSizes = computed(() => {
       />
 
       <div
-        class="ad col-12 lg:col align-items-center justify-content-center hidden lg:flex"
+        class="ad col-12 lg:col align-items-center justify-content-center hidden lg:flex px-0"
       >
         <story-htlAd
           layout="rectangle"

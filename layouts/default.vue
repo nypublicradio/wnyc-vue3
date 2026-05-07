@@ -78,7 +78,7 @@ watch(
     </main>
     <BottomMenu v-if="isApp" />
     <footer v-if="!isApp">
-      <TheFooter />
+      <LazyTheFooter />
     </footer>
   </div>
 </template>
