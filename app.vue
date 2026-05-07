@@ -261,7 +261,7 @@ useSeoMeta({
   <!-- Inline SVG filter for Safari compatibility - Safari doesn't support data URI SVG filters -->
   <svg
     aria-hidden="true"
-    style="position: absolute; width: 0; height: 0; overflow: hidden"
+    style="position: absolute; left: -9999px; top: -9999px; width: 0; height: 0; overflow: hidden; visibility: hidden; pointer-events: none;"
   >
     <defs>
       <filter
