@@ -8,7 +8,7 @@ describe('firebase config', () => {
   it('uses the configured measurement id for web', async () => {
     const { buildFirebaseConfig } = await import('~/plugins/firebase.client')
     const config = buildFirebaseConfig('web', {
-      FB_MEASUREMENT_ID: 'G-2S1VBKH11B',
+      FB_MEASUREMENT_ID: 'G-PCL0RZR9NG',
       FB_API_KEY_WEB: 'web-key',
       FB_API_KEY_IOS: 'ios-key',
       FB_API_KEY_ANDROID: 'android-key',
@@ -28,8 +28,33 @@ describe('firebase config', () => {
       storageBucket: 'wnyc-prod.appspot.com',
       messagingSenderId: '123456789',
       appId: 'web-app-id',
-      measurementId: 'G-2S1VBKH11B',
+      measurementId: 'G-PCL0RZR9NG',
     })
+  })
+
+  it('registerGtagDestination pushes a config call into the dataLayer', async () => {
+    delete (window as any).gtag
+    ;(window as any).dataLayer = []
+
+    const { registerGtagDestination } = await import('~/plugins/firebase.client')
+    registerGtagDestination('G-PCL0RZR9NG')
+
+    const dataLayer = (window as any).dataLayer
+    expect(dataLayer).toHaveLength(1)
+    // gtag pushes its arguments object to dataLayer; compare positional args.
+    expect(Array.from(dataLayer[0])).toEqual(['config', 'G-PCL0RZR9NG', { send_page_view: false }])
+  })
+
+  it('registerGtagDestination is a no-op when no measurement id is provided', async () => {
+    delete (window as any).gtag
+    ;(window as any).dataLayer = []
+
+    const { registerGtagDestination } = await import('~/plugins/firebase.client')
+    registerGtagDestination(undefined as any)
+    registerGtagDestination('')
+    registerGtagDestination(null as any)
+
+    expect((window as any).dataLayer).toHaveLength(0)
   })
 
   it('selects platform specific app ids and api keys', async () => {
