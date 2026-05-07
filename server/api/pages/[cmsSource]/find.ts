@@ -27,6 +27,23 @@ const resolveCmsSite = (config: ReturnType<typeof __getConfig>, override?: strin
   return config.public.cmsSite
 }
 
+const getCmsPathUrl = (baseApi: string, path: string) => {
+  const base = new URL(baseApi)
+  return new URL(path, base.origin).toString()
+}
+
+const redirectResponse = (status: number, location?: string) => {
+  if (!location) {
+    throw createError({ statusCode: 502, statusMessage: 'CMS redirect missing location header' })
+  }
+
+  return {
+    redirect: true,
+    location,
+    statusCode: status,
+  }
+}
+
 export default defineEventHandler(async (event) => {
   const config = __getConfig()
   const { html_path, cms_site } = getQuery(event)
@@ -71,6 +88,12 @@ export default defineEventHandler(async (event) => {
   }
 
   if (res.status === 404) {
+    const redirectRes = await axios.get(getCmsPathUrl(baseApi, html_path), requestOptions)
+
+    if (redirectRes.status >= 300 && redirectRes.status < 400) {
+      return redirectResponse(redirectRes.status, redirectRes.headers?.location)
+    }
+
     throw createError({ statusCode: 404, statusMessage: 'Page Not Found' })
   }
 
