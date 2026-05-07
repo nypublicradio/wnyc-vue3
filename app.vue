@@ -17,10 +17,7 @@ import {
   useFullDeviceInfo,
   useAppDownloadLink,
 } from "~/composables/states"
-import {
-  useBrowserTopColor,
-  useBrowserTopColorDarkMode,
-} from "~/composables/globals"
+import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
 import useLiveStream from "~/composables/data/liveStream"
 import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
@@ -187,8 +184,7 @@ watch(globalError, (error) => {
   }
 })
 
-const title =
-  "WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
+const title = "WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
 const description =
   "WNYC is America's most listened-to public radio station and the producer of award-winning programs and podcasts like Radiolab, On the Media, and The Brian Lehrer Show."
 const keywords =
@@ -209,8 +205,7 @@ useHead({
     { charset: "utf-8" },
     {
       name: "viewport",
-      content:
-        "viewport-fit=cover, width=device-width, initial-scale=1, maximum-scale=1",
+      content: "viewport-fit=cover, width=device-width, initial-scale=1, maximum-scale=1",
     },
     { name: "robots", content: "index, follow" },
   ],
@@ -258,7 +253,7 @@ useSeoMeta({
   <Toast position="top-center" successIcon="ci-check" warnIcon="ci-warn" />
 
   <!-- Inline SVG filter for Safari compatibility - Safari doesn't support data URI SVG filters -->
-  <svg
+  <!-- <svg
     aria-hidden="true"
     style="display: none;"
   >
@@ -275,5 +270,5 @@ useSeoMeta({
         </feMerge>
       </filter>
     </defs>
-  </svg>
+  </svg> -->
 </template>
