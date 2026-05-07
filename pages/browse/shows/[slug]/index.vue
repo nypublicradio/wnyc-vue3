@@ -91,14 +91,6 @@ useSeoMeta({
     </section>
     <template v-if="!error">
       <ShowHeader :show="show" />
-
-      <div class="md:hidden mt-4 mb-3">
-        <story-htlAd
-          layout="rectangle"
-          slotClass="htlad-wnyc_homepage_rectangle"
-          fineprint="WNYC is funded by sponsors and member donations"
-        />
-      </div>
       <!-- JUMP LINKS -->
       <section class="hidden md:block">
         <div class="grid">
@@ -129,17 +121,25 @@ useSeoMeta({
               </template>
             </div>
           </div>
-          <!-- <div class="col-fixed hidden lg:block w-20rem"></div> -->
         </div>
       </section>
 
       <section class="pb-4">
-        <!-- <pre class="text-lg">{{ show }}</pre> -->
         <div class="grid">
           <div class="col-fixed hidden xxl:block w-20rem"></div>
           <div class="col pr-2 lg:pr-4">
             <div v-if="status === 'success'" class="flex flex-column gap-5">
-              <VStreamfield :streamfieldBlocks="show?.body" />
+              <VStreamfield :streamfieldBlocks="show?.body">
+                <template #adBlock="slotProps">
+                  <div class="lg:hidden mt-4 mb-6" v-if="slotProps.index === 0">
+                    <story-htlAd
+                      layout="rectangle"
+                      slotClass="htlad-wnyc_show_page_rectangle"
+                      fineprint="WNYC is funded by sponsors and member donations"
+                    />
+                  </div>
+                </template>
+              </VStreamfield>
             </div>
             <div v-if="status !== 'success'">
               <div class="flex justify-content-between align-items-center mb-5 mt-2">

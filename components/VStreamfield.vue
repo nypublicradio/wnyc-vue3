@@ -211,6 +211,8 @@ onMounted(() => {
           :class="verticalSpacingClasses"
           :id="slugify(block.value.heading)"
         />
+
+        <slot name="adBlock" :block="block" :index="index" />
       </template>
     </div>
     <!-- <pre>{{ props.article }}</pre> -->
