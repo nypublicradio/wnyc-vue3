@@ -74,6 +74,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
           lg: [261, 174],
           xl: [324, 216],
         }"
+        v-once
       />
     </div>
   </div>

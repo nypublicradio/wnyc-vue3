@@ -136,6 +136,7 @@ const listTextClasses = props.isThin ? "text-sm" : "text-base lg:text-base"
         is-vertical
         is-feature
         :size="featureSizes"
+        v-once
       />
 
       <div class="col-12 grid grid-nogutter gap-3 h-full" :class="rightCol">
@@ -177,6 +178,7 @@ const listTextClasses = props.isThin ? "text-sm" : "text-base lg:text-base"
             xs: [112, 112],
             md: [176, 176],
           }"
+          v-once
         />
       </div>
     </div>
