@@ -45,10 +45,40 @@ export const buildFirebaseAnalyticsSettings = () => ({
     },
 })
 
+/**
+ * Explicitly registers the GA4 measurement ID with gtag so that page_view and
+ * other events have a valid destination to land in.
+ *
+ * Why this is necessary: the Firebase Web SDK's analytics module does not use
+ * the measurementId we pass to initializeApp() directly. Instead it fetches
+ * the public webConfig endpoint (firebase.googleapis.com/.../webConfig) and
+ * prefers whatever measurementId that response returns. If the Firebase web
+ * app's GA4 stream linkage has been recently changed, that endpoint can lag
+ * behind the actual configuration for many hours. While it lags it returns
+ * no measurementId at all, so the SDK calls gtag('config', null, ...), no
+ * destination is registered, and every gtag('event', ...) is silently
+ * dropped. This call ensures gtag has a valid destination registered using
+ * the measurementId from our runtime config, regardless of what the Firebase
+ * SDK's webConfig fetch ends up returning.
+ */
+export const registerGtagDestination = (measurementId) => {
+    if (typeof window === 'undefined' || !measurementId) return
+    window.dataLayer = window.dataLayer || []
+    if (typeof window.gtag !== 'function') {
+        window.gtag = function () { window.dataLayer.push(arguments) }
+    }
+    window.gtag('config', measurementId, { send_page_view: false })
+}
+
 export default defineNuxtPlugin(async () => {
     const config = useRuntimeConfig()
     const platform = await Capacitor.getPlatform()
     const firebaseConfig = buildFirebaseConfig(platform, config.public)
     const app = initializeApp(firebaseConfig)
+
+    if (platform === 'web') {
+        registerGtagDestination(firebaseConfig.measurementId)
+    }
+
     initializeAnalytics(app, buildFirebaseAnalyticsSettings())
 })
