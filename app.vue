@@ -252,24 +252,4 @@ useSeoMeta({
   <Drawers class="z-2" />
   <DynamicDialog />
   <Toast position="top-center" successIcon="ci-check" warnIcon="ci-warn" />
-
-  <!-- Inline SVG filter for Safari compatibility - Safari doesn't support data URI SVG filters -->
-  <!-- <svg
-    aria-hidden="true"
-    style="display: none;"
-  >
-    <defs>
-      <filter
-        id="v-image-blur-filter"
-        color-interpolation-filters="sRGB"
-      >
-        <feGaussianBlur stdDeviation="38" result="blurred" />
-        <feMorphology operator="dilate" radius="38" />
-        <feMerge>
-          <feMergeNode />
-          <feMergeNode in="blurred" />
-        </feMerge>
-      </filter>
-    </defs>
-  </svg> -->
 </template>
