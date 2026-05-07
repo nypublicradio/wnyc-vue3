@@ -86,6 +86,11 @@ const redirects = [
     { from: '/browse/shows/pipedreams', to: 'https://www.pipedreams.org/' },
     { from: '/browse/shows/fiesta', to: 'https://www.wfmt.com/programs/fiesta-latin-american-music-with-elbio-barilari/' },
     { from: '/browse/shows/chicago-symphony-orchestra', to: 'https://www.wfmt.com/programs/chicago-symphony-orchestra/' },
+    { from: '/getlit', to: '/get-lit' },
+    { from: '/publicsong', to: '/psp' },
+    { from: '/publicsongproject', to: '/psp' },
+    { from: '/story/2026-public-song-project', to: '/psp' },
+    { from: '/poetry', to: '/story/month-good-poetry-good-neighbors' },
 ]
 
 export default defineEventHandler((event) => {
