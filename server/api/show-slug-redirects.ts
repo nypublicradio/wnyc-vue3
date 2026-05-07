@@ -33,6 +33,11 @@ const redirects = [
     { from: '/browse/shows/fleas', to: '/browse/shows/this-podcast-has-fleas' },
     { from: '/browse/shows/trumpinc', to: '/browse/shows/trump-inc' },
     { from: '/browse/shows/universe-art', to: '/browse/shows/universe-of-art' },
+    { from: '/getlit', to: '/get-lit' },
+    { from: '/publicsong', to: '/psp' },
+    { from: '/publicsongproject', to: '/psp' },
+    { from: '/story/2026-public-song-project', to: '/psp' },
+    { from: '/poetry', to: '/story/month-good-poetry-good-neighbors' },
 ]
 
 export default defineEventHandler((event) => {
