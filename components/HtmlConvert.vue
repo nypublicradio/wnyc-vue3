@@ -38,7 +38,7 @@ const getFallbackWidth = () => {
     // 48 is the padding of the content area
     return window.innerWidth >= 1200 ? 658 : window.innerWidth - 48
   }
-  return 304
+  return 614
 }
 
 // Function to update parent width
@@ -134,8 +134,8 @@ onMounted(() => {
   if (!newContent) return
   const hasImages = /<img[^>]*>/i.test(newContent)
   if (hasImages) {
-    parentWidth.value = getFallbackWidth()
     nextTick(() => {
+      parentWidth.value = getFallbackWidth()
       updateParentWidth()
     })
   }
@@ -144,10 +144,7 @@ onMounted(() => {
 
 <template>
   <div ref="htmlConvertRef" class="html-convert-container">
-    <div
-      class="html-formatting"
-      :class="[{ 'no-blocks': noBlocks }, props.htmlClasses]"
-    >
+    <div class="html-formatting" :class="[{ 'no-blocks': noBlocks }, props.htmlClasses]">
       <component :is="parsedNodes" v-if="parsedNodes" />
     </div>
   </div>

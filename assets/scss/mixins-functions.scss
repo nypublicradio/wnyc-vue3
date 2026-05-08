@@ -54,6 +54,7 @@
     color: var(--link-button-color);
     transition: color var(--p-transition-duration);
     -webkit-transition: color var(--p-transition-duration);
+    word-break: break-all;
     &:hover,
     &:active,
     &:focus {
