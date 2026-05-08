@@ -12,7 +12,6 @@ interface HtmlParserOptions {
 }
 // composable that will parse the html string into an ast
 export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {}): (() => VNode[]) => {
-    console.log('htmlString', htmlString)
     const { getImageDimensions, templatizeImageUrl, isPublisherImageUrl, isNPRImageUrl } = useVImage()
     const { tagClassMap = {}, imagePropsMap = {}, parentWidth = 304 } = options
 
