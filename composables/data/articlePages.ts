@@ -886,8 +886,6 @@ const processNprLayout = async (article: NprArticle): Promise<string> => {
     }
 
     const profileHref = asset.profiles[0].href
-    console.log('####Image asset:', profileHref)
-
     if (profileHref === '/v1/profiles/text') {
       textBody += processTextAsset(asset)
     } else if (profileHref === '/v1/profiles/html-block') {
