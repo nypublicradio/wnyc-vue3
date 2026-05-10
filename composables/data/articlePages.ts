@@ -905,7 +905,7 @@ const processNprLayout = async (article: NprArticle): Promise<string> => {
 }
 
 // Helper: Extract audio information from NPR assets
-const extractNprAudio = (article: NprArticle): { url?: string; duration?: number } => {
+const extractNprAudio = async (article: NprArticle): Promise<{ url?: string; duration?: number; transcript?: string }> => {
   if (!article?.assets) {
     return {}
   }
@@ -921,9 +921,28 @@ const extractNprAudio = (article: NprArticle): { url?: string; duration?: number
         enclosure.type?.startsWith('audio/')
       )?.href
 
+      let transcript = null
+      if (asset.transcriptLink) {
+        // fetch npr transcript here
+        const config = useRuntimeConfig()
+        const options = {
+          method: 'GET',
+          url: `${config.public.NPR_CDS_API}${asset.transcriptLink.href}`,
+          headers: {
+            Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
+          },
+        }
+        try {
+          const transcriptResponse = await axios(options)
+          transcript = transcriptResponse.data.resources[0].text
+        } catch (e) {
+          console.error(e)
+        }
+      }
       return {
         url: audioURL,
-        duration: asset.duration
+        duration: asset.duration,
+        transcript: transcript
       }
     }
   }
@@ -998,7 +1017,7 @@ export async function normalizeNprPage (article: NprArticle, componentType = "de
   //console.log('NPR Image URLs:', { square, wide, selected: image })
 
   const textBody = await processNprLayout(article)
-  const { url: audioURL, duration: audioDuration } = extractNprAudio(article)
+  const { url: audioURL, duration: audioDuration, transcript } = await extractNprAudio(article)
 
   const bylineUrl = article.collections?.find(c => c.rels?.includes('byline'))?.href ?? null
   const authors = bylineUrl ? [await getAuthorsFromBylineUrl(bylineUrl)] : null
@@ -1025,6 +1044,7 @@ export async function normalizeNprPage (article: NprArticle, componentType = "de
     leadImageCaption: firstImageCaption,
     cmsSource: cmsSources.NPR,
     audio: audioURL ?? null,
+    transcript,
     hasAudio: Boolean(audioURL),
     type: audioURL ? mediaTypes.NPR_EPISODE : mediaTypes.NPR_ARTICLE,
     estimatedDuration: audioDuration ?? null,
