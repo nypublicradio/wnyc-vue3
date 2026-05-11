@@ -1,6 +1,5 @@
 <script setup>
 import { useTopStories } from "~/composables/useTopStories"
-import { hasAudio } from "~/utilities/helpers"
 const { getFilteredTopStories } = useTopStories()
 
 const route = useRoute()
@@ -56,8 +55,6 @@ const breadcrumbs = computed(() => [
   { label: storyData.value?.title },
 ])
 
-const hasNprAudio = computed(() => hasAudio(storyData.value?.audio))
-
 const title = `${storyData.value?.title} | WNYC`
 const description = storyData.value?.description
 const canonicalUrl = storyData.value?.link
@@ -81,11 +78,7 @@ useSeoMeta({
       <section class="flex align-items-center">
         <Breadcrumbs :items="breadcrumbs" />
       </section>
-      <EpisodeTemplate
-        :pending="status !== 'success'"
-        :episodeData="storyData"
-        :show-npr-transcript-disclaimer="hasNprAudio"
-      >
+      <EpisodeTemplate :pending="status !== 'success'" :episodeData="storyData">
         <template #bottom>
           <Divider class="mt-8 mb-5" />
           <TopStories :articles="filteredTopStories" />
