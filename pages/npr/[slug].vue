@@ -1,7 +1,7 @@
 <script setup>
 import { useTopStories } from "~/composables/useTopStories"
 import { hasAudio } from "~/utilities/helpers"
-const { topStories } = useTopStories()
+const { getFilteredTopStories, topStories } = useTopStories()
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -27,6 +27,10 @@ const {
       }
     },
   }
+)
+
+const filteredTopStories = computed(() =>
+  getFilteredTopStories(storyData.value)
 )
 
 onMounted(() => {
@@ -93,8 +97,7 @@ useSeoMeta({
       >
         <template #bottom>
           <Divider class="mt-8 mb-5" />
-          <h2 class="mb-3">Top Stories From Gothamist</h2>
-          <TopStories :articles="topStories" />
+          <TopStories :articles="filteredTopStories" />
         </template>
       </EpisodeTemplate>
 
