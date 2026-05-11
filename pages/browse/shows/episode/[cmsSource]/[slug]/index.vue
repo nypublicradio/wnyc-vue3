@@ -13,32 +13,28 @@ const route = useRoute()
 const router = useRouter()
 const toast = useToast()
 
-const [
-  { data: episode, status, error },
-  { data: redirectsData }
-] = await Promise.all([
-  useFetchWrapper(
-    () =>
-      `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
-    {
-      key: `index-episode-${route.params.cmsSource}-${route.params.slug}`,
-      onResponseError() {
-        toast.add({
-          severity: "error",
-          summary: "We are having a problem loading this episode. Please try again later.",
-          life: 6000,
-          closable: true,
-        })
-      },
-    }
-  ),
-  useFetchWrapper(
-    () => `${config.public.BFF_URL}/api/show-slug-redirects`,
-    {
+const [{ data: episode, status, error }, { data: redirectsData }] =
+  await Promise.all([
+    useFetchWrapper(
+      () =>
+        `${config.public.BFF_URL}/api/v2/show/episode/${route.params.cmsSource}/${route.params.slug}`,
+      {
+        key: `index-episode-${route.params.cmsSource}-${route.params.slug}`,
+        onResponseError() {
+          toast.add({
+            severity: "error",
+            summary:
+              "We are having a problem loading this episode. Please try again later.",
+            life: 6000,
+            closable: true,
+          })
+        },
+      }
+    ),
+    useFetchWrapper(() => `${config.public.BFF_URL}/api/show-slug-redirects`, {
       key: "show-slug-redirects",
-    }
-  )
-])
+    }),
+  ])
 
 const filteredTopStories = computed(() => getFilteredTopStories(episode.value))
 
@@ -49,7 +45,9 @@ onMounted(() => {
     page_title: episode.value.title,
     page_type: "episode_page",
     content_group: "on_demand_episode",
-    article_authors: episode.value?.authors?.map((author) => author.name).join(","),
+    article_authors: episode.value?.authors
+      ?.map((author) => author.name)
+      .join(","),
     article_publish_date: episode.value.publicationDate,
     article_updated_date: episode.value.updatedDate
       ? episode.value.updatedDate
@@ -96,7 +94,9 @@ const resolvedShowSlug = computed(() => {
   )?.slug
 
   if (headerSlug) {
-    const redirect = redirectsData.value?.find((r) => isolateSlug(r.from) === headerSlug)
+    const redirect = redirectsData.value?.find(
+      (r) => isolateSlug(r.from) === headerSlug
+    )
     return redirect ? isolateSlug(redirect.to) : headerSlug
   }
 
@@ -104,7 +104,9 @@ const resolvedShowSlug = computed(() => {
   if (showSlug.value?.show?.slug) return showSlug.value.show.slug
 
   // 3. Raw fallbacks
-  return episode.value?.show?.slug || episode.value?.headers?.brand?.slug || null
+  return (
+    episode.value?.show?.slug || episode.value?.headers?.brand?.slug || null
+  )
 })
 
 const { data: show, status: showStatus } = await useFetchWrapper(
@@ -157,7 +159,6 @@ useSeoMeta({
       >
         <template #bottom>
           <Divider class="mt-8 mb-5" />
-          <h2 class="mb-3">Top Stories From Gothamist</h2>
           <TopStories :articles="filteredTopStories" />
         </template>
       </EpisodeTemplate>

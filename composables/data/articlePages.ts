@@ -886,7 +886,6 @@ const processNprLayout = async (article: NprArticle): Promise<string> => {
     }
 
     const profileHref = asset.profiles[0].href
-
     if (profileHref === '/v1/profiles/text') {
       textBody += processTextAsset(asset)
     } else if (profileHref === '/v1/profiles/html-block') {
@@ -896,6 +895,8 @@ const processNprLayout = async (article: NprArticle): Promise<string> => {
     } else if (profileHref === '/v1/profiles/tweet') {
       textBody += await processTweetAsset(asset)
     } else if (profileHref === '/v1/profiles/image' && index > 0) {
+      textBody += processImageAsset(asset)
+    } else if (profileHref === '/v1/profiles/document' && asset.enclosures?.[0]?.type?.includes('image') && index > 0) {
       textBody += processImageAsset(asset)
     }
 

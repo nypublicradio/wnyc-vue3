@@ -54,7 +54,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
           imgCol="w-7rem md:w-12rem lg:w-full"
           :size="{
             xs: [112, 112],
-            md: [176, 176],
+            md: [192, 192],
             lg: [353, 235],
             xl: [437, 292],
           }"
@@ -71,7 +71,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
         imgCol="w-7rem md:w-12rem lg:w-full"
         :size="{
           xs: [112, 112],
-          md: [176, 176],
+          md: [192, 192],
           lg: [261, 174],
           xl: [324, 216],
         }"
