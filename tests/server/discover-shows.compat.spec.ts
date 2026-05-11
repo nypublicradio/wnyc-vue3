@@ -13,81 +13,49 @@ globalThis.defineEventHandler = (handler: unknown) => handler
 // @ts-expect-error test-only global
 globalThis.getQuery = () => currentQuery
 
-const publisherShowResponse = {
-  data: {
-    data: [
-      {
-        id: '882225',
-        type: 'show',
-        attributes: {
-          slug: 'all-of-it',
-          title: 'All Of It with Alison Stewart',
-          description: '<p>All Of It description.</p>',
-          url: 'https://www.wnyc.org/shows/all-of-it',
-        },
-        relationships: {
-          image: {
-            data: { type: 'image', id: '190372' },
-          },
-          'producing-organizations': {
-            data: [],
-          },
-        },
-      },
-      {
-        id: '398',
-        type: 'show',
-        attributes: {
-          slug: 'otm',
-          title: 'On the Media',
-          description: '<p>On the Media description.</p>',
-          url: 'https://www.wnyc.org/shows/otm',
-        },
-        relationships: {
-          image: {
-            data: { type: 'image', id: '103448' },
-          },
-          'producing-organizations': {
-            data: [{ type: 'producing-organization', id: '332' }],
-          },
-        },
-      },
-    ],
-    included: [
-      {
-        type: 'image',
-        id: '190372',
-        attributes: {
-          url: 'https://media.wnyc.org/i/1400/1400/l/80/2020/06/AllOfIt.png',
-          template: 'https://media.wnyc.org/i/%s/%s/%s/%s/2020/06/AllOfIt.png',
-        },
-      },
-      {
-        type: 'image',
-        id: '103448',
-        attributes: {
-          url: 'https://media.wnyc.org/i/500/500/c/80/1/onthemedia.png',
-          template: 'https://media.wnyc.org/i/%s/%s/%s/%s/1/onthemedia.png',
-        },
-      },
-      {
-        type: 'producing-organization',
-        id: '332',
-        attributes: {
-          name: 'WNYC Studios',
-          url: 'https://www.wnycstudios.org/',
-        },
-      },
-    ],
+const legacyPublisherShows = [
+  {
+    producingOrganizations: [],
+    title: 'All Of It with Alison Stewart',
+    image: {
+      altText: 'All of It with Alison Stewart',
+      name: '2020/06/AllOfIt.png',
+      source: null,
+      url: 'https://media.wnyc.org/i/1400/1400/l/80/2020/06/AllOfIt.png',
+      h: 1400,
+      isDisplay: true,
+      crop: 'l',
+      caption: 'All of It with Alison Stewart',
+      creditsUrl: '',
+      template: 'https://media.wnyc.org/i/%s/%s/%s/%s/2020/06/AllOfIt.png',
+      w: 1400,
+      id: 190372,
+      creditsName: 'WNYC',
+    },
+    list_api_url: '/api/list/stories/all-of-it/',
+    pk: 882225,
+    type: 'show',
+    slug: 'all-of-it',
   },
-}
+  {
+    producingOrganizations: [{ name: 'WNYC Studios' }],
+    title: 'On the Media',
+    image: {
+      url: 'https://media.wnyc.org/i/500/500/c/80/1/onthemedia.png',
+    },
+    list_api_url: '/api/list/stories/otm/',
+    pk: 398,
+    type: 'show',
+    slug: 'otm',
+  },
+]
 
 describe('legacy /api/v2/discover/shows compatibility', () => {
   beforeEach(() => {
     vi.resetModules()
     currentQuery = {}
     axiosMock.mockReset()
-    axiosMock.mockResolvedValue(publisherShowResponse)
+    axiosMock.mockResolvedValue({ data: legacyPublisherShows })
     ;(globalThis as any).__testRuntimeConfig = {
       public: {
         PUBLISHER_BASE_API: 'https://api.wnyc.org/api/',
@@ -95,10 +63,11 @@ describe('legacy /api/v2/discover/shows compatibility', () => {
     }
   })
 
-  it('returns the Publisher-backed legacy top-level array for spotlight app requests', async () => {
+  it('passes through the surviving Publisher legacy discover shows response', async () => {
     currentQuery = {
       discover_station: 'wnyc-vue3-app-featured',
       api_key: 'spotlight',
+      browser_id: 'test-browser',
     }
 
     const handler = (await import('../../server/api/v2/discover/shows')).default
@@ -106,38 +75,16 @@ describe('legacy /api/v2/discover/shows compatibility', () => {
 
     const result = await handler(event)
 
-    expect(result).toEqual([
-      {
-        id: 882225,
-        pk: 882225,
-        title: 'All Of It with Alison Stewart',
-        description: '<p>All Of It description.</p>',
-        slug: 'all-of-it',
-        type: 'show',
-        image: {
-          url: 'https://media.wnyc.org/i/1400/1400/l/80/2020/06/AllOfIt.png',
-          template: 'https://media.wnyc.org/i/%s/%s/%s/%s/2020/06/AllOfIt.png',
-        },
-        list_api_url: 'https://api.wnyc.org/api/v3/story/?show=all-of-it',
-        producingOrganizations: [],
-        producing_organizations: [],
-        url: 'https://www.wnyc.org/shows/all-of-it',
-      },
-      expect.objectContaining({
-        id: 398,
-        slug: 'otm',
-        title: 'On the Media',
-        producingOrganizations: [{ name: 'WNYC Studios', url: 'https://www.wnycstudios.org/' }],
-      }),
-    ])
+    expect(result).toBe(legacyPublisherShows)
     expect(Array.isArray(result)).toBe(true)
+    expect(result[0]).not.toHaveProperty('description')
+    expect(result[0]).not.toHaveProperty('id')
+    expect(result[0].image).toHaveProperty('altText')
+    expect(result[0].image).toHaveProperty('isDisplay')
     expect(axiosMock).toHaveBeenCalledWith({
       method: 'GET',
-      url: 'https://api.wnyc.org/api/v3/shows/',
-      params: {
-        discover_station: 'wnyc-vue3-app-featured',
-        api_key: 'spotlight',
-      },
+      url: 'https://api.wnyc.org/api/v1/discover/shows/',
+      params: currentQuery,
       timeout: 10000,
     })
     expect(event.node.res.setHeader).toHaveBeenCalledWith(
@@ -146,7 +93,7 @@ describe('legacy /api/v2/discover/shows compatibility', () => {
     )
   })
 
-  it('forwards known topic requests to Publisher so the DiscoverStation whitelist controls membership and order', async () => {
+  it('forwards topic query params without local filtering or reshaping', async () => {
     currentQuery = {
       discover_station: 'wnyc-vue3-app-techmedia',
       api_key: 'otm',
@@ -157,7 +104,7 @@ describe('legacy /api/v2/discover/shows compatibility', () => {
 
     const result = await handler(event)
 
-    expect(result.map((show: any) => show.slug)).toEqual(['all-of-it', 'otm'])
+    expect(result).toBe(legacyPublisherShows)
     expect(axiosMock).toHaveBeenCalledWith(
       expect.objectContaining({
         params: {
