@@ -1,6 +1,7 @@
 import axios from 'axios'
 import humps from 'humps'
 import { cmsSources, FALLBACKIMAGE } from '~/composables/globals'
+import { getLegacyDiscoverShows } from '~/server/api/v2/discover/shows'
 import { customAlphabeticalSort } from '~/utilities/helpers'
 
 const config = useRuntimeConfig()
@@ -27,17 +28,12 @@ const allShows = async () => {
 //Fetch featured shows for the app
 const featuredShows = async () => {
     try {
-        const option = {
-            method: 'GET',
-            url: config.public.FEATURED_SHOWS,
-            params: {
-                discover_station: 'wnyc-vue3-app-featured',
-                api_key: 'spotlight',
-            }
-        }
-        const res = await axios(option)
+        const data = await getLegacyDiscoverShows({
+            discover_station: 'wnyc-vue3-app-featured',
+            api_key: 'spotlight',
+        })
 
-        const resData = res.data.map((show) => {
+        const resData = data.map((show) => {
             show.cmsSource = cmsSources.PUBLISHER
             const humped = humps.camelizeKeys(show)
             return humped
