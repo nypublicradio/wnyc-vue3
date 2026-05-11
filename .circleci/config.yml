@@ -30,7 +30,7 @@ filter_prod: &filter_prod
 filter_web-prod: &filter_web-prod
   filters:
     branches:
-      only: main-org
+      ignore: /.*/
     tags:
       only: web-prod
 
