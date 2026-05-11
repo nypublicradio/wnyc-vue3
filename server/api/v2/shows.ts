@@ -5,7 +5,6 @@ import { NyprDb } from '~/server/utils/nyprdb'
 import { cmsSources, FALLBACKIMAGE } from '~/composables/globals'
 import { NPR } from '~/server/utils/npr'
 import { customAlphabeticalSort } from '~/utilities/helpers'
-import { getLegacyDiscoverShows } from './discover/shows'
 
 
 const config = useRuntimeConfig()
@@ -84,12 +83,17 @@ const allShows = async () => {
 //Fetch featured shows for the app
 const featuredShows = async () => {
 
-    const data = await getLegacyDiscoverShows({
-        discover_station: 'wnyc-vue3-app-featured',
-        api_key: 'spotlight',
-    })
+    const option = {
+        method: 'GET',
+        url: config.public.FEATURED_SHOWS,
+        params: {
+            discover_station: 'wnyc-vue3-app-featured',
+            api_key: 'spotlight',
+        }
+    }
+    const res = await axios(option)
 
-    const resData = data.map((show) => {
+    const resData = res.data.map((show) => {
         show.cmsSource = cmsSources.PUBLISHER
         const humped = humps.camelizeKeys(show)
         return humped
