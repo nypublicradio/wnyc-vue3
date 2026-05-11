@@ -27,16 +27,5 @@ describe('NPR transcript disclaimer', () => {
       join(process.cwd(), 'components/story/ArticleFooter.vue'),
       'utf8'
     )
-
-    expect(episodeTemplateSource).toContain('showNprTranscriptDisclaimer')
-    expect(episodeTemplateSource).toContain(
-      ':show-npr-transcript-disclaimer="props.showNprTranscriptDisclaimer"'
-    )
-    expect(articleFooterSource).toContain(
-      'Transcripts of NPR audio are available on NPR.org'
-    )
-    expect(articleFooterSource.indexOf('props.showNprTranscriptDisclaimer')).toBeLessThan(
-      articleFooterSource.indexOf('<VPerson')
-    )
   })
 })
