@@ -15,10 +15,6 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
-  showNprTranscriptDisclaimer: {
-    type: Boolean,
-    default: false,
-  },
 })
 
 //const tags = ref(props.article.tags)
@@ -52,12 +48,6 @@ const { getUserFallBackImage } = useFallbackImages()
         <!-- <pre>{{ profileData }}</pre> -->
         <div v-if="profileData?.length">
           <hr class="black mb-4 mt-0" />
-          <p
-            v-if="props.showNprTranscriptDisclaimer"
-            class="npr-transcript-disclaimer text-sm mb-4"
-          >
-            Transcripts of NPR audio are available on NPR.org
-          </p>
           <div>
             <VPerson
               v-for="profile in profileData"
@@ -73,12 +63,6 @@ const { getUserFallBackImage } = useFallbackImages()
           </div>
           <hr class="black mb-6" />
         </div>
-        <p
-          v-else-if="props.showNprTranscriptDisclaimer"
-          class="npr-transcript-disclaimer text-sm mb-6"
-        >
-          Transcripts of NPR audio are available on NPR.org
-        </p>
         <div
           v-if="props.showAd"
           class="mx-auto mb-6"
