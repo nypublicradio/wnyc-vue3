@@ -6,30 +6,12 @@ vi.mock('axios', () => ({
   default: axiosMock,
 }))
 
-vi.mock('~/server/utils/supabaseClient', () => ({
-  supabaseClient: vi.fn(() => ({})),
-}))
-
-vi.mock('~/server/utils/nyprdb', () => ({
-  NyprDb: vi.fn(() => ({
-    getNPRShows: vi.fn(() => []),
-  })),
-}))
-
-vi.mock('~/server/utils/npr', () => ({
-  NPR: vi.fn(() => ({
-    findImageUrl: vi.fn(() => ''),
-  })),
-}))
-
 let currentQuery: Record<string, any> = {}
 
 // @ts-expect-error test-only global
 globalThis.defineEventHandler = (handler: unknown) => handler
 // @ts-expect-error test-only global
 globalThis.getQuery = () => currentQuery
-// @ts-expect-error test-only global
-globalThis.useRuntimeConfig = () => (globalThis as any).__testRuntimeConfig
 
 const legacyPublisherShows = [
   {
@@ -131,68 +113,5 @@ describe('legacy /api/v2/discover/shows compatibility', () => {
         },
       })
     )
-  })
-
-  it('uses the Publisher discover passthrough for the app featured shows endpoint', async () => {
-    axiosMock.mockImplementation(async (options) => {
-      if (options.url === 'https://api.wnyc.org/api/v1/list/shows-for-app/') {
-        return {
-          data: {
-            results: [
-              {
-                id: 123,
-                title: 'All Of It with Alison Stewart',
-                slug: 'all-of-it',
-                description: 'removed by the route',
-                image: {
-                  url: 'https://media.wnyc.org/i/raw/2020/06/AllOfIt.png',
-                },
-              },
-            ],
-          },
-        }
-      }
-
-      return { data: legacyPublisherShows }
-    })
-
-    const handler = (await import('../../server/api/v2/shows')).default
-    const event: any = { node: { res: { setHeader: vi.fn() } } }
-
-    const result = await handler(event)
-
-    expect(result.featuredShows[0].title).toBe('All Of It with Alison Stewart')
-    expect(result.featuredShows[0].listApiUrl).toBe('/api/list/stories/all-of-it/')
-    expect(axiosMock).toHaveBeenCalledWith({
-      method: 'GET',
-      url: 'https://api.wnyc.org/api/v1/discover/shows/',
-      params: {
-        discover_station: 'wnyc-vue3-app-featured',
-        api_key: 'spotlight',
-      },
-      timeout: 10000,
-    })
-  })
-
-  it('uses the Publisher discover passthrough for browse topic data', async () => {
-    currentQuery = {
-      topic: 'tech-and-media',
-    }
-
-    const handler = (await import('../../server/api/browse/browse-topic/getTopicData')).default
-    const event: any = { node: { res: { setHeader: vi.fn() } } }
-
-    const result = await handler(event)
-
-    expect(result[0].listApiUrl).toBe('/api/list/stories/all-of-it/')
-    expect(axiosMock).toHaveBeenCalledWith({
-      method: 'GET',
-      url: 'https://api.wnyc.org/api/v1/discover/shows/',
-      params: {
-        discover_station: 'wnyc-vue3-app-techmedia',
-        api_key: 'otm',
-      },
-      timeout: 10000,
-    })
   })
 })

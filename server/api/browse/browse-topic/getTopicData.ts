@@ -1,20 +1,19 @@
+
+import axios from 'axios'
 import humps from 'humps'
 import { showTopics } from '~/composables/globals'
-import { getLegacyDiscoverShows } from '~/server/api/v2/discover/shows'
 import { customAlphabeticalSort } from '~/utilities/helpers';
-
-const discoverQueryFromTopicUrl = (url: string) => {
-    const searchParams = new URL(url).searchParams
-
-    return Object.fromEntries(searchParams.entries())
-}
 
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
     const topic = showTopics.find(topic => topic.value === query.topic);
     try {
-        const data = await getLegacyDiscoverShows(discoverQueryFromTopicUrl(topic.url))
-        const resData = humps.camelizeKeys(data)
+        const options = {
+            method: 'GET',
+            url: topic.url,
+        }
+        const res = await axios(options)
+        const resData = humps.camelizeKeys(res.data)
 
         // Sort resData
         resData.sort(customAlphabeticalSort());
