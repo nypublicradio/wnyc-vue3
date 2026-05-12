@@ -30,6 +30,13 @@ const {
   }
 )
 
+if (show.value?.redirect) {
+  await navigateTo(show.value.location, {
+    redirectCode: show.value.statusCode || 301,
+    external: /^https?:\/\//.test(show.value.location),
+  })
+}
+
 const podcastId = computed(
   () => show.value?.linkedDataSource?.[0]?.value?.id ?? null
 )

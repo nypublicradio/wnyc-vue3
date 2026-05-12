@@ -19,6 +19,13 @@ const { data: show, status, error } = isApp.value
   ? useFetchWrapper(...showFetchArgs)
   : await useFetchWrapper(...showFetchArgs)
 
+if (show.value?.redirect) {
+  await navigateTo(show.value.location, {
+    redirectCode: show.value.statusCode || 301,
+    external: /^https?:\/\//.test(show.value.location),
+  })
+}
+
 // Auto-refresh handled by useFetchWrapper
 
 const sectionAnchorData = computed(
