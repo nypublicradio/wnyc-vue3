@@ -10,20 +10,14 @@ const storySource = "WNYC"
 
 const breadcrumbs = computed(() => [{ label: "Home", route: "/home" }])
 
-const {
-  data: storyData,
-  status,
-  error,
-} = await useFetchWrapper(
-  () =>
-    `${config.public.BFF_URL}/api/story/${cmsSources.PUBLISHER}/${route.params.slug}`,
+const { data: storyData, status, error } = await useFetchWrapper(
+  () => `${config.public.BFF_URL}/api/story/${cmsSources.PUBLISHER}/${route.params.slug}`,
   {
     key: `story-${cmsSources.PUBLISHER}-${route.params.slug}`,
     onResponseError() {
       globalToast.value = {
         severity: "error",
-        summary:
-          "We are having a problem loading this story. Please try again later.",
+        summary: "We are having a problem loading this story. Please try again later.",
         life: 6000,
         closable: true,
       }
@@ -31,9 +25,7 @@ const {
   }
 )
 
-const filteredTopStories = computed(() =>
-  getFilteredTopStories(storyData.value)
-)
+const filteredTopStories = computed(() => getFilteredTopStories(storyData.value))
 
 onMounted(() => {
   if (!storyData.value) return
@@ -42,9 +34,7 @@ onMounted(() => {
     page_title: storyData.value?.title,
     page_type: "article",
     content_group: `${storySource}_article`,
-    article_authors: storyData.value?.authors
-      ?.map((author) => author.name)
-      .join(","),
+    article_authors: storyData.value?.authors?.map((author) => author.name).join(","),
     article_publish_date: storyData.value?.publicationDate,
     article_updated_date: storyData.value?.updatedDate
       ? storyData.value?.updatedDate
@@ -71,7 +61,6 @@ useHead(() => ({
           <Breadcrumbs :items="breadcrumbs" />
         </div>
       </section>
-
       <EpisodeTemplate :pending="status !== 'success'" :episodeData="storyData">
         <template #bottom>
           <Divider class="mt-8 mb-5" />

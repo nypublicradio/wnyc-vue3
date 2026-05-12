@@ -111,6 +111,19 @@ export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {
                     return h(VImage, vImageProps)
                 }
 
+                // Intercept iframes and rewrite WNYC widget URLs to use local Nuxt routes
+                if (tagName === 'iframe' && attrs.src) {
+                    if (attrs.src.includes('wnyc.org/widgets/')) {
+                        try {
+                            const urlObj = new URL(attrs.src)
+                            attrs.src = urlObj.pathname + urlObj.search + urlObj.hash
+                        } catch (e) {
+                            // ignore invalid URLs
+                        }
+                    }
+                    return h(tagName, attrs, node.children ? processNodeList(node.children) : null)
+                }
+
                 // Skip script tags
                 if (tagName === 'script') {
                     return null
