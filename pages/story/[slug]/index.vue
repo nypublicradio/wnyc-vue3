@@ -35,6 +35,13 @@ const filteredTopStories = computed(() =>
   getFilteredTopStories(storyData.value)
 )
 
+if (storyData.value?.redirect) {
+  await navigateTo(storyData.value.location, {
+    redirectCode: storyData.value.statusCode || 301,
+    external: /^https?:\/\//.test(storyData.value.location),
+  })
+}
+
 onMounted(() => {
   if (!storyData.value) return
   const { $analytics } = useNuxtApp()
