@@ -42,7 +42,14 @@ if (isPreview) {
     })
   }
 
-  page = normalizeFindPageResponse(data)
+  if (data.value.redirect) {
+    await navigateTo(data.value.location, {
+      redirectCode: data.value.statusCode || 301,
+      external: /^https?:\/\//.test(data.value.location),
+    })
+  } else {
+    page = normalizeFindPageResponse(data)
+  }
 }
 </script>
 

@@ -27,6 +27,35 @@ const resolveCmsSite = (config: ReturnType<typeof __getConfig>, override?: strin
   return config.public.cmsSite
 }
 
+const getCmsPathUrl = (baseApi: string, path: string) => {
+  const base = new URL(baseApi)
+  return new URL(path, base.origin).toString()
+}
+
+const stripTrailingSlash = (path: string) => path.replace(/\/+$/, '') || '/'
+
+const isSlashNormalizationRedirect = (fromUrl: string, location: string) => {
+  const from = new URL(fromUrl)
+  const to = new URL(location, from)
+
+  return (
+    from.origin === to.origin &&
+    stripTrailingSlash(from.pathname) === stripTrailingSlash(to.pathname)
+  )
+}
+
+const redirectResponse = (status: number, location?: string) => {
+  if (!location) {
+    throw createError({ statusCode: 502, statusMessage: 'CMS redirect missing location header' })
+  }
+
+  return {
+    redirect: true,
+    location,
+    statusCode: status,
+  }
+}
+
 export default defineEventHandler(async (event) => {
   const config = __getConfig()
   const { html_path, cms_site } = getQuery(event)
@@ -71,6 +100,21 @@ export default defineEventHandler(async (event) => {
   }
 
   if (res.status === 404) {
+    const redirectUrl = getCmsPathUrl(baseApi, html_path)
+    let redirectRes = await axios.get(redirectUrl, requestOptions)
+
+    if (redirectRes.status >= 300 && redirectRes.status < 400) {
+      const location = redirectRes.headers?.location
+
+      if (location && isSlashNormalizationRedirect(redirectUrl, location)) {
+        redirectRes = await axios.get(new URL(location, redirectUrl).toString(), requestOptions)
+      }
+    }
+
+    if (redirectRes.status >= 300 && redirectRes.status < 400) {
+      return redirectResponse(redirectRes.status, redirectRes.headers?.location)
+    }
+
     throw createError({ statusCode: 404, statusMessage: 'Page Not Found' })
   }
 
