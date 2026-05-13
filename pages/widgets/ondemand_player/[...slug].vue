@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue"
-import { useRoute } from "#app"
-
 // Disable the global app layout (header/footer) so it acts like a clean widget
 definePageMeta({
   layout: false,
@@ -30,6 +27,23 @@ onMounted(() => {
 
     if (file) {
       audioUrl.value = decodeURIComponent(file)
+    }
+  }
+  // Case 2: The hash was URL encoded (%23) in the iframe src, causing Nuxt to see it as part of the path
+  else if (route.params.slug) {
+    const slugArray = Array.isArray(route.params.slug)
+      ? route.params.slug
+      : [route.params.slug]
+    const fullSlug = slugArray.join("/")
+
+    if (fullSlug.includes("#file=") || fullSlug.includes("%23file=")) {
+      const parts = fullSlug.split(/#file=|%23file=/)
+      if (parts.length > 1) {
+        const fileString = parts[1].split("&")[0]
+        if (fileString) {
+          audioUrl.value = decodeURIComponent(fileString)
+        }
+      }
     }
   }
 })
