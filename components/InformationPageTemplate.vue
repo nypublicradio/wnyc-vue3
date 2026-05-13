@@ -6,12 +6,16 @@ const props = defineProps<{
 }>()
 
 const title = `${props.page.title} | WNYC`
+const searchDescription = props.page?.meta?.seoDescription
+const socialDescription = props.page?.socialText
 useHead({
   title,
 })
 useSeoMeta({
   title,
   ogTitle: title,
+  description: searchDescription,
+  ogDescription: socialDescription,
 })
 </script>
 

@@ -177,6 +177,7 @@ const breadcrumbs = computed(() => [
 
 const title = `${show.value?.title} | WNYC`
 const description = getFirstSentence(show.value?.summary)
+const image = show.value?.image
 useHead({
   title,
 })
@@ -186,6 +187,16 @@ useSeoMeta({
   description,
   ogDescription: description,
 })
+if (image) {
+  useSeoMeta({
+    ogImage: {
+      url: image.file,
+      alt: show.value?.title,
+      width: image.width,
+      height: image.height,
+    },
+  })
+}
 
 onUnmounted(() => stop())
 </script>

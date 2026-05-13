@@ -135,6 +135,7 @@ const tease =
 const description =
   episode.value?.description ??
   getFirstSentence(stripHtmlTags(episode.value?.description))
+const image = episode.value?.listingImage || show.value?.image
 useHead({
   title,
 })
@@ -142,6 +143,16 @@ useSeoMeta({
   title,
   description: tease ?? description,
 })
+if (image) {
+  useSeoMeta({
+    ogImage: {
+      url: image,
+      alt: `${show.value?.title} - ${episode.value?.title}`,
+      width: image.width,
+      height: image.height,
+    },
+  })
+}
 </script>
 
 <template>

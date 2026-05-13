@@ -99,17 +99,30 @@ onMounted(() => {
   })
 })
 
+console.log("show", show.value)
 const title = `${show.value?.title} | WNYC`
 const description = getFirstSentence(show.value?.summary)
+const image = show.value?.image
 useHead({
   title,
 })
+
 useSeoMeta({
   title,
   ogTitle: title,
   description,
   ogDescription: description,
 })
+if (image) {
+  useSeoMeta({
+    ogImage: {
+      url: image.file,
+      alt: show.value?.title,
+      width: image.width,
+      height: image.height,
+    },
+  })
+}
 </script>
 
 <template>

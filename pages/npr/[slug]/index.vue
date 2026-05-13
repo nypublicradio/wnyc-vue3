@@ -58,6 +58,9 @@ const breadcrumbs = computed(() => [
 const title = `${storyData.value?.title} | WNYC`
 const description = storyData.value?.description
 const canonicalUrl = storyData.value?.link
+const image = storyData.value?.image?.replace("{width}", 512)
+    .replace("{quality}", 80)
+    .replace("{format}", "jpg")
 useHead(() => ({
   title,
   link: [{ rel: "canonical", href: canonicalUrl }],
@@ -69,6 +72,16 @@ useSeoMeta({
   ogTitle: title,
   ogDescription: description,
 })
+if (image) {
+  useSeoMeta({
+    ogImage: {
+      url: image,
+      alt: storyData.value?.title,
+      width: 512,
+      height: 512,
+    },
+  })
+}
 </script>
 
 <template>
