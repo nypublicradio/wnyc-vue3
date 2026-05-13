@@ -236,7 +236,6 @@ useSeoMeta({
   twitterImage: ogImage.url,
   twitterSite: "@WNYC",
   themeColor,
-  msapplicationTileColor: themeColor,
 })
 </script>
 

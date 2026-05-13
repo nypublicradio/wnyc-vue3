@@ -60,13 +60,20 @@ onMounted(() => {
   })
 })
 
+const title = `${storyData.value?.title} | WNYC`
+const description = getFirstSentence(eventData.value?.description)
+const searchDescription = storyData.value?.meta?.searchDescription || description
+const socialDescription = eventData.value?.socialText || description
 useHead(() => ({
   title: `${storyData.value?.title} | WNYC`,
-  meta: [
-    { name: "og:title", content: `${storyData.value?.title} | WNYC` },
-    { name: "twitter:title", content: `${storyData.value?.title} | WNYC` },
-  ],
 }))
+useSeoMeta({
+  title,
+  description: searchDescription,
+  ogDescription: socialDescription,
+  ogTitle: title,
+})
+
 </script>
 
 <template>
