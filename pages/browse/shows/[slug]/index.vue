@@ -1,5 +1,9 @@
 <script setup>
-import { checkIsFavorited, slugify, getFirstSentence } from "~/utilities/helpers"
+import {
+  checkIsFavorited,
+  slugify,
+  getFirstSentence,
+} from "~/utilities/helpers"
 import { useIsApp } from "~/composables/states"
 import { useFetchWrapper } from "~/composables/useFetchWrapper"
 
@@ -15,7 +19,11 @@ const showFetchArgs = [
   },
 ]
 
-const { data: show, status, error } = isApp.value
+const {
+  data: show,
+  status,
+  error,
+} = isApp.value
   ? useFetchWrapper(...showFetchArgs)
   : await useFetchWrapper(...showFetchArgs)
 
@@ -37,12 +45,20 @@ onMounted(() => {
   })
 })
 
+const firstCuratedListIndex = computed(() => {
+  const index = show.value?.body?.findIndex(
+    (item) => item.type === "curated_list"
+  )
+  return index !== undefined && index > -1 ? index : null
+})
+
 // scrolls to the selected section from the jump link buttons
 const scrollToSection = (sectionId, behavior = "smooth", offset = 90) => {
   const element = document.getElementById(sectionId)
 
   if (element) {
-    const elementPosition = element.getBoundingClientRect().top + window.pageYOffset
+    const elementPosition =
+      element.getBoundingClientRect().top + window.pageYOffset
     const offsetPosition = elementPosition - offset
 
     window.scrollTo({
@@ -131,7 +147,13 @@ useSeoMeta({
             <div v-if="status === 'success'" class="flex flex-column gap-5">
               <VStreamfield :streamfieldBlocks="show?.body">
                 <template #adBlock="slotProps">
-                  <div class="lg:hidden mt-4 mb-6" v-if="slotProps.index === 0">
+                  <div
+                    class="lg:hidden mt-4 mb-6"
+                    v-if="
+                      slotProps.index === firstCuratedListIndex &&
+                      firstCuratedListIndex !== null
+                    "
+                  >
                     <story-htlAd
                       layout="rectangle"
                       slotClass="htlad-wnyc_show_page_rectangle"
@@ -142,7 +164,9 @@ useSeoMeta({
               </VStreamfield>
             </div>
             <div v-if="status !== 'success'">
-              <div class="flex justify-content-between align-items-center mb-5 mt-2">
+              <div
+                class="flex justify-content-between align-items-center mb-5 mt-2"
+              >
                 <Skeleton height="18px" width="80px" borderRadius="4px" />
                 <Skeleton height="18px" width="80px" borderRadius="4px" />
               </div>
