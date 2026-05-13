@@ -9,9 +9,9 @@ const props = defineProps<{
 // Intercept the raw HTML embed and rewrite absolute WNYC widget URLs to relative paths
 const processedEmbed = computed(() => {
   let html = props.block.value.embed
-  if (html && html.includes('wnyc.org/widgets/')) {
-    // Basic string replacement for the absolute URL to force local routing
-    html = html.replace(/https?:\/\/(www\.)?wnyc\.org\/widgets\//g, '/widgets/')
+  if (html) {
+    // Basic string replacement for any absolute WNYC URL to force local routing
+    html = html.replace(/https?:\/\/(www\.)?wnyc\.org\//g, '/')
   }
   return html
 })
