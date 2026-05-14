@@ -3,7 +3,9 @@ import { useToast } from "primevue/usetoast"
 import { useTopStories } from "~/composables/useTopStories"
 import { EVENT_BADGE_STYLES, useEventData } from "~/composables/useEventData"
 import {
-  getFirstSentence
+  dynamicNavigation,
+  getFirstSentence,
+  stripHtmlTags
 } from "~/utilities/helpers"
 
 const { getFilteredTopStories,topStories } = useTopStories()
@@ -106,9 +108,12 @@ const breadcrumbs = computed(() => [
   { label: title.value || "Event" },
 ])
 const pageTitle = eventData.value?.meta?.seoTitle || `${eventData.value?.title} | WNYC`
-const description = getFirstSentence(eventData.value?.description)
+const description = getFirstSentence(eventData.value?.description) || 
+                    getFirstSentence(stripHtmlTags(eventData.value?.body[0].value)) || 
+                    pageTitle
 const searchDescription = eventData.value?.meta?.searchDescription || description
 const socialDescription = eventData.value?.socialText || description
+const socialImage = eventData.value?.socialImage
 useHead({
   title: pageTitle,
 })
@@ -123,6 +128,16 @@ useSeoMeta({
   description: searchDescription,
   ogDescription: socialDescription,
 })
+if (socialImage) {
+  useSeoMeta({
+    ogImage: {
+      url: socialImage.url,
+      alt: eventData.value?.title,
+      width: socialImage.width,
+      height: socialImage.height,
+    },
+  })
+}
 </script>
 
 <template>

@@ -115,6 +115,7 @@ useSeoMeta({
   title,
   description,
   ogTitle: title,
+  ogDescription: description,
 })
 </script>
 

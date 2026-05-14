@@ -3,7 +3,9 @@ import { useIntersectionObserver } from "@vueuse/core"
 import {
   checkIsFavorited,
   trackClickEvent,
-  getFirstSentence
+  dynamicNavigation,
+  getFirstSentence,
+  stripHtmlTags,
 } from "~/utilities/helpers"
 import { useGlobalToast } from "~/composables/states"
 
@@ -175,8 +177,16 @@ const breadcrumbs = computed(() => [
   },
 ])
 
+const getDescription = (aboutModule) => {
+  if (aboutModule?.length) {
+    return getFirstSentence(stripHtmlTags(aboutModule[0].value))
+  }
+}
+
 const title = `${show.value?.title} | WNYC`
-const description = getFirstSentence(show.value?.summary)
+const description = getDescription(show.value?.aboutModule)
+const searchDescription = show.value?.meta?.searchDescription || description
+const socialDescription = show.value?.socialText || description
 const image = show.value?.image
 useHead({
   title,
@@ -184,8 +194,8 @@ useHead({
 useSeoMeta({
   title,
   ogTitle: title,
-  description,
-  ogDescription: description,
+  description: searchDescription,
+  ogDescription: socialDescription,
 })
 if (image) {
   useSeoMeta({

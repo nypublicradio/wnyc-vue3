@@ -3,6 +3,7 @@ import {
   checkIsFavorited,
   slugify,
   getFirstSentence,
+  stripHtmlTags,
 } from "~/utilities/helpers"
 import { useIsApp } from "~/composables/states"
 import { useFetchWrapper } from "~/composables/useFetchWrapper"
@@ -99,19 +100,25 @@ onMounted(() => {
   })
 })
 
-console.log("show", show.value)
+const getDescription = (aboutModule) => {
+  if (aboutModule?.length) {
+    return getFirstSentence(stripHtmlTags(aboutModule[0].value))
+  }
+}
+
 const title = `${show.value?.title} | WNYC`
-const description = getFirstSentence(show.value?.summary)
+const description = getDescription(show.value?.aboutModule)
+const searchDescription = show.value?.meta?.searchDescription || description
+const socialDescription = show.value?.socialText || description
 const image = show.value?.image
 useHead({
   title,
 })
-
 useSeoMeta({
   title,
   ogTitle: title,
-  description,
-  ogDescription: description,
+  description: searchDescription,
+  ogDescription: socialDescription,
 })
 if (image) {
   useSeoMeta({
