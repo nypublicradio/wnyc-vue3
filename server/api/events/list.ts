@@ -16,7 +16,7 @@ const getWagtailEvents = async (query: Record<string, any>) => {
             method: 'GET',
             url: `${config.public.AVIARY_BASE_API}events/`,
             params: {
-                fields: 'id,title,start_datetime,end_datetime,duration,event_image,description,ticket_url,price,event_location,venue_name,event_url,body,tags,listing_title,listing_summary',
+                fields: 'id,title,start_datetime,end_datetime,duration,event_image,description,ticket_url,price,event_location,venue_name,event_url,body,tags,listing_title,listing_summary,listing_image',
                 limit: query.limit || queryLimit,
                 offset: query.offset || 0,
             },
@@ -39,8 +39,7 @@ const getWagtailEvents = async (query: Record<string, any>) => {
 
         const res = await axios(options)
         const data = humps.camelizeKeys(res.data)
-        const events = (data.items || []).map(normalizeWagtailEvent)
-
+        const events = (data.items || []).map((e: any) => normalizeWagtailEvent(e, true))
         // Transform the response to include both data and meta
         return {
             events,

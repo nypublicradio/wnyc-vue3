@@ -31,6 +31,7 @@ const reactiveArticles = toRef(props, "articles")
         <MediaCard
           showTease
           isHorizontal
+          :allowVerticalEffect="false"
           imgCol="w-7rem md:w-12rem"
           :data="article"
           :size="{ xs: [112, 112], md: [192, 192] }"
