@@ -32,3 +32,26 @@ export-aws-credentials.py
 start-local.sh
 
 .env
+
+# mobile
+
+android/
+ios/
+kludge/
+
+# test
+
+tests/
+vitest.config.ts
+jest.config.js
+jest.setup.js
+
+# large static assets not needed at build time
+
+assets/gsap/
+
+# data files only used locally
+
+article-data.json
+episode-data.json
+mobile-events-snapshot.md

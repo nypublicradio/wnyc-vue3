@@ -4,7 +4,7 @@ orbs:
   ruby: circleci/ruby@2.1.0
   android: circleci/android@2.3.0
   node: circleci/node@5.1.0 #not to be mistaken with node version 5.1.0
-  nypr-deploy: nypr/nypr-deploy@0.0.105
+  nypr-deploy: nypr/nypr-deploy@0.1.0
 
 filter_all: &filter_all
   filters:
@@ -56,6 +56,7 @@ workflows:
           repo: "wnyc-vue3"
           service: "wnyc-vue3"
           cluster: "wnyc-vue3"
+          use_layer_caching: true
           cpu: 1024
           memory: 2048
           use_firelens: true
@@ -70,6 +71,7 @@ workflows:
           repo: "wnyc-vue3"
           service: "wnyc-vue3"
           cluster: "wnyc-vue3"
+          use_layer_caching: true
           cpu: 1024
           memory: 2048
           use_firelens: true
@@ -84,6 +86,7 @@ workflows:
           repo: "wnyc-vue3"
           service: "wnyc-vue3-web"
           cluster: "wnyc-vue3-web"
+          use_layer_caching: true
           cpu: 2048
           memory: 4096
           use_firelens: true
@@ -141,17 +144,21 @@ jobs:
           name: Assert that it builds
           command: |
             npm run build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - node_modules
+            - .nuxt
 
   test:
     executor: default
     steps:
       - checkout
-      - setup_npmrc
-      - node/install-packages
+      - attach_workspace:
+          at: .
       - run:
           name: Run unit tests
           command: |
-            npx nuxi prepare
             npm run test      
 
   test_nginx:
