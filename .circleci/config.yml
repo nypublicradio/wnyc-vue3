@@ -56,7 +56,7 @@ workflows:
           repo: "wnyc-vue3"
           service: "wnyc-vue3"
           cluster: "wnyc-vue3"
-          use_layer_caching: true
+          use_layer_cache: true
           cpu: 1024
           memory: 2048
           use_firelens: true
@@ -71,7 +71,7 @@ workflows:
           repo: "wnyc-vue3"
           service: "wnyc-vue3"
           cluster: "wnyc-vue3"
-          use_layer_caching: true
+          use_layer_cache: true
           cpu: 1024
           memory: 2048
           use_firelens: true
@@ -86,7 +86,7 @@ workflows:
           repo: "wnyc-vue3"
           service: "wnyc-vue3-web"
           cluster: "wnyc-vue3-web"
-          use_layer_caching: true
+          use_layer_cache: true
           cpu: 2048
           memory: 4096
           use_firelens: true
