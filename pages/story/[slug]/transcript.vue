@@ -4,11 +4,10 @@ import {
   trackClickEvent,
   togglePlayEpisode,
   copyToClipBoard,
-  getFirstSentence,
-  stripHtmlTags,
 } from "~/utilities/helpers"
 import { useIsApp } from "~/composables/states"
 import { mediaTypeRoutes } from "~/composables/globals"
+import { getPublisherStoryTitle, getPublisherStoryDescription, getPublisherStoryImage, getPublisherSocialImage } from "~/utilities/metadataHelpers"
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
@@ -144,19 +143,24 @@ onUnmounted(() => {
   clearTimeout(scrollTimeout)
 })
 
-const title = `${episode.value?.title} | WNYC`
-const tease =
-  episode.value?.tease ?? getFirstSentence(stripHtmlTags(episode.value?.tease))
-const description =
-  episode.value?.description ??
-  getFirstSentence(stripHtmlTags(episode.value?.description))
-useHead({
+const title = getPublisherStoryTitle(storyData)
+const description = getPublisherStoryDescription(storyData)
+const image = getPublisherStoryImage(storyData)
+const socialImage = getPublisherSocialImage(storyData)
+useHead(() => ({
   title,
-})
+}))
 useSeoMeta({
   title,
-  description: tease ?? description,
+  description: description,
+  ogDescription: description,
+  ogTitle: title,
 })
+if (socialImage || image) {
+  useSeoMeta({
+    ogImage: socialImage || image,
+  })
+}
 </script>
 
 <template>

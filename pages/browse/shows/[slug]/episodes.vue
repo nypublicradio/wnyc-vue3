@@ -4,8 +4,6 @@ import {
   checkIsFavorited,
   trackClickEvent,
   dynamicNavigation,
-  getFirstSentence,
-  stripHtmlTags,
 } from "~/utilities/helpers"
 import { getShowImage } from "~/utilities/metadataHelpers"
 import { useGlobalToast } from "~/composables/states"
@@ -177,12 +175,6 @@ const breadcrumbs = computed(() => [
     label: "All Episodes",
   },
 ])
-
-const getDescription = (aboutModule) => {
-  if (aboutModule?.length) {
-    return getFirstSentence(stripHtmlTags(aboutModule[0].value))
-  }
-}
 
 const title = `${show.value?.title} episodes | WNYC`
 const description = `Listen to the latest episodes from ${show.value?.title} on WNYC.org.`
