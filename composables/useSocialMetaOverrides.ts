@@ -1,4 +1,5 @@
 export default function useSocialMetaOverrides (page) {
+  // apply social overrides from the CMS "Promote" tab
   const socialTitle = page.value?.socialTitle
   if (socialTitle) {
     useSeoMeta({

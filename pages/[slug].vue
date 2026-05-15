@@ -5,7 +5,8 @@
 
 <script setup lang="ts">
 import type { InformationPage } from "~/composables/types/Page"
-
+import useSeoMetaOverrides from "~/composables/useSeoMetaOverrides"
+import useSocialMetaOverrides from "~/composables/useSocialMetaOverrides"
 const route = useRoute()
 const config = useRuntimeConfig()
 
@@ -51,6 +52,16 @@ if (isPreview) {
     page = normalizeFindPageResponse(data)
   }
 }
+const title = page?.title || "NYPR"
+useHead({
+  title,
+})
+useSeoMeta({
+  title,
+  ogTitle: title,
+})
+useSeoMetaOverrides(page)
+useSocialMetaOverrides(page)
 </script>
 
 <template>
