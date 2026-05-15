@@ -7,7 +7,7 @@ import {
   getFirstSentence,
   stripHtmlTags,
 } from "~/utilities/helpers"
-import getShowImage from "~/utilities/metadataHelpers"
+import { getShowImage } from "~/utilities/metadataHelpers"
 import { useGlobalToast } from "~/composables/states"
 
 const config = useRuntimeConfig()
