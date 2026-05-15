@@ -1,6 +1,7 @@
 <script setup>
 import { cmsSources } from "~/composables/globals"
 import { useTopStories } from "~/composables/useTopStories"
+import { getPublisherStoryTitle, getPublisherStoryDescription, getPublisherStoryImage, getPublisherSocialImage } from "~/utilities/metadataHelpers"
 const { getFilteredTopStories, topStories } = useTopStories()
 
 const route = useRoute()
@@ -60,20 +61,24 @@ onMounted(() => {
   })
 })
 
-const title = `${storyData.value?.title} | WNYC`
-const description = getFirstSentence(eventData.value?.description)
-const searchDescription = storyData.value?.meta?.searchDescription || description
-const socialDescription = eventData.value?.socialText || description
+const title = getPublisherStoryTitle(storyData)
+const description = getPublisherStoryDescription(storyData)
+const image = getPublisherStoryImage(storyData)
+const socialImage = getPublisherSocialImage(storyData)
 useHead(() => ({
-  title: `${storyData.value?.title} | WNYC`,
+  title,
 }))
 useSeoMeta({
   title,
-  description: searchDescription,
-  ogDescription: socialDescription,
+  description: description,
+  ogDescription: description,
   ogTitle: title,
 })
-
+if (socialImage || image) {
+  useSeoMeta({
+    ogImage: socialImage || image,
+  })
+}
 </script>
 
 <template>

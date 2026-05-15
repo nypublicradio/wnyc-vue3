@@ -1,5 +1,6 @@
 <script setup>
 import { useTopStories } from "~/composables/useTopStories"
+import { getNprTitle, getNprDescription, getNprImage } from "~/utilities/metadataHelpers"
 const { getFilteredTopStories } = useTopStories()
 
 const route = useRoute()
@@ -55,12 +56,10 @@ const breadcrumbs = computed(() => [
   { label: storyData.value?.title },
 ])
 
-const title = `${storyData.value?.title} | WNYC`
-const description = storyData.value?.description
+const title = getNprTitle(storyData)
+const description = getNprDescription(storyData)
 const canonicalUrl = storyData.value?.link
-const image = storyData.value?.image?.replace("{width}", 512)
-    .replace("{quality}", 80)
-    .replace("{format}", "jpg")
+const image = getNprImage(storyData)
 useHead(() => ({
   title,
   link: [{ rel: "canonical", href: canonicalUrl }],
@@ -74,12 +73,7 @@ useSeoMeta({
 })
 if (image) {
   useSeoMeta({
-    ogImage: {
-      url: image,
-      alt: storyData.value?.title,
-      width: 512,
-      height: 512,
-    },
+    ogImage: image
   })
 }
 </script>

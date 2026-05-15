@@ -7,6 +7,7 @@ import {
   togglePlayEpisode,
 } from "~/utilities/helpers"
 import { useTopStories } from "~/composables/useTopStories"
+import { getSimplecastEpisodeTitle, getSimplecastEpisodeDescription, getSimplecastEpisodeImage } from "~/utilities/metadataHelpers"
 const { getFilteredTopStories } = useTopStories()
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -129,28 +130,21 @@ const breadcrumbs = computed(() => [
   { label: episode.value?.title },
 ])
 
-const title = `${episode.value?.title} | WNYC`
-const tease =
-  episode.value?.tease ?? getFirstSentence(stripHtmlTags(episode.value?.tease))
-const description =
-  episode.value?.description ??
-  getFirstSentence(stripHtmlTags(episode.value?.description))
-const image = episode.value?.listingImage || show.value?.image
+const title = getSimplecastEpisodeTitle(episode)
+const description = getSimplecastEpisodeDescription(episode)
+const image = getSimplecastEpisodeImage(episode, show)
 useHead({
   title,
 })
 useSeoMeta({
   title,
-  description: tease ?? description,
+  description: description,
+  ogTitle: title,
+  ogDescription: description,
 })
 if (image) {
   useSeoMeta({
-    ogImage: {
-      url: image,
-      alt: `${show.value?.title} - ${episode.value?.title}`,
-      width: image.width,
-      height: image.height,
-    },
+    ogImage: image,
   })
 }
 </script>

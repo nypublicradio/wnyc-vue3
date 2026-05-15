@@ -1,5 +1,5 @@
 <script setup>
-import { getFirstSentence, stripHtmlTags } from "~/utilities/helpers"
+import { getNprTitle, getNprDescription, getNprImage } from "~/utilities/metadataHelpers"
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -59,19 +59,26 @@ const breadcrumbs = computed(() => [
   { label: "Transcript" },
 ])
 
-const title = `${storyData.value?.title} | WNYC`
-const tease =
-  storyData.value?.tease ?? getFirstSentence(stripHtmlTags(storyData.value?.tease))
-const description =
-  storyData.value?.description ??
-  getFirstSentence(stripHtmlTags(storyData.value?.description))
-useHead({
+const title = getNprTitle(storyData)
+const description = getNprDescription(storyData)
+const canonicalUrl = storyData.value?.link
+const image = getNprImage(storyData)
+useHead(() => ({
   title,
-})
+  link: [{ rel: "canonical", href: canonicalUrl }],
+}))
 useSeoMeta({
   title,
-  description: tease ?? description,
+  description,
+  ogUrl: canonicalUrl,
+  ogTitle: title,
+  ogDescription: description,
 })
+if (image) {
+  useSeoMeta({
+    ogImage: image
+  })
+}
 </script>
 
 <template>
