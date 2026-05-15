@@ -85,6 +85,7 @@ describe('CMS route redirects', () => {
       expect.objectContaining({
         maxRedirects: 0,
         headers: expect.objectContaining({
+          'Accept-Encoding': 'identity',
           'X-CMS-Site': 'wnyc.org:443',
         }),
       }),
@@ -129,6 +130,7 @@ describe('CMS route redirects', () => {
       expect.objectContaining({
         maxRedirects: 0,
         headers: expect.objectContaining({
+          'Accept-Encoding': 'identity',
           'X-CMS-Site': 'wnyc.org:443',
         }),
       }),

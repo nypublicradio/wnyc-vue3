@@ -3,6 +3,7 @@ import { createError } from 'h3'
 
 export const getCmsRequestOptions = (cmsSite: string) => ({
   headers: {
+    'Accept-Encoding': 'identity',
     'X-CMS-Site': cmsSite,
   },
   maxRedirects: 0,
