@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const axiosMock = vi.fn()
-const axiosGetMock = vi.fn()
-axiosMock.get = axiosGetMock
+const axiosHeadMock = vi.fn()
+axiosMock.head = axiosHeadMock
 
 vi.mock('axios', () => ({
   default: axiosMock,
@@ -49,14 +49,14 @@ describe('CMS route redirects', () => {
   beforeEach(() => {
     vi.resetModules()
     axiosMock.mockReset()
-    axiosGetMock.mockReset()
+    axiosHeadMock.mockReset()
   })
 
   it('returns Aviary redirect metadata for missing Publisher stories under /story', async () => {
     const redirectLocation = '/story/new-story/'
 
     axiosMock.mockRejectedValue({ response: { status: 404 } })
-    axiosGetMock.mockImplementation(async (url: string) => {
+    axiosHeadMock.mockImplementation(async (url: string) => {
       if (url === 'https://cms.prod.nypr.digital/story/old-story') {
         return {
           status: 301,
@@ -80,7 +80,7 @@ describe('CMS route redirects', () => {
       statusCode: 301,
     })
 
-    expect(axiosGetMock).toHaveBeenCalledWith(
+    expect(axiosHeadMock).toHaveBeenCalledWith(
       'https://cms.prod.nypr.digital/story/old-story',
       expect.objectContaining({
         maxRedirects: 0,
@@ -95,7 +95,7 @@ describe('CMS route redirects', () => {
     const redirectLocation = '/shows/new-show/'
 
     axiosMock.mockRejectedValue({ response: { status: 404 } })
-    axiosGetMock.mockImplementation(async (url: string) => {
+    axiosHeadMock.mockImplementation(async (url: string) => {
       if (url === 'https://cms.prod.nypr.digital/browse/shows/old-show') {
         return { status: 404 }
       }
@@ -123,7 +123,7 @@ describe('CMS route redirects', () => {
       statusCode: 301,
     })
 
-    expect(axiosGetMock).toHaveBeenNthCalledWith(
+    expect(axiosHeadMock).toHaveBeenNthCalledWith(
       2,
       'https://cms.prod.nypr.digital/shows/old-show',
       expect.objectContaining({

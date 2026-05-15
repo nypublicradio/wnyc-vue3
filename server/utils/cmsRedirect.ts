@@ -56,13 +56,13 @@ export const getCmsPathRedirect = async (
   requestOptions: ReturnType<typeof getCmsRequestOptions>
 ) => {
   const redirectUrl = getCmsPathUrl(baseApi, path)
-  let redirectRes = await axios.get(redirectUrl, requestOptions)
+  let redirectRes = await axios.head(redirectUrl, requestOptions)
 
   if (redirectRes.status >= 300 && redirectRes.status < 400) {
     const location = redirectRes.headers?.location
 
     if (location && isSlashNormalizationRedirect(redirectUrl, location)) {
-      redirectRes = await axios.get(new URL(location, redirectUrl).toString(), requestOptions)
+      redirectRes = await axios.head(new URL(location, redirectUrl).toString(), requestOptions)
     }
   }
 
