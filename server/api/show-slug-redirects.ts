@@ -21,7 +21,6 @@ const redirects = [
     { from: '/browse/shows/anxiety', to: '/browse/shows/notes-from-america' },
     { from: '/browse/shows/otm', to: '/browse/shows/on-the-media' },
     { from: '/browse/shows/onlyhuman', to: '/browse/shows/only-human' },
-    { from: '/browse/shows/classical-music-happy-hour', to: '/browse/shows/our-common-nature' },
     { from: '/browse/shows/our-common-nature-podcast', to: '/browse/shows/our-common-nature' },
     { from: '/browse/shows/pieceofwork', to: '/browse/shows/a-piece-of-work' },
     { from: '/browse/shows/theseason', to: '/browse/shows/the-season' },
@@ -87,6 +86,12 @@ const redirects = [
     { from: '/browse/shows/pipedreams', to: 'https://www.pipedreams.org/' },
     { from: '/browse/shows/fiesta', to: 'https://www.wfmt.com/programs/fiesta-latin-american-music-with-elbio-barilari/' },
     { from: '/browse/shows/chicago-symphony-orchestra', to: 'https://www.wfmt.com/programs/chicago-symphony-orchestra/' },
+    { from: '/getlit', to: '/get-lit' },
+    { from: '/publicsong', to: '/psp' },
+    { from: '/publicsongproject', to: '/psp' },
+    { from: '/story/2026-public-song-project', to: '/psp' },
+    { from: '/poetry', to: '/story/month-good-poetry-good-neighbors' },
+    { from: '/browse/shows/open-to-debate', to: 'https://opentodebate.org' },
 ]
 
 export default defineEventHandler((event) => {
