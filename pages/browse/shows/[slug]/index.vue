@@ -7,7 +7,9 @@ import {
 } from "~/utilities/helpers"
 import { useIsApp } from "~/composables/states"
 import { useFetchWrapper } from "~/composables/useFetchWrapper"
-
+import { getShowTitle, getShowDescription, getShowImage } from "~/utilities/metadataHelpers"
+import useSeoMetaOverrides from "~/composables/useSeoMetaOverrides"
+import useSocialMetaOverrides from "~/composables/useSocialMetaOverrides"
 const config = useRuntimeConfig()
 const route = useRoute()
 const isApp = useIsApp()
@@ -100,36 +102,25 @@ onMounted(() => {
   })
 })
 
-const getDescription = (aboutModule) => {
-  if (aboutModule?.length) {
-    return getFirstSentence(stripHtmlTags(aboutModule[0].value))
-  }
-}
-
-const title = `${show.value?.title} | WNYC`
-const description = getDescription(show.value?.aboutModule)
-const searchDescription = show.value?.meta?.searchDescription || description
-const socialDescription = show.value?.socialText || description
-const image = show.value?.image
+const title = getShowTitle(show)
+const description = getShowDescription(show)
+const image = getShowImage(show)
 useHead({
   title,
 })
 useSeoMeta({
   title,
   ogTitle: title,
-  description: searchDescription,
-  ogDescription: socialDescription,
+  description: description,
+  ogDescription: description,
 })
 if (image) {
   useSeoMeta({
-    ogImage: {
-      url: image.file,
-      alt: show.value?.title,
-      width: image.width,
-      height: image.height,
-    },
+   ogImage: image,
   })
 }
+useSeoMetaOverrides(show)
+useSocialMetaOverrides(show)
 </script>
 
 <template>

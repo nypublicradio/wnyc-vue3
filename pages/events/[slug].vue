@@ -7,6 +7,9 @@ import {
   getFirstSentence,
   stripHtmlTags
 } from "~/utilities/helpers"
+import { getEventTitle, getEventDescription, getEventImage } from "~/utilities/metadataHelpers"
+import useSeoMetaOverrides from "~/composables/useSeoMetaOverrides"
+import useSocialMetaOverrides from "~/composables/useSocialMetaOverrides"
 
 const { getFilteredTopStories,topStories } = useTopStories()
 const config = useRuntimeConfig()
@@ -107,37 +110,26 @@ const breadcrumbs = computed(() => [
   { label: "Events", route: "/events" },
   { label: title.value || "Event" },
 ])
-const pageTitle = eventData.value?.meta?.seoTitle || `${eventData.value?.title} | WNYC`
-const description = getFirstSentence(eventData.value?.description) || 
-                    getFirstSentence(stripHtmlTags(eventData.value?.body[0].value)) || 
-                    pageTitle
-const searchDescription = eventData.value?.meta?.searchDescription || description
-const socialDescription = eventData.value?.socialText || description
-const socialImage = eventData.value?.socialImage
+
+const pageTitle = getEventTitle(eventData)
+const description = getEventDescription(eventData)
+const image = getEventImage(eventData)
 useHead({
   title: pageTitle,
 })
-if (eventData.value?.preventSearchIndexing) {
-  useHead({
-    meta: [{name: "robots", content: "noindex" }],
-  })
-}
 useSeoMeta({
   title: pageTitle,
+  description: description,
   ogTitle: pageTitle,
-  description: searchDescription,
-  ogDescription: socialDescription,
+  ogDescription: description,
 })
-if (socialImage) {
+if (image) {
   useSeoMeta({
-    ogImage: {
-      url: socialImage.url,
-      alt: eventData.value?.title,
-      width: socialImage.width,
-      height: socialImage.height,
-    },
+   ogImage: image,
   })
 }
+useSeoMetaOverrides(eventData)
+useSocialMetaOverrides(eventData)
 </script>
 
 <template>

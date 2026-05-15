@@ -7,6 +7,7 @@ import {
   getFirstSentence,
   stripHtmlTags,
 } from "~/utilities/helpers"
+import getShowImage from "~/utilities/metadataHelpers"
 import { useGlobalToast } from "~/composables/states"
 
 const config = useRuntimeConfig()
@@ -183,28 +184,21 @@ const getDescription = (aboutModule) => {
   }
 }
 
-const title = `${show.value?.title} | WNYC`
-const description = getDescription(show.value?.aboutModule)
-const searchDescription = show.value?.meta?.searchDescription || description
-const socialDescription = show.value?.socialText || description
-const image = show.value?.image
+const title = `${show.value?.title} episodes | WNYC`
+const description = `Listen to the latest episodes from ${show.value?.title} on WNYC.org.`
+const image = getShowImage(show)
 useHead({
   title,
 })
 useSeoMeta({
   title,
   ogTitle: title,
-  description: searchDescription,
-  ogDescription: socialDescription,
+  description: description,
+  ogDescription: description,
 })
 if (image) {
   useSeoMeta({
-    ogImage: {
-      url: image.file,
-      alt: show.value?.title,
-      width: image.width,
-      height: image.height,
-    },
+   ogImage: image,
   })
 }
 
