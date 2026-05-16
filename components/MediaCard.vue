@@ -20,6 +20,7 @@ import {
   getOrg,
   formatTime,
   dynamicNavigation,
+  saveRecentlyPlayed,
 } from "~/utilities/helpers"
 import {
   fetchAndStoreMp3,
@@ -190,6 +191,19 @@ const eventDate = ref(props.data?.startDatetime)
 
 const reactiveData = toRef(props, "data")
 
+// set dynamic route
+const dynamicRoute = dynamicNavigation(
+  reactiveData.value,
+  props.isSaveHistory,
+  props.isInDownloads,
+  true
+)
+
+// card type for analytics
+const cardType = `Media Card - Type:${reactiveData.value?.type} - ${reactiveData.value.title} CMS Source: ${reactiveData.value?.cmsSource} ID: ${reactiveData.value?.id}`
+
+console.log("reactiveData.value", reactiveData.value)
+
 const nativeImageHeight = computed(() => {
   //console.log("reactiveData.value.imageFullHeight", reactiveData.value.imageFullHeight)
   return reactiveData.value?.imageFullHeight || 192
@@ -233,7 +247,7 @@ const handleAddToFavorites = (bucketItem) => {
 const progress = ref({})
 // handle the download of the audio file request and feed the progress
 const handleDownload = async (bucketItem) => {
-  trackClickEvent("Click Tracking - Audio Download", "Episode Item", bucketItem.title)
+  trackClickEvent("Click Tracking - Audio Download", cardType, bucketItem.title)
   progress.value = await fetchAndStoreMp3(bucketItem)
 }
 
@@ -378,15 +392,23 @@ const toggleDownloadedPlay = (file) => {
   // GA tracking
   trackClickEvent(
     "Click Tracking - Play download episode",
-    "Episode Item",
+    cardType,
     `playing = ${file.title}`
   )
 }
 
 // handle click event & emit
-const handleClick = () => {
-  dynamicNavigation(props.data, props.isSaveHistory, props.isInDownloads, false)
+const handleRouteClick = (fromNuxtLink = false) => {
   emit("on-click")
+  if (!fromNuxtLink) {
+    dynamicNavigation(props.data, props.isSaveHistory, props.isInDownloads, false)
+  } else if (props.isSaveHistory) {
+    //save history here because this is handled by the dynamicNavigation when it is not just returning a route
+    saveRecentlyPlayed(props.data)
+  }
+
+  // click tracking
+  trackClickEvent("Click Tracking - Route", cardType, `route = ${dynamicRoute}`)
 }
 
 // handle the play button render
@@ -429,9 +451,9 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
       v-if="!props.isSegment"
       v-ripple
       class="card-click w-full h-full absolute top-0 left-0 z-1 p-ripple"
-      :to="dynamicNavigation(props.data, props.isSaveHistory, props.isInDownloads, true)"
-      @click.prevent="handleClick"
-      @keypress.enter.space="handleClick"
+      :to="dynamicRoute"
+      @click.prevent="handleRouteClick(true)"
+      @keypress.enter.space="handleRouteClick(true)"
       tabindex="0"
       aria-role="button"
       :aria-label="`${props.data?.showTitle} show details`"
@@ -575,7 +597,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                     )
                   "
                   :file="props.data?.name"
-                  @on-click="handleClick"
+                  @on-click="handleRouteClick"
                 />
                 <div v-else></div>
               </template>
@@ -652,7 +674,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                 <EventButton
                   v-if="eventData?.eventCtaUrl"
                   class="z-2"
-                  @on-click="handleClick"
+                  @on-click="handleRouteClick"
                   buttonClass="px-5 md:px-3"
                   labelClass="text-base md:text-sm"
                 />

@@ -1052,9 +1052,9 @@ export const goToLivePage = (ep, params, log = true, returnRoute = false) => {
     path: `${mediaTypeRoutes[mediaTypes.LIVE]}`,
     query: params,
   }
-  
+
   if (returnRoute) return routeObj
-  
+
   navigateTo(routeObj)
   if (log) {
     saveRecentlyPlayed(ep)
@@ -1066,7 +1066,7 @@ export const goToStoryPage = (story, params, log = true, returnRoute = false) =>
   const theLink = story.url || story.link || stripApiSubdomain(story.meta?.htmlUrl)
   if (shouldOpenStoryInNewTab(Capacitor.getPlatform(), theLink, story.cmsSource)) {
     if (returnRoute) return theLink
-    
+
     if (shouldTrackOutgoingGothamistClick(theLink)) {
       trackClickEvent(
         "Click Tracking - Outgoing Gothamist Story",
@@ -1082,7 +1082,7 @@ export const goToStoryPage = (story, params, log = true, returnRoute = false) =>
       query: params,
     }
     if (returnRoute) return routeObj
-    
+
     navigateTo(routeObj)
   }
   if (log) {
@@ -1095,9 +1095,9 @@ export const goToNprPage = (story, log = true, returnRoute = false) => {
   const routeObj = {
     path: `${mediaTypeRoutes[mediaTypes.NPR_EPISODE]}${story.media_id ?? story.id}`,
   }
-  
+
   if (returnRoute) return routeObj
-  
+
   navigateTo(routeObj)
   if (log) {
     saveRecentlyPlayed(story)
@@ -1110,7 +1110,7 @@ export const goToEventPage = (story/* , log = true */, returnRoute = false) => {
     path: `${mediaTypeRoutes[mediaTypes.EVENT]}${story.meta?.slug ?? story.slug ?? story.id}`,
   }
   if (returnRoute) return routeObj
-  
+
   navigateTo(routeObj)
   // we are not saving events to recently played as of 3/26/2026
   // if (log) {
@@ -1132,12 +1132,12 @@ export const goToShowPage = (show, params = null, returnRoute = false) => {
 /* centralized function to route to a card page */
 export const goToUrlOverrideDestination = (item, params = null, returnRoute = false) => {
   const path = `${getRouteOrLink(item.url)}`
-  
+
   if (returnRoute) {
     if (path.startsWith("http")) return path
     return { path, query: params }
   }
-  
+
   // if the path is a full url, open in new tab
   if (path.startsWith("http")) {
     window.open(path, "_blank")
