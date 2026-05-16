@@ -192,15 +192,15 @@ const eventDate = ref(props.data?.startDatetime)
 const reactiveData = toRef(props, "data")
 
 // set dynamic route
-const dynamicRoute = dynamicNavigation(
+const dynamicRoute = computed(() => dynamicNavigation(
   reactiveData.value,
   props.isSaveHistory,
   props.isInDownloads,
   true
-)
+))
 
 // card type for analytics
-const cardType = `Media Card - Type:${reactiveData.value?.type} - ${reactiveData.value.title} CMS Source: ${reactiveData.value?.cmsSource} ID: ${reactiveData.value?.id}`
+const cardType = computed(() => `Media Card - Type:${reactiveData.value?.type} - ${reactiveData.value?.title} CMS Source: ${reactiveData.value?.cmsSource} ID: ${reactiveData.value?.id}`)
 
 console.log("reactiveData.value", reactiveData.value)
 
@@ -247,7 +247,7 @@ const handleAddToFavorites = (bucketItem) => {
 const progress = ref({})
 // handle the download of the audio file request and feed the progress
 const handleDownload = async (bucketItem) => {
-  trackClickEvent("Click Tracking - Audio Download", cardType, bucketItem.title)
+  trackClickEvent("Click Tracking - Audio Download", cardType.value, bucketItem.title)
   progress.value = await fetchAndStoreMp3(bucketItem)
 }
 
@@ -392,9 +392,23 @@ const toggleDownloadedPlay = (file) => {
   // GA tracking
   trackClickEvent(
     "Click Tracking - Play download episode",
-    cardType,
+    cardType.value,
     `playing = ${file.title}`
   )
+}
+
+// handle general play click
+const handlePlayClick = () => {
+  if (isDownloaded.value && !isNetworkConnected.value) {
+    toggleDownloadedPlay(props.data)
+  } else {
+    togglePlayEpisode(props.data)
+    trackClickEvent(
+      "Click Tracking - Play episode",
+      cardType.value,
+      `playing = ${props.data?.title}`
+    )
+  }
 }
 
 // handle click event & emit
@@ -408,7 +422,8 @@ const handleRouteClick = (fromNuxtLink = false) => {
   }
 
   // click tracking
-  trackClickEvent("Click Tracking - Route", cardType, `route = ${dynamicRoute}`)
+  const routeString = dynamicRoute.value?.path || dynamicRoute.value || "unknown"
+  trackClickEvent("Click Tracking - Route", cardType.value, `route = ${routeString}`)
 }
 
 // handle the play button render
@@ -575,11 +590,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                   :data="props.data"
                   class="z-2"
                   :label="getMinutes(props.data?.estimatedDuration, 1)"
-                  @onClick="
-                    isDownloaded && !isNetworkConnected
-                      ? toggleDownloadedPlay(props.data)
-                      : togglePlayEpisode(props.data)
-                  "
+                  @onClick="handlePlayClick"
                 >
                 </PlayButton>
                 <ReadButton
