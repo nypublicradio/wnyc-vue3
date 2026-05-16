@@ -6,7 +6,7 @@ import {
   getFirstSentence
 } from "~/utilities/helpers"
 
-const { getFilteredTopStories } = useTopStories()
+const { getFilteredTopStories,topStories } = useTopStories()
 const config = useRuntimeConfig()
 const route = useRoute()
 const toast = useToast()
@@ -33,6 +33,8 @@ const [
     `${config.public.BFF_URL}/api/events/list?limit=4`
   )
 ])
+
+const filteredTopStories = computed(() => getFilteredTopStories(event?.value))
 
 onMounted(() => {
   if (!event.value) return
@@ -138,8 +140,12 @@ useSeoMeta({
             <div class="event-hero__layout">
               <div class="event-hero__header">
                 <div class="event-hero__datebox" v-if="eventDayNumber">
-                  <span class="event-hero__datebox-day">{{ eventDayNumber }}</span>
-                  <span class="event-hero__datebox-month">{{ eventDateShort }}</span>
+                  <span class="event-hero__datebox-day">{{
+                    eventDayNumber
+                  }}</span>
+                  <span class="event-hero__datebox-month">{{
+                    eventDateShort
+                  }}</span>
                 </div>
                 <div class="event-hero__titlegroup">
                   <h1
@@ -179,10 +185,30 @@ useSeoMeta({
             </div>
           </template>
           <template v-else>
-            <Skeleton class="mb-2" height="18px" width="120px" borderRadius="8px" />
-            <Skeleton class="mb-3" height="48px" width="85%" borderRadius="16px" />
-            <Skeleton class="mb-2" height="16px" width="70%" borderRadius="8px" />
-            <Skeleton class="mb-2" height="16px" width="60%" borderRadius="8px" />
+            <Skeleton
+              class="mb-2"
+              height="18px"
+              width="120px"
+              borderRadius="8px"
+            />
+            <Skeleton
+              class="mb-3"
+              height="48px"
+              width="85%"
+              borderRadius="16px"
+            />
+            <Skeleton
+              class="mb-2"
+              height="16px"
+              width="70%"
+              borderRadius="8px"
+            />
+            <Skeleton
+              class="mb-2"
+              height="16px"
+              width="60%"
+              borderRadius="8px"
+            />
           </template>
         </div>
       </section>
@@ -290,16 +316,15 @@ useSeoMeta({
             titleClasses="text-sm md:text-lg"
             pipeClasses="text-xs md:text-base"
             :data="eventItem"
-            :size="{ xs: [112, 112], md: [176, 176] }"
+            :size="{ xs: [112, 112], md: [192, 192] }"
           />
         </div>
       </div>
     </section>
 
-    <section v-if="getFilteredTopStories" class="thinContent">
+    <section v-if="filteredTopStories" class="thinContent">
       <Divider class="mt-2 mb-5" />
-      <h2 class="mb-3">Top Stories From Gothamist</h2>
-      <TopStories :articles="getFilteredTopStories()" />
+      <TopStories :articles="filteredTopStories" />
     </section>
 
     <BackToTopButton />

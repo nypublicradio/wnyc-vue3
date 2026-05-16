@@ -30,7 +30,7 @@ filter_prod: &filter_prod
 filter_web-prod: &filter_web-prod
   filters:
     branches:
-      only: main-org
+      ignore: /.*/
     tags:
       only: web-prod
 
@@ -84,8 +84,8 @@ workflows:
           repo: "wnyc-vue3"
           service: "wnyc-vue3-web"
           cluster: "wnyc-vue3-web"
-          cpu: 1024
-          memory: 2048
+          cpu: 2048
+          memory: 4096
           use_firelens: true
           requires:
             - test

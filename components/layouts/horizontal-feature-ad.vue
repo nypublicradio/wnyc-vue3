@@ -128,7 +128,7 @@ const featureSizes = computed(() => {
           :data="article"
           :isHorizontal="isLgBreakpoint"
           imgCol="w-7rem md:w-12rem lg:w-full"
-          :size="{ xs: [112, 112], md: [176, 176], lg: [412, 275] }"
+          :size="{ xs: [112, 112], md: [192, 192], lg: [412, 275] }"
           :loading="props.loading"
         />
       </template>
@@ -140,7 +140,7 @@ const featureSizes = computed(() => {
           :isHorizontal="isLgBreakpoint"
           imgCol="w-7rem md:w-12rem lg:w-full"
           :class="{ 'md:hidden': index === 1 }"
-          :size="{ xs: [112, 112], md: [176, 176], lg: [412, 275] }"
+          :size="{ xs: [112, 112], md: [192, 192], lg: [412, 275] }"
         />
       </div>
     </div>

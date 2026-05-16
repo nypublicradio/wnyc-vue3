@@ -1,8 +1,6 @@
 <script setup>
 import { useCurrentEpisode, useIsApp } from "~/composables/states"
 import { useFetchWrapper } from "~/composables/useFetchWrapper"
-// import { useTopStories } from "~/composables/useTopStories"
-// const { topStories } = useTopStories()
 import { brandCards } from "~/composables/globals.ts"
 
 useHead({
@@ -34,10 +32,10 @@ const curationFetchArgs = [
 
 const [
   { data: latestNewsUpdatesData, error: error2 },
-  { data: pagedata, error, status }
+  { data: pagedata, error, status },
 ] = await Promise.all([
   useFetchWrapper(...newsFetchArgs),
-  useFetchWrapper(...curationFetchArgs)
+  useFetchWrapper(...curationFetchArgs),
 ])
 
 definePageMeta({
@@ -66,7 +64,9 @@ onMounted(() => {
         <LiveFeature class="col-12 lg:col -mx-4 md:mx-0 w-screen md:w-full" />
         <div class="latestNewsHolder col">
           <FetchError v-if="error || error2" />
-          <h2 class="mt-4 mb-3 lg:mt-0 md:text-lg lg:text-xl">Latest News Updates</h2>
+          <h2 class="mt-4 mb-3 lg:mt-0 md:text-lg lg:text-xl">
+            Latest News Updates
+          </h2>
           <LatestNewsUpdates
             :localNewscast="latestNewsUpdatesData?.local_newscast ?? null"
             :nationalNewscast="latestNewsUpdatesData?.national_newscast ?? null"
@@ -75,9 +75,11 @@ onMounted(() => {
       </div>
       <!-- <VImage src="/fallback-ep.png" /> -->
     </section>
-    <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" />
+    <!-- <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" /> -->
     <section v-if="status === 'success'">
-      <VStreamfield :streamfieldBlocks="pagedata?.new_home_template?.curatedContent" />
+      <VStreamfield
+        :streamfieldBlocks="pagedata?.new_home_template?.curatedContent"
+      />
     </section>
     <section v-else>
       <layouts-horizontal-feature-ad-skeleton />

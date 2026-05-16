@@ -2,8 +2,12 @@
 
 const props = defineProps({
   articles: {
-    type: Array,
-    default: () => [],
+    type: Object,
+    default: () => ({ listItems: [] }),
+  },
+  headerTitleOverride: {
+    type: String,
+    default: null,
   },
 })
 
@@ -13,13 +17,15 @@ const reactiveArticles = toRef(props, "articles")
 <template>
   <div>
     <div
-      v-if="reactiveArticles?.length > 0"
+      v-if="reactiveArticles?.listItems?.length > 0"
       class="top-stories flex flex-column gap-3"
     >
+      <h2 class="mb-3">
+        {{ props.headerTitleOverride ?? reactiveArticles?.title }}
+      </h2>
       <div
-        v-for="(article, index) in reactiveArticles"
+        v-for="(article, index) in reactiveArticles?.listItems"
         :key="`${article?.id}-${index}`"
-        :class="props.cardClass"
         class=""
       >
         <MediaCard
@@ -27,21 +33,22 @@ const reactiveArticles = toRef(props, "articles")
           isHorizontal
           imgCol="w-7rem md:w-12rem"
           :data="article"
-          :size="{ xs: [112, 112], md: [176, 176] }"
+          :size="{ xs: [112, 112], md: [192, 192] }"
         />
       </div>
     </div>
     <div v-else class="flex flex-column gap-3">
-      <div
-        v-for="index in 5"
-        :key="`skeleton-top-stories-${index}`"
-        :class="props.cardClass"
-        class=""
-      >
+      <Skeleton
+        height="18px"
+        width="45%"
+        borderRadius="16px"
+        style="margin-bottom: 6px"
+      />
+      <div v-for="index in 4" :key="`skeleton-top-stories-${index}`">
         <skeleton-media-card
           isHorizontal
           imgCol="w-7rem md:w-12rem"
-          :size="{ xs: [112, 112], md: [176, 176] }"
+          :size="{ xs: [112, 112], md: [192, 192] }"
         />
       </div>
     </div>
