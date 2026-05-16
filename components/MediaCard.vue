@@ -199,9 +199,11 @@ const dynamicRoute = computed(() =>
 // card type for analytics
 const cardType = computed(
   () =>
-    `Media Card - Type:${reactiveData.value?.type || "unknown"} CMS Source: ${
-      reactiveData.value?.cmsSource || "unknown"
-    } ID: ${reactiveData.value?.id || "unknown"}`
+    `Media Card - Type:${reactiveData.value?.type || "unknown"} Title: ${
+      reactiveData.value?.title || "unknown"
+    } CMS Source: ${reactiveData.value?.cmsSource || "unknown"} ID: ${
+      reactiveData.value?.id || "unknown"
+    }`
 )
 
 const nativeImageHeight = computed(() => {
@@ -323,7 +325,7 @@ const getDotMenuItems = (bucketItem) => {
               label: "Remove from Download",
               customIcon: TrashIcon,
               command: () => {
-                handleDelete(bucketItem)
+                handleDelete(bucketItem, cardType.value)
               },
             },
           ]
@@ -335,7 +337,7 @@ const getDotMenuItems = (bucketItem) => {
               customIcon: ShareIcon,
               title: bucketItem?.title,
               command: () => {
-                shareAPI(bucketItem, "Media Card")
+                shareAPI(bucketItem, cardType.value)
               },
             },
           ]
@@ -372,7 +374,7 @@ const getDotMenuItems = (bucketItem) => {
               customIcon: ShareIcon,
               title: bucketItem?.title,
               command: () => {
-                shareAPI(bucketItem, "Media Card")
+                shareAPI(bucketItem, cardType.value)
               },
             },
           ]
