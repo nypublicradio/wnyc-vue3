@@ -1,5 +1,7 @@
 <script setup>
 import { mediaTypeRoutes } from "~/composables/globals.ts"
+import { trackClickEvent } from "~/utilities/helpers"
+
 const bannerData = [
   {
     id: "rl",
@@ -48,6 +50,14 @@ const bannerData = [
   },
 ]
 
+const handleClick = (item) => {
+  trackClickEvent(
+    "Click Tracking - Route",
+    `Personalities Banner ${item.name}`,
+    `route = ${item.to}`
+  )
+}
+
 // gsap looping animation cross fade code
 const itemRefs = ref([])
 const { $gsap } = useNuxtApp()
@@ -91,6 +101,7 @@ onUnmounted(() => {
       v-ripple
       :alt="item.name"
       :ref="(el) => (itemRefs[index] = el)"
+      @click="handleClick(item)"
     >
       <div class="holder flex">
         <div class="bg-holder">
