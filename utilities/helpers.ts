@@ -510,7 +510,7 @@ export const shareAPI = async (
 }
 
 // handle the delete of the stored audio file and GA tracking
-export const handleDelete = (file) => {
+export const handleDelete = (file, componentOfOrigin = "Episode Item") => {
   const globalToast = useGlobalToast()
   deleteDirectory(file)
   globalToast.value = {
@@ -521,8 +521,8 @@ export const handleDelete = (file) => {
   // GA tracking
   trackClickEvent(
     "Click Tracking - Audio file delete",
-    "Episode Item",
-    `deleting = ${file.directoryAudio.name}`
+    componentOfOrigin,
+    `deleting = ${file.directoryAudio?.name || file.title || 'unknown'}`
   )
 }
 
@@ -1214,7 +1214,7 @@ export const addToFavorites2 = async ({ item, isFavorited, message = isFavorited
       summary: message,
       life: 3000,
     }
-    const cardType = `Type:${item?.type || "unknown"} CMS Source: ${item?.cmsSource || "unknown"} ID: ${item?.id || "unknown"}`
+    const cardType = `Type:${item?.type || "unknown"} Title: ${item?.title || "unknown"} CMS Source: ${item?.cmsSource || "unknown"} ID: ${item?.id || "unknown"}`
     trackClickEvent(
       `Click Tracking - ${message}`,
       cardType,
