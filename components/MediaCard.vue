@@ -192,17 +192,17 @@ const eventDate = ref(props.data?.startDatetime)
 const reactiveData = toRef(props, "data")
 
 // set dynamic route
-const dynamicRoute = computed(() => dynamicNavigation(
-  reactiveData.value,
-  props.isSaveHistory,
-  props.isInDownloads,
-  true
-))
+const dynamicRoute = computed(() =>
+  dynamicNavigation(reactiveData.value, props.isSaveHistory, props.isInDownloads, true)
+)
 
 // card type for analytics
-const cardType = computed(() => `Media Card - Type:${reactiveData.value?.type} - ${reactiveData.value?.title} CMS Source: ${reactiveData.value?.cmsSource} ID: ${reactiveData.value?.id}`)
-
-console.log("reactiveData.value", reactiveData.value)
+const cardType = computed(
+  () =>
+    `Media Card - Type:${reactiveData.value?.type || "unknown"} CMS Source: ${
+      reactiveData.value?.cmsSource || "unknown"
+    } ID: ${reactiveData.value?.id || "unknown"}`
+)
 
 const nativeImageHeight = computed(() => {
   //console.log("reactiveData.value.imageFullHeight", reactiveData.value.imageFullHeight)

@@ -1214,9 +1214,10 @@ export const addToFavorites2 = async ({ item, isFavorited, message = isFavorited
       summary: message,
       life: 3000,
     }
+    const cardType = `Type:${item?.type || "unknown"} CMS Source: ${item?.cmsSource || "unknown"} ID: ${item?.id || "unknown"}`
     trackClickEvent(
       `Click Tracking - ${message}`,
-      "Episode Item",
+      cardType,
       item.title
     )
   } else {
