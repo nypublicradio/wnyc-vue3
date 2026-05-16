@@ -84,6 +84,16 @@ const getDescription = computed(() => {
     : null
 })
 
+const getEpisodeContextLabel = computed(() => {
+  return (
+    currentEpisode.value?.showTitle ||
+    currentEpisode.value?.station ||
+    currentEpisode.value?.headers?.brand?.title ||
+    currentEpisode.value?.show ||
+    ""
+  )
+})
+
 /*function that updated the global useIsPlayerMinimized */
 const updateUseIsPlayerMinimized = (e) => {
   trackClickEvent(
@@ -480,11 +490,7 @@ onMounted(async () => {
         <template #expanded-player-title>
           <PipeData v-if="!isLiveStream" class="text-xs md:text-base">
             <template #left>
-              {{
-                currentEpisode.showTitle ||
-                currentEpisode.station ||
-                currentEpisode.headers.brand.title
-              }}
+              {{ getEpisodeContextLabel }}
             </template>
             <template #right>
               {{ getDate(currentEpisode) }}
