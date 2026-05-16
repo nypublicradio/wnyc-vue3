@@ -257,13 +257,9 @@ export async function normalizeWagtailPage (article: Record<string, any | undefi
 export async function normalizeWagtailListItem (article: Record<string, any | undefined>): ArticlePage {
   if (typeof article === 'undefined')
     return null
-
   const isEventItem = article.contentType === 'event_page' || article.type === 'event'
   const normalizedImage = isEventItem
-    ? (
-      article.image
-      ?? article.listingImage
-      ?? article.content?.listingImage
+    ? (article.image
       ?? article.leadAsset?.[0]?.value?.image
       ?? article.leadAsset?.[0]?.value?.defaultImage
     )
@@ -301,7 +297,7 @@ export async function normalizeWagtailListItem (article: Record<string, any | un
 
     // Event-specific fields
     contentType: article.contentType,
-    subtitle: article.subtitle,
+    //subtitle: article.subtitle,
     body: article.body,
     eventDate: article.eventDate,
     endDate: article.endDate,
