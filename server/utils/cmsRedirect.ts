@@ -62,8 +62,12 @@ export const getCmsPathRedirect = async (
   if (redirectRes.status >= 300 && redirectRes.status < 400) {
     const location = redirectRes.headers?.location
 
-    if (location && isSlashNormalizationRedirect(redirectUrl, location)) {
-      redirectRes = await axios.head(new URL(location, redirectUrl).toString(), requestOptions)
+    if (location) {
+      const nextUrl = normalizeCmsLocation(location, baseApi)
+
+      if (isSlashNormalizationRedirect(redirectUrl, nextUrl)) {
+        redirectRes = await axios.head(nextUrl, requestOptions)
+      }
     }
   }
 
