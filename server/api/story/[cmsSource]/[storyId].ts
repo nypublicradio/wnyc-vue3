@@ -33,9 +33,10 @@ const getCmsRedirectForStoryPath = async (slug: string) => {
 }
 
 const getPublisherStoryData = async (idOrSlug: string) => {
+    const isNumericId = /^\d+$/.test(idOrSlug);
+
     try {
         // Determine if the identifier is numeric (ID) or a slug
-        const isNumericId = /^\d+$/.test(idOrSlug);
         const endpoint = isNumericId 
             ? `v3/story-pk/${idOrSlug}/`
             : `v3/story/${idOrSlug}/`;
@@ -49,7 +50,9 @@ const getPublisherStoryData = async (idOrSlug: string) => {
     } catch (e: any) {
 
         if (e.response && e.response.status === 404) {
-            return await getCmsRedirectForStoryPath(idOrSlug)
+            if (!isNumericId) {
+                return await getCmsRedirectForStoryPath(idOrSlug)
+            }
         } else {
             console.error(e);
         }

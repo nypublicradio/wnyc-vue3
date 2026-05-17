@@ -92,7 +92,70 @@ describe('CMS route redirects', () => {
     )
   })
 
-  it('returns Aviary redirect metadata for missing Wagtail show pages under /shows', async () => {
+  it('follows normalized CMS slash redirects before returning story redirect metadata', async () => {
+    const finalRedirectLocation = '/story/new-story/'
+
+    axiosMock.mockRejectedValue({ response: { status: 404 } })
+    axiosHeadMock.mockImplementation(async (url: string) => {
+      if (url === 'https://cms.prod.nypr.digital/story/old-story') {
+        return {
+          status: 301,
+          headers: {
+            location: 'https://www.wnyc.org/story/old-story/',
+          },
+        }
+      }
+
+      if (url === 'https://cms.prod.nypr.digital/story/old-story/') {
+        return {
+          status: 301,
+          headers: {
+            location: finalRedirectLocation,
+          },
+        }
+      }
+
+      throw new Error(`Unexpected URL: ${url}`)
+    })
+
+    const handler = (await import('../../server/api/story/[cmsSource]/[storyId]')).default
+    const event: any = {
+      context: { params: { cmsSource: 'publisher', storyId: 'old-story' } },
+    }
+
+    await expect(handler(event)).resolves.toEqual({
+      redirect: true,
+      location: finalRedirectLocation,
+      statusCode: 301,
+    })
+
+    expect(axiosHeadMock).toHaveBeenNthCalledWith(
+      2,
+      'https://cms.prod.nypr.digital/story/old-story/',
+      expect.objectContaining({
+        maxRedirects: 0,
+      }),
+    )
+  })
+
+  it('does not probe slug redirects for missing numeric Publisher story IDs', async () => {
+    axiosMock.mockRejectedValue({ response: { status: 404 } })
+
+    const handler = (await import('../../server/api/story/[cmsSource]/[storyId]')).default
+    const event: any = {
+      context: { params: { cmsSource: 'publisher', storyId: '12345' } },
+    }
+
+    await expect(handler(event)).resolves.toBeNull()
+    expect(axiosHeadMock).not.toHaveBeenCalled()
+    expect(axiosMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        url: 'https://publisher.test/api/v3/story-pk/12345/',
+      }),
+    )
+  })
+
+  it('routes Aviary redirect metadata for missing Wagtail show pages under /shows', async () => {
     const redirectLocation = '/shows/new-show/'
 
     axiosMock.mockRejectedValue({ response: { status: 404 } })
@@ -120,7 +183,7 @@ describe('CMS route redirects', () => {
 
     await expect(handler(event)).resolves.toEqual({
       redirect: true,
-      location: redirectLocation,
+      location: '/browse/shows/new-show/',
       statusCode: 301,
     })
 

@@ -11,6 +11,29 @@ const __getConfig = () => {
     return testCfg ?? useRuntimeConfig()
 }
 
+const isWnycHost = (hostname: string) => hostname === 'wnyc.org' || hostname.endsWith('.wnyc.org')
+
+const routeLegacyShowLocation = (location: string) => {
+    const routedShowPrefix = mediaTypeRoutes.show.replace(/\/$/, '')
+    const rewritePath = (path: string) => path.replace(/^\/shows(?=\/|$)/, routedShowPrefix)
+
+    if (location.startsWith('/shows/') || location === '/shows') {
+        return rewritePath(location)
+    }
+
+    try {
+        const url = new URL(location)
+
+        if (!isWnycHost(url.hostname) || !(url.pathname.startsWith('/shows/') || url.pathname === '/shows')) {
+            return location
+        }
+
+        return `${rewritePath(url.pathname)}${url.search}${url.hash}`
+    } catch {
+        return location
+    }
+}
+
 // getting flat page data from the publisher api
 const getPublisherPageData = async (pageSlug: string) => {
     const config = __getConfig()
@@ -75,7 +98,10 @@ const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean, isDown
             for (const path of redirectPaths) {
                 const redirect = await getCmsPathRedirect(config.public.AVIARY_BASE_API, path, requestOptions)
                 if (redirect) {
-                    return redirect
+                    return {
+                        ...redirect,
+                        location: routeLegacyShowLocation(redirect.location),
+                    }
                 }
             }
 
