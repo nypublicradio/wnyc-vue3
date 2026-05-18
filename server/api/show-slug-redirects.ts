@@ -91,6 +91,7 @@ const redirects = [
     { from: '/publicsongproject', to: '/psp' },
     { from: '/story/2026-public-song-project', to: '/psp' },
     { from: '/poetry', to: '/story/month-good-poetry-good-neighbors' },
+    { from: '/browse/shows/open-to-debate', to: 'https://opentodebate.org' },
 ]
 
 export default defineEventHandler((event) => {
