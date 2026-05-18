@@ -59,6 +59,7 @@ export interface Page {
   inPageNavigation?: InPageNavigationLink[]
 
   tease?: string
+  subtitle?: string
   listingTitle?: string
   listingDescription?: string
   listingImage?: Image
