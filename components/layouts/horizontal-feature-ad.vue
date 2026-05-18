@@ -72,7 +72,6 @@ const featureSizes = computed(() => {
         fineprint="WNYC is funded by sponsors and member donations"
       />
     </div>
-    <pre class="text-xs">{{ list.listItems[1] }}</pre>
     <div class="grid">
       <LayoutsTitleHeader
         class="col-12 order-2 lg:order-1 -mb-3"
