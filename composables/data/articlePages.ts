@@ -318,8 +318,10 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
   const showId = article.showId || article.show_id
   const showTitle = article.showTitle || article.show_title
   const showImageUrl = article.showImageUrl || article.show_image_url
-
+  // if subtitle same as showTitle, skip it, but we need this to support the curation override for the subtitle to populate the tease
+  const tease = article.tease || (article.subtitle === article.showTitle ? null : article.subtitle) || article.description
   return Object.assign({}, await normalizePage(article), {
+    tease, // OVERRIDE from the normalizePage
     uuid: simplecastId, // Preserve the Simplecast UUID
     showId, // Preserve the show UUID
     showSlug: showId, // Use showId as slug for Simplecast shows
@@ -439,6 +441,7 @@ export async function normalizeSimplecastPage (article: SimplecastArticle): Prom
   const audioUrl = article.audioFileUrl || article.enclosureUrl
   const bodyText = article.longDescription || article.description
   return Promise.resolve(Object.assign({}, normalizePage(article), {
+    tease: article.description, // OVERRIDE from the normalizePage
     uuid: simplecastId,
     showId,
     showSlug: showId,
@@ -462,7 +465,6 @@ export async function normalizeSimplecastPage (article: SimplecastArticle): Prom
       type: article.type || 'episode',
     },
     title: article.title,
-    tease: article.description,
     gallerySlides: undefined,
     legacyId: article.id,
     authors: undefined,
