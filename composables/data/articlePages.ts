@@ -257,9 +257,7 @@ export async function normalizeWagtailPage (article: Record<string, any | undefi
 export async function normalizeWagtailListItem (article: Record<string, any | undefined>): ArticlePage {
   if (typeof article === 'undefined')
     return null
-  const normalizedImage = article.image
-    ?? article.leadAsset?.[0]?.value?.image
-    ?? article.leadAsset?.[0]?.value?.defaultImage
+  const normalizedImage = article.image ?? article.listingImage ?? article.content?.listingImage ?? article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage
   return Object.assign({}, await normalizePage(article), {
     image: normalizedImage,
     imageFullWidth: normalizedImage?.width ?? article.leadAsset?.[0]?.value?.image?.width ?? article.leadAsset?.[0]?.value?.defaultImage?.width,
@@ -292,7 +290,6 @@ export async function normalizeWagtailListItem (article: Record<string, any | un
 
     // Event-specific fields
     contentType: article.contentType,
-    //subtitle: article.subtitle,
     body: article.body,
     eventDate: article.eventDate,
     endDate: article.endDate,
