@@ -3,11 +3,35 @@ import humps from 'humps'
 import { cmsSources, mediaTypeRoutes } from '~/composables/globals'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
 import { transformCuratedContent } from '~/utilities/curatedContent'
+import { getCmsPathRedirect, getCmsRequestOptions } from '~/server/utils/cmsRedirect'
 
 // Helper to obtain runtime config, with test override support.
 const __getConfig = () => {
     const testCfg = (globalThis as any)?.__testRuntimeConfig
     return testCfg ?? useRuntimeConfig()
+}
+
+const isWnycHost = (hostname: string) => hostname === 'wnyc.org' || hostname.endsWith('.wnyc.org')
+
+const routeLegacyShowLocation = (location: string) => {
+    const routedShowPrefix = mediaTypeRoutes.show.replace(/\/$/, '')
+    const rewritePath = (path: string) => path.replace(/^\/shows(?=\/|$)/, routedShowPrefix)
+
+    if (location.startsWith('/shows/') || location === '/shows') {
+        return rewritePath(location)
+    }
+
+    try {
+        const url = new URL(location)
+
+        if (!isWnycHost(url.hostname) || !(url.pathname.startsWith('/shows/') || url.pathname === '/shows')) {
+            return location
+        }
+
+        return `${rewritePath(url.pathname)}${url.search}${url.hash}`
+    } catch {
+        return location
+    }
 }
 
 // getting flat page data from the publisher api
@@ -65,6 +89,22 @@ const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean, isDown
         return await normalizeArticlePage(resData)
     } catch (error: any) {
         if (error?.response?.status === 404) {
+            const requestOptions = getCmsRequestOptions(config.public.cmsSite)
+            const redirectPaths = [
+                `${mediaTypeRoutes.show}${pageSlug}`,
+                `/shows/${pageSlug}`,
+            ]
+
+            for (const path of redirectPaths) {
+                const redirect = await getCmsPathRedirect(config.public.AVIARY_BASE_API, path, requestOptions)
+                if (redirect) {
+                    return {
+                        ...redirect,
+                        location: routeLegacyShowLocation(redirect.location),
+                    }
+                }
+            }
+
             // Nuxt expects proper error objects to avoid generic 500 noise
             throw createError({ statusCode: 404, statusMessage: `Page not found: ${pageSlug}` })
         }

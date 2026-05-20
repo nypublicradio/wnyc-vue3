@@ -1,6 +1,7 @@
 import axios from 'axios'
 import humps from 'humps'
 import { normalizePublisherPage, normalizeWagtailPage } from '~/composables/data/articlePages'
+import { getCmsPathRedirect, getCmsRequestOptions } from '~/server/utils/cmsRedirect'
 
 const config = useRuntimeConfig();
 
@@ -17,16 +18,25 @@ const getWagtailStoryData = async (id: string) => {
         //return humps.camelizeKeys(res.data);
 
         return normalizeWagtailPage(humps.camelizeKeys(res.data));
-    } catch (e) {
+    } catch (e: any) {
+        if (e?.response?.status === 404) {
+            return await getCmsRedirectForStoryPath(id)
+        }
         //console.log(e);
     }
     return null
 };
 
+const getCmsRedirectForStoryPath = async (slug: string) => {
+    const requestOptions = getCmsRequestOptions(config.public.cmsSite)
+    return await getCmsPathRedirect(config.public.AVIARY_BASE_API, `/story/${slug}`, requestOptions)
+}
+
 const getPublisherStoryData = async (idOrSlug: string) => {
+    const isNumericId = /^\d+$/.test(idOrSlug);
+
     try {
         // Determine if the identifier is numeric (ID) or a slug
-        const isNumericId = /^\d+$/.test(idOrSlug);
         const endpoint = isNumericId 
             ? `v3/story-pk/${idOrSlug}/`
             : `v3/story/${idOrSlug}/`;
@@ -37,10 +47,12 @@ const getPublisherStoryData = async (idOrSlug: string) => {
         };
         const res = await axios(option);
         return normalizePublisherPage(humps.camelizeKeys(res.data).data);
-    } catch (e) {
+    } catch (e: any) {
 
         if (e.response && e.response.status === 404) {
-            console.error('404 = ', e)
+            if (!isNumericId) {
+                return await getCmsRedirectForStoryPath(idOrSlug)
+            }
         } else {
             console.error(e);
         }

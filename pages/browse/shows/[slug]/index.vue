@@ -27,6 +27,21 @@ const {
   ? useFetchWrapper(...showFetchArgs)
   : await useFetchWrapper(...showFetchArgs)
 
+const redirectIfNeeded = (page) => {
+  if (!page?.redirect) return
+
+  return navigateTo(page.location, {
+    redirectCode: page.statusCode || 301,
+    external: /^https?:\/\//.test(page.location),
+  })
+}
+
+watch(show, (page) => {
+  redirectIfNeeded(page)
+})
+
+await redirectIfNeeded(show.value)
+
 // Auto-refresh handled by useFetchWrapper
 
 const sectionAnchorData = computed(
