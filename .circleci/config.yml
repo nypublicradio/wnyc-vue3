@@ -4,7 +4,7 @@ orbs:
   ruby: circleci/ruby@2.1.0
   android: circleci/android@2.3.0
   node: circleci/node@5.1.0 #not to be mistaken with node version 5.1.0
-  nypr-deploy: nypr/nypr-deploy@0.1.0
+  nypr-deploy: nypr/nypr-deploy@0.1.1
 
 filter_all: &filter_all
   filters:
@@ -56,7 +56,7 @@ workflows:
           repo: "wnyc-vue3"
           service: "wnyc-vue3"
           cluster: "wnyc-vue3"
-          use_layer_cache: true
+          use_layer_caching: true
           cpu: 1024
           memory: 2048
           use_firelens: true
@@ -85,7 +85,7 @@ workflows:
           repo: "wnyc-vue3"
           service: "wnyc-vue3"
           cluster: "wnyc-vue3"
-          use_layer_cache: true
+          use_layer_caching: true
           cpu: 1024
           memory: 2048
           use_firelens: true
@@ -114,7 +114,7 @@ workflows:
           repo: "wnyc-vue3"
           service: "wnyc-vue3-web"
           cluster: "wnyc-vue3-web"
-          use_layer_cache: true
+          use_layer_caching: true
           prerun_steps:
             - run:
                 name: Setup local environment for pre-build
