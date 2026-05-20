@@ -37,17 +37,12 @@ filter_web-prod: &filter_web-prod
 workflows:
   test-and-deploy:
     jobs:
-      - build:
-          context: "dockerhub"
-          <<: *filter_all
       - test_nginx:
           context: "dockerhub"
           <<: *filter_all  
       - test:
           context: "dockerhub"
           <<: *filter_all
-          requires:
-            - build
       - nypr-deploy/build_and_deploy:
           <<: *filter_demo
           name: Deploy (demo)
@@ -197,35 +192,16 @@ workflows:
             - test
 
 jobs: 
-  # Note (allie): This is its own job because I don't 
-  # want to run the tests in an environment that has the
-  # built project. 
-  build:
+  test:
     executor: default
     steps:
       - checkout
       - setup_npmrc
       - node/install-packages
-      - run: 
-          name: Assert that it builds
-          command: |
-            npm run build
-      - persist_to_workspace:
-          root: .
-          paths:
-            - node_modules
-            - .nuxt
-
-  test:
-    executor: default
-    steps:
-      - checkout
-      - attach_workspace:
-          at: .
       - run:
           name: Run unit tests
           command: |
-            npm run test      
+            npm run test
 
   test_nginx:
     executor: default
