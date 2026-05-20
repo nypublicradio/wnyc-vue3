@@ -76,7 +76,7 @@ workflows:
                     [[ "${stripped}" == *"AWS_"* ]] && continue
                     val="${!var}"
                     export "${stripped}=${val}"
-                  done < <(printenv | grep "^${env_prefix}")
+                  done < <(printenv | grep "^${env_prefix}" | cut -d= -f1)
                   APP_VERSION=$(git tag --sort=-committerdate | grep -v "demo" | head -n 1 | sed -E 's/(v[0-9]+\.[0-9]+\.[0-9]+).*/\1/')
                   export APP_VERSION
                   echo "export APP_VERSION=\"${APP_VERSION}\"" >> "$BASH_ENV"
@@ -113,7 +113,7 @@ workflows:
                     [[ "${stripped}" == *"AWS_"* ]] && continue
                     val="${!var}"
                     export "${stripped}=${val}"
-                  done < <(printenv | grep "^${env_prefix}")
+                  done < <(printenv | grep "^${env_prefix}" | cut -d= -f1)
                   APP_VERSION=$(git tag --sort=-committerdate | grep -v "demo" | head -n 1 | sed -E 's/(v[0-9]+\.[0-9]+\.[0-9]+).*/\1/')
                   export APP_VERSION
                   echo "export APP_VERSION=\"${APP_VERSION}\"" >> "$BASH_ENV"
@@ -147,7 +147,7 @@ workflows:
                     [[ "${stripped}" == *"AWS_"* ]] && continue
                     val="${!var}"
                     export "${stripped}=${val}"
-                  done < <(printenv | grep "^${env_prefix}")
+                  done < <(printenv | grep "^${env_prefix}" | cut -d= -f1)
                   APP_VERSION=$(git tag --sort=-committerdate | grep -v "demo" | head -n 1 | sed -E 's/(v[0-9]+\.[0-9]+\.[0-9]+).*/\1/')
                   export APP_VERSION
                   echo "export APP_VERSION=\"${APP_VERSION}\"" >> "$BASH_ENV"
