@@ -4,7 +4,7 @@ orbs:
   ruby: circleci/ruby@2.1.0
   android: circleci/android@2.3.0
   node: circleci/node@5.1.0 #not to be mistaken with node version 5.1.0
-  nypr-deploy: nypr/nypr-deploy@0.1.1
+  nypr-deploy: nypr/nypr-deploy@0.1.2
 
 filter_all: &filter_all
   filters:
@@ -62,16 +62,24 @@ workflows:
           use_firelens: true
           prerun_steps:
             - run:
-                name: Setup local environment for pre-build
-                command: bash ./scripts/setuplocalenv.sh
-            - run:
-                name: Setup .npmrc for pre-build
+                name: Pre-build Nuxt app
                 command: |
                   echo "@nypublicradio:registry=https://npm.pkg.github.com" > .npmrc
                   echo "//npm.pkg.github.com/:_authToken=$PAT" >> .npmrc
-            - run:
-                name: Pre-build Nuxt app
-                command: |
+                  case "${ENV}" in
+                    "demo") env_prefix="DEMO_" ;;
+                    "prod") env_prefix="PROD_" ;;
+                    *) echo "Unknown environment '${ENV}'" >&2; exit 1 ;;
+                  esac
+                  while IFS= read -r var; do
+                    stripped="${var#${env_prefix}}"
+                    [[ "${stripped}" == *"AWS_"* ]] && continue
+                    val="${!var}"
+                    export "${stripped}=${val}"
+                  done < <(printenv | grep "^${env_prefix}")
+                  APP_VERSION=$(git tag --sort=-committerdate | grep -v "demo" | head -n 1 | sed -E 's/(v[0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+                  export APP_VERSION
+                  echo "export APP_VERSION=\"${APP_VERSION}\"" >> "$BASH_ENV"
                   npm ci
                   npm run build
           requires:
@@ -91,16 +99,24 @@ workflows:
           use_firelens: true
           prerun_steps:
             - run:
-                name: Setup local environment for pre-build
-                command: bash ./scripts/setuplocalenv.sh
-            - run:
-                name: Setup .npmrc for pre-build
+                name: Pre-build Nuxt app
                 command: |
                   echo "@nypublicradio:registry=https://npm.pkg.github.com" > .npmrc
                   echo "//npm.pkg.github.com/:_authToken=$PAT" >> .npmrc
-            - run:
-                name: Pre-build Nuxt app
-                command: |
+                  case "${ENV}" in
+                    "demo") env_prefix="DEMO_" ;;
+                    "prod") env_prefix="PROD_" ;;
+                    *) echo "Unknown environment '${ENV}'" >&2; exit 1 ;;
+                  esac
+                  while IFS= read -r var; do
+                    stripped="${var#${env_prefix}}"
+                    [[ "${stripped}" == *"AWS_"* ]] && continue
+                    val="${!var}"
+                    export "${stripped}=${val}"
+                  done < <(printenv | grep "^${env_prefix}")
+                  APP_VERSION=$(git tag --sort=-committerdate | grep -v "demo" | head -n 1 | sed -E 's/(v[0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+                  export APP_VERSION
+                  echo "export APP_VERSION=\"${APP_VERSION}\"" >> "$BASH_ENV"
                   npm ci
                   npm run build
           requires:
@@ -117,16 +133,24 @@ workflows:
           use_layer_caching: true
           prerun_steps:
             - run:
-                name: Setup local environment for pre-build
-                command: bash ./scripts/setuplocalenv.sh
-            - run:
-                name: Setup .npmrc for pre-build
+                name: Pre-build Nuxt app
                 command: |
                   echo "@nypublicradio:registry=https://npm.pkg.github.com" > .npmrc
                   echo "//npm.pkg.github.com/:_authToken=$PAT" >> .npmrc
-            - run:
-                name: Pre-build Nuxt app
-                command: |
+                  case "${ENV}" in
+                    "demo") env_prefix="DEMO_" ;;
+                    "prod") env_prefix="PROD_" ;;
+                    *) echo "Unknown environment '${ENV}'" >&2; exit 1 ;;
+                  esac
+                  while IFS= read -r var; do
+                    stripped="${var#${env_prefix}}"
+                    [[ "${stripped}" == *"AWS_"* ]] && continue
+                    val="${!var}"
+                    export "${stripped}=${val}"
+                  done < <(printenv | grep "^${env_prefix}")
+                  APP_VERSION=$(git tag --sort=-committerdate | grep -v "demo" | head -n 1 | sed -E 's/(v[0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+                  export APP_VERSION
+                  echo "export APP_VERSION=\"${APP_VERSION}\"" >> "$BASH_ENV"
                   npm ci
                   npm run build
           cpu: 2048
