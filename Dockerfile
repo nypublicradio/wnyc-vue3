@@ -92,11 +92,13 @@ WORKDIR /code
 COPY .npmrc .npmrc
 COPY ./package.json .
 COPY ./package-lock.json .
-RUN npm ci
-
 COPY . .
 ENV NUXT_TELEMETRY_DISABLED=1
-RUN timeout 300 npm run build; \
+RUN if [ -d ".output" ] && [ -f ".output/server/index.mjs" ]; then \
+      echo "Using pre-built .output, skipping npm ci and build"; \
+    else \
+      npm ci && timeout 300 npm run build; \
+    fi; \
     test -f .output/server/index.mjs || exit 1
 
 FROM node:18.18.2-slim AS app
