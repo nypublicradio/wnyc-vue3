@@ -1,5 +1,5 @@
 <script setup>
-import { dynamicNavigation } from "~/utilities/helpers"
+
 import { useBreakpoints } from "~/composables/useBreakpoints"
 const props = defineProps({
   label: {
@@ -79,7 +79,6 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
           imgCol="w-7rem md:w-12rem lg:w-full"
           :allowVerticalEffect="!props.square"
           :loading="props.loading"
-          @on-click="dynamicNavigation(item)"
         />
       </template>
       <skeleton-media-card
@@ -90,6 +89,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
         :size="imgSizes"
         :ratio="imgRatio"
         isVertical
+        v-once
       />
     </div>
   </div>

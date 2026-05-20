@@ -1,6 +1,6 @@
 <script setup>
 import { mediaTypes } from "~/composables/globals"
-import { dynamicNavigation } from "~/utilities/helpers"
+
 import ShowItem from "~/components/ShowItem.vue"
 import MediaCard from "~/components/MediaCard.vue"
 
@@ -138,7 +138,6 @@ watch(
             :showBg="false"
             :showBgMobile="false"
             showTease
-            @on-click="dynamicNavigation(item)"
           />
           <slot name="recent-episodes" :show="item" />
         </div>

@@ -15,24 +15,27 @@ export function useFetchWrapper (request, options = {}) {
         key,
         autoRefresh = true,
         logKey = false,
+        shallow = true,
         ...rest
     } = options
 
-    // Standardized getCachedData: always use Nuxt payload cache
-    const wrappedGetCachedData = (key, nuxtApp) => {
-        if (logKey) {
+    const fetchOptions = {
+        key,
+        shallow,
+        ...rest,
+    }
+
+    if (logKey) {
+        fetchOptions.getCachedData = (key, nuxtApp) => {
+            const data = nuxtApp.isHydrating ? nuxtApp.payload.data[key] : nuxtApp.static.data?.[key]
             // eslint-disable-next-line no-console
-            console.log('[useFetchWrapper] getCachedData', key, nuxtApp.payload.data[key])
+            console.log('[useFetchWrapper] getCachedData', key, data)
+            return data
         }
-        return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
     }
 
     // Call useFetch with standardized getCachedData
-    const fetchResult = useFetch(request, {
-        key,
-        getCachedData: wrappedGetCachedData,
-        ...rest,
-    })
+    const fetchResult = useFetch(request, fetchOptions)
 
     // Auto-refresh on mount if data is missing or errored
     if (autoRefresh) {
@@ -41,6 +44,12 @@ export function useFetchWrapper (request, options = {}) {
                 fetchResult.refresh()
             }
         })
+    }
+
+    // Workaround: When Nuxt loads payload data from cache during client-side navigation, 
+    // it leaves status as 'idle' instead of 'success', causing skeletons to hang.
+    if (fetchResult.status.value === 'idle' && fetchResult.data.value) {
+        fetchResult.status.value = 'success'
     }
 
     return fetchResult

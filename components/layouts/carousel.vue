@@ -1,5 +1,4 @@
 <script setup>
-import { dynamicNavigation } from "~/utilities/helpers"
 
 const props = defineProps({
   label: {
@@ -73,7 +72,6 @@ const getImgSizesBasedOnItemImgRatio = (item, obj) => {
             lg: 288,
           })
         "
-        @on-click="dynamicNavigation(item)"
       />
     </MaterialCarouselBasic>
   </div>

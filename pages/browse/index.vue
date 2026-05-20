@@ -7,13 +7,12 @@ import { useIsApp } from "~/composables/states"
 const config = useRuntimeConfig()
 const isApp = useIsApp()
 const route = useRoute()
-const {
-  data: shows,
-  status,
-  error,
-} = await useFetchWrapper(`${config.public.BFF_URL}/api/v3/shows`, {
-  key: "v3-shows",
-})
+const { data: shows, status, error } = await useFetchWrapper(
+  `${config.public.BFF_URL}/api/v3/shows`,
+  {
+    key: "v3-shows",
+  }
+)
 
 const router = useRouter()
 const searchFieldValue = ref("")
@@ -178,9 +177,7 @@ useSeoMeta({
         <FetchError v-if="error" />
 
         <section class="tabs mt-2">
-          <div
-            class="flex md:justify-content-between align-items-center mb-4 gap-3"
-          >
+          <div class="flex md:justify-content-between align-items-center mb-4 gap-3">
             <Transition name="fade" mode="out-in">
               <h2 :key="allOrFeatured ? 'featured' : 'all'">
                 {{ allOrFeatured ? "Featured" : "All" }} Shows
@@ -226,7 +223,6 @@ useSeoMeta({
                 imageClass="w-6rem xs:w-7rem md:w-13rem"
                 :size="{ xxs: [96, 96], xs: [112, 112], md: [208, 208] }"
                 :hideButtons="!isMobileBreakpoint"
-                @onClick="goToShowPage(show)"
               />
             </div>
             <div v-else key="loading" class="shows grid">
@@ -259,7 +255,6 @@ useSeoMeta({
               imageClass="w-6rem xs:w-7rem md:w-13rem"
               :size="{ xxs: [96, 96], xs: [112, 112], md: [208, 208] }"
               :hideButtons="!isMobileBreakpoint"
-              @onClick="goToShowPage(show.item)"
             />
           </div>
           <!-- if no results show this -->

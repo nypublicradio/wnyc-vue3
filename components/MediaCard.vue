@@ -19,6 +19,8 @@ import {
   getReadingTime,
   getOrg,
   formatTime,
+  dynamicNavigation,
+  saveRecentlyPlayed,
 } from "~/utilities/helpers"
 import {
   fetchAndStoreMp3,
@@ -161,6 +163,10 @@ const props = defineProps({
     type: String,
     default: "lazy",
   },
+  isSaveHistory: {
+    type: Boolean,
+    default: true,
+  },
 })
 const user = useCurrentUser()
 const isNetworkConnected = useIsNetworkConnected()
@@ -184,6 +190,21 @@ const isLive = props.data?.type === mediaTypes.LIVE
 const eventDate = ref(props.data?.startDatetime)
 
 const reactiveData = toRef(props, "data")
+
+// set dynamic route
+const dynamicRoute = computed(() =>
+  dynamicNavigation(reactiveData.value, props.isSaveHistory, props.isInDownloads, true)
+)
+
+// card type for analytics
+const cardType = computed(
+  () =>
+    `Media Card - Type:${reactiveData.value?.type || "unknown"} Title: ${
+      reactiveData.value?.title || "unknown"
+    } CMS Source: ${reactiveData.value?.cmsSource || "unknown"} ID: ${
+      reactiveData.value?.id || "unknown"
+    }`
+)
 
 const nativeImageHeight = computed(() => {
   //console.log("reactiveData.value.imageFullHeight", reactiveData.value.imageFullHeight)
@@ -228,7 +249,7 @@ const handleAddToFavorites = (bucketItem) => {
 const progress = ref({})
 // handle the download of the audio file request and feed the progress
 const handleDownload = async (bucketItem) => {
-  trackClickEvent("Click Tracking - Audio Download", "Episode Item", bucketItem.title)
+  trackClickEvent("Click Tracking - Audio Download", cardType.value, bucketItem.title)
   progress.value = await fetchAndStoreMp3(bucketItem)
 }
 
@@ -304,7 +325,7 @@ const getDotMenuItems = (bucketItem) => {
               label: "Remove from Download",
               customIcon: TrashIcon,
               command: () => {
-                handleDelete(bucketItem)
+                handleDelete(bucketItem, cardType.value)
               },
             },
           ]
@@ -316,7 +337,7 @@ const getDotMenuItems = (bucketItem) => {
               customIcon: ShareIcon,
               title: bucketItem?.title,
               command: () => {
-                shareAPI(bucketItem, "Media Card")
+                shareAPI(bucketItem, cardType.value)
               },
             },
           ]
@@ -353,7 +374,7 @@ const getDotMenuItems = (bucketItem) => {
               customIcon: ShareIcon,
               title: bucketItem?.title,
               command: () => {
-                shareAPI(bucketItem, "Media Card")
+                shareAPI(bucketItem, cardType.value)
               },
             },
           ]
@@ -373,14 +394,38 @@ const toggleDownloadedPlay = (file) => {
   // GA tracking
   trackClickEvent(
     "Click Tracking - Play download episode",
-    "Episode Item",
+    cardType.value,
     `playing = ${file.title}`
   )
 }
 
+// handle general play click
+const handlePlayClick = () => {
+  if (isDownloaded.value && !isNetworkConnected.value) {
+    toggleDownloadedPlay(props.data)
+  } else {
+    togglePlayEpisode(props.data)
+    trackClickEvent(
+      "Click Tracking - Play episode",
+      cardType.value,
+      `playing = ${props.data?.title}`
+    )
+  }
+}
+
 // handle click event & emit
-const handleClick = () => {
+const handleRouteClick = (fromNuxtLink = false) => {
   emit("on-click")
+  if (!fromNuxtLink) {
+    dynamicNavigation(props.data, props.isSaveHistory, props.isInDownloads, false)
+  } else if (props.isSaveHistory) {
+    //save history here because this is handled by the dynamicNavigation when it is not just returning a route
+    saveRecentlyPlayed(props.data)
+  }
+
+  // click tracking
+  const routeString = dynamicRoute.value?.path || dynamicRoute.value || "unknown"
+  trackClickEvent("Click Tracking - Route", cardType.value, `route = ${routeString}`)
 }
 
 // handle the play button render
@@ -419,17 +464,18 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
       props.data?.mediaType,
     ]"
   >
-    <div
+    <nuxt-link
       v-if="!props.isSegment"
       v-ripple
       class="card-click w-full h-full absolute top-0 left-0 z-1 p-ripple"
-      @click.prevent="handleClick"
-      @keypress.enter.space="handleClick"
+      :to="dynamicRoute"
+      @click.prevent="handleRouteClick(true)"
+      @keypress.enter.space="handleRouteClick(true)"
       tabindex="0"
       aria-role="button"
       :aria-label="`${props.data?.showTitle} show details`"
       :title="props.data?.title"
-    ></div>
+    ></nuxt-link>
     <div class="holder flex flex-nogutter">
       <div
         v-if="isEvent"
@@ -546,11 +592,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                   :data="props.data"
                   class="z-2"
                   :label="getMinutes(props.data?.estimatedDuration, 1)"
-                  @onClick="
-                    isDownloaded && !isNetworkConnected
-                      ? toggleDownloadedPlay(props.data)
-                      : togglePlayEpisode(props.data)
-                  "
+                  @onClick="handlePlayClick"
                 >
                 </PlayButton>
                 <ReadButton
@@ -568,7 +610,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                     )
                   "
                   :file="props.data?.name"
-                  @on-click="handleClick"
+                  @on-click="handleRouteClick"
                 />
                 <div v-else></div>
               </template>
@@ -645,7 +687,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                 <EventButton
                   v-if="eventData?.eventCtaUrl"
                   class="z-2"
-                  @on-click="handleClick"
+                  @on-click="handleRouteClick"
                   buttonClass="px-5 md:px-3"
                   labelClass="text-base md:text-sm"
                 />
