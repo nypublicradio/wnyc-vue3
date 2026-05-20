@@ -50,13 +50,14 @@ export function normalizePage (page: Record<string, any>): Page {
   return {
     id: idToNumber(page.id),
     title: page.title,
+    tease: page.tease || page.subtitle || page.listingSummary || page.description || page.body,
     uuid: page.uuid,
     type: WAGTAIL_PAGE_TYPES[page.contentType] ?? WAGTAIL_PAGE_TYPES[page.meta?.type] ?? 'unknown',
 
     listingTitle: page.listingTitle || page.title,
-    tease: page.tease || page.subtitle || page.listingSummary || page.description,
-    listingDescription: page.subtitle || page.listingSummary || page.description,
+    listingDescription: page.listingSummary || page.description || page.subtitle,
     listingImage: page.listingImage,
+
     preventSearchIndexing: page.preventSearchIndexing,
 
     socialTitle: page.socialTitle || page.title,

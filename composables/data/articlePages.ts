@@ -197,7 +197,7 @@ export async function normalizeWagtailPage (article: Record<string, any | undefi
   const config = useRuntimeConfig()
   return Object.assign({}, await normalizePage(article), {
     description: article.description,
-    image: article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage ?? article.showArt,
+    image: article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage ?? article.image ?? article.showArt,
     imageFullWidth: article.leadAsset?.[0]?.value?.image?.width ?? article.leadAsset?.[0]?.value?.defaultImage?.width,
     imageFullHeight: article.leadAsset?.[0]?.value?.image?.height ?? article.leadAsset?.[0]?.value?.defaultImage?.height,
     leadImageCaption: article.leadAsset?.[0]?.value?.caption || article.leadAsset?.[0]?.value?.image?.caption,
@@ -257,17 +257,7 @@ export async function normalizeWagtailPage (article: Record<string, any | undefi
 export async function normalizeWagtailListItem (article: Record<string, any | undefined>): ArticlePage {
   if (typeof article === 'undefined')
     return null
-
-  const isEventItem = article.contentType === 'event_page' || article.type === 'event'
-  const normalizedImage = isEventItem
-    ? (
-      article.image
-      ?? article.listingImage
-      ?? article.content?.listingImage
-      ?? article.leadAsset?.[0]?.value?.image
-      ?? article.leadAsset?.[0]?.value?.defaultImage
-    )
-    : (article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage ?? article.image)
+  const normalizedImage = article.image ?? article.listingImage ?? article.content?.listingImage ?? article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage
   return Object.assign({}, await normalizePage(article), {
     image: normalizedImage,
     imageFullWidth: normalizedImage?.width ?? article.leadAsset?.[0]?.value?.image?.width ?? article.leadAsset?.[0]?.value?.defaultImage?.width,
@@ -297,11 +287,9 @@ export async function normalizeWagtailListItem (article: Record<string, any | un
     sortDate: article.sortDate,
     meta: article.meta,
     showTitle: article.showTitle,
-    tease: article.body,
 
     // Event-specific fields
     contentType: article.contentType,
-    subtitle: article.subtitle,
     body: article.body,
     eventDate: article.eventDate,
     endDate: article.endDate,
@@ -330,9 +318,10 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
   const showId = article.showId || article.show_id
   const showTitle = article.showTitle || article.show_title
   const showImageUrl = article.showImageUrl || article.show_image_url
-
+  // if subtitle same as showTitle, skip it, but we need this to support the curation override for the subtitle to populate the tease
+  const tease = article.tease || (article.subtitle === article.showTitle ? null : article.subtitle) || article.description
   return Object.assign({}, await normalizePage(article), {
-    tease: article.description, // OVERRIDE from the normalizePage
+    tease, // OVERRIDE from the normalizePage
     uuid: simplecastId, // Preserve the Simplecast UUID
     showId, // Preserve the show UUID
     showSlug: showId, // Use showId as slug for Simplecast shows
