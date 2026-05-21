@@ -507,13 +507,14 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
       v-ripple
       class="card-click w-full h-full absolute top-0 left-0 z-1 p-ripple"
       :to="dynamicRoute"
-      :target="shouldOpenInNewTab ? '_blank' : ''"
+      :target="shouldOpenInNewTab ? '_blank' : undefined"
+      :rel="shouldOpenInNewTab ? 'noopener noreferrer' : undefined"
+      @click.stop="handleRouteClick(true)"
+      @keypress.enter.space="handleRouteClick(true)"
       tabindex="0"
       aria-role="button"
       :aria-label="`${props.data?.showTitle} show details`"
       :title="props.data?.title"
-      @click.stop="handleRouteClick(true)"
-      @keypress.enter.space="handleRouteClick(true)"
     ></nuxt-link>
     <div class="holder flex flex-nogutter">
       <div
