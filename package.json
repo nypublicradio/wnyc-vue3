@@ -6,7 +6,7 @@
     "start": "node .output/server/index.mjs",
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "generate": "nuxt generate",
+    "generate": "NUXT_SSR=false nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "generate-splash": "node assets/copyToAssets.js && npx capacitor-assets generate",

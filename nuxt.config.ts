@@ -73,7 +73,8 @@ export default defineNuxtConfig({
   ssr: process.env.NUXT_SSR === 'true',
 
   nitro: {
-    routeRules: process.env.NODE_ENV === 'production' ? {
+    // Route rules only apply in SSR/website mode
+    routeRules: process.env.NUXT_SSR === 'true' && process.env.NODE_ENV === 'production' ? {
       '/home': { swr: 60 },
       // Cache ALL shows and any nested episode pages under a show for 15 minutes
       '/browse/shows/**': { swr: 900 },
@@ -82,7 +83,7 @@ export default defineNuxtConfig({
       '/confirm': { ssr: false },
     } : {},
     prerender: {
-      // Disable prerendering when SSR is false (SPA mode for mobile)
+      // Only crawl links and prerender routes in SSR/website mode
       crawlLinks: process.env.NUXT_SSR === 'true',
       routes: process.env.NUXT_SSR === 'true' ? [
         '/browse/shows/brian-lehrer-show',
@@ -90,11 +91,11 @@ export default defineNuxtConfig({
         '/browse/shows/morning-edition',
         '/browse/shows/radiolab',
         '/browse/shows/on-the-media'
-      ] : null,
+      ] : [],
       // Don't fail the build on prerender errors for client-only routes
       failOnError: false,
       // Ignore client-only routes that don't work with SSR
-      ignore: [
+      ignore: process.env.NUXT_SSR === 'true' ? [
         '/dashboard',
         '/forgot-password',
         '/signup',
@@ -103,7 +104,7 @@ export default defineNuxtConfig({
         '/confirm',
         '/mobile',
         '/preview',
-      ],
+      ] : [],
     },
   },
 
@@ -211,7 +212,8 @@ export default defineNuxtConfig({
   ],
 
   experimental: {
-    crossOriginPrefetch: true,
+    // crossOriginPrefetch only makes sense in SSR/website mode
+    crossOriginPrefetch: process.env.NUXT_SSR === 'true',
   },
 
 
