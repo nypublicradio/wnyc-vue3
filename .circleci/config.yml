@@ -56,6 +56,11 @@ workflows:
           memory: 2048
           use_firelens: true
           prerun_steps:
+            - restore_cache:
+                keys:
+                  - node-deps-{{ arch }}-{{ checksum "package-lock.json" }}
+                  - node-deps-{{ arch }}-
+                  - node-deps-
             - run:
                 name: Pre-build Nuxt app
                 command: |
@@ -93,6 +98,11 @@ workflows:
           memory: 2048
           use_firelens: true
           prerun_steps:
+            - restore_cache:
+                keys:
+                  - node-deps-{{ arch }}-{{ checksum "package-lock.json" }}
+                  - node-deps-{{ arch }}-
+                  - node-deps-
             - run:
                 name: Pre-build Nuxt app
                 command: |
@@ -127,6 +137,11 @@ workflows:
           cluster: "wnyc-vue3-web"
           use_layer_caching: true
           prerun_steps:
+            - restore_cache:
+                keys:
+                  - node-deps-{{ arch }}-{{ checksum "package-lock.json" }}
+                  - node-deps-{{ arch }}-
+                  - node-deps-
             - run:
                 name: Pre-build Nuxt app
                 command: |

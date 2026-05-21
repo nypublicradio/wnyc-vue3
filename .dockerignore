@@ -45,9 +45,18 @@ vitest.config.ts
 jest.config.js
 jest.setup.js
 
-# large static assets not needed at build time
+# source code (built in CI, artifacts copied from .output)
 
-assets/gsap/
+components/
+pages/
+composables/
+layouts/
+middleware/
+plugins/
+icons/
+assets/
+app.vue
+error.vue
 
 # data files only used locally
 
