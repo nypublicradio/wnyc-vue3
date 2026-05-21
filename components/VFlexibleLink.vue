@@ -71,22 +71,22 @@ const isAnchor = computed(() => {
 
 <template>
   <div
-    v-if="!to"
+    v-if="!props.to"
     class="flexible-link null inline"
     v-bind="$attrs"
-    @click="emit('flexible-link-click', to)"
+    @click="emit('flexible-link-click', props.to)"
   >
     <slot name="default"></slot>
   </div>
   <a
     v-else-if="isExternal"
     v-bind="$attrs"
-    :href="to"
+    :href="props.to"
     :target="target"
     :rel="`noopener ${props.target === '_blank' ? 'noreferrer' : ''}`"
     class="flexible-link external"
     :class="{ ['raw']: raw }"
-    @click="emit('flexible-link-click', to)"
+    @click="emit('flexible-link-click', props.to)"
     :tabIndex="tabIndexNumber"
   >
     <slot name="default"></slot>
@@ -94,11 +94,11 @@ const isAnchor = computed(() => {
   <a
     v-else-if="isAnchor"
     v-bind="$attrs"
-    :href="to"
+    :href="props.to"
     target="_self"
     class="flexible-link anchor"
     :class="{ ['raw']: raw }"
-    @click="emit('flexible-link-click', to)"
+    @click="emit('flexible-link-click', props.to)"
     :tabIndex="tabIndexNumber"
   >
     <slot name="default"></slot>
@@ -107,9 +107,9 @@ const isAnchor = computed(() => {
     v-else
     class="flexible-link internal"
     :class="{ ['raw']: raw }"
-    :to="to"
+    :to="props.to"
     v-bind="$attrs"
-    @click="emit('flexible-link-click', to)"
+    @click="emit('flexible-link-click', props.to)"
     :tabIndex="tabIndexNumber"
   >
     <slot name="default"></slot>

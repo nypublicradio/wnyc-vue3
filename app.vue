@@ -8,6 +8,7 @@ import {
 import { initFileSystem } from "~/utilities/file-system"
 import { Capacitor } from "@capacitor/core"
 import { App } from "@capacitor/app"
+import { ScreenOrientation } from "@capacitor/screen-orientation"
 import type { URLOpenListenerEvent } from "@capacitor/app"
 import {
   useIsApp,
@@ -16,8 +17,12 @@ import {
   useIsNetworkConnected,
   useFullDeviceInfo,
   useAppDownloadLink,
+  useIsActive,
 } from "~/composables/states"
-import { useBrowserTopColor, useBrowserTopColorDarkMode } from "~/composables/globals"
+import {
+  useBrowserTopColor,
+  useBrowserTopColorDarkMode,
+} from "~/composables/globals"
 import useLiveStream from "~/composables/data/liveStream"
 import { initLocalNotifications } from "~/utilities/local-notifications"
 import { Network } from "@capacitor/network"
@@ -25,6 +30,7 @@ import { useToast } from "primevue/usetoast"
 import { getGtmHeadConfig } from "~/utilities/gtm"
 //import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
 import useOneSignal from "~/composables/useOneSignal"
+import { useAuthReturnRoute } from "~/composables/useAuthReturnRoute"
 
 const { fetchSchedule } = useLiveStream()
 
@@ -43,6 +49,7 @@ const globalToast = useGlobalToast()
 const isNetworkConnected = useIsNetworkConnected()
 const fullDeviceInfo = useFullDeviceInfo()
 const appDownloadLink = useAppDownloadLink()
+const isActiveGlobal = useIsActive()
 const isApp = useIsApp()
 
 // Capacitor APIs are client-only — on the server, assume web/browser
@@ -112,9 +119,14 @@ onMounted(async () => {
   // OneSignal
   if (isApp.value) initOneSignal()
 
+  // check for stale auth return route
+  const { checkStaleAuthRoute } = useAuthReturnRoute()
+  await checkStaleAuthRoute()
+
   await getAndSetUserProfile()
 
   if (isApp.value) {
+    await ScreenOrientation.lock({ orientation: "portrait" })
     await initFileSystem()
     await addListeners()
     await initLocalNotifications()
@@ -129,6 +141,7 @@ onMounted(async () => {
   // fired when the app becomes active
   //refresh data and check notifications permissions every time the tab is in focus or the App is in focus
   await App.addListener("appStateChange", async ({ isActive }) => {
+    isActiveGlobal.value = isActive
     if (isActive && isApp.value) {
       // refresh data
       refreshData()
@@ -137,6 +150,9 @@ onMounted(async () => {
       if (isApp.value) {
         await notificationPermissionSync()
       }
+
+      // set the system status bar to dark mode again
+      await setStatusDarkMode(currentUserProfile.value?.dark_mode)
     }
   })
 

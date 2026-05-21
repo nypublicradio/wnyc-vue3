@@ -2,7 +2,7 @@
 import { useCurrentEpisode, useIsApp } from "~/composables/states"
 import { useFetchWrapper } from "~/composables/useFetchWrapper"
 import { brandCards } from "~/composables/globals.ts"
-
+import useAppSettings from "~/composables/useAppSettings"
 useHead({
   bodyAttrs: {
     class: "no-bottom-padding",
@@ -12,6 +12,9 @@ useHead({
 const config = useRuntimeConfig()
 const currentEpisode = useCurrentEpisode()
 const isApp = useIsApp()
+// get app settings
+const { getAppSettings, settings: appSettings } = useAppSettings()
+getAppSettings()
 
 const newsFetchArgs = [
   `${config.public.BFF_URL}/api/homepagelatestnewsupdates`,
@@ -64,9 +67,7 @@ onMounted(() => {
         <LiveFeature class="col-12 lg:col -mx-4 md:mx-0 w-screen md:w-full" />
         <div class="latestNewsHolder col">
           <FetchError v-if="error || error2" />
-          <h2 class="mt-4 mb-3 lg:mt-0 md:text-lg lg:text-xl">
-            Latest News Updates
-          </h2>
+          <h2 class="mt-4 mb-3 lg:mt-0 md:text-lg lg:text-xl">Latest News Updates</h2>
           <LatestNewsUpdates
             :localNewscast="latestNewsUpdatesData?.local_newscast ?? null"
             :nationalNewscast="latestNewsUpdatesData?.national_newscast ?? null"
@@ -76,10 +77,11 @@ onMounted(() => {
       <!-- <VImage src="/fallback-ep.png" /> -->
     </section>
     <!-- <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" /> -->
+    <section>
+      <atm-cta v-if="appSettings?.ask_the_mayor" />
+    </section>
     <section v-if="status === 'success'">
-      <VStreamfield
-        :streamfieldBlocks="pagedata?.new_home_template?.curatedContent"
-      />
+      <VStreamfield :streamfieldBlocks="pagedata?.new_home_template?.curatedContent" />
     </section>
     <section v-else>
       <layouts-horizontal-feature-ad-skeleton />

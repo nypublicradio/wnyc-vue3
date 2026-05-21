@@ -33,17 +33,20 @@ import { ref } from "vue"
 import { doActionId, doTrigger } from "~/server/utils/oneSignalNotificationCustomActions"
 import { Capacitor } from "@capacitor/core"
 import { LocalNotifications } from "@capacitor/local-notifications"
+import { useAuthReturnRoute } from "./useAuthReturnRoute"
+
 // shared state for in-app notification
 export const isInAppNotificationActive = ref(false)
 
 // base OneSignal composable
-export default function useOneSignal() {
+export default function useOneSignal () {
 
   let oneSignalSubscriptionId: string = null
   let oneSignalId: string = null
 
   const isApp = useIsApp()
   const masterNotificationChannelsArray = useMasterNotificationChannelsArray()
+  const router = useRouter()
 
   // toggle users notifications channel tags
   const toggleOneSignalUserTag = async (channelKey: string, value: boolean) => {
@@ -117,10 +120,16 @@ export default function useOneSignal() {
 
       const client = useSupabaseClient()
       const globalToast = useGlobalToast()
+      const { getAuthReturnRoute, clearAuthReturnRoute } = useAuthReturnRoute()
+      const theReturnRoute = await getAuthReturnRoute()
       try {
         await client.auth.exchangeCodeForSession(cleanCode)
-        navigateTo("/")
-        window.location.reload()
+
+        await router.push(theReturnRoute || "/")
+        clearAuthReturnRoute()
+        setTimeout(() => {
+          window.location.reload()
+        }, 200)
         return
       } catch (error) {
         console.error(error)
@@ -158,8 +167,8 @@ export default function useOneSignal() {
 
     // route to the url deep link if it is NOT the root url
     // remove trailing slashes from the url
-    const normalizedPathname = urlObj.pathname.replace(/\/+$/, "");
-    const isIndexPath = normalizedPathname === "";
+    const normalizedPathname = urlObj.pathname.replace(/\/+$/, "")
+    const isIndexPath = normalizedPathname === ""
     if (!isIndexPath) {
       const route = getPathAndQuery(event.url)
 
@@ -229,7 +238,7 @@ export default function useOneSignal() {
       .eq("id", currentUser.value.id)
       .single()
 
-    oneSignalSubscriptionId = await OneSignal.User.pushSubscription.getIdAsync();
+    oneSignalSubscriptionId = await OneSignal.User.pushSubscription.getIdAsync()
 
     const subscriptionIds: Array<string> = profile.one_signal_subscription_ids || []
 
@@ -357,7 +366,7 @@ export default function useOneSignal() {
   // triggered when the listener for User "change" is called
   const userListener = () => {
     setOneSignalId()
-  };
+  }
 
   // function to initialize OneSignal
   async function initOneSignal() {
@@ -377,16 +386,16 @@ export default function useOneSignal() {
     await OneSignal.InAppMessages.addEventListener("click", inAppNotificationClickListener)
 
     //await OneSignal.InAppMessages.addEventListener("willDisplay", inAppNotificationDidDisplay);
-    await OneSignal.InAppMessages.addEventListener("didDisplay", inAppNotificationDidDisplay);
+    await OneSignal.InAppMessages.addEventListener("didDisplay", inAppNotificationDidDisplay)
     //await OneSignal.InAppMessages.addEventListener("willDismiss", inAppNotificationDidDismiss);
-    await OneSignal.InAppMessages.addEventListener("didDismiss", inAppNotificationDidDismiss);
+    await OneSignal.InAppMessages.addEventListener("didDismiss", inAppNotificationDidDismiss)
 
     // listener for when the user changes the notification permissions at the OS level
     await OneSignal.Notifications.addEventListener("permissionChange", () => {
       // delay added so the notificationPermissionSync can detect that the change before it happens. This is so Ios can detect that the notification were OFF before they were turned ON
       setTimeout(() => {
         updateNotificationSetting()
-      }, 1500);
+      }, 1500)
     })
 
     //await OneSignal.User.pushSubscription.addEventListener("change", pushSubscriptionListener)
@@ -407,36 +416,36 @@ export default function useOneSignal() {
           await notificationPermissionSync()
         }
       }) : toSystemSettings()
-    });
+    })
   }
 
   // syncMasterNotificationChannels with the user's profile, supabase and oneSignal
-  function syncMasterNotificationChannels(local, master) {
+  function syncMasterNotificationChannels (local, master) {
 
     // Update data.one_signal_notification_channels based on masterNotificationChannelsArray. This is to ensure that the user's notification channels are always in sync on Supabase & oneSignal user tags with the masterNotificationChannelsArray if they are updated/changed
 
     // Remove any channels from data.one_signal_notification_channels that are not in masterNotificationChannelsArray
     local.one_signal_notification_channels = local.one_signal_notification_channels?.filter(existingChannel =>
       master.some(newChannel => newChannel.key === existingChannel.key)
-    );
+    )
 
     // Add any new channels from masterNotificationChannelsArray & update any labels tha tmay have changed
     master.forEach(newChannel => {
       const existingChannel = local.one_signal_notification_channels?.find(
         channel => channel.key === newChannel.key
-      );
+      )
 
       //add new channel
       if (!existingChannel) {
-        local.one_signal_notification_channels?.push(newChannel);
+        local.one_signal_notification_channels?.push(newChannel)
       }
 
       // update label
       if (existingChannel && existingChannel.label !== newChannel.label) {
-        existingChannel.label = newChannel.label;
+        existingChannel.label = newChannel.label
       }
 
-    });
+    })
 
     //update the user tags to OneSignal profile, when user is logged in only
     if (isApp.value) {
@@ -452,7 +461,7 @@ export default function useOneSignal() {
   }
 
   // function to log in and manage the user in OneSignal with supabase data
-  async function OneSignalLogin() {
+  async function OneSignalLogin () {
     if (!isApp.value) return
     const OneSignal = await loadOneSignal()
     if (!OneSignal) return
@@ -477,7 +486,7 @@ export default function useOneSignal() {
     setSubscriptions()
 
     // add/update name, to OneSignal tags
-    if (currentUser.value.user_metadata.full_name) await OneSignal.User.addTags({ "name": currentUser.value.user_metadata.full_name });
+    if (currentUser.value.user_metadata.full_name) await OneSignal.User.addTags({ "name": currentUser.value.user_metadata.full_name })
   }
 
   // get current tags
@@ -494,7 +503,7 @@ export default function useOneSignal() {
   }
 
   // function to log out the user in OneSignal
-  async function logout() {
+  async function logout () {
     if (!isApp.value) return
     const OneSignal = await loadOneSignal()
     if (!OneSignal) return

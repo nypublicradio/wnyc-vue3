@@ -61,6 +61,8 @@ const login = async () => {
     errorMessage.value = res.error
   } else {
     emit("submit-success")
+    // after apple or google auth returns the user back to the site, the App.addListener("appUrlOpen") listener in the App.vue file. That will trigger the handleAppUrlOpen(event) method in the useOneSignal composable
+    // that will check if there is a return route and if so, navigate to it, and clear the authReturnRoute preference/local storage
   }
 }
 // capitalise the first letter of a string

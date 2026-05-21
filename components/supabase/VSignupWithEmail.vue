@@ -41,8 +41,8 @@ const props = defineProps({
     default: "Sign up with email",
     type: String,
   },
-  slug: {
-    default: "/dashboard",
+  returnRoute: {
+    default: "/confirm",
     type: String,
   },
   success: {
@@ -177,10 +177,10 @@ const submitForm = async () => {
           </Message>
           <slot name="success">
             <VLoginWithEmail
-              :slug="props.slug"
               :current-email="formData.email"
               :client="innerClient"
               :config="innerConfig"
+              :returnRoute="props.returnRoute"
               @submit-success="emit('login-success', $event)"
             />
           </slot>

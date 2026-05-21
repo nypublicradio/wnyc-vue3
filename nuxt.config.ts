@@ -13,6 +13,12 @@ export default defineNuxtConfig({
     "@primevue/nuxt-module",
   ],
 
+  vue: {
+    runtimeCompiler: true,
+  },
+
+
+
   primevue: {
     options: {
       ripple: true,
@@ -208,6 +214,8 @@ export default defineNuxtConfig({
     crossOriginPrefetch: true,
   },
 
+
+
   runtimeConfig: {
     // Server-only runtime values (read at runtime by Nitro)
 
@@ -227,6 +235,9 @@ export default defineNuxtConfig({
         process.env.LIVESTREAM_URL ?? "https://api.prod.nypr.digital/api/v4/whats_on/",
       HEADER_NAVIGATION_API:
         process.env.HEADER_NAVIGATION_API ??
+        "https://cms.prod.nypr.digital/api/v2/navigation/4/",
+      NAVIGATION_API:
+        process.env.NAVIGATION_API ??
         "https://cms.prod.nypr.digital/api/v2/navigation/4/",
       SYSTEM_MESSAGES_API:
         process.env.SYSTEM_MESSAGES_API ??

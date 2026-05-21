@@ -38,6 +38,9 @@ export const useLocalUserProfileDefault = () => useState('localUserProfileDefaul
 // keep track of dark mode
 export const useIsDarkMode = () => useState('useIsDarkMode', () => false)
 
+// keep track if the app is int eh foreground and active
+export const useIsActive = () => useState('useIsActive', () => true)
+
 const currentUser = null
 // global state for the current authorized user
 export const useCurrentUser = () => useState('useCurrentUser', () => currentUser)

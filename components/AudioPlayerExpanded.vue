@@ -174,7 +174,9 @@ const handleDownload = async () => {
     "Expanded Audio Player",
     currentEpisode.value.title
   )
-  progress.value[currentEpisode.value.id] = await fetchAndStoreMp3(currentEpisode.value)
+  progress.value[currentEpisode.value.id] = await fetchAndStoreMp3(
+    currentEpisode.value
+  )
 }
 
 // handle share button
@@ -261,7 +263,9 @@ const getDotMenuItems = () => {
             ? [
                 {
                   label: `${
-                    isFavorited.value ? "Unfavorite Episode" : "Favorite Episode"
+                    isFavorited.value
+                      ? "Unfavorite Episode"
+                      : "Favorite Episode"
                   }`,
                   customIcon: StarIcon,
                   active: isFavorited.value,
@@ -411,7 +415,9 @@ const moreFromClick = async () => {
           </template>
         </Button>
         <DownloadProgress
-          v-if="progress[currentEpisode.id] || isAlreadyDownloaded(currentEpisode)"
+          v-if="
+            progress[currentEpisode.id] || isAlreadyDownloaded(currentEpisode)
+          "
           class="flex align-items-center"
           :isDownloaded="isAlreadyDownloaded(currentEpisode)"
           :progress="progress[currentEpisode.id]"
@@ -556,7 +562,9 @@ const moreFromClick = async () => {
         <Button
           text
           severity="secondary"
-          :label="`More from ${currentEpisode.showTitle || currentEpisode.title}`"
+          :label="`More from ${
+            currentEpisode.showTitle || currentEpisode.title
+          }`"
           :aria-label="`More from ${
             currentEpisode.showTitle || currentEpisode.title
           } button`"
@@ -578,7 +586,8 @@ const moreFromClick = async () => {
     .expanded-player {
       max-width: $thinContentWidth;
       padding-bottom: calc(
-        $bottomMenuHeight + $expandedFooterHeight + env(safe-area-inset-bottom) + 2rem
+        $bottomMenuHeight + $expandedFooterHeight + env(safe-area-inset-bottom) +
+          2rem
       );
       .expanded-footer {
         background: var(--persistent-player-bg);

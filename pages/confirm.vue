@@ -38,13 +38,16 @@ watch(
 
         if (sessionData.session) {
           // Convert Supabase session to JWT
-          const jwtResponse = await $fetch(`${config.public.BFF_URL}/api/auth/session-to-jwt`, {
-            method: "POST",
-            body: {
-              access_token: sessionData.session.access_token,
-              refresh_token: sessionData.session.refresh_token,
-            },
-          })
+          const jwtResponse = await $fetch(
+            `${config.public.BFF_URL}/api/auth/session-to-jwt`,
+            {
+              method: "POST",
+              body: {
+                access_token: sessionData.session.access_token,
+                refresh_token: sessionData.session.refresh_token,
+              },
+            }
+          )
 
           if (jwtResponse.success && jwtResponse.token) {
             // Set the JWT token in our auth system with refresh token
