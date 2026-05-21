@@ -49,6 +49,64 @@ jobs:
           REVIEW_APP_URL="https://pr-${{ github.event.number }}-nypublicradio-wnyc-vue3.fly.dev"
           echo "url=$REVIEW_APP_URL" >> $GITHUB_OUTPUT
 
+      - name: Set up Node.js
+        if: github.event.action != 'closed'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        if: github.event.action != 'closed'
+        run: npm ci
+
+      - name: Build Nuxt app
+        if: github.event.action != 'closed'
+        env:
+          ENV: review
+          AVIARY_BASE_API: ${{ vars.AVIARY_BASE_API }}
+          SENTRY_DSN: ${{ vars.SENTRY_DSN }}
+          SENTRY_ENV: ${{ vars.SENTRY_ENV }}
+          LIVESTREAM_URL: ${{ vars.LIVESTREAM_URL }}
+          NAVIGATION_API: ${{ vars.NAVIGATION_API }}
+          HEADER_NAVIGATION_API: ${{ vars.HEADER_NAVIGATION_API }}
+          SYSTEM_MESSAGES_API: ${{ vars.SYSTEM_MESSAGES_API }}
+          STORIES_API: ${{ vars.STORIES_API }}
+          IMAGE_BASE_URL: ${{ vars.IMAGE_BASE_URL }}
+          FB_MEASUREMENT_ID: ${{ vars.FB_MEASUREMENT_ID }}
+          FB_API_KEY_WEB: ${{ vars.FB_API_KEY_WEB }}
+          FB_API_KEY_IOS: ${{ vars.FB_API_KEY_IOS }}
+          FB_API_KEY_ANDROID: ${{ vars.FB_API_KEY_ANDROID }}
+          FB_AUTH_DOMAIN: ${{ vars.FB_AUTH_DOMAIN }}
+          FB_PROJECT_ID: ${{ vars.FB_PROJECT_ID }}
+          FB_STORAGE_BUCKET: ${{ vars.FB_STORAGE_BUCKET }}
+          FB_MESSAGING_SENDER_ID: ${{ vars.FB_MESSAGING_SENDER_ID }}
+          FB_APP_ID_WEB: ${{ vars.FB_APP_ID_WEB }}
+          FB_APP_ID_IOS: ${{ vars.FB_APP_ID_IOS }}
+          FB_APP_ID_ANDROID: ${{ vars.FB_APP_ID_ANDROID }}
+          GTM_ID: ${{ vars.GTM_ID }}
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          SUPABASE_AUTH_SIGN_IN_REDIRECT_TO: ${{ steps.set-url.outputs.url }}
+          SUPABASE_AUTH_TOKEN_NAME: ${{ vars.SUPABASE_AUTH_TOKEN_NAME }}
+          BFF_URL: ${{ steps.set-url.outputs.url }}
+          OPENWEB_SPOT_ID: ${{ vars.OPENWEB_SPOT_ID }}
+          NPR_CDS_API: ${{ vars.NPR_CDS_API }}
+          WNYC_NOW_FEED_URL: ${{ vars.WNYC_NOW_FEED_URL }}
+          WNYC_SHOW_SHARE_BASE_URL: ${{ vars.WNYC_SHOW_SHARE_BASE_URL }}
+          ARTICLE_STREAMFIELD_DONATION_URL: ${{ vars.ARTICLE_STREAMFIELD_DONATION_URL }}
+          SETTINGS_MENU_DONATION_URL: ${{ vars.SETTINGS_MENU_DONATION_URL }}
+          USER_AGENT: ${{ vars.USER_AGENT }}
+          APP_VERSION: ${{ vars.APP_VERSION }}
+          SPRINGBOARD_URL: ${{ vars.SPRINGBOARD_URL }}
+          NEWSLETTER_API: ${{ vars.NEWSLETTER_API }}
+          RAPID_ASSET_URL: ${{ vars.RAPID_ASSET_URL }}
+          SIMPLECAST_URL: ${{ vars.SIMPLECAST_URL }}
+          FEATURED_SHOWS_PAGE_ID: ${{ vars.FEATURED_SHOWS_PAGE_ID }}
+          NUXT_SSR: "true"
+          CMS_SITE: ${{ vars.CMS_SITE }}
+          NUXT_TELEMETRY_DISABLED: "1"
+        run: npm run build
+
       - name: Deploy PR Review App
         id: deploy
         uses: superfly/fly-pr-review-apps@1.5.0
@@ -73,49 +131,6 @@ jobs:
             SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
             SIMPLECAST_API_KEY=${{ secrets.SIMPLECAST_API_KEY }}
             RAPID_ASSET_URL=${{ vars.RAPID_ASSET_URL }}
-          build_args: |
-            ENV=review
-            AVIARY_BASE_API=${{ vars.AVIARY_BASE_API }}
-            SENTRY_DSN=${{ vars.SENTRY_DSN }}
-            SENTRY_ENV=${{ vars.SENTRY_ENV }}
-            LIVESTREAM_URL=${{ vars.LIVESTREAM_URL }}
-            NAVIGATION_API=${{ vars.NAVIGATION_API }}
-            HEADER_NAVIGATION_API=${{ vars.HEADER_NAVIGATION_API }}
-            SYSTEM_MESSAGES_API=${{ vars.SYSTEM_MESSAGES_API }}
-            STORIES_API=${{ vars.STORIES_API }}
-            IMAGE_BASE_URL=${{ vars.IMAGE_BASE_URL }}
-            FB_MEASUREMENT_ID=${{ vars.FB_MEASUREMENT_ID }}
-            FB_API_KEY_WEB=${{ vars.FB_API_KEY_WEB }}
-            FB_API_KEY_IOS=${{ vars.FB_API_KEY_IOS }}
-            FB_API_KEY_ANDROID=${{ vars.FB_API_KEY_ANDROID }}
-            FB_AUTH_DOMAIN=${{ vars.FB_AUTH_DOMAIN }}
-            FB_PROJECT_ID=${{ vars.FB_PROJECT_ID }}
-            FB_STORAGE_BUCKET=${{ vars.FB_STORAGE_BUCKET }}
-            FB_MESSAGING_SENDER_ID=${{ vars.FB_MESSAGING_SENDER_ID }}
-            FB_APP_ID_WEB=${{ vars.FB_APP_ID_WEB }}
-            FB_APP_ID_IOS=${{ vars.FB_APP_ID_IOS }}
-            FB_APP_ID_ANDROID=${{ vars.FB_APP_ID_ANDROID }}
-            GTM_ID=${{ vars.GTM_ID }}
-            SUPABASE_URL=${{ vars.SUPABASE_URL }}
-            SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
-            SUPABASE_AUTH_SIGN_IN_REDIRECT_TO=${{ steps.set-url.outputs.url }}
-            SUPABASE_AUTH_TOKEN_NAME=${{ vars.SUPABASE_AUTH_TOKEN_NAME }}
-            BFF_URL=${{ steps.set-url.outputs.url }}
-            OPENWEB_SPOT_ID=${{ vars.OPENWEB_SPOT_ID }}
-            NPR_CDS_API=${{ vars.NPR_CDS_API }}
-            WNYC_NOW_FEED_URL=${{ vars.WNYC_NOW_FEED_URL }}
-            WNYC_SHOW_SHARE_BASE_URL=${{ vars.WNYC_SHOW_SHARE_BASE_URL }}
-            ARTICLE_STREAMFIELD_DONATION_URL=${{ vars.ARTICLE_STREAMFIELD_DONATION_URL }}
-            SETTINGS_MENU_DONATION_URL=${{ vars.SETTINGS_MENU_DONATION_URL }}
-            USER_AGENT=${{ vars.USER_AGENT }}
-            APP_VERSION=${{ vars.APP_VERSION }}
-            SPRINGBOARD_URL=${{ vars.SPRINGBOARD_URL }}
-            NEWSLETTER_API=${{ vars.NEWSLETTER_API }}
-            RAPID_ASSET_URL=${{ vars.RAPID_ASSET_URL }}
-            SIMPLECAST_URL=${{ vars.SIMPLECAST_URL }}
-            FEATURED_SHOWS_PAGE_ID=${{ vars.FEATURED_SHOWS_PAGE_ID }}
-            NUXT_SSR=true
-            CMS_SITE=${{ vars.CMS_SITE }}
       - name: Delete GitHub Environment
         if: github.event.action == 'closed'
         uses: actions/github-script@v7
