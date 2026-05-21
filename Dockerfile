@@ -1,31 +1,109 @@
-FROM node:18.19.0 AS build
+FROM 493123279066.dkr.ecr.us-east-1.amazonaws.com/nypr-node:18.18.2 as build
+
+ARG ENV
+ARG SENTRY_DSN
+ARG SENTRY_ARG
+ARG SENTRY_AUTH_TOKEN
+ARG ARG
+ARG LIVESTREAM_URL
+ARG NAVIGATION_API
+ARG HEADER_NAVIGATION_API
+ARG SYSTEM_MESSAGES_API
+ARG STORIES_API
+ARG IMAGE_BASE_URL
+ARG FB_MEASUREMENT_ID
+ARG FB_API_KEY_WEB
+ARG FB_API_KEY_IOS
+ARG FB_API_KEY_ANDROID
+ARG FB_AUTH_DOMAIN
+ARG FB_PROJECT_ID
+ARG FB_STORAGE_BUCKET
+ARG FB_MESSAGING_SENDER_ID
+ARG FB_APP_ID_WEB
+ARG FB_APP_ID_IOS
+ARG FB_APP_ID_ANDROID
+ARG GTM_ID
+ARG SUPABASE_URL
+ARG SUPABASE_KEY
+ARG SUPABASE_AUTH_SIGN_IN_REDIRECT_TO
+ARG SUPABASE_AUTH_TOKEN_NAME
+ARG BFF_URL
+ARG OPENWEB_SPOT_ID
+ARG NPR_CDS_API
+ARG WNYC_NOW_FEED_URL
+ARG WNYC_SHOW_SHARE_BASE_URL
+ARG ARTICLE_STREAMFIELD_DONATION_URL
+ARG SETTINGS_MENU_DONATION_URL
+ARG USER_AGENT
+ARG APP_VERSION
+ARG SPRINGBOARD_URL
+ARG NEWSLETTER_API
+ARG AVIARY_BASE_API
+ARG SIMPLECAST_URL
+ARG FEATURED_SHOWS_PAGE_ID
+ARG NUXT_SSR
+ARG CMS_SITE
+
+# Set ENV variables from build args so they're available during npm run build
+ENV ENV=${ENV}
+ENV SENTRY_DSN=${SENTRY_DSN}
+ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
+ENV SENTRY_ENV=${SENTRY_ENV}
+ENV LIVESTREAM_URL=${LIVESTREAM_URL}
+ENV HEADER_NAVIGATION_API=${HEADER_NAVIGATION_API}
+ENV SYSTEM_MESSAGES_API=${SYSTEM_MESSAGES_API}
+ENV SYSTEM_NAVIGATION_API=${NAVIGATION_API}
+ENV STORIES_API=${STORIES_API}
+ENV IMAGE_BASE_URL=${IMAGE_BASE_URL}
+ENV FB_MEASUREMENT_ID=${FB_MEASUREMENT_ID}
+ENV FB_API_KEY_WEB=${FB_API_KEY_WEB}
+ENV FB_API_KEY_IOS=${FB_API_KEY_IOS}
+ENV FB_API_KEY_ANDROID=${FB_API_KEY_ANDROID}
+ENV FB_AUTH_DOMAIN=${FB_AUTH_DOMAIN}
+ENV FB_PROJECT_ID=${FB_PROJECT_ID}
+ENV FB_STORAGE_BUCKET=${FB_STORAGE_BUCKET}
+ENV FB_MESSAGING_SENDER_ID=${FB_MESSAGING_SENDER_ID}
+ENV FB_APP_ID_WEB=${FB_APP_ID_WEB}
+ENV FB_APP_ID_IOS=${FB_APP_ID_IOS}
+ENV FB_APP_ID_ANDROID=${FB_APP_ID_ANDROID}
+ENV GTM_ID=${GTM_ID}
+ENV SUPABASE_URL=${SUPABASE_URL}
+ENV SUPABASE_KEY=${SUPABASE_KEY}
+ENV SUPABASE_AUTH_SIGN_IN_REDIRECT_TO=${SUPABASE_AUTH_SIGN_IN_REDIRECT_TO}
+ENV SUPABASE_AUTH_TOKEN_NAME=${SUPABASE_AUTH_TOKEN_NAME}
+ENV BFF_URL=${BFF_URL}
+ENV OPENWEB_SPOT_ID=${OPENWEB_SPOT_ID}
+ENV NPR_CDS_API=${NPR_CDS_API}
+ENV WNYC_NOW_FEED_URL=${WNYC_NOW_FEED_URL}
+ENV WNYC_SHOW_SHARE_BASE_URL=${WNYC_SHOW_SHARE_BASE_URL}
+ENV ARTICLE_STREAMFIELD_DONATION_URL=${ARTICLE_STREAMFIELD_DONATION_URL}
+ENV SETTINGS_MENU_DONATION_URL=${SETTINGS_MENU_DONATION_URL}
+ENV APP_VERSION=${APP_VERSION}
+ENV SPRINGBOARD_URL=${SPRINGBOARD_URL}
+ENV NEWSLETTER_API=${NEWSLETTER_API}
+ENV AVIARY_BASE_API=${AVIARY_BASE_API}
+ENV SIMPLECAST_URL=${SIMPLECAST_URL}
+ENV FEATURED_SHOWS_PAGE_ID=${FEATURED_SHOWS_PAGE_ID}
+ENV NUXT_SSR=${NUXT_SSR}
+ENV CMS_SITE=${CMS_SITE}
 
 WORKDIR /code
 
-COPY .output .output
+COPY .npmrc .npmrc
 COPY ./package.json .
-COPY ./server/data ./server/data
-RUN test -f .output/server/index.mjs || (echo "ERROR: .output not found. Run 'npm run build' before 'docker build'." && exit 1)
+COPY ./package-lock.json .
+RUN npm ci
+RUN npm install sass
 
-FROM node:18.18.2-slim AS app
+COPY . .
+ENV NUXT_TELEMETRY_DISABLED=1
+RUN timeout 300 npm run build; \
+    test -f .output/server/index.mjs || exit 1
+
+FROM 493123279066.dkr.ecr.us-east-1.amazonaws.com/nypr-node:18.18.2 as app
 
 WORKDIR /app
-
-RUN groupadd www && \
-    useradd -d /app -s /sbin/nologin -g www www
-
-RUN apt-get update \
-    && apt-get install -y \
-    curl \
-    netcat-traditional \
-    nginx-extras \
-    python3 \
-    python3-pip \
-    python3-setuptools \
-    unzip \
-    supervisor
-
-COPY --chown=www:www scripts/entrypoint.sh ./scripts/entrypoint.sh
+COPY --chown=www:www --chmod=755 scripts/entrypoint.sh ./scripts/entrypoint.sh
 
 COPY --chown=www:www nginx/*.conf /etc/nginx/
 COPY --chown=www:www public/robots* ./public/
@@ -34,22 +112,6 @@ COPY --chown=www:www public/.well-known ./public/.well-known
 COPY --chown=www:www --from=build /code/.output/ ./.output/
 COPY --chown=www:www --from=build /code/package.json .
 COPY --chown=www:www --from=build /code/server/data/ ./server/data/
-
-RUN mkdir -p /var/run/nginx/ && \
-    mkdir -p /var/log/nginx/ && \
-    mkdir -p /app/log/ && \
-    touch /run/nginx.pid && \
-    chown -Rf www:www /var/run/nginx && \
-    chown -Rf www:www /var/lib/nginx && \
-    chown -Rf www:www /var/log/nginx && \
-    chown -Rf www:www /etc/nginx && \
-    chown -Rf www:www /run/nginx.pid && \
-    chown -Rf www:www /app && \
-
-    chmod -R 755 /app/scripts/entrypoint.sh
-
-ENV TZ=America/New_York
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 USER www
 
