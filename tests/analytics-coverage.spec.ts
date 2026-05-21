@@ -5,6 +5,11 @@ import { describe, expect, it } from 'vitest'
 const pagesDir = join(process.cwd(), 'pages')
 
 const expectedPageViewFiles = [
+  'pages/ask-the-mayor-dashboard/[slug].vue',
+  'pages/ask-the-mayor-dashboard/index.vue',
+  'pages/ask-the-mayor/guidelines.vue',
+  'pages/ask-the-mayor/index.vue',
+  'pages/ask-the-mayor/submission.vue',
   'pages/browse/browse-topic.vue',
   'pages/browse/index.vue',
   'pages/browse/shows/[slug]/episodes.vue',
