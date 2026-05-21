@@ -13,6 +13,10 @@ env:
 jobs:
   review_app:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
     outputs:
       url: ${{ steps.deploy.outputs.url }}
     # Only run one deployment at a time per PR.
@@ -41,6 +45,15 @@ jobs:
           ./scripts/update-mock-schedule.sh wqxr
           ./scripts/update-mock-schedule.sh wqxr-holiday-channel-on-wnyc
           ./scripts/update-mock-schedule.sh q2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Set Review App URL
         id: set-url
