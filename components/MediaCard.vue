@@ -5,7 +5,11 @@ import TrashIcon from "~/components/icons/TrashIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
 import SleepIcon from "~/components/icons/SleepIcon.vue"
 //import QueueIcon from "~/components/icons/QueueIcon.vue"
-import { useIsNetworkConnected, useCurrentUser, useIsApp } from "~/composables/states"
+import {
+  useIsNetworkConnected,
+  useCurrentUser,
+  useIsApp,
+} from "~/composables/states"
 import {
   checkIsFavorited,
   trackClickEvent,
@@ -193,8 +197,20 @@ const reactiveData = toRef(props, "data")
 
 // set dynamic route
 const dynamicRoute = computed(() =>
-  dynamicNavigation(reactiveData.value, props.isSaveHistory, props.isInDownloads, true)
+  dynamicNavigation(
+    reactiveData.value,
+    props.isSaveHistory,
+    props.isInDownloads,
+    true
+  )
 )
+
+// determine if the route is an external link that should open in a new tab
+const shouldOpenInNewTab = computed(() => {
+  const route = dynamicRoute.value
+  const routeString = typeof route === "string" ? route : route?.path
+  return routeString?.startsWith("http")
+})
 
 // card type for analytics
 const cardType = computed(
@@ -226,7 +242,9 @@ onMounted(() => {
   watchEffect(async () => {
     if (!props.data) return
     isDownloaded.value = isAlreadyDownloaded(props.data)
-    isFavorited.value = await checkIsFavorited(props.data?.meta?.slug || props.data?.slug)
+    isFavorited.value = await checkIsFavorited(
+      props.data?.meta?.slug || props.data?.slug
+    )
     eventDate.value = props.data?.startDatetime
   })
 })
@@ -249,7 +267,11 @@ const handleAddToFavorites = (bucketItem) => {
 const progress = ref({})
 // handle the download of the audio file request and feed the progress
 const handleDownload = async (bucketItem) => {
-  trackClickEvent("Click Tracking - Audio Download", cardType.value, bucketItem.title)
+  trackClickEvent(
+    "Click Tracking - Audio Download",
+    cardType.value,
+    bucketItem.title
+  )
   progress.value = await fetchAndStoreMp3(bucketItem)
 }
 
@@ -260,7 +282,10 @@ const canDownloadEpisodes = ref(props.data?.canDownloadEpisodes)
 
 // 2. Determine if we need to fetch the show's download rules.
 const showIdentifier = computed(() => {
-  if (canDownloadEpisodes.value !== undefined && canDownloadEpisodes.value !== null) {
+  if (
+    canDownloadEpisodes.value !== undefined &&
+    canDownloadEpisodes.value !== null
+  ) {
     return null
   }
   return (
@@ -283,7 +308,11 @@ watchEffect(async () => {
 
 // Finally, determine if the download button should be shown
 const isDownloadAvailable = (bucketItem) => {
-  return hasAudio(bucketItem.audio) && canDownloadEpisodes.value && !isDownloaded.value
+  return (
+    hasAudio(bucketItem.audio) &&
+    canDownloadEpisodes.value &&
+    !isDownloaded.value
+  )
 }
 /////////////////////////////////////////////////////////////////
 
@@ -294,7 +323,9 @@ const getDotMenuItems = (bucketItem) => {
       ...(!props.isSegment
         ? [
             {
-              label: `${isFavorited.value ? "Unfavorite Episode" : "Favorite Episode"}`,
+              label: `${
+                isFavorited.value ? "Unfavorite Episode" : "Favorite Episode"
+              }`,
               customIcon: StarIcon,
               active: isFavorited.value,
               title: bucketItem?.title,
@@ -308,7 +339,9 @@ const getDotMenuItems = (bucketItem) => {
         ? [
             {
               label: `Download ${
-                bucketItem?.segments && Array.isArray(bucketItem?.audio) ? "All" : ""
+                bucketItem?.segments && Array.isArray(bucketItem?.audio)
+                  ? "All"
+                  : ""
               }`,
               //icon: 'pi pi-google',
               customIcon: DownloadIcon,
@@ -417,15 +450,25 @@ const handlePlayClick = () => {
 const handleRouteClick = (fromNuxtLink = false) => {
   emit("on-click")
   if (!fromNuxtLink) {
-    dynamicNavigation(props.data, props.isSaveHistory, props.isInDownloads, false)
+    dynamicNavigation(
+      props.data,
+      props.isSaveHistory,
+      props.isInDownloads,
+      false
+    )
   } else if (props.isSaveHistory) {
     //save history here because this is handled by the dynamicNavigation when it is not just returning a route
     saveRecentlyPlayed(props.data)
   }
 
   // click tracking
-  const routeString = dynamicRoute.value?.path || dynamicRoute.value || "unknown"
-  trackClickEvent("Click Tracking - Route", cardType.value, `route = ${routeString}`)
+  const routeString =
+    dynamicRoute.value?.path || dynamicRoute.value || "unknown"
+  trackClickEvent(
+    "Click Tracking - Route",
+    cardType.value,
+    `route = ${routeString}`
+  )
 }
 
 // handle the play button render
@@ -469,8 +512,9 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
       v-ripple
       class="card-click w-full h-full absolute top-0 left-0 z-1 p-ripple"
       :to="dynamicRoute"
-      @click.prevent="handleRouteClick(true)"
-      @keypress.enter.space="handleRouteClick(true)"
+      :target="shouldOpenInNewTab ? '_blank' : undefined"
+      :rel="shouldOpenInNewTab ? 'noopener noreferrer' : undefined"
+      @click.stop="handleRouteClick(true)"
       tabindex="0"
       aria-role="button"
       :aria-label="`${props.data?.showTitle} show details`"
@@ -484,7 +528,11 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
         <p class="date day">{{ formatTime(eventDate, "d") }}</p>
         <p class="date month">{{ formatTime(eventDate, "MMM") }}</p>
       </div>
-      <div class="image p-0 col-fixed" :class="props.imgCol" v-if="props.showImage">
+      <div
+        class="image p-0 col-fixed"
+        :class="props.imgCol"
+        v-if="props.showImage"
+      >
         <VImage
           class="flex-none"
           :alt="`${props.data.title} media image`"
@@ -509,7 +557,10 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
         >
           <div class="top flex gap-2 flex-column w-full">
             <div class="text flex gap-2 flex-column align-items-start">
-              <LiveBadge v-if="props.showLive && !props.saved" class="align-self-start" />
+              <LiveBadge
+                v-if="props.showLive && !props.saved"
+                class="align-self-start"
+              />
               <p v-if="props.showTitle" :class="props.showTitleClasses">
                 {{ props.data?.org ?? props.data?.showTitle }}
               </p>
@@ -527,7 +578,9 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                   class="tease"
                   :class="props.teaseClasses"
                   :htmlClasses="props.teaseClasses"
-                  :key="`tease-${props.data.id || props.data.slug || 'default'}`"
+                  :key="`tease-${
+                    props.data.id || props.data.slug || 'default'
+                  }`"
                 />
                 <div class="article-metadata w-full" v-if="!isEvent">
                   <PipeData
@@ -619,7 +672,10 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                 <div class="flex gap-1 align-items-center">
                   <DownloadProgress
                     class="mr-2"
-                    v-if="(progress && Object.keys(progress).length > 0) || isDownloaded"
+                    v-if="
+                      (progress && Object.keys(progress).length > 0) ||
+                      isDownloaded
+                    "
                     :isDownloaded="isDownloaded"
                     :progress="progress"
                     small
@@ -692,7 +748,10 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                   labelClass="text-base md:text-sm"
                 />
               </div>
-              <div v-if="eventData?.eventTypeBadges?.length" class="flex gap-2 flex-wrap">
+              <div
+                v-if="eventData?.eventTypeBadges?.length"
+                class="flex gap-2 flex-wrap"
+              >
                 <VBadge
                   v-for="badge in eventData?.eventTypeBadges"
                   :key="badge.label"
