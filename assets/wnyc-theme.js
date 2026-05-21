@@ -1327,8 +1327,8 @@ const MyPreset = definePreset(Aura, {
     stepper: {
       stepTitle: {
         color: '{neutral.500}',
-        fontWeight: '500'
         activeColor: '{text.color}',
+        fontWeight: '500'
       },
       stepNumber: {
         color: '{neutral.500}',
@@ -1346,15 +1346,15 @@ const MyPreset = definePreset(Aura, {
       step: {
         gap: '0',
         padding: '0'
-      steppanels: {
       },
+      steppanels: {
         padding: '0'
       },
       steppanel: {
         background: '{sky.50}',
       },
-        light: {
       colorScheme: {
+        light: {
           steppanel: {
             //background: '{sky.100}',
           }
@@ -1364,8 +1364,8 @@ const MyPreset = definePreset(Aura, {
             color: '{neutral.300}',
           },
           steppanel: {
-          },
             background: '{surface.25}',
+          },
           stepNumber: {
             background: '{surface.25}',
           },

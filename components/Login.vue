@@ -91,7 +91,6 @@ const closeLogin = () => {
 
 <template>
   <div class="login">
-
     <section v-if="props.showHeader">
       <slot name="header">
         <SHeader class="pb-4" label="Log in" @close-sidebar="closeLogin" />
@@ -153,6 +152,6 @@ const closeLogin = () => {
           </div>
         </template>
       </VLoginWithEmail>
-    </div>
+    </section>
   </div>
 </template>

@@ -76,9 +76,6 @@ const closeAll = () => {
 
 <template>
   <div class="signup">
-
-
-
     <section v-if="props.showHeader">
       <slot name="header">
         <SHeader
@@ -149,7 +146,7 @@ const closeAll = () => {
           />
         </template> -->
       </VSignupWithEmail>
-    </div>
+    </section>
   </div>
 </template>
 
