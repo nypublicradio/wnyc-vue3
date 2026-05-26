@@ -44,22 +44,3 @@ tests/
 vitest.config.ts
 jest.config.js
 jest.setup.js
-
-# source code (built in CI, artifacts copied from .output)
-
-components/
-pages/
-composables/
-layouts/
-middleware/
-plugins/
-icons/
-assets/
-app.vue
-error.vue
-
-# data files only used locally
-
-article-data.json
-episode-data.json
-mobile-events-snapshot.md
