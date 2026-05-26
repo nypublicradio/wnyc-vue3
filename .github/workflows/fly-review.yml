@@ -66,12 +66,14 @@ jobs:
           echo "url=$REVIEW_APP_URL" >> $GITHUB_OUTPUT
 
       - name: Install Fly CLI
-        run: curl -L https://fly.io/install.sh | sh
-        env:
-          FLYCTL_INSTALL: /usr/local
+        run: |
+          mkdir -p ~/flyctl
+          cd ~/flyctl
+          curl -L https://fly.io/install.sh | bash
+          echo "${HOME}/flyctl/bin" >> $GITHUB_PATH
 
       - name: Authenticate Fly registry
-        run: /usr/local/bin/flyctl auth docker
+        run: flyctl auth docker
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
