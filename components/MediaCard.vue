@@ -223,7 +223,6 @@ const cardType = computed(
 )
 
 const nativeImageHeight = computed(() => {
-  //console.log("reactiveData.value.imageFullHeight", reactiveData.value.imageFullHeight)
   return reactiveData.value?.imageFullHeight || 192
 })
 const nativeImageWidth = computed(() => {
@@ -481,12 +480,9 @@ const handleHasAudio = computed(() => {
 
 // handle event code here - make event data available for template access
 const eventData = ref(isEvent ? useEventData(reactiveData) : null)
-// console.log("eventData", eventData.value)
-// console.log("reactiveData", reactiveData.value)
 </script>
 
 <template>
-  <!-- <pre class="text-xs">{{ props.data }}</pre> -->
   <div
     class="media-card"
     :style="`cursor: ${props.isSegment ? 'default !important' : ''}`"
@@ -515,6 +511,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
       :target="shouldOpenInNewTab ? '_blank' : undefined"
       :rel="shouldOpenInNewTab ? 'noopener noreferrer' : undefined"
       @click.stop="handleRouteClick(true)"
+      @keypress.enter.space="handleRouteClick(true)"
       tabindex="0"
       aria-role="button"
       :aria-label="`${props.data?.showTitle} show details`"
@@ -551,7 +548,6 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
         />
       </div>
       <div class="content col">
-        <!-- <pre class="text-xs">{{ props.data }}</pre> -->
         <div
           class="content-flex flex gap-2 flex-column justify-content-between w-full h-full"
         >
