@@ -1,9 +1,7 @@
 <script setup>
 import { useToast } from "primevue/usetoast"
 import {
-  getFirstSentence,
   isolateSlug,
-  stripHtmlTags,
   togglePlayEpisode,
 } from "~/utilities/helpers"
 import { useTopStories } from "~/composables/useTopStories"
