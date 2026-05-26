@@ -67,18 +67,19 @@ jobs:
 
       - name: Install Fly CLI
         run: |
-          mkdir -p ~/flyctl
-          cd ~/flyctl
-          curl -L https://fly.io/install.sh | bash
-          echo "${HOME}/flyctl/bin" >> $GITHUB_PATH
+          cd /tmp
+          curl -L https://fly.io/install.sh > install.sh
+          bash install.sh
+          ls -la ~/.fly/bin/flyctl || find ~ -name flyctl -type f 2>/dev/null
 
       - name: Authenticate Fly registry
-        run: flyctl auth docker
+        run: ~/.fly/bin/flyctl auth docker
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
       - name: Build and push image locally
         run: |
+          export PATH="${HOME}/.fly/bin:$PATH"
           APP_NAME="pr-${{ github.event.number }}-nypublicradio-wnyc-vue3"
           IMAGE="registry.fly.io/${APP_NAME}:${{ github.sha }}"
           docker build \
