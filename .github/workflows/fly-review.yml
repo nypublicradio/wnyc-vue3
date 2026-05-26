@@ -46,6 +46,9 @@ jobs:
           ./scripts/update-mock-schedule.sh wqxr-holiday-channel-on-wnyc
           ./scripts/update-mock-schedule.sh q2
 
+      # This step is required to set up AWS credentials for the ECR login and deployment steps.
+      # The Fly PR Review Apps action uses ECR to store the built Docker images for the review apps,
+      # so AWS credentials are needed to authenticate with ECR.
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
