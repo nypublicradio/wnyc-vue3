@@ -37,7 +37,7 @@ export const useProfileApi = () => {
             const requestBody = isEmail
                 ? { email: salesforceIdOrEmail }
                 : { salesforceID: salesforceIdOrEmail }
-
+            const config = useRuntimeConfig()
             const data = await authenticatedFetch(`${config.public.BFF_URL}/api/profile`, {
                 method: 'POST',
                 body: requestBody,
@@ -82,7 +82,7 @@ export const useProfileApi = () => {
                 const { data: sessionData } = await supabase.auth.getSession()
                 if (sessionData.session) {
                     // Convert Supabase session to JWT
-                    const jwtResponse = await $fetch("/api/auth/session-to-jwt", {
+                    const jwtResponse = await $fetch(`${config.public.BFF_URL}/api/auth/session-to-jwt`, {
                         method: "POST",
                         body: {
                             access_token: sessionData.session.access_token,

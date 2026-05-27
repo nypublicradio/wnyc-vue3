@@ -43,7 +43,7 @@ async function getNavigationData () {
             }),
             // Use $fetch for internal API call instead of axios to avoid circular dependency
             Promise.race([
-                $fetch('/api/streams').then(data => ({ data })),
+                $fetch(`${config.public.BFF_URL}/api/streams`).then(data => ({ data })),
                 new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), API_TIMEOUT))
             ]),
             axios.get(`${config.public.AVIARY_BASE_API}curated_lists/${allShows}/`, {
