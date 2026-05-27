@@ -2,9 +2,8 @@
 import { useToast } from "primevue/usetoast"
 import {
   togglePlayEpisode,
-  getFirstSentence,
-  stripHtmlTags,
 } from "~/utilities/helpers"
+import { getSimplecastEpisodeTitle, getSimplecastEpisodeDescription, getSimplecastEpisodeImage } from "~/utilities/metadataHelpers"
 import { mediaTypeRoutes } from "~/composables/globals"
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -102,19 +101,23 @@ const breadcrumbs = computed(() => [
   { label: "Transcript" },
 ])
 
-const title = `${episode.value?.title} | WNYC`
-const tease =
-  episode.value?.tease ?? getFirstSentence(stripHtmlTags(episode.value?.tease))
-const description =
-  episode.value?.description ??
-  getFirstSentence(stripHtmlTags(episode.value?.description))
+const title = getSimplecastEpisodeTitle(episode)
+const description = getSimplecastEpisodeDescription(episode)
+const image = getSimplecastEpisodeImage(episode, show)
 useHead({
   title,
 })
 useSeoMeta({
   title,
-  description: tease ?? description,
+  description: description,
+  ogTitle: title,
+  ogDescription: description,
 })
+if (image) {
+  useSeoMeta({
+    ogImage: image,
+  })
+}
 </script>
 
 <template>

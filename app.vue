@@ -208,10 +208,10 @@ const keywords =
   "wnyc, podcasts, npr, new york, WNYC Studios, arts, culture, classical, music, news, public, radio"
 const canonicalUrl = `https://www.wnyc.org${route.fullPath}`
 const ogImage = {
-  url: "https://media.wnyc.org/i/1200/1200/c/80/1/wnyc_square_logo.png",
+  url: "https://media.wnyc.org/i/1200/630/c/80/1/wnyc_square_logo.png",
   alt: "WNYC",
   width: 1200,
-  height: 600,
+  height: 630,
 }
 const themeColor = currentUserProfile?.dark_mode
   ? browserTopColorDarkMode
@@ -249,10 +249,8 @@ useSeoMeta({
   ogType: "website",
   ogUrl: canonicalUrl,
   twitterCard: "summary_large_image",
-  twitterImage: ogImage.url,
   twitterSite: "@WNYC",
   themeColor,
-  msapplicationTileColor: themeColor,
 })
 </script>
 

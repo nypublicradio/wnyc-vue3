@@ -88,12 +88,15 @@ onMounted(() => {
 })
 
 const title = "Browse Shows | WNYC"
+const description = "Learn more about the shows airing on WNYC, America's most listened-to public radio station."
 useHead({
   title,
 })
 useSeoMeta({
   title,
+  description,
   ogTitle: title,
+  ogDescription: description,
 })
 </script>
 

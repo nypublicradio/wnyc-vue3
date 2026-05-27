@@ -1,12 +1,10 @@
 <script setup>
-import {
-  checkIsFavorited,
-  slugify,
-  getFirstSentence,
-} from "~/utilities/helpers"
+import { checkIsFavorited, slugify } from "~/utilities/helpers"
 import { useIsApp } from "~/composables/states"
 import { useFetchWrapper } from "~/composables/useFetchWrapper"
-
+import { getShowTitle, getShowDescription, getShowImage } from "~/utilities/metadataHelpers"
+import useSeoMetaOverrides from "~/composables/useSeoMetaOverrides"
+import useSocialMetaOverrides from "~/composables/useSocialMetaOverrides"
 const config = useRuntimeConfig()
 const route = useRoute()
 const isApp = useIsApp()
@@ -99,17 +97,25 @@ onMounted(() => {
   })
 })
 
-const title = `${show.value?.title} | WNYC`
-const description = getFirstSentence(show.value?.summary)
+const title = getShowTitle(show)
+const description = getShowDescription(show)
+const image = getShowImage(show)
 useHead({
   title,
 })
 useSeoMeta({
   title,
   ogTitle: title,
-  description,
+  description: description,
   ogDescription: description,
 })
+if (image) {
+  useSeoMeta({
+   ogImage: image,
+  })
+}
+useSeoMetaOverrides(show)
+useSocialMetaOverrides(show)
 </script>
 
 <template>

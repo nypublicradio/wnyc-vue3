@@ -107,12 +107,15 @@ const breadcrumbs = computed(() => [
 const greeneSpaceUrl = "/rent-the-greene-space"
 
 const title = "Events | WNYC"
+const description = "Find information about events hosted by WNYC."
 useHead({
   title,
 })
 useSeoMeta({
   title,
+  description,
   ogTitle: title,
+  ogDescription: description,
 })
 </script>
 

@@ -1,6 +1,7 @@
 <script setup>
 import { cmsSources } from "~/composables/globals"
 import { useTopStories } from "~/composables/useTopStories"
+import { getPublisherStoryTitle, getPublisherStoryDescription, getPublisherStoryImage, getPublisherSocialImage } from "~/utilities/metadataHelpers"
 const { getFilteredTopStories, topStories } = useTopStories()
 
 const route = useRoute()
@@ -25,8 +26,7 @@ const {
     onResponseError() {
       globalToast.value = {
         severity: "error",
-        summary:
-          "We are having a problem loading this story. Please try again later.",
+        summary: "We are having a problem loading this story. Please try again later.",
         life: 6000,
         closable: true,
       }
@@ -34,9 +34,7 @@ const {
   }
 )
 
-const filteredTopStories = computed(() =>
-  getFilteredTopStories(storyData.value)
-)
+const filteredTopStories = computed(() => getFilteredTopStories(storyData.value))
 
 if (storyData.value?.redirect) {
   await navigateTo(storyData.value.location, {
@@ -52,9 +50,7 @@ onMounted(() => {
     page_title: storyData.value?.title,
     page_type: "article",
     content_group: `${storySource}_article`,
-    article_authors: storyData.value?.authors
-      ?.map((author) => author.name)
-      .join(","),
+    article_authors: storyData.value?.authors?.map((author) => author.name).join(","),
     article_publish_date: storyData.value?.publicationDate,
     article_updated_date: storyData.value?.updatedDate
       ? storyData.value?.updatedDate
@@ -63,13 +59,24 @@ onMounted(() => {
   })
 })
 
+const title = getPublisherStoryTitle(storyData)
+const description = getPublisherStoryDescription(storyData)
+const image = getPublisherStoryImage(storyData)
+const socialImage = getPublisherSocialImage(storyData)
 useHead(() => ({
-  title: `${storyData.value?.title} | WNYC`,
-  meta: [
-    { name: "og:title", content: `${storyData.value?.title} | WNYC` },
-    { name: "twitter:title", content: `${storyData.value?.title} | WNYC` },
-  ],
+  title,
 }))
+useSeoMeta({
+  title,
+  description: description,
+  ogDescription: description,
+  ogTitle: title,
+})
+if (socialImage || image) {
+  useSeoMeta({
+    ogImage: socialImage || image,
+  })
+}
 </script>
 
 <template>
@@ -81,7 +88,6 @@ useHead(() => ({
           <Breadcrumbs :items="breadcrumbs" />
         </div>
       </section>
-
       <EpisodeTemplate :pending="status !== 'success'" :episodeData="storyData">
         <template #bottom>
           <Divider class="mt-8 mb-5" />
