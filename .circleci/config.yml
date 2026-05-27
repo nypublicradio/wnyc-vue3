@@ -63,6 +63,7 @@ workflows:
                   - node-deps-
             - run:
                 name: Pre-build Nuxt app
+                no_output_timeout: 30m
                 command: |
                   echo "@nypublicradio:registry=https://npm.pkg.github.com" > .npmrc
                   echo "//npm.pkg.github.com/:_authToken=$PAT" >> .npmrc
@@ -81,7 +82,19 @@ workflows:
                   export APP_VERSION
                   echo "export APP_VERSION=\"${APP_VERSION}\"" >> "$BASH_ENV"
                   npm ci
+                  (
+                    while true; do
+                      echo "[heartbeat] Nuxt pre-build still running at $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+                      sleep 60
+                    done
+                  ) &
+                  HEARTBEAT_PID=$!
+                  trap 'kill "$HEARTBEAT_PID" 2>/dev/null || true' EXIT
                   npm run build
+                  BUILD_EXIT_CODE=$?
+                  kill "$HEARTBEAT_PID" 2>/dev/null || true
+                  wait "$HEARTBEAT_PID" 2>/dev/null || true
+                  exit "$BUILD_EXIT_CODE"
           requires:
             - test
             - test_nginx
@@ -105,6 +118,7 @@ workflows:
                   - node-deps-
             - run:
                 name: Pre-build Nuxt app
+                no_output_timeout: 30m
                 command: |
                   echo "@nypublicradio:registry=https://npm.pkg.github.com" > .npmrc
                   echo "//npm.pkg.github.com/:_authToken=$PAT" >> .npmrc
@@ -123,7 +137,19 @@ workflows:
                   export APP_VERSION
                   echo "export APP_VERSION=\"${APP_VERSION}\"" >> "$BASH_ENV"
                   npm ci
+                  (
+                    while true; do
+                      echo "[heartbeat] Nuxt pre-build still running at $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+                      sleep 60
+                    done
+                  ) &
+                  HEARTBEAT_PID=$!
+                  trap 'kill "$HEARTBEAT_PID" 2>/dev/null || true' EXIT
                   npm run build
+                  BUILD_EXIT_CODE=$?
+                  kill "$HEARTBEAT_PID" 2>/dev/null || true
+                  wait "$HEARTBEAT_PID" 2>/dev/null || true
+                  exit "$BUILD_EXIT_CODE"
           requires:
             - test
             - test_nginx
@@ -144,6 +170,7 @@ workflows:
                   - node-deps-
             - run:
                 name: Pre-build Nuxt app
+                no_output_timeout: 30m
                 command: |
                   echo "@nypublicradio:registry=https://npm.pkg.github.com" > .npmrc
                   echo "//npm.pkg.github.com/:_authToken=$PAT" >> .npmrc
@@ -162,7 +189,19 @@ workflows:
                   export APP_VERSION
                   echo "export APP_VERSION=\"${APP_VERSION}\"" >> "$BASH_ENV"
                   npm ci
+                  (
+                    while true; do
+                      echo "[heartbeat] Nuxt pre-build still running at $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+                      sleep 60
+                    done
+                  ) &
+                  HEARTBEAT_PID=$!
+                  trap 'kill "$HEARTBEAT_PID" 2>/dev/null || true' EXIT
                   npm run build
+                  BUILD_EXIT_CODE=$?
+                  kill "$HEARTBEAT_PID" 2>/dev/null || true
+                  wait "$HEARTBEAT_PID" 2>/dev/null || true
+                  exit "$BUILD_EXIT_CODE"
           cpu: 2048
           memory: 4096
           use_firelens: true
