@@ -111,6 +111,22 @@ export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {
                     return h(VImage, vImageProps)
                 }
 
+                // Intercept iframes and rewrite WNYC URLs to use local Nuxt routes
+                if (tagName === 'iframe' && attrs.src && attrs.src.includes('wnyc.org')) {
+                    try {
+                        const urlObj = new URL(attrs.src)
+                        if (urlObj.hostname.includes('wnyc.org')) {
+                            attrs.src = urlObj.pathname + urlObj.search + urlObj.hash
+                        }
+                    } catch (e) {
+                        // ignore invalid URLs, they might already be relative
+                    }
+                }
+
+                if (tagName === 'iframe') {
+                    return h(tagName, attrs, node.children ? processNodeList(node.children) : null)
+                }
+
                 // Skip script tags
                 if (tagName === 'script') {
                     return null
