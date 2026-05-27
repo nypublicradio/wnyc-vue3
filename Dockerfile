@@ -96,8 +96,7 @@ RUN npm ci
 
 COPY . .
 ENV NUXT_TELEMETRY_DISABLED=1
-RUN timeout 300 npm run build; \
-    test -f .output/server/index.mjs || exit 1
+RUN npm run build
 
 FROM 493123279066.dkr.ecr.us-east-1.amazonaws.com/nypr-node:18.18.2 as app
 
