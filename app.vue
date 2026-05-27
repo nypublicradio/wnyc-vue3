@@ -157,15 +157,16 @@ onMounted(async () => {
     htlbid.setTargeting("post_id", route.name) // dynamically pass unique post/page id into this function
   })
 })
-watch(route, (value) => {
-  if (window && typeof window.htlbid !== 'undefined') {
+watch(route, async (newRoute) => {
+  await nextTick()
+  htlbid.cmd.push(() => {
     htlbid.layout("universal") // Leave as 'universal' or add custom layout
     htlbid.setTargeting("is_testing", config.public.HTL_IS_TESTING) // Set to "no" for production
-    htlbid.setTargeting("is_home", route.name === "home" ? "yes" : "no") // Set to "yes" on the homepage
-    htlbid.setTargeting("category", route.name) // dynamically pass page category into this function
-    htlbid.setTargeting("post_id", route.name) // dynamically pass unique post/page id into this function
+    htlbid.setTargeting("is_home", newRoute.name === "home" ? "yes" : "no") // Set to "yes" on the homepage
+    htlbid.setTargeting("category", newRoute.name) // dynamically pass page category into this function
+    htlbid.setTargeting("post_id", newRoute.name) // dynamically pass unique post/page id into this function
     htlbid.forceRefresh()
-  }
+  })
 })
 
 useHead({
