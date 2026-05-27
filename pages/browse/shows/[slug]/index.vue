@@ -1,10 +1,5 @@
 <script setup>
-import {
-  checkIsFavorited,
-  slugify,
-  getFirstSentence,
-  stripHtmlTags,
-} from "~/utilities/helpers"
+import { checkIsFavorited, slugify } from "~/utilities/helpers"
 import { useIsApp } from "~/composables/states"
 import { useFetchWrapper } from "~/composables/useFetchWrapper"
 import { getShowTitle, getShowDescription, getShowImage } from "~/utilities/metadataHelpers"

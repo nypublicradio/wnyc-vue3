@@ -2,11 +2,7 @@
 import { useToast } from "primevue/usetoast"
 import { useTopStories } from "~/composables/useTopStories"
 import { EVENT_BADGE_STYLES, useEventData } from "~/composables/useEventData"
-import {
-  dynamicNavigation,
-  getFirstSentence,
-  stripHtmlTags
-} from "~/utilities/helpers"
+import { dynamicNavigation } from "~/utilities/helpers"
 import { getEventTitle, getEventDescription, getEventImage } from "~/utilities/metadataHelpers"
 import useSeoMetaOverrides from "~/composables/useSeoMetaOverrides"
 import useSocialMetaOverrides from "~/composables/useSocialMetaOverrides"
