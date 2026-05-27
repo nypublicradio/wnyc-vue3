@@ -3,8 +3,9 @@ import { useIntersectionObserver } from "@vueuse/core"
 import {
   checkIsFavorited,
   trackClickEvent,
-  getFirstSentence
+  dynamicNavigation,
 } from "~/utilities/helpers"
+import { getShowImage } from "~/utilities/metadataHelpers"
 import { useGlobalToast } from "~/composables/states"
 
 const config = useRuntimeConfig()
@@ -175,17 +176,23 @@ const breadcrumbs = computed(() => [
   },
 ])
 
-const title = `${show.value?.title} | WNYC`
-const description = getFirstSentence(show.value?.summary)
+const title = `${show.value?.title} episodes | WNYC`
+const description = `Listen to the latest episodes from ${show.value?.title} on WNYC.org.`
+const image = getShowImage(show)
 useHead({
   title,
 })
 useSeoMeta({
   title,
   ogTitle: title,
-  description,
+  description: description,
   ogDescription: description,
 })
+if (image) {
+  useSeoMeta({
+   ogImage: image,
+  })
+}
 
 onUnmounted(() => stop())
 </script>

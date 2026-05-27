@@ -2,9 +2,10 @@
 import { useToast } from "primevue/usetoast"
 import { useTopStories } from "~/composables/useTopStories"
 import { EVENT_BADGE_STYLES, useEventData } from "~/composables/useEventData"
-import {
-  getFirstSentence
-} from "~/utilities/helpers"
+import { dynamicNavigation } from "~/utilities/helpers"
+import { getEventTitle, getEventDescription, getEventImage } from "~/utilities/metadataHelpers"
+import useSeoMetaOverrides from "~/composables/useSeoMetaOverrides"
+import useSocialMetaOverrides from "~/composables/useSocialMetaOverrides"
 
 const { getFilteredTopStories,topStories } = useTopStories()
 const config = useRuntimeConfig()
@@ -105,24 +106,26 @@ const breadcrumbs = computed(() => [
   { label: "Events", route: "/events" },
   { label: title.value || "Event" },
 ])
-const pageTitle = eventData.value?.meta?.seoTitle || `${eventData.value?.title} | WNYC`
-const description = getFirstSentence(eventData.value?.description)
-const searchDescription = eventData.value?.meta?.searchDescription || description
-const socialDescription = eventData.value?.socialText || description
+
+const pageTitle = getEventTitle(eventData)
+const description = getEventDescription(eventData)
+const image = getEventImage(eventData)
 useHead({
   title: pageTitle,
 })
-if (eventData.value?.preventSearchIndexing) {
-  useHead({
-    meta: [{name: "robots", content: "noindex" }],
-  })
-}
 useSeoMeta({
   title: pageTitle,
+  description: description,
   ogTitle: pageTitle,
-  description: searchDescription,
-  ogDescription: socialDescription,
+  ogDescription: description,
 })
+if (image) {
+  useSeoMeta({
+   ogImage: image,
+  })
+}
+useSeoMetaOverrides(eventData)
+useSocialMetaOverrides(eventData)
 </script>
 
 <template>
