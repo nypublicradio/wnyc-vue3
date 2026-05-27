@@ -10,15 +10,14 @@ const storySource = "WNYC"
 
 const breadcrumbs = computed(() => [{ label: "Home", route: "/home" }])
 
+const storyUrl = `${config.public.BFF_URL}/api/story/${route?.query?.src || cmsSources.PUBLISHER}/${route.params.slug}`
+
 const {
   data: storyData,
   status,
   error,
 } = await useFetchWrapper(
-  () =>
-    `${config.public.BFF_URL}/api/story/${
-      route?.query?.src || cmsSources.PUBLISHER
-    }/${route.params.slug}`,
+  () => storyUrl,
   {
     key: `story-${route?.query?.src || cmsSources.PUBLISHER}-${
       route.params.slug

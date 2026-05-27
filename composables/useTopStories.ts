@@ -12,16 +12,33 @@ export const useTopStories = () => {
     listId = '87'
   }
 
-  const { data: topStoriesData, status, error } = useFetchWrapper(`/api/curated_lists/${listId}`)
+  const { data: topStoriesData, status, error } = useFetchWrapper(`${config.public.BFF_URL}/api/curated_lists/${listId}`)
+
+  const normalizeStories = (rawStories: any) => {
+    if (!rawStories || typeof rawStories !== 'object') {
+      return { listItems: [] }
+    }
+
+    const listItems = Array.isArray(rawStories.listItems)
+      ? rawStories.listItems
+      : Array.isArray(rawStories.list_items)
+        ? rawStories.list_items
+        : []
+
+    return {
+      ...rawStories,
+      listItems,
+    }
+  }
 
   // Computed property to safely extract top_stories array
   const topStories = computed(() => {
-    return topStoriesData?.value || { listItems: [] }
+    return normalizeStories(topStoriesData?.value)
   })
 
   // Function to get filtered stories excluding a specific article
   const getFilteredTopStories = (currentArticle?: Article) => {
-    const stories = topStoriesData?.value || { listItems: [] }
+    const stories = normalizeStories(topStoriesData?.value)
     if (!currentArticle) return stories
 
     return {

@@ -1,4 +1,4 @@
-import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
+import { FirebaseAnalytics } from '@capacitor-firebase/analytics'
 import { useCurrentUser } from '~/composables/states'
 import { buildPageViewEventParams } from '~/utilities/analytics'
 
@@ -16,9 +16,14 @@ export const createAnalyticsApi = ({
    * Forwards arbitrary analytics events to Firebase.
    */
   const sendEvent = async (eventName, eventParams) => {
+    // The native Firebase Analytics plugin cannot handle null/undefined param values —
+    // they cause a ClassCastException on Android. Strip them out before sending.
+    const sanitizedParams = eventParams
+      ? Object.fromEntries(Object.entries(eventParams).filter(([, v]) => v != null))
+      : undefined
     await logEvent({
       name: eventName,
-      params: eventParams,
+      params: sanitizedParams,
     })
   }
 

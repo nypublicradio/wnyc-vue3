@@ -6,7 +6,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
     try {
         if (!cachedRedirects) {
-            const response = await $fetch("/api/show-slug-redirects")
+            const response = await $fetch(`${config.public.BFF_URL}/api/show-slug-redirects`)
             // Ensure response is an array
             cachedRedirects = Array.isArray(response) ? response : []
         }
