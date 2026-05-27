@@ -60,7 +60,12 @@ const loadFirebaseAnalytics = async () => {
   if (typeof window === 'undefined' || !isApp.value) return null
   try {
     const module = await import('@capacitor-firebase/analytics')
-    return module.FirebaseAnalytics
+    // Return plain function wrappers instead of the raw Capacitor plugin proxy.
+    // Returning the proxy directly from an async function can trigger a `.then`
+    // lookup and cause: "FirebaseAnalytics.then() is not implemented on android".
+    return {
+      setUserId: (options) => module.FirebaseAnalytics.setUserId(options),
+    }
   } catch (error) {
     console.error('Failed to load FirebaseAnalytics:', error)
     return null

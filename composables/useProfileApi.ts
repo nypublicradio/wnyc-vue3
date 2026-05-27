@@ -7,6 +7,8 @@ import {
     useCurrentUserProfile,
 } from "~/composables/states"
 
+let inFlightProfileRequest: Promise<any> | null = null
+
 /**
  * Hook providing profile API methods and state.
  * @returns {object} Contains profile, loading, error state and helper functions.
@@ -27,11 +29,15 @@ export const useProfileApi = () => {
      * @returns {Promise<any>} Resolves to profile data.
      */
     const fetchProfile = async (salesforceIdOrEmail: string) => {
+        if (inFlightProfileRequest) {
+            return await inFlightProfileRequest
+        }
+
         loading.value = true
         error.value = null
         profile.value = null
 
-        try {
+        const request = (async () => {
             // Try with Salesforce ID first, then email
             const isEmail = salesforceIdOrEmail.includes('@')
             const requestBody = isEmail
@@ -58,6 +64,12 @@ export const useProfileApi = () => {
             }
 
             return data
+        })()
+
+        inFlightProfileRequest = request
+
+        try {
+            return await request
         } catch (err: any) {
             error.value = err
             console.error('Failed to fetch profile:', err)
@@ -65,6 +77,7 @@ export const useProfileApi = () => {
             profile.value = {}
             return {}
         } finally {
+            inFlightProfileRequest = null
             loading.value = false
         }
     }

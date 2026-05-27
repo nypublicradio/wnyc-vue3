@@ -66,12 +66,12 @@ const onLogin = (provider) => {
 
 // close all sidebars
 const closeAll = () => {
-  onLogin("email")
   if (!props.isRoute) {
     loginSideBar.value = false
     signUpSideBar.value = false
     settingsSideBar.value = false
   }
+  onLogin("email")
 }
 
 // open the forgot password sidebar
