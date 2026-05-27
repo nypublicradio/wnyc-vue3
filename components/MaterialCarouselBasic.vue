@@ -274,24 +274,11 @@ onBeforeUnmount(() => {
     <!-- Left Arrow -->
     <button
       v-show="showLeftArrow"
-      class="nav-arrow nav-arrow-left"
+      class="nav-arrow nav-arrow-left style-mode-light"
       @click="scrollToPrev"
       aria-label="Previous items"
     >
-      <!-- Simple Chevron Left SVG -->
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <polyline points="15 18 9 12 15 6"></polyline>
-      </svg>
+      <i class="pi pi-chevron-left" aria-hidden="true"></i>
     </button>
 
     <div
@@ -308,24 +295,11 @@ onBeforeUnmount(() => {
     <!-- Right Arrow -->
     <button
       v-show="showRightArrow"
-      class="nav-arrow nav-arrow-right"
+      class="nav-arrow nav-arrow-right style-mode-light"
       @click="scrollToNext"
       aria-label="Next items"
     >
-      <!-- Simple Chevron Right SVG -->
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <polyline points="9 18 15 12 9 6"></polyline>
-      </svg>
+      <i class="pi pi-chevron-right" aria-hidden="true"></i>
     </button>
   </div>
 </template>

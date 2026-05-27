@@ -1240,8 +1240,8 @@ export const addToFavorites2 = async ({ item, isFavorited, message = isFavorited
 export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = false, returnRoute = false) => {
   const isNetworkConnected = useIsNetworkConnected()
   if (isNetworkConnected.value || returnRoute) {
-    // if the item has a url, we ignore everything and route based on the url, because it is the override destination
-    if (item.url) {
+    // if the item has a url, we ignore everything and route based on the url, because it is the override destination, unless it is a gothamist link, then it will route in the app
+    if (item.url && !item.url.includes("gothamist.com")) {
       const res = goToUrlOverrideDestination(item, null, returnRoute)
       if (returnRoute) return res
       return

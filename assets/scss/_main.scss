@@ -51,6 +51,7 @@ a:focus-visible {
 
 .nuxt-loading-indicator {
   //background: var(--p-primary-500) !important;
+  top: env(safe-area-inset-top) !important;
   background: repeating-linear-gradient(
     to right,
     var(--p-primary-200) 0%,
@@ -94,6 +95,9 @@ body {
   position: relative !important;
   margin: auto;
 
+  main {
+    padding-bottom: 100px;
+  }
   &.background-gradient {
     background: $backgroundBlueGradient1;
     transform: none;
@@ -110,20 +114,20 @@ body {
   &.grey-bg {
     background: var(--p-surface-25);
   }
-  main {
-    transition: padding-top var(--p-transition-duration) ease;
-    padding-bottom: calc(
-      $bottomMenuHeight + var(--persistent-player-height) + env(safe-area-inset-bottom) + 20px
-    ); // account for the sticky bottom menu
-  }
-  &.no-bottom-padding {
-    main {
-      padding-bottom: 0px !important;
-    }
+  &.no-bottom-padding main {
+    padding-bottom: 0px !important;
   }
   &.hide-footer {
     footer {
       display: none !important;
+    }
+  }
+  &.app {
+    .page {
+      transition: padding-top var(--p-transition-duration) ease;
+      padding-bottom: calc(
+        $bottomMenuHeight + var(--persistent-player-height) + env(safe-area-inset-bottom) + 20px
+      ); // account for the sticky bottom menu
     }
   }
 }

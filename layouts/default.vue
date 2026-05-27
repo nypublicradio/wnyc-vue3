@@ -40,10 +40,7 @@ watch(
 </script>
 
 <template>
-  <div
-    class="page flex flex-column h-screen"
-    :class="[`${String(route.name)}`]"
-  >
+  <div class="page flex flex-column h-full" :class="[`${String(route.name)}`]">
     <div class="top-safe-cover" />
     <header>
       <VSmartHeader

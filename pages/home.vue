@@ -1,5 +1,5 @@
 <script setup>
-import { useCurrentEpisode, useIsApp } from "~/composables/states"
+import { /* useCurrentEpisode, */ useIsApp } from "~/composables/states"
 import { useFetchWrapper } from "~/composables/useFetchWrapper"
 import { brandCards } from "~/composables/globals.ts"
 import useAppSettings from "~/composables/useAppSettings"
@@ -10,7 +10,7 @@ useHead({
 })
 
 const config = useRuntimeConfig()
-const currentEpisode = useCurrentEpisode()
+//const currentEpisode = useCurrentEpisode()
 const isApp = useIsApp()
 // get app settings
 const { getAppSettings, settings: appSettings } = useAppSettings()
@@ -105,10 +105,10 @@ onMounted(() => {
 
     <LazyDonateBanner v-if="!isApp" class="mt-6" />
 
-    <LazySponsorBanner
+    <!-- <LazySponsorBanner
       v-if="isApp"
       :style="`margin-bottom:${currentEpisode ? '-20px' : '0'}`"
-    />
+    /> -->
   </div>
 </template>
 

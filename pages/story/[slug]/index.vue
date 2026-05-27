@@ -16,9 +16,13 @@ const {
   error,
 } = await useFetchWrapper(
   () =>
-    `${config.public.BFF_URL}/api/story/${cmsSources.PUBLISHER}/${route.params.slug}`,
+    `${config.public.BFF_URL}/api/story/${
+      route?.query?.src || cmsSources.PUBLISHER
+    }/${route.params.slug}`,
   {
-    key: `story-${cmsSources.PUBLISHER}-${route.params.slug}`,
+    key: `story-${route?.query?.src || cmsSources.PUBLISHER}-${
+      route.params.slug
+    }`,
     onResponseError() {
       globalToast.value = {
         severity: "error",
