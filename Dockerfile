@@ -93,7 +93,6 @@ COPY .npmrc .npmrc
 COPY ./package.json .
 COPY ./package-lock.json .
 RUN npm ci
-RUN npm install sass
 
 COPY . .
 ENV NUXT_TELEMETRY_DISABLED=1
