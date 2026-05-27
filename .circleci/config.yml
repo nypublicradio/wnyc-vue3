@@ -62,8 +62,7 @@ workflows:
                   - node-deps-{{ arch }}-
                   - node-deps-
             - run:
-                name: Pre-build Nuxt app
-                no_output_timeout: 30m
+                name: Prepare deploy metadata
                 command: |
                   echo "@nypublicradio:registry=https://npm.pkg.github.com" > .npmrc
                   echo "//npm.pkg.github.com/:_authToken=$PAT" >> .npmrc
@@ -81,20 +80,7 @@ workflows:
                   APP_VERSION=$(git tag --sort=-committerdate | grep -v "demo" | head -n 1 | sed -E 's/(v[0-9]+\.[0-9]+\.[0-9]+).*/\1/')
                   export APP_VERSION
                   echo "export APP_VERSION=\"${APP_VERSION}\"" >> "$BASH_ENV"
-                  npm ci
-                  (
-                    while true; do
-                      echo "[heartbeat] Nuxt pre-build still running at $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-                      sleep 60
-                    done
-                  ) &
-                  HEARTBEAT_PID=$!
-                  trap 'kill "$HEARTBEAT_PID" 2>/dev/null || true' EXIT
-                  npm run build
-                  BUILD_EXIT_CODE=$?
-                  kill "$HEARTBEAT_PID" 2>/dev/null || true
-                  wait "$HEARTBEAT_PID" 2>/dev/null || true
-                  exit "$BUILD_EXIT_CODE"
+                  echo "Skipping duplicate Nuxt pre-build in prerun_steps; Docker build performs the app build."
           requires:
             - test
             - test_nginx
@@ -117,8 +103,7 @@ workflows:
                   - node-deps-{{ arch }}-
                   - node-deps-
             - run:
-                name: Pre-build Nuxt app
-                no_output_timeout: 30m
+                name: Prepare deploy metadata
                 command: |
                   echo "@nypublicradio:registry=https://npm.pkg.github.com" > .npmrc
                   echo "//npm.pkg.github.com/:_authToken=$PAT" >> .npmrc
@@ -136,20 +121,7 @@ workflows:
                   APP_VERSION=$(git tag --sort=-committerdate | grep -v "demo" | head -n 1 | sed -E 's/(v[0-9]+\.[0-9]+\.[0-9]+).*/\1/')
                   export APP_VERSION
                   echo "export APP_VERSION=\"${APP_VERSION}\"" >> "$BASH_ENV"
-                  npm ci
-                  (
-                    while true; do
-                      echo "[heartbeat] Nuxt pre-build still running at $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-                      sleep 60
-                    done
-                  ) &
-                  HEARTBEAT_PID=$!
-                  trap 'kill "$HEARTBEAT_PID" 2>/dev/null || true' EXIT
-                  npm run build
-                  BUILD_EXIT_CODE=$?
-                  kill "$HEARTBEAT_PID" 2>/dev/null || true
-                  wait "$HEARTBEAT_PID" 2>/dev/null || true
-                  exit "$BUILD_EXIT_CODE"
+                  echo "Skipping duplicate Nuxt pre-build in prerun_steps; Docker build performs the app build."
           requires:
             - test
             - test_nginx
@@ -169,8 +141,7 @@ workflows:
                   - node-deps-{{ arch }}-
                   - node-deps-
             - run:
-                name: Pre-build Nuxt app
-                no_output_timeout: 30m
+                name: Prepare deploy metadata
                 command: |
                   echo "@nypublicradio:registry=https://npm.pkg.github.com" > .npmrc
                   echo "//npm.pkg.github.com/:_authToken=$PAT" >> .npmrc
@@ -188,20 +159,7 @@ workflows:
                   APP_VERSION=$(git tag --sort=-committerdate | grep -v "demo" | head -n 1 | sed -E 's/(v[0-9]+\.[0-9]+\.[0-9]+).*/\1/')
                   export APP_VERSION
                   echo "export APP_VERSION=\"${APP_VERSION}\"" >> "$BASH_ENV"
-                  npm ci
-                  (
-                    while true; do
-                      echo "[heartbeat] Nuxt pre-build still running at $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-                      sleep 60
-                    done
-                  ) &
-                  HEARTBEAT_PID=$!
-                  trap 'kill "$HEARTBEAT_PID" 2>/dev/null || true' EXIT
-                  npm run build
-                  BUILD_EXIT_CODE=$?
-                  kill "$HEARTBEAT_PID" 2>/dev/null || true
-                  wait "$HEARTBEAT_PID" 2>/dev/null || true
-                  exit "$BUILD_EXIT_CODE"
+                  echo "Skipping duplicate Nuxt pre-build in prerun_steps; Docker build performs the app build."
           cpu: 2048
           memory: 4096
           use_firelens: true
