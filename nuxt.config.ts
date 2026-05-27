@@ -44,6 +44,9 @@ export default defineNuxtConfig({
   },
 
   image: {
+    // In app/client-only builds there is no runtime IPX server at https://localhost,
+    // so default to original image URLs instead of /_ipx transformed URLs.
+    provider: process.env.NUXT_SSR === 'true' ? 'ipx' : 'none',
     dir: "public/",
     screens: {
       xxs: 375,
