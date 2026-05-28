@@ -213,6 +213,7 @@ jobs:
       - run:
           name: Run unit tests
           command: |
+            npx nuxi prepare
             npm run test
 
   test_nginx:

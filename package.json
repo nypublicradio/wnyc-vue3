@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "prepare:test-tsconfig": "[ -f .nuxt/tsconfig.json ] || npx nuxi prepare",
+    "prepare:test-tsconfig": "[ -f .nuxt/tsconfig.server.json ] || npx nuxi prepare",
     "build": "nuxt build",
     "dev": "nuxt dev --host",
     "start": "node .output/server/index.mjs",
