@@ -146,7 +146,6 @@ onMounted(async () => {
   // }
 
   // Ads - deferred to after hydration to prevent DOM mutation conflicts
-  if(process.client) {
   await nextTick()
     window.htlbid = window.htlbid || {}
     htlbid.cmd = htlbid.cmd || []
@@ -157,7 +156,6 @@ onMounted(async () => {
       htlbid.setTargeting("category", route.name) // dynamically pass page category into this function
       htlbid.setTargeting("post_id", route.name) // dynamically pass unique post/page id into this function
     })
-  }
 })
 watch(route, async () => {
   await nextTick()
