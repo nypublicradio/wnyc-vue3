@@ -3,6 +3,12 @@ import MyPreset from "./assets/wnyc-theme.js"
 
 export default defineNuxtConfig({
   //devtools: { enabled: true },
+
+  // Nitro doesn't self-terminate after build in Docker; force-exit when Nuxt closes
+  hooks: {
+    close: () => process.exit(0),
+  },
+
   modules: [
     "@nuxtjs/supabase",
     ...(process.env.NUXT_SSR === "true" ? [] : ["@nuxtjs/ionic"]),
@@ -142,7 +148,7 @@ export default defineNuxtConfig({
       },
     },
     plugins: [
-      process.env.SENTRY_ENV === "development"
+      process.env.SENTRY_ENV === "development" || !process.env.SENTRY_AUTH_TOKEN
         ? null
         : sentryVitePlugin({
           sourcemaps: {
@@ -157,8 +163,8 @@ export default defineNuxtConfig({
   },
 
   sourcemap: {
-    client: true,
-    server: true,
+    client: !!process.env.SENTRY_AUTH_TOKEN,
+    server: !!process.env.SENTRY_AUTH_TOKEN,
   },
 
   components: ["~/components", "~/components/icons", "~/components/logos"],

@@ -5,7 +5,6 @@ node_modules/
 # nuxt
 
 .nuxt/
-.output/
 
 # ci/cd
 
@@ -32,3 +31,16 @@ export-aws-credentials.py
 start-local.sh
 
 .env
+
+# mobile
+
+android/
+ios/
+kludge/
+
+# test
+
+tests/
+vitest.config.ts
+jest.config.js
+jest.setup.js

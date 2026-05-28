@@ -1,11 +1,12 @@
 {
   "private": true,
   "scripts": {
+    "prepare:test-tsconfig": "[ -f .nuxt/tsconfig.server.json ] || npx nuxi prepare",
     "build": "nuxt build",
     "dev": "nuxt dev --host",
     "start": "node .output/server/index.mjs",
-    "test": "vitest",
-    "coverage": "vitest run --coverage",
+    "test": "npm run prepare:test-tsconfig && vitest",
+    "coverage": "npm run prepare:test-tsconfig && vitest run --coverage",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
