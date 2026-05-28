@@ -85,30 +85,6 @@ export default defineNuxtConfig({
       '/events/**': { swr: 900 },
       '/confirm': { ssr: false },
     } : {},
-    prerender: {
-      // Only crawl links and prerender routes in SSR/website mode
-      crawlLinks: process.env.NUXT_SSR === 'true',
-      routes: process.env.NUXT_SSR === 'true' ? [
-        '/browse/shows/brian-lehrer-show',
-        '/browse/shows/all-of-it',
-        '/browse/shows/morning-edition',
-        '/browse/shows/radiolab',
-        '/browse/shows/on-the-media'
-      ] : [],
-      // Don't fail the build on prerender errors for client-only routes
-      failOnError: false,
-      // Ignore client-only routes that don't work with SSR
-      ignore: process.env.NUXT_SSR === 'true' ? [
-        '/dashboard',
-        '/forgot-password',
-        '/signup',
-        '/saved',
-        '/login',
-        '/confirm',
-        '/mobile',
-        '/preview',
-      ] : [],
-    },
   },
 
   ionic: {
