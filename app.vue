@@ -157,7 +157,7 @@ onMounted(async () => {
       htlbid.setTargeting("post_id", route.name) // dynamically pass unique post/page id into this function
     })
 })
-watch(route.path,
+watch(() => route.path,
   async (newPath, oldPath) => {
     if (newPath !== oldPath) {
       await nextTick()
