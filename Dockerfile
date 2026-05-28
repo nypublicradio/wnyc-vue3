@@ -1,5 +1,14 @@
 FROM 493123279066.dkr.ecr.us-east-1.amazonaws.com/nypr-node:18.18.2 as build
 
+WORKDIR /code
+
+# Copy only dependency manifests first so the npm ci layer is cached until the lockfile changes
+COPY .npmrc .npmrc
+COPY ./package.json .
+COPY ./package-lock.json .
+RUN npm ci
+
+# Declare build args after npm ci so changing env vars doesn't bust the install cache
 ARG ENV
 ARG SENTRY_DSN
 ARG SENTRY_ARG
@@ -86,13 +95,6 @@ ENV SIMPLECAST_URL=${SIMPLECAST_URL}
 ENV FEATURED_SHOWS_PAGE_ID=${FEATURED_SHOWS_PAGE_ID}
 ENV NUXT_SSR=${NUXT_SSR}
 ENV CMS_SITE=${CMS_SITE}
-
-WORKDIR /code
-
-COPY .npmrc .npmrc
-COPY ./package.json .
-COPY ./package-lock.json .
-RUN npm ci
 
 COPY . .
 ENV NUXT_TELEMETRY_DISABLED=1
