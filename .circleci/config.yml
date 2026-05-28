@@ -212,7 +212,7 @@ jobs:
       - run:
           name: Capacitor Setup
           command: |
-            NUXT_SSR=false npm run generate-splash
+            npm run generate-splash
             npm run generate
             npx cap sync ios
       - run:
@@ -270,7 +270,7 @@ jobs:
           command: |
             patch node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/CapacitorWebView.java -i kludge/BackgroundPlay.diff
             npm run generate-splash
-            NUXT_SSR=false npm run generate
+            npm run generate
             npx cap sync android
       - run:
           name: fastlane
