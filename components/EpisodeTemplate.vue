@@ -683,7 +683,7 @@ const getDotMenuItems = (bucketItem) => {
 </template>
 
 <style lang="scss">
-.episode-template mt-0 md:mt-5 .v-byline .flexible-link {
+.episode-template .v-byline .flexible-link {
   color: var(--p-text-color) !important;
   text-decoration: none;
 }

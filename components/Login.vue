@@ -43,10 +43,6 @@ const onSignupClick = () => {
   if (!props.isRoute) {
     loginSideBar.value = false
     signUpSideBar.value = true
-  } else {
-    navigateTo({
-      path: "/signup",
-    })
   }
   trackClickEvent(
     "Click Tracking - Sign up",
@@ -93,16 +89,22 @@ const closeLogin = () => {
   <div class="login">
     <section v-if="props.showHeader">
       <slot name="header">
-        <SHeader class="pb-4" label="Log in" @close-sidebar="closeLogin" />
-        <p>
+        <SHeader
+          :showButton="!props.isRoute"
+          class="pb-4"
+          label="Log in"
+          @close-sidebar="closeLogin"
+        />
+        <div>
           Don't have an account yet?
           <VFlexibleLink
+            :to="props.isRoute ? '/signup' : '#'"
             aria-label="sign up"
             @flexible-link-click="onSignupClick"
           >
             Sign up
           </VFlexibleLink>
-        </p>
+        </div>
       </slot>
     </section>
 

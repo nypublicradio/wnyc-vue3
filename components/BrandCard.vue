@@ -42,17 +42,17 @@ const selectBrand = (brand) => {
 </template>
 
 <style lang="scss" scoped>
-.brand-card {
-  @mixin greyEffect {
-    background-color: var(--p-surface-25) !important;
-    background-image: none !important;
-    .logo {
-      filter: brightness(0);
-      &.on-the-media {
-        filter: grayscale(1) brightness(1) contrast(1.25);
-      }
+@mixin greyEffect {
+  background-color: var(--p-surface-25) !important;
+  background-image: none !important;
+  .logo {
+    filter: brightness(0);
+    &.on-the-media {
+      filter: grayscale(1) brightness(1) contrast(1.25);
     }
   }
+}
+.brand-card {
   .brand-btn {
     font-family: var(--font-family-header);
     width: 100%;
@@ -73,8 +73,10 @@ const selectBrand = (brand) => {
       }
     }
     @include media(">=xl") {
-      &:not(:hover) {
-        @include greyEffect;
+      html:not(.style-mode-dark) & {
+        &:not(:hover) {
+          @include greyEffect;
+        }
       }
     }
   }

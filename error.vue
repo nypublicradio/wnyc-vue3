@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { refreshData } from "./utilities/helpers"
 
+interface ErrorPayload {
+  statusCode?: number
+  statusMessage?: string
+  message?: string
+  stack?: string
+  data?: unknown
+}
+
 const props = defineProps({
   error: {
     type: Object,
@@ -8,15 +16,47 @@ const props = defineProps({
   },
 })
 
+const requestEvent = import.meta.server ? useRequestEvent() : null
+const route = useRoute()
+
+function logPageError(errorPayload: ErrorPayload | null) {
+  if (!errorPayload) {
+    return
+  }
+
+  const details = {
+    timestamp: new Date().toISOString(),
+    context: import.meta.server ? "server" : "client",
+    route: route.fullPath,
+    url: requestEvent?.path || requestEvent?.node?.req?.url,
+    statusCode: errorPayload.statusCode,
+    statusMessage: errorPayload.statusMessage,
+    message: errorPayload.message,
+    data: errorPayload.data,
+    stack: errorPayload.stack,
+  }
+
+  console.error("[error.vue] Nuxt error page triggered", details)
+
+  if (errorPayload.stack) {
+    console.error("[error.vue] stack", errorPayload.stack)
+  }
+}
+
 // Set the HTTP response status code based on the error
 // This is critical for nginx to intercept 404s and proxy to CMS
 // MUST run only on server side when SSR is enabled
-if (import.meta.server && props.error?.statusCode) {
-  const event = useRequestEvent()
-  if (event) {
-    setResponseStatus(event, props.error.statusCode, props.error.statusMessage)
+if (import.meta.server && props.error) {
+  if (requestEvent && props.error?.statusCode) {
+    setResponseStatus(
+      requestEvent,
+      props.error.statusCode,
+      props.error.statusMessage
+    )
   }
 }
+
+logPageError(props.error as ErrorPayload)
 
 //clear error and route home
 function handleGoHome() {

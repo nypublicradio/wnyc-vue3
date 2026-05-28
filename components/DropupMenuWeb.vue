@@ -116,7 +116,7 @@ defineExpose({
             <div
               v-for="(item, index) in options"
               :key="item.label"
-              class="style-mode-dark item p-menu-item-content relative"
+              class="item p-menu-item-content relative"
               @click="onMenuUpdate(item)"
               @keydown="onKeyDown($event, item)"
               tabindex="0"
@@ -170,28 +170,6 @@ defineExpose({
 .dropup-panel-holder {
   .ans {
     @include font-config($type-paragraph1);
-  }
-}
-</style>
-
-<style lang="scss">
-.p-menu-item-content {
-  &.selected .options {
-    &:after {
-      font-family: primeicons;
-      content: "\e909";
-      position: relative;
-      margin-left: 20px;
-      width: 1rem;
-      height: 1rem;
-      color: var(--surface-950);
-    }
-  }
-  .custom-icon,
-  .pi {
-    width: 24px !important;
-    height: 24px !important;
-    font-size: 24px !important;
   }
 }
 </style>

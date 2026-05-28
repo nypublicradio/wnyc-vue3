@@ -330,11 +330,9 @@ export async function setStatusDarkMode (bool: boolean) {
  */
 export async function setDarkMode (bool: boolean) {
   if (!import.meta.client) return
-  console.log('###### setdarkmode called with bool:', bool)
   // TEMP, no dark ode for browser yet
   const isApp = useIsApp()
   const dmBool = isApp.value ? bool : false
-  console.log('###### isApp.value:', isApp.value, 'dmBool:', dmBool)
   dmBool
     ? document.documentElement.classList.add("style-mode-dark")
     : document.documentElement.classList.remove("style-mode-dark")
