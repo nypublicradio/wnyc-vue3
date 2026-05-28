@@ -13,6 +13,10 @@ env:
 jobs:
   review_app:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
     outputs:
       url: ${{ steps.deploy.outputs.url }}
     # Only run one deployment at a time per PR.
@@ -42,6 +46,18 @@ jobs:
           ./scripts/update-mock-schedule.sh wqxr-holiday-channel-on-wnyc
           ./scripts/update-mock-schedule.sh q2
 
+      # This step is required to set up AWS credentials for the ECR login and deployment steps.
+      # The Fly PR Review Apps action uses ECR to store the built Docker images for the review apps,
+      # so AWS credentials are needed to authenticate with ECR.
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
       - name: Set Review App URL
         id: set-url
         run: |
@@ -49,10 +65,77 @@ jobs:
           REVIEW_APP_URL="https://pr-${{ github.event.number }}-nypublicradio-wnyc-vue3.fly.dev"
           echo "url=$REVIEW_APP_URL" >> $GITHUB_OUTPUT
 
+      - name: Install Fly CLI
+        run: |
+          cd /tmp
+          curl -L https://fly.io/install.sh > install.sh
+          bash install.sh
+          ls -la ~/.fly/bin/flyctl || find ~ -name flyctl -type f 2>/dev/null
+
+      - name: Authenticate Fly registry
+        run: ~/.fly/bin/flyctl auth docker
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Build and push image locally
+        run: |
+          export PATH="${HOME}/.fly/bin:$PATH"
+          APP_NAME="pr-${{ github.event.number }}-nypublicradio-wnyc-vue3"
+          IMAGE="registry.fly.io/${APP_NAME}:${{ github.sha }}"
+          docker build \
+            --build-arg ENV=review \
+            --build-arg AVIARY_BASE_API='${{ vars.AVIARY_BASE_API }}' \
+            --build-arg SENTRY_DSN='${{ vars.SENTRY_DSN }}' \
+            --build-arg SENTRY_ENV='${{ vars.SENTRY_ENV }}' \
+            --build-arg LIVESTREAM_URL='${{ vars.LIVESTREAM_URL }}' \
+            --build-arg NAVIGATION_API='${{ vars.NAVIGATION_API }}' \
+            --build-arg HEADER_NAVIGATION_API='${{ vars.HEADER_NAVIGATION_API }}' \
+            --build-arg SYSTEM_MESSAGES_API='${{ vars.SYSTEM_MESSAGES_API }}' \
+            --build-arg STORIES_API='${{ vars.STORIES_API }}' \
+            --build-arg IMAGE_BASE_URL='${{ vars.IMAGE_BASE_URL }}' \
+            --build-arg FB_MEASUREMENT_ID='${{ vars.FB_MEASUREMENT_ID }}' \
+            --build-arg FB_API_KEY_WEB='${{ vars.FB_API_KEY_WEB }}' \
+            --build-arg FB_API_KEY_IOS='${{ vars.FB_API_KEY_IOS }}' \
+            --build-arg FB_API_KEY_ANDROID='${{ vars.FB_API_KEY_ANDROID }}' \
+            --build-arg FB_AUTH_DOMAIN='${{ vars.FB_AUTH_DOMAIN }}' \
+            --build-arg FB_PROJECT_ID='${{ vars.FB_PROJECT_ID }}' \
+            --build-arg FB_STORAGE_BUCKET='${{ vars.FB_STORAGE_BUCKET }}' \
+            --build-arg FB_MESSAGING_SENDER_ID='${{ vars.FB_MESSAGING_SENDER_ID }}' \
+            --build-arg FB_APP_ID_WEB='${{ vars.FB_APP_ID_WEB }}' \
+            --build-arg FB_APP_ID_IOS='${{ vars.FB_APP_ID_IOS }}' \
+            --build-arg FB_APP_ID_ANDROID='${{ vars.FB_APP_ID_ANDROID }}' \
+            --build-arg GTM_ID='${{ vars.GTM_ID }}' \
+            --build-arg SUPABASE_URL='${{ vars.SUPABASE_URL }}' \
+            --build-arg SUPABASE_KEY='${{ secrets.SUPABASE_KEY }}' \
+            --build-arg SUPABASE_AUTH_SIGN_IN_REDIRECT_TO='https://pr-${{ github.event.number }}-nypublicradio-wnyc-vue3.fly.dev' \
+            --build-arg SUPABASE_AUTH_TOKEN_NAME='${{ vars.SUPABASE_AUTH_TOKEN_NAME }}' \
+            --build-arg BFF_URL='https://pr-${{ github.event.number }}-nypublicradio-wnyc-vue3.fly.dev' \
+            --build-arg OPENWEB_SPOT_ID='${{ vars.OPENWEB_SPOT_ID }}' \
+            --build-arg NPR_CDS_API='${{ vars.NPR_CDS_API }}' \
+            --build-arg WNYC_NOW_FEED_URL='${{ vars.WNYC_NOW_FEED_URL }}' \
+            --build-arg WNYC_SHOW_SHARE_BASE_URL='${{ vars.WNYC_SHOW_SHARE_BASE_URL }}' \
+            --build-arg ARTICLE_STREAMFIELD_DONATION_URL='${{ vars.ARTICLE_STREAMFIELD_DONATION_URL }}' \
+            --build-arg SETTINGS_MENU_DONATION_URL='${{ vars.SETTINGS_MENU_DONATION_URL }}' \
+            --build-arg USER_AGENT='${{ vars.USER_AGENT }}' \
+            --build-arg APP_VERSION='${{ vars.APP_VERSION }}' \
+            --build-arg SPRINGBOARD_URL='${{ vars.SPRINGBOARD_URL }}' \
+            --build-arg NEWSLETTER_API='${{ vars.NEWSLETTER_API }}' \
+            --build-arg RAPID_ASSET_URL='${{ vars.RAPID_ASSET_URL }}' \
+            --build-arg SIMPLECAST_URL='${{ vars.SIMPLECAST_URL }}' \
+            --build-arg FEATURED_SHOWS_PAGE_ID='${{ vars.FEATURED_SHOWS_PAGE_ID }}' \
+            --build-arg NUXT_SSR=true \
+            --build-arg CMS_SITE='${{ vars.CMS_SITE }}' \
+            -t "${IMAGE}" .
+          docker push "${IMAGE}"
+          echo "image=${IMAGE}" >> $GITHUB_ENV
+          echo "app_name=${APP_NAME}" >> $GITHUB_ENV
+
       - name: Deploy PR Review App
         id: deploy
         uses: superfly/fly-pr-review-apps@1.5.0
         with:
+          image: ${{ env.image }}
+          name: ${{ env.app_name }}
           secrets: |
             ENV=review
             AVIARY_BASE_API=${{ vars.AVIARY_BASE_API }}
@@ -73,49 +156,6 @@ jobs:
             SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
             SIMPLECAST_API_KEY=${{ secrets.SIMPLECAST_API_KEY }}
             RAPID_ASSET_URL=${{ vars.RAPID_ASSET_URL }}
-          build_args: |
-            ENV=review
-            AVIARY_BASE_API=${{ vars.AVIARY_BASE_API }}
-            SENTRY_DSN=${{ vars.SENTRY_DSN }}
-            SENTRY_ENV=${{ vars.SENTRY_ENV }}
-            LIVESTREAM_URL=${{ vars.LIVESTREAM_URL }}
-            NAVIGATION_API=${{ vars.NAVIGATION_API }}
-            HEADER_NAVIGATION_API=${{ vars.HEADER_NAVIGATION_API }}
-            SYSTEM_MESSAGES_API=${{ vars.SYSTEM_MESSAGES_API }}
-            STORIES_API=${{ vars.STORIES_API }}
-            IMAGE_BASE_URL=${{ vars.IMAGE_BASE_URL }}
-            FB_MEASUREMENT_ID=${{ vars.FB_MEASUREMENT_ID }}
-            FB_API_KEY_WEB=${{ vars.FB_API_KEY_WEB }}
-            FB_API_KEY_IOS=${{ vars.FB_API_KEY_IOS }}
-            FB_API_KEY_ANDROID=${{ vars.FB_API_KEY_ANDROID }}
-            FB_AUTH_DOMAIN=${{ vars.FB_AUTH_DOMAIN }}
-            FB_PROJECT_ID=${{ vars.FB_PROJECT_ID }}
-            FB_STORAGE_BUCKET=${{ vars.FB_STORAGE_BUCKET }}
-            FB_MESSAGING_SENDER_ID=${{ vars.FB_MESSAGING_SENDER_ID }}
-            FB_APP_ID_WEB=${{ vars.FB_APP_ID_WEB }}
-            FB_APP_ID_IOS=${{ vars.FB_APP_ID_IOS }}
-            FB_APP_ID_ANDROID=${{ vars.FB_APP_ID_ANDROID }}
-            GTM_ID=${{ vars.GTM_ID }}
-            SUPABASE_URL=${{ vars.SUPABASE_URL }}
-            SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}
-            SUPABASE_AUTH_SIGN_IN_REDIRECT_TO=${{ steps.set-url.outputs.url }}
-            SUPABASE_AUTH_TOKEN_NAME=${{ vars.SUPABASE_AUTH_TOKEN_NAME }}
-            BFF_URL=${{ steps.set-url.outputs.url }}
-            OPENWEB_SPOT_ID=${{ vars.OPENWEB_SPOT_ID }}
-            NPR_CDS_API=${{ vars.NPR_CDS_API }}
-            WNYC_NOW_FEED_URL=${{ vars.WNYC_NOW_FEED_URL }}
-            WNYC_SHOW_SHARE_BASE_URL=${{ vars.WNYC_SHOW_SHARE_BASE_URL }}
-            ARTICLE_STREAMFIELD_DONATION_URL=${{ vars.ARTICLE_STREAMFIELD_DONATION_URL }}
-            SETTINGS_MENU_DONATION_URL=${{ vars.SETTINGS_MENU_DONATION_URL }}
-            USER_AGENT=${{ vars.USER_AGENT }}
-            APP_VERSION=${{ vars.APP_VERSION }}
-            SPRINGBOARD_URL=${{ vars.SPRINGBOARD_URL }}
-            NEWSLETTER_API=${{ vars.NEWSLETTER_API }}
-            RAPID_ASSET_URL=${{ vars.RAPID_ASSET_URL }}
-            SIMPLECAST_URL=${{ vars.SIMPLECAST_URL }}
-            FEATURED_SHOWS_PAGE_ID=${{ vars.FEATURED_SHOWS_PAGE_ID }}
-            NUXT_SSR=true
-            CMS_SITE=${{ vars.CMS_SITE }}
       - name: Delete GitHub Environment
         if: github.event.action == 'closed'
         uses: actions/github-script@v7

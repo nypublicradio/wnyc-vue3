@@ -16,6 +16,18 @@ export default (/* { mode } */) => {
     plugins: [
       vue(),
     ],
+    esbuild: {
+      tsconfigRaw: {
+        compilerOptions: {
+          baseUrl: '.',
+          target: 'ESNext',
+          module: 'ESNext',
+          moduleResolution: 'Node',
+          resolveJsonModule: true,
+          types: ['node', 'vitest/globals'],
+        },
+      },
+    },
     resolve: {
       alias: {
         '~': resolve(__dirname, '.'),

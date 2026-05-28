@@ -1,6 +1,6 @@
 {
   // https://nuxt.com/docs/guide/concepts/typescript
-  "extends": "./.nuxt/tsconfig.json",
+  "extends": "./.nuxt/tsconfig.server.json",
   "files": ["types.d.ts"],
   "compilerOptions": {
     "baseUrl": ".",
