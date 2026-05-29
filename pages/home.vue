@@ -70,6 +70,7 @@ onMounted(() => {
           <h2 class="mt-4 mb-3 lg:mt-0 md:text-lg lg:text-xl">
             Latest News Updates
           </h2>
+          <pre>{{ latestNewsUpdatesData }}</pre>
           <LatestNewsUpdates
             :localNewscast="latestNewsUpdatesData?.local_newscast ?? null"
             :nationalNewscast="latestNewsUpdatesData?.national_newscast ?? null"

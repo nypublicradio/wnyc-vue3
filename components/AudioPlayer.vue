@@ -166,7 +166,9 @@ const switchEpisode = async (val) => {
   const wasPlayingBeforeSwitch = isEpisodePlaying.value
   isNewEpisode.value = true
   showPlayer.value = false
-  suppressTransitionErrorsUntil.value = wasPlayingBeforeSwitch ? Date.now() + 5000 : 0
+  suppressTransitionErrorsUntil.value = wasPlayingBeforeSwitch
+    ? Date.now() + 5000
+    : 0
 
   await releasePlayer()
 

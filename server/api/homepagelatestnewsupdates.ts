@@ -22,7 +22,8 @@ const getLocalNewscast = async () => {
 		const res = await axios(options)
 		const resData = humps.camelizeKeys(res.data).data
 		resData.attributes.file = resData.attributes.audio
-		resData.attributes.image = resData.attributes.headers.brand.logoImage.template
+		resData.attributes.image = resData.attributes.headers.brand.logoImage
+		resData.attributes.publicationDate = new Date(resData.attributes.newsdate).toUTCString()
 		resData.attributes.duration = await handleDuration(resData.attributes.estimatedDuration, resData.attributes.audio)
 		resData.attributes.cardTitle = 'NYC Headlines'
 		resData.attributes.showTitle = resData.attributes.channelTitle
@@ -38,6 +39,21 @@ const getLocalNewscast = async () => {
 }
 // Get National Newscast from the WNYC API
 const getNationalNewscast = async () => {
+	const hardcodedNprImage = {
+		altText: "NPR News Now",
+		name: "",
+		source: null,
+		url: "https://media.wnyc.org/i/500/500/c/80/2023/09/npr-news-now.jpeg",
+		h: 500,
+		isDisplay: false,
+		crop: null,
+		caption: "",
+		creditsUrl: "",
+		w: 500,
+		id: 345689,
+		creditsName: "",
+		template: 'https://media.wnyc.org/i/%s/%s/%s/%s/2023/09/npr-news-now.jpeg'
+	}
 	try {
 		const options = {
 			method: 'GET',
@@ -47,8 +63,10 @@ const getNationalNewscast = async () => {
 		const resData = humps.camelizeKeys(res.data).data
 		const mp3Res = await axios(resData.attributes.audio)
 		resData.attributes.newsdate = mp3Res.headers['last-modified']
+		resData.attributes.publicationDate = mp3Res.headers['last-modified']
 		resData.attributes.file = resData.attributes.audio
-		resData.attributes.image = 'https://media.wnyc.org/i/%s/%s/%s/%s/2023/09/npr-news-now.jpeg'
+		resData.attributes.image = hardcodedNprImage
+		resData.attributes.headers.brand.logoImage = hardcodedNprImage
 		resData.attributes.duration = await handleDuration(resData.attributes.estimatedDuration, resData.attributes.audio)
 		resData.attributes.cardTitle = 'NPR News Now'
 		resData.attributes.showTitle = resData.attributes.channelTitle
