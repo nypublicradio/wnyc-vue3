@@ -1020,7 +1020,6 @@ export const togglePlayEpisode = (media, type = mediaTypes.EPISODE) => {
     saveRecentlyPlayed(media, type)
     return
   }
-
   togglePlayTrigger.value = !togglePlayTrigger.value
 }
 

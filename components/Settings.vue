@@ -236,7 +236,8 @@ const showNotificationTypes = computed(() => {
   return (
     isApp &&
     currentUserProfile.value?.receive_general_notifications &&
-    masterNotificationChannelsArray.value?.length > 0
+    masterNotificationChannelsArray.value?.length > 0 &&
+    Array.isArray(currentUserProfile.value?.one_signal_notification_channels)
   )
 })
 
@@ -475,6 +476,8 @@ watch(
         />
       </SBox>
     </section>
+    <pre>{{ masterNotificationChannelsArray }}</pre>
+    <pre>{{ currentUserProfile }}</pre>
     <section v-if="showNotificationTypes" class="notifications p-0">
       <div class="flex s-title-holder">
         <div class="s-title">Notification Types</div>
@@ -556,7 +559,7 @@ watch(
           "
         />
       </SBox>
-      <p><pre>{{ currentUserProfile }}</pre></p>
+      <!-- <p><pre>{{ currentUserProfile }}</pre></p> -->
     </section>
     <section v-if="isApp" class="wnyc p-0">
       <div class="flex s-title-holder">

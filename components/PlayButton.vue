@@ -72,14 +72,17 @@ const togglePlay = () => {
 }
 
 const getProgress = computed(() => {
-  return Math.ceil((currentEpisodeProgress.value / currentEpisodeDuration.value) * 100)
+  return Math.ceil(
+    (currentEpisodeProgress.value / currentEpisodeDuration.value) * 100
+  )
 })
 
 const isPlaying = ref(false)
 watch(
-  isEpisodePlaying,
+  [isEpisodePlaying, currentEpisode],
   () => {
-    isPlaying.value = String(currentEpisode.value?.id) === String(props.data?.id)
+    isPlaying.value =
+      String(currentEpisode.value?.id) === String(props.data?.id)
   },
   {
     immediate: true,
@@ -126,7 +129,9 @@ watch(
         <div
           class="content flex white-space-nowrap align-items-center justify-content-center w-full"
         >
-          <span class="center" :class="props.labelClass">{{ props.label }}</span>
+          <span class="center" :class="props.labelClass">{{
+            props.label
+          }}</span>
           <LiveBadge
             v-if="props.liveBadge"
             font-size="14px"
