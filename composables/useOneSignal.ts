@@ -294,7 +294,7 @@ export default function useOneSignal () {
   }
 
   // triggered when the listener for permissionChange is called
-  const notificationPermissionSync = async (accepted) => {
+  const notificationPermissionSync = async (accepted?: boolean) => {
     const isNetworkConnected = useIsNetworkConnected()
     if (!isNetworkConnected.value) return
     await nextTick()
@@ -421,34 +421,26 @@ export default function useOneSignal () {
 
   // syncMasterNotificationChannels with the user's profile, supabase and oneSignal
   function syncMasterNotificationChannels (local, master) {
+    const safeMaster = Array.isArray(master) ? master : []
+
     if (!Array.isArray(local.one_signal_notification_channels)) {
       local.one_signal_notification_channels = []
     }
 
+    // Keep the user's current channel values by key, then rehydrate from master.
+    // This preserves user preferences while allowing master labels/metadata to update.
+    const localValueByKey = local.one_signal_notification_channels.reduce((acc, channel) => {
+      acc[channel.key] = channel.value
+      return acc
+    }, {})
+
     // Update data.one_signal_notification_channels based on masterNotificationChannelsArray. This is to ensure that the user's notification channels are always in sync on Supabase & oneSignal user tags with the masterNotificationChannelsArray if they are updated/changed
 
-    // Remove any channels from data.one_signal_notification_channels that are not in masterNotificationChannelsArray
-    local.one_signal_notification_channels = local.one_signal_notification_channels.filter(existingChannel =>
-      master.some(newChannel => newChannel.key === existingChannel.key)
-    )
-
-    // Add any new channels from masterNotificationChannelsArray & update any labels tha tmay have changed
-    master.forEach(newChannel => {
-      const existingChannel = local.one_signal_notification_channels.find(
-        channel => channel.key === newChannel.key
-      )
-
-      //add new channel
-      if (!existingChannel) {
-        local.one_signal_notification_channels.push(newChannel)
-      }
-
-      // update label
-      if (existingChannel && existingChannel.label !== newChannel.label) {
-        existingChannel.label = newChannel.label
-      }
-
-    })
+    // Rebuild from master so only valid channels remain, but preserve local user value when available.
+    local.one_signal_notification_channels = safeMaster.map((masterChannel) => ({
+      ...masterChannel,
+      value: localValueByKey[masterChannel.key] ?? masterChannel.value ?? true,
+    }))
 
     //update the user tags to OneSignal profile, when user is logged in only
     if (isApp.value) {

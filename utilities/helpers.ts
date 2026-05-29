@@ -50,7 +50,6 @@ import {
   type AppTrackingStatusResponse,
 } from "capacitor-plugin-app-tracking-transparency"
 import { initMediaSession } from "~/utilities/media-session.js"
-import useOneSignal from "~/composables/useOneSignal"
 import { capacitorIosNotificationSettings } from '@nypublicradio/capacitor-ios-notification-settings'
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics'
 
@@ -797,6 +796,12 @@ export const getAndSetUserProfile = async () => {
           // get the system's notification permission and apply it to the initial defaults
           defaults.receive_general_notifications = await useOneSignal().checkPermissions()
 
+          // keep local settings aligned with master notification topics
+          defaults.one_signal_notification_channels = await syncMasterNotificationChannels(
+            defaults,
+            masterNotificationChannelsArray
+          )
+
 
           const defaultsSTRING = JSON.stringify(defaults)
           await Preferences.set({
@@ -1341,9 +1346,6 @@ export const logOutUser = async () => {
   currentEpisode.value = null
   currentEpisodeHolder.value = null
   isEpisodePlaying.value = false
-
-  // clear the local storage
-  await Preferences.clear()
 
   // logout of OneSignal
   useOneSignal().logout()
