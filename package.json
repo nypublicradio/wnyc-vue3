@@ -1,12 +1,13 @@
 {
   "private": true,
   "scripts": {
+    "prepare:test-tsconfig": "[ -f .nuxt/tsconfig.server.json ] || npx nuxi prepare",
     "build": "nuxt build",
     "dev": "nuxt dev --host",
     "start": "node .output/server/index.mjs",
-    "test": "vitest",
-    "coverage": "vitest run --coverage",
     "generate": "NUXT_SSR=false BFF_URL='https://demo.native-app.wnyc.org' nuxt generate",
+    "coverage": "npm run prepare:test-tsconfig && vitest run --coverage",
+    "test": "npm run prepare:test-tsconfig && vitest",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "generate-splash": "node assets/copyToAssets.js && npx capacitor-assets generate",
