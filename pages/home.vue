@@ -105,10 +105,11 @@ onMounted(() => {
 
     <LazyDonateBanner v-if="!isApp" class="mt-6" />
 
-    <!-- <LazySponsorBanner
+    <LazySponsorBanner
       v-if="isApp"
+      class="mt-6"
       :style="`margin-bottom:${currentEpisode ? '-20px' : '0'}`"
-    /> -->
+    />
   </div>
 </template>
 
