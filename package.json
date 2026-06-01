@@ -23,7 +23,7 @@
     "date-fns": "^2.30.0",
     "nuxt": "^3.12.3",
     "sass": "1.69.7",
-    "vitest": "0.32.4"
+    "vitest": "4.1.0"
   },
   "dependencies": {
     "@capacitor-community/video-recorder": "^6.5.0",
