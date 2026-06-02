@@ -82,11 +82,12 @@ jobs:
           # Ensure Docker daemon has fresh ECR credentials
           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 493123279066.dkr.ecr.us-east-1.amazonaws.com
 
-      - name: Build and push image locally
+      - name: Build and push image with Fly CLI
         run: |
           export PATH="${HOME}/.fly/bin:$PATH"
           APP_NAME="pr-${{ github.event.number }}-nypublicradio-wnyc-vue3"
           IMAGE="registry.fly.io/${APP_NAME}:${{ github.sha }}"
+
           docker build \
             --build-arg ENV=review \
             --build-arg AVIARY_BASE_API='${{ vars.AVIARY_BASE_API }}' \
@@ -131,7 +132,22 @@ jobs:
             --build-arg NUXT_SSR=true \
             --build-arg CMS_SITE='${{ vars.CMS_SITE }}' \
             -t "${IMAGE}" .
-          docker push "${IMAGE}"
+
+          # Push with retry logic for transient failures
+          for attempt in 1 2 3; do
+            echo "Push attempt $attempt..."
+            if docker push "${IMAGE}"; then
+              echo "Push succeeded"
+              break
+            elif [ $attempt -lt 3 ]; then
+              echo "Push failed, waiting 30 seconds before retry..."
+              sleep 30
+            else
+              echo "Push failed after 3 attempts"
+              exit 1
+            fi
+          done
+
           echo "image=${IMAGE}" >> $GITHUB_ENV
           echo "app_name=${APP_NAME}" >> $GITHUB_ENV
 
