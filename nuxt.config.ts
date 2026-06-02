@@ -77,7 +77,7 @@ export default defineNuxtConfig({
   nitro: {
     ...(isAppBuild
       ? {
-        // Disable prerendering for mobile app builds (runs in WebView, not web server)
+        // Disable prerendering for mobile app builds (runs in Webview, not web server)
         prerender: {
           crawlLinks: false,
           routes: [],
