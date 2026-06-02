@@ -80,11 +80,11 @@ export default defineNuxtConfig({
         // Disable prerendering for mobile app builds (runs in Webview, not web server)
         prerender: {
           crawlLinks: false,
-          routes: [],
+          routes: ['/'],
         },
         // Output to dist/ for Capacitor mobile builds
         output: {
-          dir: '.output-app',
+          dir: '.output',
           publicDir: 'dist',
         },
       }
