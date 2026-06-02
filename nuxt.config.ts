@@ -82,10 +82,10 @@ export default defineNuxtConfig({
           crawlLinks: false,
           routes: ['/'],
         },
-        // Output to dist/ for Capacitor mobile builds
+        // Output to .output/ for Capacitor mobile builds
         output: {
           dir: '.output',
-          publicDir: 'dist',
+          publicDir: '.output/public',
         },
       }
       : {}),
