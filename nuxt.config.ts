@@ -73,6 +73,11 @@ export default defineNuxtConfig({
   ssr: process.env.NUXT_SSR === 'true',
 
   nitro: {
+    // Disable prerendering for mobile app builds (runs in WebView, not web server)
+    prerender: {
+      crawlLinks: false,
+      routes: [],
+    },
     routeRules: process.env.NODE_ENV === 'production' ? {
       '/home': { swr: 60 },
       // Cache ALL shows and any nested episode pages under a show for 15 minutes
