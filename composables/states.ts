@@ -2,15 +2,15 @@
 export const useMasterNotificationChannelsArray = () => useState<any[]>('masterNotificationChannelsArray', () => null)
 
 export const getMasterNotificationChannels = async () => {
-  const masterNotificationChannelsArray = useMasterNotificationChannelsArray()
-  // get notification topics
-  const client = useSupabaseClient()
-  const { data } = await client
-    .from("notification_topics")
-    .select("*")
+    const masterNotificationChannelsArray = useMasterNotificationChannelsArray()
+    // get notification topics
+    const client = useSupabaseClient()
+    const { data } = await client
+        .from("notification_topics")
+        .select("*")
 
-  masterNotificationChannelsArray.value = data
-  return data
+    masterNotificationChannelsArray.value = data
+    return data
 }
 
 // Homepage data
@@ -105,6 +105,9 @@ export const useIsNetworkConnected = () => useState('useIsNetworkConnected', () 
 
 // global state if this instance is a native app
 export const useIsApp = () => useState('useIsApp', () => false)
+
+// global state for the actual Capacitor native runtime (ios/android only)
+export const useIsNativeApp = () => useState('useIsNativeApp', () => false)
 
 
 // audio player globals

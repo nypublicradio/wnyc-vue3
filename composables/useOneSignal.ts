@@ -17,7 +17,7 @@ import {
   useCurrentUserProfile,
   useCurrentUser,
   useSettingSideBar,
-  useIsApp,
+  useIsNativeApp,
   useGlobalToast,
   useIsNetworkConnected,
   useMasterNotificationChannelsArray,
@@ -44,13 +44,13 @@ export default function useOneSignal () {
   let oneSignalSubscriptionId: string = null
   let oneSignalId: string = null
 
-  const isApp = useIsApp()
+  const isNativeApp = useIsNativeApp()
   const masterNotificationChannelsArray = useMasterNotificationChannelsArray()
   const router = useRouter()
 
   // toggle users notifications channel tags
   const toggleOneSignalUserTag = async (channelKey: string, value: boolean) => {
-    if (!isApp.value) return
+    if (!isNativeApp.value) return
     const OneSignal = await loadOneSignal()
     if (!OneSignal) return
     await OneSignal.User.addTag(channelKey, String(value))
@@ -276,7 +276,7 @@ export default function useOneSignal () {
 
   // function to check the permissions for notifications
   const checkPermissions = async () => {
-    if (isApp.value) {
+    if (isNativeApp.value) {
       const OneSignal = await loadOneSignal()
       if (!OneSignal) return false
       return await OneSignal.Notifications.getPermissionAsync()
@@ -443,7 +443,7 @@ export default function useOneSignal () {
     }))
 
     //update the user tags to OneSignal profile, when user is logged in only
-    if (isApp.value) {
+    if (isNativeApp.value) {
       const currentUser = useCurrentUser()
       if (currentUser.value) {
         local.one_signal_notification_channels.forEach((channel) => {
@@ -457,7 +457,7 @@ export default function useOneSignal () {
 
   // function to log in and manage the user in OneSignal with supabase data
   async function OneSignalLogin () {
-    if (!isApp.value) return
+    if (!isNativeApp.value) return
     const OneSignal = await loadOneSignal()
     if (!OneSignal) return
     const currentUser = useCurrentUser()
@@ -499,7 +499,7 @@ export default function useOneSignal () {
 
   // function to log out the user in OneSignal
   async function logout () {
-    if (!isApp.value) return
+    if (!isNativeApp.value) return
     const OneSignal = await loadOneSignal()
     if (!OneSignal) return
     await OneSignal.logout()

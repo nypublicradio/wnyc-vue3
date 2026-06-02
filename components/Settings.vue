@@ -476,8 +476,6 @@ watch(
         />
       </SBox>
     </section>
-    <pre>{{ masterNotificationChannelsArray }}</pre>
-    <pre>{{ currentUserProfile }}</pre>
     <section v-if="showNotificationTypes" class="notifications p-0">
       <div class="flex s-title-holder">
         <div class="s-title">Notification Types</div>

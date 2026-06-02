@@ -13,6 +13,7 @@ import { ScreenOrientation } from "@capacitor/screen-orientation"
 import type { URLOpenListenerEvent } from "@capacitor/app"
 import {
   useIsApp,
+  useIsNativeApp,
   useCurrentUserProfile,
   useGlobalToast,
   useIsNetworkConnected,
@@ -52,12 +53,19 @@ const fullDeviceInfo = useFullDeviceInfo()
 const appDownloadLink = useAppDownloadLink()
 const isActiveGlobal = useIsActive()
 const isApp = useIsApp()
+const isNativeApp = useIsNativeApp()
 
+// FORCE_APP_MODE=true in .env lets you debug app rendering in the browser without a native build
+const forceAppMode = config.public.FORCE_APP_MODE === "true"
 // Capacitor APIs are client-only — on the server, assume web/browser
-const isWeb = import.meta.client ? Capacitor.getPlatform() === "web" : true
-isApp.value = !isWeb
+const detectedNativeApp = import.meta.client
+  ? Capacitor.getPlatform() !== "web"
+  : false
+isNativeApp.value = detectedNativeApp
+isApp.value = forceAppMode || detectedNativeApp
+
 const gtmHeadConfig = getGtmHeadConfig({
-  isWeb,
+  isWeb: !isApp.value,
   gtmId: config.public.GTM_ID,
 })
 
@@ -95,9 +103,6 @@ const addListeners = async () => {
 }
 
 onMounted(async () => {
-  // Initialize Capacitor platform detection (client-side only)
-  isApp.value = Capacitor.getPlatform() !== "web"
-
   // Initialize device info and app download link asynchronously (client-side only)
   fullDeviceInfo.value = await getFullDeviceInfo()
   appDownloadLink.value = await getAppDownloadLink()
@@ -118,7 +123,7 @@ onMounted(async () => {
   isNetworkConnected.value = initNetworkStatus.connected
 
   // OneSignal
-  if (isApp.value) initOneSignal()
+  if (isNativeApp.value) initOneSignal()
 
   // check for stale auth return route
   const { checkStaleAuthRoute } = useAuthReturnRoute()
@@ -126,7 +131,7 @@ onMounted(async () => {
 
   await getAndSetUserProfile()
 
-  if (isApp.value) {
+  if (isNativeApp.value) {
     await ScreenOrientation.lock({ orientation: "portrait" })
     await initFileSystem()
     await addListeners()
@@ -143,12 +148,12 @@ onMounted(async () => {
   //refresh data and check notifications permissions every time the tab is in focus or the App is in focus
   await App.addListener("appStateChange", async ({ isActive }) => {
     isActiveGlobal.value = isActive
-    if (isActive && isApp.value) {
+    if (isActive && isNativeApp.value) {
       // refresh data
       refreshData()
 
       // update user profile when coming back from the system settings
-      if (isApp.value) {
+      if (isNativeApp.value) {
         await notificationPermissionSync()
       }
 
@@ -164,17 +169,18 @@ onMounted(async () => {
 
   // Ads - deferred to after hydration to prevent DOM mutation conflicts
   await nextTick()
-    window.htlbid = window.htlbid || {}
-    htlbid.cmd = htlbid.cmd || []
-    htlbid.cmd.push(() => {
-      htlbid.layout("universal") // Leave as 'universal' or add custom layout
-      htlbid.setTargeting("is_testing", config.public.HTL_IS_TESTING) // Set to "no" for production
-      htlbid.setTargeting("is_home", route.name === "home" ? "yes" : "no") // Set to "yes" on the homepage
-      htlbid.setTargeting("category", route.name) // dynamically pass page category into this function
-      htlbid.setTargeting("post_id", route.name) // dynamically pass unique post/page id into this function
-    })
+  window.htlbid = window.htlbid || {}
+  htlbid.cmd = htlbid.cmd || []
+  htlbid.cmd.push(() => {
+    htlbid.layout("universal") // Leave as 'universal' or add custom layout
+    htlbid.setTargeting("is_testing", config.public.HTL_IS_TESTING) // Set to "no" for production
+    htlbid.setTargeting("is_home", route.name === "home" ? "yes" : "no") // Set to "yes" on the homepage
+    htlbid.setTargeting("category", route.name) // dynamically pass page category into this function
+    htlbid.setTargeting("post_id", route.name) // dynamically pass unique post/page id into this function
+  })
 })
-watch(() => route.path,
+watch(
+  () => route.path,
   async (newPath, oldPath) => {
     if (newPath !== oldPath) {
       await nextTick()
@@ -185,9 +191,10 @@ watch(() => route.path,
         htlbid.setTargeting("category", route.name) // dynamically pass page category into this function
         htlbid.setTargeting("post_id", route.name) // dynamically pass unique post/page id into this function
         htlbid.forceRefresh()
-    })
+      })
+    }
   }
-})
+)
 
 useHead({
   script: [

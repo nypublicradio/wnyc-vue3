@@ -1,7 +1,7 @@
 
 <script setup>
 import { useToast } from "primevue/usetoast"
-import { useIsActive, useIsApp } from "~/composables/states"
+import { useIsActive, useIsNativeApp } from "~/composables/states"
 import OneSignal from "onesignal-cordova-plugin"
 import { formatDate, trackClickEvent } from "~/utilities/helpers"
 useHead({
@@ -26,7 +26,7 @@ const questionLimitReached = ref(false)
 const questionLimitDays = ref(1) // only submit a question once per day
 const isSignupForm = ref(true)
 const isActiveGlobal = useIsActive()
-const isApp = useIsApp()
+const isNativeApp = useIsNativeApp()
 const miscData = ref({
   instagramHandle: "",
 })
@@ -76,8 +76,8 @@ const onFormSubmit = async () => {
 
     await UploadMediaREF.value?.uploadFiles()
 
-    // update OneSignal tags for App env only
-    if (isApp.value) {
+    // update OneSignal tags for native app env only
+    if (isNativeApp.value) {
       try {
         await OneSignal.User.addTags({
           "ask-the-mayor": "true",
@@ -133,7 +133,7 @@ const onSignupClick = () => {
 }
 
 onMounted(async () => {
-  if (isApp.value) {
+  if (isNativeApp.value) {
     // tell OneSignal to pause in-app notifications
     await OneSignal.InAppMessages.setPaused(true)
   }
@@ -149,7 +149,7 @@ onMounted(async () => {
 })
 
 onUnmounted(async () => {
-  if (isApp.value) {
+  if (isNativeApp.value) {
     // tell OneSignal to resume in-app notifications
     await OneSignal.InAppMessages.setPaused(false)
   }

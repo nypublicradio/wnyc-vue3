@@ -125,9 +125,10 @@ body {
   &.app {
     .page {
       transition: padding-top var(--p-transition-duration) ease;
-      padding-bottom: calc(
-        $bottomMenuHeight + var(--persistent-player-height) + env(safe-area-inset-bottom) + 20px
-      ); // account for the sticky bottom menu
+      padding-bottom: calc($bottomMenuHeight + env(safe-area-inset-bottom));
+      &.player-is-visible {
+        padding-bottom: calc($bottomMenuHeight + var(--persistent-player-height) + env(safe-area-inset-bottom));
+      }
     }
   }
 }

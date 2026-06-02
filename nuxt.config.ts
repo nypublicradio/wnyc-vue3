@@ -1,6 +1,9 @@
 import { sentryVitePlugin } from "@sentry/vite-plugin"
 import MyPreset from "./assets/wnyc-theme.js"
 
+const isSsrEnabled =
+  process.env.NUXT_SSR === "true" && process.env.FORCE_APP_MODE !== "true"
+
 export default defineNuxtConfig({
   //devtools: { enabled: true },
 
@@ -11,7 +14,7 @@ export default defineNuxtConfig({
 
   modules: [
     "@nuxtjs/supabase",
-    ...(process.env.NUXT_SSR === "true" ? [] : ["@nuxtjs/ionic"]),
+    ...(isSsrEnabled ? [] : ["@nuxtjs/ionic"]),
     "@nuxtjs/device",
     "@nuxt/image",
     "@hypernym/nuxt-gsap",
@@ -42,7 +45,7 @@ export default defineNuxtConfig({
     url: process.env.SUPABASE_URL,
     key: process.env.SUPABASE_KEY,
     redirect: false,
-    useSsrCookies: process.env.NUXT_SSR === "true",
+    useSsrCookies: isSsrEnabled,
     // Allow insecure cookies on localhost:
     cookieOptions: {
       secure: process.env.NODE_ENV === 'production',
@@ -52,7 +55,7 @@ export default defineNuxtConfig({
   image: {
     // In app/client-only builds there is no runtime IPX server at https://localhost,
     // so default to original image URLs instead of /_ipx transformed URLs.
-    provider: process.env.NUXT_SSR === 'true' ? 'ipx' : 'none',
+    provider: isSsrEnabled ? 'ipx' : 'none',
     dir: "public/",
     screens: {
       xxs: 375,
@@ -79,11 +82,11 @@ export default defineNuxtConfig({
     },
   },
 
-  ssr: process.env.NUXT_SSR === 'true',
+  ssr: isSsrEnabled,
 
   nitro: {
     // Route rules only apply in SSR/website mode
-    routeRules: process.env.NUXT_SSR === 'true' && process.env.NODE_ENV === 'production' ? {
+    routeRules: isSsrEnabled && process.env.NODE_ENV === 'production' ? {
       '/home': { swr: 60 },
       // Cache ALL shows and any nested episode pages under a show for 15 minutes
       '/browse/shows/**': { swr: 900 },
@@ -198,7 +201,7 @@ export default defineNuxtConfig({
 
   experimental: {
     // crossOriginPrefetch only makes sense in SSR/website mode
-    crossOriginPrefetch: process.env.NUXT_SSR === 'true',
+    crossOriginPrefetch: isSsrEnabled,
   },
 
 
@@ -276,7 +279,8 @@ export default defineNuxtConfig({
       SPRINGBOARD_URL: process.env.SPRINGBOARD_URL ?? "https://nypr.hosted.jacksonriverdev.com",
       NEWSLETTER_API: process.env.NEWSLETTER_API ?? 'https://api.demo.nypr.digital/email-proxy/subscribe',
       NEWSLETTER_MULTI_LIST_IDS: 'WNYC Weekly Brief++WNYC Membership',
-      NUXT_SSR: process.env.NUXT_SSR === 'true' ? 'true' : 'false',
+      NUXT_SSR: isSsrEnabled ? 'true' : 'false',
+      FORCE_APP_MODE: process.env.FORCE_APP_MODE === 'true' ? 'true' : 'false',
     },
   },
 

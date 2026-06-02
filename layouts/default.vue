@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { useIsApp } from "~/composables/states"
+import { useIsApp, useCurrentEpisode } from "~/composables/states"
 
 const isApp = useIsApp()
+const currentEpisode = useCurrentEpisode()
 const route = useRoute()
 // control pages that show the smart header for app
 const pagesToShowAppSmartHeaderArray = ["home"]
@@ -40,7 +41,12 @@ watch(
 </script>
 
 <template>
-  <div class="page flex flex-column h-full" :class="[`${String(route.name)}`]">
+  <div
+    class="page flex flex-column h-full"
+    :class="[
+      `${String(route.name)} ${currentEpisode ? 'player-is-visible' : ''}`,
+    ]"
+  >
     <div class="top-safe-cover" />
     <header>
       <VSmartHeader

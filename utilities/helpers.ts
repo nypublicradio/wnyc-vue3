@@ -8,6 +8,7 @@ import {
   useDeviceId,
   useTextSizeOption,
   useIsApp,
+  useIsNativeApp,
   useCurrentUser,
   useCurrentUserProfile,
   useLocalUserProfileDefault,
@@ -55,8 +56,8 @@ import { FirebaseAnalytics } from '@capacitor-firebase/analytics'
 
 // Dynamic import for FirebaseAnalytics to avoid SSR errors
 const loadFirebaseAnalytics = async () => {
-  const isApp = useIsApp()
-  if (typeof window === 'undefined' || !isApp.value) return null
+  const isNativeApp = useIsNativeApp()
+  if (typeof window === 'undefined' || !isNativeApp.value) return null
   try {
     const module = await import('@capacitor-firebase/analytics')
     // Return plain function wrappers instead of the raw Capacitor plugin proxy.
@@ -314,8 +315,8 @@ export function setFontSize (size: string) {
 export async function setStatusDarkMode (bool: boolean) {
   if (!import.meta.client) return
   await nextTick()
-  const isApp = useIsApp()
-  if (isApp.value) {
+  const isNativeApp = useIsNativeApp()
+  if (isNativeApp.value) {
     // delay needed for some reason
     setTimeout(async () => {
       bool
@@ -583,7 +584,7 @@ export const convertTime = (val) => {
 // get and set the user profile
 export const getAndSetUserProfile = async () => {
   const isNetworkConnected = useIsNetworkConnected()
-  const isApp = useIsApp()
+  const isNativeApp = useIsNativeApp()
   const currentUser = useCurrentUser()
   const currentUserProfile = useCurrentUserProfile()
   const localUserProfileDefault = useLocalUserProfileDefault()
@@ -854,7 +855,7 @@ export const getAndSetUserProfile = async () => {
         }
 
         // get the device id if it's an app and not a browser
-        if (isApp.value) {
+        if (isNativeApp.value) {
           await initDeviceId()
         }
         await getFavoritedItems()
