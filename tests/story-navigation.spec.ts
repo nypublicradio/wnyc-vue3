@@ -2,6 +2,22 @@ import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
+vi.mock('~/composables/states', () => ({
+  useIsApp: () => ({ value: false }),
+}))
+
+vi.mock('~/composables/globals', () => ({
+  cmsSources: {
+    WAGTAIL: 'wagtail',
+    PUBLISHER: 'publisher',
+    NPR: 'npr',
+    SIMPLECAST: 'simplecast',
+  },
+  mediaTypeRoutes: {},
+  localUserProfileKey: 'localUserProfile',
+  liveStationPreferences: [],
+}))
+
 beforeAll(() => {
   vi.stubGlobal('defineNuxtPlugin', (plugin) => plugin)
 })
@@ -14,7 +30,6 @@ describe('story navigation', () => {
     } = await import('~/utilities/helpers')
 
     expect(shouldOpenStoryInNewTab(
-      'web',
       'https://demo.gothamist.com/news/mayor-mamdani-in-albany',
       'wagtail'
     )).toBe(true)

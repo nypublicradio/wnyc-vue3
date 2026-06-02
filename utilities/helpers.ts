@@ -53,6 +53,7 @@ import {
 import { initMediaSession } from "~/utilities/media-session.js"
 import { capacitorIosNotificationSettings } from '@nypublicradio/capacitor-ios-notification-settings'
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics'
+import { WAGTAIL_PAGE_TYPES } from "~/composables/data/basePages"
 
 // Dynamic import for FirebaseAnalytics to avoid SSR errors
 const loadFirebaseAnalytics = async () => {
@@ -1037,8 +1038,10 @@ export const getCssVar = (name: string, px = false) => {
   return px ? val : Number(parseInt(val))
 }
 // ROUTING
-export const shouldOpenStoryInNewTab = (platform, storyLink, cmsSource) =>
-  platform === "web" && Boolean(storyLink) && cmsSource === cmsSources.WAGTAIL
+export const shouldOpenStoryInNewTab = (storyLink, cmsSource) => {
+  const isApp = useIsApp()
+  return !isApp.value && Boolean(storyLink) && cmsSource === cmsSources.WAGTAIL
+}
 
 // returns true if the story link is from gothamist.com
 export const shouldTrackOutgoingGothamistClick = (storyLink) =>
@@ -1085,7 +1088,7 @@ export const goToLivePage = (ep, params, log = true, returnRoute = false) => {
 /* centralized function to route to a story page */
 export const goToStoryPage = (story, params, log = true, returnRoute = false) => {
   const theLink = story.url || story.link || stripApiSubdomain(story.meta?.htmlUrl)
-  if (shouldOpenStoryInNewTab(Capacitor.getPlatform(), theLink, story.cmsSource)) {
+  if (shouldOpenStoryInNewTab(theLink, story.cmsSource)) {
     if (returnRoute) return theLink
 
     if (shouldTrackOutgoingGothamistClick(theLink)) {
@@ -1223,8 +1226,10 @@ export const addToFavorites2 = async ({ item, isFavorited, message = isFavorited
       if (callback) {
         callback()
       }
+
     } else {
-      await saveFavorite(episode, episode.type)
+      const type = WAGTAIL_PAGE_TYPES[episode.type] || episode.type
+      await saveFavorite(episode, type)
       getFavoritedItems()
       if (callback) {
         callback()

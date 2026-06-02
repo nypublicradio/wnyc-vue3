@@ -45,8 +45,7 @@ const loadComponent = (item) => {
   return markRaw(componentMap[componentName])
 }
 
-const getFilteredItemsData = computed(async () => {
-  pending.value = true
+const getFilteredItemsData = async () => {
   let typeFilterCondition = ""
   if (Array.isArray(props.typeFilter)) {
     typeFilterCondition = props.typeFilter
@@ -56,23 +55,22 @@ const getFilteredItemsData = computed(async () => {
     typeFilterCondition = `type.eq.${props.typeFilter}`
   }
 
-  const query = await client
+  return await client
     .from(props.table)
     .select("*")
     .eq("uid", user.value.id)
     .or(typeFilterCondition)
     .neq("type", props.excludeFilter ?? null)
     .order("created_at", { ascending: false })
-  pending.value = false
-  return query
-})
+}
 
 // retrieve item data
 const getItemsData = async () => {
+  await nextTick()
   if (user.value) {
     pending.value = true
     const { data, error } = props.typeFilter
-      ? await getFilteredItemsData.value
+      ? await getFilteredItemsData()
       : await client
           .from(props.table)
           .select("*")
@@ -124,7 +122,12 @@ watch(
     <div v-if="savedItems">
       <h2 v-if="headerTitle" class="mb-4 mt-3">{{ headerTitle }}</h2>
       <div class="flex flex-column gap-5">
-        <div v-for="(item, index) in savedItems" :key="index">
+        <div
+          v-for="(item, index) in savedItems"
+          :key="`${item.uid || 'nouid'}-${
+            item.id || item.slug || item.media_id || item.created_at || index
+          }`"
+        >
           <component
             :is="item.component"
             :data="item.data"

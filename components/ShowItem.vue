@@ -58,7 +58,9 @@ onMounted(() => {
 
 // check if the show is currently live
 const isCurrentlyLive = computed(() => {
-  return isolateSlug(currentEpisodeHolder.value?.detailsLink) === props.data?.slug
+  return (
+    isolateSlug(currentEpisodeHolder.value?.detailsLink) === props.data?.slug
+  )
 })
 
 // add item to favorites
@@ -90,7 +92,7 @@ const getDotMenuItems = (bucketItem) => {
       active: isFavorited.value,
       title: bucketItem.title,
       command: () => {
-        handleAddToFavorites()
+        handleAddToFavorites(bucketItem)
       },
     },
   ]
@@ -123,11 +125,17 @@ const getDotMenuItems = (bucketItem) => {
       />
       <div class="flex gap-1 flex-column align-items-start">
         <LiveBadge v-if="isCurrentlyLive" class="mb-1" />
-        <h2 class="text-base md:text-lg line-height-2 truncate t2lines no-hyphens">
+        <h2
+          class="text-base md:text-lg line-height-2 truncate t2lines no-hyphens"
+        >
           {{ props.data.title }}
         </h2>
         <p class="font-meta" v-if="props.data?.producingOrganizations?.length">
-          {{ props.data.producingOrganizations.map((org) => org.name).join(" and ") }}
+          {{
+            props.data.producingOrganizations
+              .map((org) => org.name)
+              .join(" and ")
+          }}
         </p>
       </div>
     </NuxtLink>
