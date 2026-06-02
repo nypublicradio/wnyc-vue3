@@ -78,6 +78,11 @@ export default defineNuxtConfig({
       crawlLinks: false,
       routes: [],
     },
+    // Output to dist/ for Capacitor mobile builds
+    output: {
+      dir: 'dist',
+      publicDir: 'dist',
+    },
     routeRules: process.env.NODE_ENV === 'production' ? {
       '/home': { swr: 60 },
       // Cache ALL shows and any nested episode pages under a show for 15 minutes
