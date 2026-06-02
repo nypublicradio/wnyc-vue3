@@ -84,7 +84,7 @@ export default defineNuxtConfig({
         },
         // Output to dist/ for Capacitor mobile builds
         output: {
-          dir: 'dist',
+          dir: '.output-app',
           publicDir: 'dist',
         },
       }
