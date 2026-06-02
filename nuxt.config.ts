@@ -1,6 +1,8 @@
 import { sentryVitePlugin } from "@sentry/vite-plugin"
 import MyPreset from "./assets/wnyc-theme.js"
 
+const isAppBuild = process.env.ISAPP === "true"
+
 export default defineNuxtConfig({
   //devtools: { enabled: true },
 
@@ -73,16 +75,20 @@ export default defineNuxtConfig({
   ssr: process.env.NUXT_SSR === 'true',
 
   nitro: {
-    // Disable prerendering for mobile app builds (runs in WebView, not web server)
-    prerender: {
-      crawlLinks: false,
-      routes: [],
-    },
-    // Output to dist/ for Capacitor mobile builds
-    output: {
-      dir: 'dist',
-      publicDir: 'dist',
-    },
+    ...(isAppBuild
+      ? {
+        // Disable prerendering for mobile app builds (runs in WebView, not web server)
+        prerender: {
+          crawlLinks: false,
+          routes: [],
+        },
+        // Output to dist/ for Capacitor mobile builds
+        output: {
+          dir: 'dist',
+          publicDir: 'dist',
+        },
+      }
+      : {}),
     routeRules: process.env.NODE_ENV === 'production' ? {
       '/home': { swr: 60 },
       // Cache ALL shows and any nested episode pages under a show for 15 minutes
