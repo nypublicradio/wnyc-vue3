@@ -45,6 +45,8 @@
 	<true/>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Your location will be used to personalize and improve your experience.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Your location will be used to personalize and improve your experience.</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>Your data will be used to personalize your experience.</string>
 	<key>UIApplicationSceneManifest</key>
