@@ -77,6 +77,11 @@ jobs:
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
+      - name: Setup Docker for ECR access
+        run: |
+          # Ensure Docker daemon has fresh ECR credentials
+          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 493123279066.dkr.ecr.us-east-1.amazonaws.com
+
       - name: Build and push image locally
         run: |
           export PATH="${HOME}/.fly/bin:$PATH"
