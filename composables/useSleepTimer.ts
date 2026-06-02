@@ -21,11 +21,17 @@ import { Preferences } from "@capacitor/preferences"
 // Fall back to global setInterval/clearInterval on the server to avoid SSR crashes.
 let workerSetInterval: typeof globalThis.setInterval = globalThis.setInterval
 let workerClearInterval: typeof globalThis.clearInterval = globalThis.clearInterval
+let workerTimersReady: Promise<void> = Promise.resolve()
+
 if (import.meta.client) {
-    import('worker-timers').then((mod) => {
-        workerSetInterval = mod.setInterval as any
-        workerClearInterval = mod.clearInterval as any
-    })
+    workerTimersReady = import('worker-timers')
+        .then((mod) => {
+            workerSetInterval = mod.setInterval as any
+            workerClearInterval = mod.clearInterval as any
+        })
+        .catch((error) => {
+            console.error('Failed to load worker-timers, using native timers:', error)
+        })
 }
 
 // composable to handle the sleep timer
@@ -63,7 +69,10 @@ export default function useSleepTimer () {
     }
 
     // Start the timer
-    function startTimer (repeat = false) {
+    async function startTimer (repeat = false) {
+        // Ensure worker timers are ready before creating the interval.
+        await workerTimersReady
+
         //console.log("----------------------------Start The Interval")
         sleepTimerRunning.value = true
         if (!sleepTimerPaused.value && !repeat) {
@@ -87,7 +96,7 @@ export default function useSleepTimer () {
             } else {
                 // restart new interval
                 clearTheInterval()
-                startTimer(true)
+                void startTimer(true)
             }
         }, 1000)
     }
@@ -176,12 +185,12 @@ export default function useSleepTimer () {
     function onUpdateDuration (e) {
         sleepTimerSelectedTime.value = e
         resetTimer()
-        startTimer()
+        void startTimer()
         sleepTimerSideBar.value = false
         trackClickEvent(
             "Click Tracking - Sleep timer duration",
             "Sleep Timer Sidebar - Duration",
-            formattedTime
+            formattedTime.value
         )
     }
 

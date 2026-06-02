@@ -30,6 +30,7 @@ if (process.client) {
 const { initBackgroundMode } = useBackgroundMode()
 
 const timeLengthOptions = [
+  { id: "1 minutes", label: "1 minutes", value: 10 },
   { id: "15 minutes", label: "15 minutes", value: 900 },
   { id: "30 minutes", label: "30 minutes", value: 1800 },
   { id: "45 minutes", label: "45 minutes", value: 2700 },
@@ -91,7 +92,8 @@ const handleStartTimer = async (data) => {
       // user did not allow the background mode
       globalToast.value = {
         severity: "error",
-        summary: "You must allow WNYC to run in the background for the sleep timer",
+        summary:
+          "You must allow WNYC to run in the background for the sleep timer",
         life: 8000,
         closable: true,
       }
@@ -126,7 +128,10 @@ watch(
   <div>
     <div class="sleep-timer px-3 pb-8 pt-6">
       <div><SleepIcon :active="sleepTimerRunning" /></div>
-      <h1 class="my-3 text-center" :class="[{ 'text-center': sleepTimerRunning }]">
+      <h1
+        class="my-3 text-center"
+        :class="[{ 'text-center': sleepTimerRunning }]"
+      >
         We'll lull you to sleep in:
       </h1>
       <div
@@ -193,14 +198,21 @@ watch(
             </div>
           </template>
         </DropupMenu>
-        <Button label="Start" @click="handleStartTimer(sleepTimerSelectedTime)" />
+        <Button
+          label="Start"
+          @click="handleStartTimer(sleepTimerSelectedTime)"
+        />
       </div>
       <div v-else>
         <div class="count-down">
-          <div class="time-holder flex align-items-center justify-content-between">
+          <div
+            class="time-holder flex align-items-center justify-content-between"
+          >
             <Button
               class="mr-3"
-              :class="[{ 'opacity-20': sleepTimerCurrentTime < timeToIncrement * 60 }]"
+              :class="[
+                { 'opacity-20': sleepTimerCurrentTime < timeToIncrement * 60 },
+              ]"
               icon="pi pi-minus"
               rounded
               outlined
