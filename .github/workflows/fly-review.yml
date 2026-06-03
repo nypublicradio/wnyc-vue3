@@ -82,6 +82,20 @@ jobs:
           # Ensure Docker daemon has fresh ECR credentials
           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 493123279066.dkr.ecr.us-east-1.amazonaws.com
 
+      - name: Ensure Fly review app exists
+        run: |
+          export PATH="${HOME}/.fly/bin:$PATH"
+          APP_NAME="pr-${{ github.event.number }}-nypublicradio-wnyc-vue3"
+
+          if ! flyctl apps show "${APP_NAME}" >/dev/null 2>&1; then
+            flyctl apps create "${APP_NAME}" --org "${FLY_ORG}"
+          fi
+
+          # Fail early if app creation/check did not succeed.
+          flyctl apps show "${APP_NAME}"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
       - name: Build and push image with Fly CLI
         run: |
           export PATH="${HOME}/.fly/bin:$PATH"
