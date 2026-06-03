@@ -52,5 +52,9 @@ watch(fileSystem, (value) => {
       }
     "
   />
-  <Button v-else disabled icon="pi pi-spin pi-spinner" />
+  <Button v-else disabled>
+    <template #icon>
+      <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
+    </template>
+  </Button>
 </template>

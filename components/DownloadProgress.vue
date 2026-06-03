@@ -29,7 +29,7 @@ const theProgress = computed(() => {
       :animate="animateComplete"
     />
     <div v-else class="spin-holder">
-      <i class="pi pi-spin pi-spinner"></i>
+      <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
       <div class="percent" v-if="theProgress > 0">{{ theProgress }}</div>
       <!-- <i class="pi pi-download absolute"></i> -->
     </div>

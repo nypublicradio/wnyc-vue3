@@ -112,13 +112,17 @@ watch(
             <CircularProgressBar :progress="getProgress" />
             <PlayIcon v-if="!isEpisodePlaying && !isStreamLoading" />
             <PauseIcon v-if="isEpisodePlaying && !isStreamLoading" />
-            <i v-if="isStreamLoading" class="pi pi-spin pi-spinner"></i>
+            <i
+              v-if="isStreamLoading"
+              class="pi pi-spin pi-spinner"
+              aria-hidden="true"
+            ></i>
           </div>
           <div
             v-else-if="isPlaying && isStreamLoading"
             class="flex align-items-center icon relative"
           >
-            <i class="pi pi-spin pi-spinner"></i>
+            <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
           </div>
           <div v-else class="flex align-items-center icon">
             <PlayIcon />

@@ -7,12 +7,13 @@ import { useIsApp } from "~/composables/states"
 const config = useRuntimeConfig()
 const isApp = useIsApp()
 const route = useRoute()
-const { data: shows, status, error } = await useFetchWrapper(
-  `${config.public.BFF_URL}/api/v3/shows`,
-  {
-    key: "v3-shows",
-  }
-)
+const {
+  data: shows,
+  status,
+  error,
+} = await useFetchWrapper(`${config.public.BFF_URL}/api/v3/shows`, {
+  key: "v3-shows",
+})
 
 const router = useRouter()
 const searchFieldValue = ref("")
@@ -88,7 +89,8 @@ onMounted(() => {
 })
 
 const title = "Browse Shows | WNYC"
-const description = "Learn more about the shows airing on WNYC, America's most listened-to public radio station."
+const description =
+  "Learn more about the shows airing on WNYC, America's most listened-to public radio station."
 useHead({
   title,
 })
@@ -106,7 +108,11 @@ useSeoMeta({
       <section class="thinContent">
         <h1 class="hidden md:block mb-3 md:mb-4">Browse All Shows</h1>
         <IconField>
-          <InputIcon v-if="isSearching" class="pi pi-spin pi-spinner z-2" />
+          <InputIcon
+            v-if="isSearching"
+            class="pi pi-spin pi-spinner z-2"
+            aria-hidden="true"
+          />
           <InputIcon v-else class="pi pi-search z-2" />
           <InputText
             v-model="searchFieldValue"
@@ -180,7 +186,9 @@ useSeoMeta({
         <FetchError v-if="error" />
 
         <section class="tabs mt-2">
-          <div class="flex md:justify-content-between align-items-center mb-4 gap-3">
+          <div
+            class="flex md:justify-content-between align-items-center mb-4 gap-3"
+          >
             <Transition name="fade" mode="out-in">
               <h2 :key="allOrFeatured ? 'featured' : 'all'">
                 {{ allOrFeatured ? "Featured" : "All" }} Shows

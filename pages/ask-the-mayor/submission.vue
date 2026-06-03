@@ -380,6 +380,7 @@ watch(
                         <i
                           class="pi pi-spinner pi-spin"
                           style="color: var(--p-sky-500)"
+                          aria-hidden="true"
                         ></i>
                         <span class="ml-2">{{ submitProgress }}</span>
                       </p>

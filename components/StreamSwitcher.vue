@@ -5,9 +5,9 @@ import {
   useCurrentEpisode,
   useCurrentEpisodeHolder,
   useIsEpisodePlaying,
-} from '~/composables/states'
-import { updateLiveStream } from '~/composables/data/liveStream'
-import { trackClickEvent, formatTime } from '~/utilities/helpers'
+} from "~/composables/states"
+import { updateLiveStream } from "~/composables/data/liveStream"
+import { trackClickEvent, formatTime } from "~/utilities/helpers"
 
 const currentStreamStation = useCurrentStreamStation()
 const currentEpisode = useCurrentEpisode()
@@ -23,8 +23,12 @@ const initializeSwitcher = (val) => {
   const tempMenuData = []
 
   val.forEach((station) => {
-    const formattedStartTime = station.timeStart ? formatTime(station.timeStart, 'h:mm a') : ''
-    const formattedEndTime = station.timeEnd ? formatTime(station.timeEnd, 'h:mm a') : ''
+    const formattedStartTime = station.timeStart
+      ? formatTime(station.timeStart, "h:mm a")
+      : ""
+    const formattedEndTime = station.timeEnd
+      ? formatTime(station.timeEnd, "h:mm a")
+      : ""
     tempMenuData.push({
       label: station.title,
       name: station.title,
@@ -32,7 +36,10 @@ const initializeSwitcher = (val) => {
       code: station.title,
       slug: station.slug,
       image: station.image,
-      times: formattedStartTime && formattedEndTime ? `${formattedStartTime} - ${formattedEndTime}` : '',
+      times:
+        formattedStartTime && formattedEndTime
+          ? `${formattedStartTime} - ${formattedEndTime}`
+          : "",
     })
   })
 
@@ -60,8 +67,8 @@ const onDropdownChange = async (event) => {
     currentEpisode.value = currentEpisodeHolder.value
   }
   trackClickEvent(
-    'Click Tracking - Stream Switcher',
-    'Stream Switcher',
+    "Click Tracking - Stream Switcher",
+    "Stream Switcher",
     `station = ${event.value.name}`
   )
 }
@@ -90,7 +97,7 @@ onMounted(() => {
         <template #value="slotProps">
           <p v-if="stationsMenuData.length > 0">
             {{
-              typeof slotProps.value === 'object'
+              typeof slotProps.value === "object"
                 ? slotProps.value.station
                 : slotProps.value
             }}
@@ -99,6 +106,7 @@ onMounted(() => {
             <i
               class="pi pi-spin pi-spinner text-white text-lg"
               style="font-size: 2rem"
+              aria-hidden="true"
             ></i>
           </div>
         </template>
@@ -136,10 +144,10 @@ onMounted(() => {
     .p-dropdown-label p {
       font-weight: var(--font-weight-700);
       text-transform: uppercase;
-      font-feature-settings: 'lnum';
+      font-feature-settings: "lnum";
     }
     &:after {
-      content: '';
+      content: "";
       position: absolute;
       width: 0;
       bottom: -29px;
@@ -175,7 +183,7 @@ onMounted(() => {
       p {
         color: var(--darkblue);
         line-height: normal;
-        font-feature-settings: 'lnum';
+        font-feature-settings: "lnum";
         &:first-child {
           font-weight: var(--font-weight-700);
         }

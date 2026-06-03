@@ -51,7 +51,7 @@ const svgWidth = 75
         v-if="props.spinner"
         class="pi pi-spin pi-spinner"
         :style="`font-size: ${props.size}; color: ${props.color};`"
-        aria-label="spinning loader"
+        aria-hidden="true"
       ></i>
       <svg
         v-else

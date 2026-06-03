@@ -69,6 +69,7 @@ handlePreviewData()
       <i
         class="pi pi-spin pi-spinner lnline-block mr-3"
         style="font-size: 2rem"
+        aria-hidden="true"
       />
       <h3 class="inline-block">Building preview...</h3>
     </div>
