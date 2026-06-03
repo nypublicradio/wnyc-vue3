@@ -278,8 +278,10 @@ onMounted(async () => {
       raw
       :to="props.to"
       :aria-hidden="props.isDecorative ? true : false"
-      :tabindex="props.isDecorative ? -1 : 0"
+      :tabindex="props.isDecorative ? undefined : 0"
+      :inert="props.isDecorative ? true : undefined"
       class="v-image-link"
+      :class="{ 'is-decorative': props.isDecorative }"
       @click="props.to ? emit('image-click', props.to) : null"
     >
       <div
@@ -375,6 +377,9 @@ onMounted(async () => {
 .v-image-link {
   width: 100%;
   height: inherit;
+}
+.v-image-link.is-decorative {
+  pointer-events: none;
 }
 .v-image-publisher {
   height: inherit;
