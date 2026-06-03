@@ -280,7 +280,7 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                     summary: "Download started!",
                     life: 3000,
                 }
-                const fileImage = file.image?.template ?? file.image?.url ?? file.image ?? FALLBACKIMAGEEP
+                const fileImage = file.image?.file ?? file.image?.url ?? file.image ?? FALLBACKIMAGEEP
 
                 // create the directory
                 await Filesystem.mkdir({

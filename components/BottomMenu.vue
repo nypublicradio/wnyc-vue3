@@ -1,5 +1,5 @@
 <script setup>
-import { useBottomMenuState } from "~/composables/states"
+import { useBottomMenuState, useIsNetworkConnected } from "~/composables/states"
 import { trackClickEvent, capitalizeFirstLetter } from "~/utilities/helpers"
 import { appMenuOptions as options } from "~/composables/globals"
 import HomeIcon from "~/components/icons/HomeIcon.vue"
@@ -19,6 +19,7 @@ const getIconComponent = (iconName) => iconComponentMap[iconName]
 const route = useRoute()
 
 const bottomMenuState = useBottomMenuState()
+const isNetworkConnected = useIsNetworkConnected()
 
 // if another trigger changes the route, update the bottom menu state
 watch(
@@ -42,7 +43,15 @@ const menuClick = (item) => {
   <div class="bottom-menu">
     <div class="buttons-holder">
       <template v-for="item in options" :key="item.slug">
-        <NuxtLink :to="item.slug" class="link w-full" prefetch>
+        <NuxtLink
+          :to="`${item.slug}${
+            !isNetworkConnected && item.slug === '/saved'
+              ? '?slug=Downloads'
+              : ''
+          }`"
+          class="link w-full"
+          prefetch
+        >
           <Button
             @click="menuClick(item)"
             class="w-full"

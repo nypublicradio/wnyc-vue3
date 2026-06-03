@@ -200,6 +200,10 @@ export function useVImage () {
     const getCmsSourceAndImageTemplate = (srcImg, fallback) => {
         const fallBackObject = { cmsSource: cmsSources.WAGTAIL, imageTemplate: fallback }
         if (srcImg) {
+            // Local device files (Capacitor downloads) — must bypass all image optimization
+            if (typeof srcImg === "string" && srcImg.includes("_capacitor_file_")) {
+                return { cmsSource: cmsSources.LOCAL, imageTemplate: srcImg }
+            }
             // check if fileHash exists, or if we pass in a fallback, they are provided as just strings numbers from Wagtail
             if (isWagtailImage(srcImg)) {
                 // Handle different Wagtail image structures

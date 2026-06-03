@@ -7,6 +7,7 @@ import { useFallbackImages } from "~/composables/useFallbackImages"
 import VImagePublisher from "./VImagePublisher.vue"
 import VImageNpr from "./VImageNpr.vue"
 import VImageWagtail from "./VImageWagtail.vue"
+import VImageLocal from "./VImageLocal.vue"
 
 // Static component map — no module-level mutable state, SSR-safe
 const componentMap = {
@@ -14,6 +15,7 @@ const componentMap = {
   [cmsSources.NPR]: VImageNpr,
   [cmsSources.WAGTAIL]: VImageWagtail,
   [cmsSources.SIMPLECAST]: VImageWagtail,
+  [cmsSources.LOCAL]: VImageLocal,
 }
 
 const props = defineProps({
@@ -113,19 +115,6 @@ const handleImageLoad = () => {
   imageLoaded.value = true
 }
 
-// Handle image error - swap to fallback src
-// const handleImageError = () => {
-//   if (!imageErrored.value) {
-//     imageErrored.value = true
-//     imageLoaded.value = false
-//   }
-// }
-
-// // The src actually passed down to the sub-component
-// const effectiveSrc = computed(() => {
-//   return imageErrored.value ? finalSrcFallback.value : imageTemplate.value
-// })
-
 // Reset loading/error state when image source changes
 watch(
   () => imageTemplate.value,
@@ -160,7 +149,8 @@ const childProps = computed(() => {
   // Pass-through props (only if defined/non-default, to let child defaults work)
   if (props.alt) p.alt = props.alt
   if (props.allowPreview) p.allowPreview = props.allowPreview
-  if (props.allowVerticalEffect) p.allowVerticalEffect = props.allowVerticalEffect
+  if (props.allowVerticalEffect)
+    p.allowVerticalEffect = props.allowVerticalEffect
   if (props.density !== undefined) p.density = props.density
   if (props.format !== undefined) p.format = props.format
   if (props.isDecorative) p.isDecorative = props.isDecorative
@@ -201,7 +191,11 @@ const childProps = computed(() => {
 
     <!-- Loader container that holds space -->
 
-    <div v-if="shouldShowLoader" class="image-loader-container" :style="loaderDimensions">
+    <div
+      v-if="shouldShowLoader"
+      class="image-loader-container"
+      :style="loaderDimensions"
+    >
       <ClientOnly>
         <WnycLoader class="image-loader-anim" size="1rem" bg spinner />
       </ClientOnly>

@@ -1,5 +1,4 @@
 <script setup>
-
 import {
   //useFileSystem,
   useFileSystemLS,
@@ -28,7 +27,7 @@ const fileSystemLS = useFileSystemLS()
 <template>
   <div>
     <div class="file-system">
-      <!-- <p>!!Storage limit: {{ used }} of {{ granted }}</p> -->
+      <!--  <p>!!Storage limit: {{ used }} of {{ granted }}</p> -->
       <div>
         <div class="flex flex-column-reverse gap-4 mt-2">
           <MediaCard

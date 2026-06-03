@@ -229,9 +229,26 @@ const nativeImageWidth = computed(() => {
   return reactiveData.value?.imageFullWidth || 192
 })
 
+const downloadedImageSrc = ref(null)
+
+if (props.isInDownloads) {
+  watch(
+    () => [reactiveData.value?.id, reactiveData.value?.directoryImage?.name],
+    async () => {
+      if (!reactiveData.value) {
+        downloadedImageSrc.value = null
+        return
+      }
+
+      downloadedImageSrc.value = await getDownloadedImageUri(reactiveData.value)
+    },
+    { immediate: true }
+  )
+}
+
 const getImage = computed(() => {
   if (props.isInDownloads) {
-    return getDownloadedImageUri(reactiveData.value)
+    return downloadedImageSrc.value
   } else {
     return reactiveData.value?.image
   }

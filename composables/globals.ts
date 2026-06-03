@@ -6,6 +6,7 @@ export const cmsSources = {
     WAGTAIL: 'wagtail',
     NPR: 'npr',
     SIMPLECAST: 'simplecast',
+    LOCAL: 'local',
 }
 
 export const appMenuOptions = [
