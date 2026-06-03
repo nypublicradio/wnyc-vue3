@@ -185,6 +185,7 @@ const downloadFileToDesktop = async (url: string, filename: string) => {
     }
     try {
         // Use server-side proxy to avoid CORS issues
+        console.log(`Requesting download proxy for URL: ${url}`)
         const proxyUrl = `/api/download-proxy?url=${encodeURIComponent(url)}`
 
         // Fetch the file data through the proxy

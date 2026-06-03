@@ -15,6 +15,8 @@ const DOWNLOAD_PROXY_ALLOWED_HOSTS = [
   "megaphone.fm",
   "amazonaws.com",
   "cloudfront.net",
+  "pscrb.fm",
+  "cdnstream1.com"
 ]
 
 const isAllowedHostname = (hostname: string): boolean => {
