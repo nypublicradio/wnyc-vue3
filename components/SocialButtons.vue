@@ -22,6 +22,7 @@ const props = defineProps({
       :key="item.id"
       radius="50px"
       :title="item.label"
+      :aria-label="`${item.label} social Button`"
       @flexible-link-click="
         () => {
           trackClickEvent(
@@ -32,7 +33,13 @@ const props = defineProps({
         }
       "
     >
-      <Button :icon="item.icon" severity="secondary" size="large" rounded tabindex="-1" />
+      <Button
+        :icon="item.icon"
+        severity="secondary"
+        size="large"
+        rounded
+        tabindex="-1"
+      />
     </VFlexibleLink>
   </div>
 </template>
