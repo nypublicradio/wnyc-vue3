@@ -530,7 +530,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
       @click.stop="handleRouteClick(true)"
       @keypress.enter.space="handleRouteClick(true)"
       tabindex="0"
-      aria-role="button"
+      role="button"
       :aria-label="`${props.data?.showTitle} show details`"
       :title="props.data?.title"
     ></nuxt-link>

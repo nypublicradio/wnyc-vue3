@@ -112,7 +112,7 @@ const getDotMenuItems = (bucketItem) => {
       @click="emit('on-click')"
       @keypress.enter.space="emit('on-click')"
       tabindex="0"
-      aria-role="button"
+      role="button"
       :aria-label="`${props.data.title} show details`"
       v-ripple
     >
