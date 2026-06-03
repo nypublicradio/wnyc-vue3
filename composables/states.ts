@@ -41,6 +41,9 @@ export const useIsDarkMode = () => useState('useIsDarkMode', () => false)
 // keep track if the app is int eh foreground and active
 export const useIsActive = () => useState('useIsActive', () => true)
 
+// flag to suppress appStateChange refresh when the native share sheet is open
+export const useIsShareDialogOpen = () => useState('useIsShareDialogOpen', () => false)
+
 const currentUser = null
 // global state for the current authorized user
 export const useCurrentUser = () => useState('useCurrentUser', () => currentUser)

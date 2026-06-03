@@ -20,6 +20,7 @@ import {
   useFullDeviceInfo,
   useAppDownloadLink,
   useIsActive,
+  useIsShareDialogOpen,
 } from "~/composables/states"
 import {
   useBrowserTopColor,
@@ -52,6 +53,7 @@ const isNetworkConnected = useIsNetworkConnected()
 const fullDeviceInfo = useFullDeviceInfo()
 const appDownloadLink = useAppDownloadLink()
 const isActiveGlobal = useIsActive()
+const isShareDialogOpen = useIsShareDialogOpen()
 const isApp = useIsApp()
 const isNativeApp = useIsNativeApp()
 
@@ -149,6 +151,12 @@ onMounted(async () => {
   await App.addListener("appStateChange", async ({ isActive }) => {
     isActiveGlobal.value = isActive
     if (isActive && isNativeApp.value) {
+      // if returning from the native share sheet, skip the refresh
+      if (isShareDialogOpen.value) {
+        isShareDialogOpen.value = false
+        return
+      }
+
       // refresh data
       refreshData()
 

@@ -484,12 +484,15 @@ export const shareAPI = async (
 ) => {
   const shareData = {
     title: stripHtmlTags(content.socialTitle || content.title),
-    text: stripHtmlTags(content.rawBody || content.description || content.title),
+    text: stripHtmlTags(content.tease || content.description || content.title),
     url: content.shareUrl || content.url || content.titleLink,
   }
   trackClickEvent("Click Tracking - Share", componentOfOrigin, shareData.title)
   // Native Mobile Sharing
   if (Capacitor.isNativePlatform()) {
+    const { useIsShareDialogOpen } = await import('~/composables/states')
+    const isShareDialogOpen = useIsShareDialogOpen()
+    isShareDialogOpen.value = true
     await Share.share({
       title: shareData.title,
       text: shareData.text,
