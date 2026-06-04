@@ -333,6 +333,16 @@ let touchendTime = 0
 const swipeThreshold = props.swipeThreshold
 let isDraggingDown = false
 
+function isExpandedContentAtTop() {
+  const scrollTop = expandedContentHolder.value?.scrollTop
+  if (typeof scrollTop !== "number") {
+    return false
+  }
+
+  // iOS Safari can report fractional or slightly negative values during elastic overscroll.
+  return scrollTop <= 1
+}
+
 // handles the detection of the direction of the drag movment
 function handleSwipeDirection() {
   const tempBool = isDraggingDown
@@ -387,7 +397,7 @@ function handleSwipe() {
   }
   if (props.canExpand && props.canUnexpandWithSwipe) {
     // only swipe closes when the scroll position is at the top
-    if (isDraggingDown && expandedContentHolder.value.scrollTop === 0) {
+    if (isDraggingDown && isExpandedContentAtTop()) {
       if (velocity > swipeThreshold) {
         //console.log('UNEXPAND')
         playerRef.value.addEventListener("touchmove", preventScrollOnTouch, {
@@ -415,6 +425,7 @@ if (supportSwipe) {
     },
     onSwipeStart() {
       touchstartY = swipe.lengthY.value
+      touchPrevY = touchstartY
       touchstartTime = new Date().getTime()
     },
     passive: true,
@@ -881,6 +892,8 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
       overflow-y: auto;
       overflow-x: hidden;
       height: inherit;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
     }
 
     #expandedControls {
