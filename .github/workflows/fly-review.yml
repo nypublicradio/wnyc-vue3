@@ -77,6 +77,20 @@ jobs:
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
+      - name: Ensure Fly review app exists
+        run: |
+          export PATH="${HOME}/.fly/bin:$PATH"
+          APP_NAME="pr-${{ github.event.number }}-nypublicradio-wnyc-vue3"
+
+          if ! flyctl apps show "${APP_NAME}" >/dev/null 2>&1; then
+            flyctl apps create "${APP_NAME}" --org "${FLY_ORG}"
+          fi
+
+          # Fail fast if app is still unavailable for any reason.
+          flyctl apps show "${APP_NAME}" >/dev/null
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
       - name: Build and push image locally
         run: |
           export PATH="${HOME}/.fly/bin:$PATH"
