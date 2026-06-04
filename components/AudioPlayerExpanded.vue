@@ -86,7 +86,9 @@ onMounted(() => {
   watchEffect(async () => {
     if (!user.value) return
     // hide share if it is a segment, which is only set in NPR direct show episodes
-    currentEpisode.value?.isSegment ? (showShare.value = false) : (showShare.value = true)
+    currentEpisode.value?.isSegment
+      ? (showShare.value = false)
+      : (showShare.value = true)
     isFavorited.value = await checkIsFavorited(
       currentEpisode.value?.meta?.slug || currentEpisode.value?.slug
     )
@@ -382,7 +384,10 @@ const moreFromClick = async () => {
     <!-- <pre class="text-xs">{{ currentEpisode }}</pre> -->
     <div class="tools flex justify-content-between">
       <div v-if="isLive && isApp" class="flex gap-3">
-        <SleepTimerButton @emit-click="handleSleepTimer" :isActive="sleepTimerRunning" />
+        <SleepTimerButton
+          @emit-click="handleSleepTimer"
+          :isActive="sleepTimerRunning"
+        />
       </div>
       <div v-else class="flex gap-3">
         <Button
@@ -479,7 +484,7 @@ const moreFromClick = async () => {
     </div>
     <VImage
       v-if="
-        Boolean(currentEpisode?.onTodaysShowImageTemplate)
+        Boolean(currentEpisode?.image || currentEpisode?.image?.template)
           ? currentEpisode?.player_image !== currentEpisode?.image
           : false
       "
@@ -501,7 +506,12 @@ const moreFromClick = async () => {
       :key="`details-${currentEpisode.id || 'default'}`"
     />
     <VImage
-      v-if="currentEpisode.onTodaysShowImageTemplate"
+      v-if="
+        Boolean(currentEpisode?.onTodaysShowImageTemplate)
+          ? currentEpisode?.player_image !==
+            currentEpisode?.onTodaysShowImageTemplate
+          : false
+      "
       :src="{ template: currentEpisode.onTodaysShowImageTemplate }"
       :alt="`${currentEpisode.title} featured image`"
       sizes="xs:327, sm:528, md:672"
@@ -553,7 +563,9 @@ const moreFromClick = async () => {
       ref="expandedFooterRef"
       v-if="
         !isLiveStream &&
-        (currentEpisode.showSlug || currentEpisode.meta?.showSlug || currentEpisode.show)
+        (currentEpisode.showSlug ||
+          currentEpisode.meta?.showSlug ||
+          currentEpisode.show)
       "
       class="expanded-footer"
     >
