@@ -90,7 +90,7 @@ jobs:
           echo "Using org: ${FLY_ORG}"
           echo "Ensuring app exists: ${APP_NAME}"
 
-          if ! flyctl apps show "${APP_NAME}"; then
+          if ! flyctl status --app "${APP_NAME}" >/dev/null 2>&1; then
             echo "App not found. Creating ${APP_NAME} in org ${FLY_ORG}..."
             flyctl apps create "${APP_NAME}" --org "${FLY_ORG}"
           else
@@ -98,7 +98,7 @@ jobs:
           fi
 
           echo "Final app verification:"
-          flyctl apps show "${APP_NAME}"
+          flyctl status --app "${APP_NAME}"
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
