@@ -57,6 +57,10 @@ const isEmail = computed(
   () => currentUser.value?.app_metadata?.provider === "email"
 )
 const isDisabled = computed(() => {
+  console.log(
+    "currentUser.value?.app_metadata?.provider",
+    currentUser.value?.app_metadata?.provider
+  )
   return currentUser.value?.app_metadata?.provider !== "email"
 })
 
