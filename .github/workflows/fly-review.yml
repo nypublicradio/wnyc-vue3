@@ -79,15 +79,26 @@ jobs:
 
       - name: Ensure Fly review app exists
         run: |
+          set -euo pipefail
           export PATH="${HOME}/.fly/bin:$PATH"
           APP_NAME="pr-${{ github.event.number }}-nypublicradio-wnyc-vue3"
 
-          if ! flyctl apps show "${APP_NAME}" >/dev/null 2>&1; then
+          echo "Checking Fly auth context..."
+          flyctl auth whoami || true
+          echo "Available orgs:"
+          flyctl orgs list || true
+          echo "Using org: ${FLY_ORG}"
+          echo "Ensuring app exists: ${APP_NAME}"
+
+          if ! flyctl apps show "${APP_NAME}"; then
+            echo "App not found. Creating ${APP_NAME} in org ${FLY_ORG}..."
             flyctl apps create "${APP_NAME}" --org "${FLY_ORG}"
+          else
+            echo "App already exists: ${APP_NAME}"
           fi
 
-          # Fail fast if app is still unavailable for any reason.
-          flyctl apps show "${APP_NAME}" >/dev/null
+          echo "Final app verification:"
+          flyctl apps show "${APP_NAME}"
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
