@@ -77,6 +77,31 @@ jobs:
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
+      - name: Ensure Fly review app exists
+        run: |
+          set -euo pipefail
+          export PATH="${HOME}/.fly/bin:$PATH"
+          APP_NAME="pr-${{ github.event.number }}-nypublicradio-wnyc-vue3"
+
+          echo "Checking Fly auth context..."
+          flyctl auth whoami || true
+          echo "Available orgs:"
+          flyctl orgs list || true
+          echo "Using org: ${FLY_ORG}"
+          echo "Ensuring app exists: ${APP_NAME}"
+
+          if ! flyctl status --app "${APP_NAME}" >/dev/null 2>&1; then
+            echo "App not found. Creating ${APP_NAME} in org ${FLY_ORG}..."
+            flyctl apps create "${APP_NAME}" --org "${FLY_ORG}"
+          else
+            echo "App already exists: ${APP_NAME}"
+          fi
+
+          echo "Final app verification:"
+          flyctl status --app "${APP_NAME}"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
       - name: Build and push image locally
         run: |
           export PATH="${HOME}/.fly/bin:$PATH"
