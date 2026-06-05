@@ -48,7 +48,7 @@ const login = async () => {
   // On web, use the runtime config value or the prop
   let redirectTo = ""
   if (isNativeApp.value) {
-    redirectTo = "wnycalpha://confirm"
+    redirectTo = "wnycalpha://"
   } else {
     const configRedirectTo =
       innerConfig.value.public?.supabaseAuthSignInRedirectTo
