@@ -105,6 +105,17 @@ const addListeners = async () => {
 }
 
 onMounted(async () => {
+  // Register deep link listener IMMEDIATELY so we don't miss the launch URL event
+  if (isNativeApp.value) {
+    await addListeners()
+
+    // Also check if the app was cold-launched via a deep link (event may have fired before listener)
+    const launchUrl = await App.getLaunchUrl()
+    if (launchUrl?.url) {
+      handleAppUrlOpen(launchUrl)
+    }
+  }
+
   // Initialize device info and app download link asynchronously (client-side only)
   fullDeviceInfo.value = await getFullDeviceInfo()
   appDownloadLink.value = await getAppDownloadLink()
@@ -136,7 +147,6 @@ onMounted(async () => {
   if (isNativeApp.value) {
     await ScreenOrientation.lock({ orientation: "portrait" })
     await initFileSystem()
-    await addListeners()
     await initLocalNotifications()
 
     // initial check for notification permission

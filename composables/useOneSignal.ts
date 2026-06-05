@@ -112,11 +112,14 @@ export default function useOneSignal () {
 
     //if the url has a query var "code" then we need to exchange it for a session
     const sessionCode = urlObj.searchParams.get("code")
+    console.log("urlObj", urlObj)
+    console.log("OS sessionCode", sessionCode)
     if (sessionCode) {
       //when redirected to the app from a apple or google auth, we need to exchange the url param code for a session
       const code = event.url.split("=")[1]
       // for some reason, sometimes, the code has a '#' at the end of it, so we need to remove it
       const cleanCode = code.replace("#", "")
+      console.log("cleanCode", cleanCode)
 
       const client = useSupabaseClient()
       const globalToast = useGlobalToast()

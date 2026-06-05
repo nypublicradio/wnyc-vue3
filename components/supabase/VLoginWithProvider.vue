@@ -47,8 +47,9 @@ const login = async () => {
   // On native apps, redirect back via custom scheme so the OS returns to the app
   // On web, use the runtime config value or the prop
   let redirectTo = ""
+  console.log("isNativeApp:", isNativeApp.value)
   if (isNativeApp.value) {
-    redirectTo = "wnycalpha://"
+    redirectTo = "wnycalpha://confirm"
   } else {
     const configRedirectTo =
       innerConfig.value.public?.supabaseAuthSignInRedirectTo
@@ -61,6 +62,7 @@ const login = async () => {
   const res = await innerClient.value.auth.signInWithOAuth({
     options: {
       redirectTo,
+      flowType: "pkce",
     },
     provider: props.provider,
   })
