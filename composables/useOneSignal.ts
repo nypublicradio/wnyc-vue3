@@ -16,12 +16,16 @@ const loadOneSignal = async () => {
 import {
   useCurrentUserProfile,
   useCurrentUser,
-  useSettingSideBar,
   useIsNativeApp,
   useGlobalToast,
   useIsNetworkConnected,
   useMasterNotificationChannelsArray,
-  getMasterNotificationChannels
+  getMasterNotificationChannels,
+  useSettingSideBar,
+  useLoginSideBar,
+  useSignupSideBar,
+  useForgotPasswordSideBar,
+  useSettingsSideBarBrowser
 } from "~/composables/states"
 import {
   trackClickEvent,
@@ -37,6 +41,20 @@ import { useAuthReturnRoute } from "./useAuthReturnRoute"
 
 // shared state for in-app notification
 export const isInAppNotificationActive = ref(false)
+
+// close the sidebars
+export const closeSidebars = () => {
+  const settingSideBar = useSettingSideBar()
+  const loginSideBar = useLoginSideBar()
+  const signupSideBar = useSignupSideBar()
+  const forgotPasswordSideBar = useForgotPasswordSideBar()
+  const settingsSideBarBrowser = useSettingsSideBarBrowser()
+  if (settingSideBar.value) settingSideBar.value = false
+  if (loginSideBar.value) loginSideBar.value = false
+  if (signupSideBar.value) signupSideBar.value = false
+  if (forgotPasswordSideBar.value) forgotPasswordSideBar.value = false
+  if (settingsSideBarBrowser.value) settingsSideBarBrowser.value = false
+}
 
 // base OneSignal composable
 export default function useOneSignal () {
@@ -60,9 +78,8 @@ export default function useOneSignal () {
   const handleAppNotificationUrlOpen = (event) => {
     const url = event.result?.url
     const action = event.result?.actionId
-    const settingSideBar = useSettingSideBar()
-    // if settingSideBar is open, close it
-    if (settingSideBar.value) settingSideBar.value = false
+    // if SideBars are open, close them
+    closeSidebars()
     if (url) {
       if (!url.includes("https://")) {
 
@@ -104,16 +121,54 @@ export default function useOneSignal () {
   }
 
   const handleAppUrlOpen = async (event) => {
-    // if settingSideBar is open, close it
-    const settingSideBar = useSettingSideBar()
-    if (settingSideBar.value) settingSideBar.value = false
+    // if SideBars are open, close them
+    closeSidebars()
 
     const urlObj = new URL(event.url)
+    const client = useSupabaseClient()
+    const globalToast = useGlobalToast()
+    const { getAuthReturnRoute, clearAuthReturnRoute } = useAuthReturnRoute()
+    const theReturnRoute = await getAuthReturnRoute()
 
     //if the url has a query var "code" then we need to exchange it for a session
     const sessionCode = urlObj.searchParams.get("code")
     console.log("urlObj", urlObj)
     console.log("OS sessionCode", sessionCode)
+
+    // Check for implicit flow tokens in the hash fragment (#access_token=...&refresh_token=...)
+    const hashParams = new URLSearchParams(urlObj.hash.substring(1))
+    const accessToken = hashParams.get("access_token")
+    const refreshToken = hashParams.get("refresh_token")
+    console.log("hashParams", hashParams)
+    console.log("accessToken", accessToken)
+    console.log("refreshToken", refreshToken)
+
+    if (accessToken && refreshToken) {
+      // Implicit flow: set session from hash tokens
+      console.log("Implicit flow: setting session from hash tokens")
+      try {
+        await client.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        })
+
+        await router.push(theReturnRoute || "/")
+        clearAuthReturnRoute()
+        setTimeout(() => {
+          window.location.reload()
+        }, 200)
+        return
+      } catch (error) {
+        console.error("Failed to set session from hash tokens:", error)
+        globalToast.value = {
+          severity: "error",
+          summary: "Authentication failed",
+          life: 6000,
+        }
+        return
+      }
+    }
+
     if (sessionCode) {
       //when redirected to the app from a apple or google auth, we need to exchange the url param code for a session
       const code = event.url.split("=")[1]
@@ -121,10 +176,6 @@ export default function useOneSignal () {
       const cleanCode = code.replace("#", "")
       console.log("cleanCode", cleanCode)
 
-      const client = useSupabaseClient()
-      const globalToast = useGlobalToast()
-      const { getAuthReturnRoute, clearAuthReturnRoute } = useAuthReturnRoute()
-      const theReturnRoute = await getAuthReturnRoute()
       try {
         await client.auth.exchangeCodeForSession(cleanCode)
 
