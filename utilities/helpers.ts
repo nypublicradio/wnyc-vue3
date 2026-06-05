@@ -600,6 +600,9 @@ export const getAndSetUserProfile = async () => {
   const masterNotificationChannelsArray = await getMasterNotificationChannels()
   // function that gets a user profile
   const getProfile = async () => {
+    // Guard: if currentUser was nulled by a parallel execution, bail out
+    if (!currentUser.value?.id) return
+
     // Retry logic: the Supabase trigger that creates the profile row may not
     // have completed by the time we query, especially for brand-new OAuth users.
     const maxRetries = 5
@@ -608,6 +611,8 @@ export const getAndSetUserProfile = async () => {
     let error = null
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      if (!currentUser.value?.id) return // guard against race condition
+
       const result = await client
         .from("profiles")
         .select("*")
@@ -625,17 +630,15 @@ export const getAndSetUserProfile = async () => {
     }
 
     if (error) {
-      console.error(error)
-      //account does not exist anymore, sign out and treat as logged-out user
       if (error.code === 'PGRST116') {
-        console.warn('Profile not found after retries, signing out to prevent reload loop')
-        await client.auth.signOut()
-        currentUser.value = null
-        await Preferences.clear()
-        localStorage.clear()
-        navitgateTo('/home')
+        // Profile row doesn't exist — let the initial-login branch handle creation
+        console.warn('Profile not found after retries, treating as initial login')
+        if (!currentUser.value?.id) return
+        data = { id: currentUser.value.id, initial: true }
+      } else {
+        console.error('Unexpected profile fetch error:', error)
+        return
       }
-      return
     }
 
     if (data) {
@@ -669,11 +672,12 @@ export const getAndSetUserProfile = async () => {
         data.dark_mode = ls.dark_mode
         data.text_size = ls.text_size
 
-        // update supabase profile data
+        // upsert supabase profile data (upsert handles case where trigger didn't create the row)
         // set the supabase preferences with what is currently set in the local storage
         await client
           .from("profiles")
-          .update({
+          .upsert({
+            id: currentUser.value.id,
             initial: data.initial,
             autodownload: data.autodownload,
             default_live_stream: data.default_live_stream,
@@ -682,7 +686,6 @@ export const getAndSetUserProfile = async () => {
             dark_mode: data.dark_mode,
             text_size: data.text_size,
           })
-          .match({ id: currentUser.value.id })
 
         // set the current user profile state
         currentUserProfile.value = data
