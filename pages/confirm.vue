@@ -21,6 +21,7 @@ const { setAuthState } = useAuth()
 // Handle PKCE OAuth flow: exchange the ?code= query param for a session
 // This is required for Google/Apple OAuth which returns a code after redirect
 const code = route.query.code as string | undefined
+console.log("OAuth code from query param:", code)
 if (code) {
   try {
     await supabase.auth.exchangeCodeForSession(code)

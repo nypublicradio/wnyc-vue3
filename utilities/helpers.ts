@@ -633,7 +633,7 @@ export const getAndSetUserProfile = async () => {
         currentUser.value = null
         await Preferences.clear()
         localStorage.clear()
-        window.location.href = '/home'
+        navitgateTo('/home')
       }
       return
     }
