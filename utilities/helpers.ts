@@ -607,11 +607,14 @@ export const getAndSetUserProfile = async () => {
       .single()
     if (error) {
       console.error(error)
-      //account does not exist anymore, wipe local storage and session and hard refresh
+      //account does not exist anymore, sign out and treat as logged-out user
       if (error.code === 'PGRST116') {
+        console.warn('Profile not found for user, signing out to prevent reload loop')
+        await client.auth.signOut()
+        currentUser.value = null
         await Preferences.clear()
-        await localStorage.clear()
-        location.reload()
+        localStorage.clear()
+        window.location.href = '/home'
       }
     } else if (data) {
       const lsSTRING = await Preferences.get({ key: localUserProfileKey })
