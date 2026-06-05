@@ -46,7 +46,7 @@ const login = async () => {
 
   // On native apps, redirect back via custom scheme so the OS returns to the app
   // On web, use the runtime config value or the prop
-  let redirectTo: string
+  let redirectTo = ""
   if (isNativeApp.value) {
     redirectTo = "wnycalpha://confirm"
   } else {
