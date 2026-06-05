@@ -312,28 +312,30 @@ watch(
                       returnRoute="/ask-the-mayor/submission"
                     >
                       <template #header>
-                        <p>
+                        <div>
                           Already have an account?
                           <VFlexibleLink
+                            to="#"
                             aria-label="log in"
                             @flexible-link-click="onLoginClick"
                           >
                             Log in
                           </VFlexibleLink>
-                        </p>
+                        </div>
                       </template>
                     </Signup>
                     <Login v-else returnRoute="/ask-the-mayor/submission">
                       <template #header>
-                        <p>
+                        <div>
                           Don't have an account yet?
                           <VFlexibleLink
+                            to="#"
                             aria-label="sign up"
                             @flexible-link-click="onSignupClick"
                           >
                             Sign up
                           </VFlexibleLink>
-                        </p>
+                        </div>
                       </template>
                     </Login>
                   </div>

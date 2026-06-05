@@ -46,61 +46,53 @@ if (code) {
       console.error("Failed to set session from hash tokens:", error)
     }
   }
-
-  // Implicit flow: session is set, proceed directly
-  await nextTick()
-  await getAndSetUserProfile()
-  navigateTo("/home")
 }
 
-// PKCE flow: wait for the user ref to update after exchangeCodeForSession
-if (code) {
-  watch(
-    user,
-    async () => {
-      if (user.value) {
-        console.log("user updated and ready")
-        try {
-          // Get the current Supabase session
-          const { data: sessionData } = await supabase.auth.getSession()
-
-          if (sessionData.session) {
-            // Convert Supabase session to JWT
-            const jwtResponse = await $fetch(
-              `${config.public.BFF_URL}/api/auth/session-to-jwt`,
-              {
-                method: "POST",
-                body: {
-                  access_token: sessionData.session.access_token,
-                  refresh_token: sessionData.session.refresh_token,
-                },
-              }
-            )
-
-            if (jwtResponse.success && jwtResponse.token) {
-              // Set the JWT token in our auth system with refresh token
-              setAuthState(
-                jwtResponse.token,
-                jwtResponse.user,
-                sessionData.session.refresh_token
-              )
+watch(
+  user,
+  async () => {
+    if (user.value) {
+      console.log("user updated and ready")
+      try {
+        // Get the current Supabase session
+        const { data: sessionData } = await supabase.auth.getSession()
+        console.log("sessionData", sessionData)
+        if (sessionData.session) {
+          // Convert Supabase session to JWT
+          const jwtResponse = await $fetch(
+            `${config.public.BFF_URL}/api/auth/session-to-jwt`,
+            {
+              method: "POST",
+              body: {
+                access_token: sessionData.session.access_token,
+                refresh_token: sessionData.session.refresh_token,
+              },
             }
+          )
+          console.log("jwtResponse", jwtResponse)
+          if (jwtResponse.success && jwtResponse.token) {
+            // Set the JWT token in our auth system with refresh token
+            setAuthState(
+              jwtResponse.token,
+              jwtResponse.user,
+              sessionData.session.refresh_token
+            )
           }
-          await nextTick()
-          await getAndSetUserProfile()
-          navigateTo("/home")
-        } catch (error) {
-          console.error("JWT generation failed:", error)
-          // Fall back to normal flow
-          await nextTick()
-          await getAndSetUserProfile()
-          navigateTo("/home")
         }
+        await nextTick()
+        await getAndSetUserProfile()
+        navigateTo("/home")
+      } catch (error) {
+        console.error("JWT generation failed:", error)
+        // Fall back to normal flow
+        await nextTick()
+        await getAndSetUserProfile()
+        navigateTo("/home")
       }
-    },
-    { immediate: false }
-  )
-}
+    }
+  },
+  { immediate: false }
+)
 </script>
 <template>
   <div class="confirm-page">

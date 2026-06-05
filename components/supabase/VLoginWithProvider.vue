@@ -30,6 +30,7 @@ const props = defineProps({
 })
 const innerClient = ref(props.client)
 const innerConfig = ref(props.config)
+const isNativeApp = useIsNativeApp()
 
 // fallback incase the parent component doesn't pass in the client and config
 if (!props.client && !props.config) {
@@ -43,12 +44,19 @@ const emit = defineEmits(["submit-click", "submit-error", "submit-success"])
 const login = async () => {
   emit("submit-click")
 
-  // Use the runtime config value if no redirectUrl prop is provided
-  const configRedirectTo = innerConfig.value.public?.supabaseAuthSignInRedirectTo
-  const redirectTo =
-    props.redirectUrl !== "http://localhost:3000"
-      ? props.redirectUrl
-      : configRedirectTo || props.redirectUrl
+  // On native apps, redirect back via custom scheme so the OS returns to the app
+  // On web, use the runtime config value or the prop
+  let redirectTo: string
+  if (isNativeApp.value) {
+    redirectTo = "wnycalpha://confirm"
+  } else {
+    const configRedirectTo =
+      innerConfig.value.public?.supabaseAuthSignInRedirectTo
+    redirectTo =
+      props.redirectUrl !== "http://localhost:3000"
+        ? props.redirectUrl
+        : configRedirectTo || props.redirectUrl
+  }
 
   const res = await innerClient.value.auth.signInWithOAuth({
     options: {
