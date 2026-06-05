@@ -9,6 +9,7 @@ useHead({
 
 definePageMeta({
   layout: "default",
+  ssr: false,
 })
 
 const route = useRoute()
@@ -70,7 +71,7 @@ watch(
       }
     }
   },
-  { immediate: true }
+  { immediate: false }
 )
 </script>
 <template>

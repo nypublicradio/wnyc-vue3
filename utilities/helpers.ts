@@ -600,23 +600,45 @@ export const getAndSetUserProfile = async () => {
   const masterNotificationChannelsArray = await getMasterNotificationChannels()
   // function that gets a user profile
   const getProfile = async () => {
-    const { data, error } = await client
-      .from("profiles")
-      .select("*")
-      .eq("id", currentUser.value.id)
-      .single()
+    // Retry logic: the Supabase trigger that creates the profile row may not
+    // have completed by the time we query, especially for brand-new OAuth users.
+    const maxRetries = 5
+    const retryDelayMs = 500
+    let data = null
+    let error = null
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      const result = await client
+        .from("profiles")
+        .select("*")
+        .eq("id", currentUser.value.id)
+        .single()
+      data = result.data
+      error = result.error
+
+      if (!error || error.code !== 'PGRST116') break // success or non-retryable error
+
+      if (attempt < maxRetries) {
+        console.warn(`Profile not found (attempt ${attempt}/${maxRetries}), retrying in ${retryDelayMs}ms...`)
+        await new Promise(resolve => setTimeout(resolve, retryDelayMs))
+      }
+    }
+
     if (error) {
       console.error(error)
       //account does not exist anymore, sign out and treat as logged-out user
       if (error.code === 'PGRST116') {
-        console.warn('Profile not found for user, signing out to prevent reload loop')
+        console.warn('Profile not found after retries, signing out to prevent reload loop')
         await client.auth.signOut()
         currentUser.value = null
         await Preferences.clear()
         localStorage.clear()
         window.location.href = '/home'
       }
-    } else if (data) {
+      return
+    }
+
+    if (data) {
       const lsSTRING = await Preferences.get({ key: localUserProfileKey })
       const ls = JSON.parse(lsSTRING.value)
 
