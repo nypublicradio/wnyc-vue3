@@ -30,8 +30,10 @@ import {
 import {
   trackClickEvent,
   getPathAndQuery,
+  getAndSetUserProfile,
   toSystemSettings,
 } from "~/utilities/helpers"
+import { useAuth } from "~/composables/useAuth"
 import { cancelAllPendingLocalNotifications, setPendingLocalNotifications, usePendingLocalNotifications } from "~/utilities/local-notifications"
 import { ref } from "vue"
 import { doActionId, doTrigger } from "~/server/utils/oneSignalNotificationCustomActions"
@@ -125,75 +127,38 @@ export default function useOneSignal () {
     closeSidebars()
 
     const urlObj = new URL(event.url)
-    const client = useSupabaseClient()
     const globalToast = useGlobalToast()
     const { getAuthReturnRoute, clearAuthReturnRoute } = useAuthReturnRoute()
     const theReturnRoute = await getAuthReturnRoute()
 
-    //if the url has a query var "code" then we need to exchange it for a session
-    const sessionCode = urlObj.searchParams.get("code")
-    console.log("urlObj", urlObj)
-    console.log("OS sessionCode", sessionCode)
-
-    // Check for implicit flow tokens in the hash fragment (#access_token=...&refresh_token=...)
+    // Check if this URL contains OAuth callback params (code or access_token)
+    const hasAuthCode = urlObj.searchParams.get("code")
     const hashParams = new URLSearchParams(urlObj.hash.substring(1))
-    const accessToken = hashParams.get("access_token")
-    const refreshToken = hashParams.get("refresh_token")
-    console.log("hashParams", hashParams)
-    console.log("accessToken", accessToken)
-    console.log("refreshToken", refreshToken)
+    const hasAccessToken = hashParams.get("access_token")
 
-    if (accessToken && refreshToken) {
-      // Implicit flow: set session from hash tokens
-      console.log("Implicit flow: setting session from hash tokens")
-      try {
-        await client.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken,
-        })
-
-        await router.push(theReturnRoute || "/")
-        clearAuthReturnRoute()
-        setTimeout(() => {
-          window.location.reload()
-        }, 200)
-        return
-      } catch (error) {
-        console.error("Failed to set session from hash tokens:", error)
-        globalToast.value = {
-          severity: "error",
-          summary: "Authentication failed",
-          life: 6000,
-        }
-        return
-      }
-    }
-
-    if (sessionCode) {
-      //when redirected to the app from a apple or google auth, we need to exchange the url param code for a session
-      const code = event.url.split("=")[1]
-      // for some reason, sometimes, the code has a '#' at the end of it, so we need to remove it
-      const cleanCode = code.replace("#", "")
-      console.log("cleanCode", cleanCode)
+    if (hasAuthCode || hasAccessToken) {
+      // Delegate all OAuth handling to useAuth
+      const { handleOAuthCallback } = useAuth()
 
       try {
-        await client.auth.exchangeCodeForSession(cleanCode)
-
-        await router.push(theReturnRoute || "/")
-        clearAuthReturnRoute()
-        setTimeout(() => {
-          window.location.reload()
-        }, 200)
-        return
-      } catch (error) {
-        console.error(error)
-        globalToast.value = {
-          severity: "error",
-          summary: "Authentication failed",
-          life: 6000,
+        const success = await handleOAuthCallback(event.url)
+        if (success) {
+          await getAndSetUserProfile()
+          await router.push(theReturnRoute || "/home")
+          clearAuthReturnRoute()
+          return
         }
-        return
+      } catch (error) {
+        console.error("OAuth callback handling failed:", error)
       }
+
+      // Auth failed
+      globalToast.value = {
+        severity: "error",
+        summary: "Authentication failed",
+        life: 6000,
+      }
+      return
     }
 
     // check if the url has the query actionid to support actionId's from any links in the appUrlProtocolsArr global array

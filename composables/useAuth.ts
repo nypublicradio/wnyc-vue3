@@ -1,5 +1,26 @@
 import { computed, readonly, nextTick } from 'vue'
 import { Preferences } from "@capacitor/preferences"
+import { useIsNativeApp } from "~/composables/states"
+
+// ─────────────────────────────────────────────────────────────────────────────
+// useAuth — Central authentication composable
+//
+// This is the SINGLE source of truth for all auth operations:
+//   1. OAuth callback handling (web + native, implicit + PKCE flows)
+//   2. JWT token management (BFF session-to-jwt, refresh, verify)
+//   3. Authenticated API calls with auto-refresh
+//   4. Platform-aware redirect URL generation
+//
+// Auth flow overview:
+//   Login initiated (VLoginWithProvider/Email) →
+//   Redirect to provider →
+//   Callback received (confirm.vue on web, deep link on native) →
+//   handleOAuthCallback() →
+//   Supabase session established + JWT generated →
+//   getAndSetUserProfile() →
+//   Navigate to /home
+// ─────────────────────────────────────────────────────────────────────────────
+
 interface User {
     id: string
     email: string
@@ -54,6 +75,88 @@ export const useAuth = () => {
         })
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // Platform helpers
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Returns the correct OAuth redirect URL for the current platform.
+     * - Native: uses the custom URL scheme (wnycalpha:// for demo, wnyc:// for prod)
+     * - Web: uses the configured supabaseAuthSignInRedirectTo value
+     */
+    const getOAuthRedirectUrl = (): string => {
+        const config = useRuntimeConfig()
+        const isNativeApp = useIsNativeApp()
+
+        if (isNativeApp.value) {
+            return `${config.public.NATIVE_URL_SCHEME}://confirm`
+        }
+
+        return config.public.supabaseAuthSignInRedirectTo || `${window.location.origin}/confirm`
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // OAuth callback handling (THE single entry point for all OAuth returns)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Handle an OAuth callback URL. Works for both web and native platforms,
+     * and supports both implicit flow (#access_token=...) and PKCE (?code=...).
+     *
+     * This method:
+     *   1. Parses the callback URL for tokens or auth code
+     *   2. Establishes a Supabase session
+     *   3. Converts the Supabase session to a custom JWT via BFF
+     *   4. Persists the JWT in auth state
+     *
+     * @returns true if auth was successful, false otherwise
+     */
+    const handleOAuthCallback = async (url: string): Promise<boolean> => {
+        const supabase = useSupabaseClient()
+        const config = useRuntimeConfig()
+
+        const urlObj = new URL(url)
+
+        // Try implicit flow first: tokens in the hash fragment (#access_token=...&refresh_token=...)
+        const hashParams = new URLSearchParams(urlObj.hash.substring(1))
+        const accessToken = hashParams.get("access_token")
+        const hashRefreshToken = hashParams.get("refresh_token")
+
+        if (accessToken && hashRefreshToken) {
+            try {
+                await supabase.auth.setSession({
+                    access_token: accessToken,
+                    refresh_token: hashRefreshToken,
+                })
+            } catch (error) {
+                console.error("Failed to set session from implicit flow tokens:", error)
+                return false
+            }
+        } else {
+            // Try PKCE flow: code as a query param (?code=...)
+            const code = urlObj.searchParams.get("code")
+            if (code) {
+                try {
+                    const cleanCode = code.replace("#", "")
+                    await supabase.auth.exchangeCodeForSession(cleanCode)
+                } catch (error) {
+                    console.error("Failed to exchange code for session:", error)
+                    return false
+                }
+            } else {
+                // No auth params found in URL
+                return false
+            }
+        }
+
+        // Session is now established in Supabase — convert to our JWT
+        return await initializeFromSupabaseSession()
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // JWT state management
+    // ─────────────────────────────────────────────────────────────────────────
+
     /**
      * Set authentication state and fetch membership info
      */
@@ -73,7 +176,6 @@ export const useAuth = () => {
             }
 
             // Fetch membership info after authentication is established
-            // This runs in the background and won't block the auth flow
             nextTick(async () => {
                 try {
                     const { useProfileApi } = await import('~/composables/useProfileApi')
@@ -149,7 +251,6 @@ export const useAuth = () => {
 
             return false
         } catch (error: any) {
-            // Only log error once, not repeatedly
             if (error?.statusCode === 401) {
                 console.warn('Token refresh failed - session expired. Please log in again.')
             } else {
@@ -178,15 +279,10 @@ export const useAuth = () => {
                 headers,
             })
         } catch (error: any) {
-            // If token is expired or invalid, try to refresh automatically
             if (error.statusCode === 401 && refreshTokenValue.value) {
-                console.log('Token expired, attempting automatic refresh...')
-
                 const refreshSuccess = await refreshToken(refreshTokenValue.value)
 
                 if (refreshSuccess && authToken.value) {
-                    // Retry the original request with the new token
-                    console.log('Token refreshed successfully, retrying request...')
                     return await $fetch(url, {
                         ...options,
                         headers: {
@@ -195,8 +291,6 @@ export const useAuth = () => {
                         },
                     })
                 } else {
-                    // Refresh failed, logout user
-                    console.log('Token refresh failed, logging out user')
                     await logout()
                     throw new Error('Authentication required')
                 }
@@ -341,5 +435,7 @@ export const useAuth = () => {
         startTokenRefreshTimer,
         triggerTokenRefresh,
         initializeFromSupabaseSession,
+        handleOAuthCallback,
+        getOAuthRedirectUrl,
     }
 }

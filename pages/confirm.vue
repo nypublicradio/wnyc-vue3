@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { getAndSetUserProfile } from "~/utilities/helpers"
 import { useAuth } from "~/composables/useAuth"
+
 useHead({
   bodyAttrs: {
     class: "no-bottom-padding hide-bottom-menu hide-footer",
@@ -12,87 +13,25 @@ definePageMeta({
   ssr: false,
 })
 
-const route = useRoute()
-const user = useSupabaseUser()
-const supabase = useSupabaseClient()
-const config = useRuntimeConfig()
-const { setAuthState } = useAuth()
+const { handleOAuthCallback } = useAuth()
 
-// Handle OAuth callback
-// Implicit flow: tokens come in the URL hash fragment (#access_token=...&refresh_token=...)
-// PKCE flow: code comes as a query param (?code=...)
-const code = route.query.code as string | undefined
-console.log("route.query", route.query)
-if (code) {
-  // PKCE flow
-  try {
-    await supabase.auth.exchangeCodeForSession(code)
-  } catch (error) {
-    console.error("Failed to exchange OAuth code for session:", error)
-  }
-} else if (route.hash) {
-  // Implicit flow: parse tokens from hash fragment
-  const hashParams = new URLSearchParams(route.hash.substring(1))
-  const accessToken = hashParams.get("access_token")
-  const refreshToken = hashParams.get("refresh_token")
+// On web, the OAuth provider redirects back here with tokens in the hash or code in query.
+// handleOAuthCallback parses the URL, establishes the Supabase session, and generates the JWT.
+const callbackUrl = window.location.href
 
-  if (accessToken && refreshToken) {
-    try {
-      await supabase.auth.setSession({
-        access_token: accessToken,
-        refresh_token: refreshToken,
-      })
-    } catch (error) {
-      console.error("Failed to set session from hash tokens:", error)
-    }
-  }
+const success = await handleOAuthCallback(callbackUrl)
+if (success) {
+  await nextTick()
+  await getAndSetUserProfile()
+  navigateTo("/home")
+} else {
+  // If no auth params were found (e.g. user navigated here directly), just go home
+  console.error(
+    "No auth params found in URL, redirecting to home, handleOAuthCallback(callbackUrl) failed",
+    callbackUrl
+  )
+  navigateTo("/home")
 }
-
-watch(
-  user,
-  async () => {
-    if (user.value) {
-      console.log("user updated and ready")
-      try {
-        // Get the current Supabase session
-        const { data: sessionData } = await supabase.auth.getSession()
-        console.log("sessionData", sessionData)
-        if (sessionData.session) {
-          // Convert Supabase session to JWT
-          const jwtResponse = await $fetch(
-            `${config.public.BFF_URL}/api/auth/session-to-jwt`,
-            {
-              method: "POST",
-              body: {
-                access_token: sessionData.session.access_token,
-                refresh_token: sessionData.session.refresh_token,
-              },
-            }
-          )
-          console.log("jwtResponse", jwtResponse)
-          if (jwtResponse.success && jwtResponse.token) {
-            // Set the JWT token in our auth system with refresh token
-            setAuthState(
-              jwtResponse.token,
-              jwtResponse.user,
-              sessionData.session.refresh_token
-            )
-          }
-        }
-        await nextTick()
-        await getAndSetUserProfile()
-        navigateTo("/home")
-      } catch (error) {
-        console.error("JWT generation failed:", error)
-        // Fall back to normal flow
-        await nextTick()
-        await getAndSetUserProfile()
-        navigateTo("/home")
-      }
-    }
-  },
-  { immediate: true }
-)
 </script>
 <template>
   <div class="confirm-page">

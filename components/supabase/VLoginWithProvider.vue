@@ -2,6 +2,7 @@
 import Button from "primevue/button"
 import Message from "primevue/message"
 import { ref } from "vue"
+import { useAuth } from "~/composables/useAuth"
 
 const errorMessage = ref("")
 
@@ -30,7 +31,7 @@ const props = defineProps({
 })
 const innerClient = ref(props.client)
 const innerConfig = ref(props.config)
-const isNativeApp = useIsNativeApp()
+const { getOAuthRedirectUrl } = useAuth()
 
 // fallback incase the parent component doesn't pass in the client and config
 if (!props.client && !props.config) {
@@ -44,25 +45,11 @@ const emit = defineEmits(["submit-click", "submit-error", "submit-success"])
 const login = async () => {
   emit("submit-click")
 
-  // On native apps, redirect back via custom scheme so the OS returns to the app
-  // On web, use the runtime config value or the prop
-  let redirectTo = ""
-  console.log("isNativeApp:", isNativeApp.value)
-  if (isNativeApp.value) {
-    redirectTo = "wnycalpha://confirm"
-  } else {
-    const configRedirectTo =
-      innerConfig.value.public?.supabaseAuthSignInRedirectTo
-    redirectTo =
-      props.redirectUrl !== "http://localhost:3000"
-        ? props.redirectUrl
-        : configRedirectTo || props.redirectUrl
-  }
+  const redirectTo = getOAuthRedirectUrl()
 
   const res = await innerClient.value.auth.signInWithOAuth({
     options: {
       redirectTo,
-      flowType: "pkce",
     },
     provider: props.provider,
   })
@@ -71,8 +58,6 @@ const login = async () => {
     errorMessage.value = res.error
   } else {
     emit("submit-success")
-    // after apple or google auth returns the user back to the site, the App.addListener("appUrlOpen") listener in the App.vue file. That will trigger the handleAppUrlOpen(event) method in the useOneSignal composable
-    // that will check if there is a return route and if so, navigate to it, and clear the authReturnRoute preference/local storage
   }
 }
 // capitalise the first letter of a string

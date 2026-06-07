@@ -1,7 +1,6 @@
 <script setup>
 definePageMeta({
   layout: "default",
-  //middleware: ["check-auth-provider"],
 })
 
 const route = useRoute()
