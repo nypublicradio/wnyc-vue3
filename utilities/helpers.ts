@@ -643,7 +643,7 @@ export const getAndSetUserProfile = async () => {
 
     if (data) {
       const lsSTRING = await Preferences.get({ key: localUserProfileKey })
-      const ls = JSON.parse(lsSTRING.value)
+      const ls = JSON.parse(lsSTRING.value) || localUserProfileDefault.value
 
       //what the user has already selected in the local storage OR the default
       const defaultNotificationChannels = ls?.one_signal_notification_channels || masterNotificationChannelsArray

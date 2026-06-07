@@ -22,7 +22,14 @@ const callbackUrl = window.location.href
 const success = await handleOAuthCallback(callbackUrl)
 if (success) {
   await nextTick()
-  await getAndSetUserProfile()
+  try {
+    await getAndSetUserProfile()
+  } catch (error) {
+    console.warn(
+      "Profile setup (getAndSetUserProfile) incomplete on first login, will retry on home:",
+      error
+    )
+  }
   navigateTo("/home")
 } else {
   // If no auth params were found (e.g. user navigated here directly), just go home
