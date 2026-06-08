@@ -19,26 +19,26 @@ const { handleOAuthCallback } = useAuth()
 // handleOAuthCallback parses the URL, establishes the Supabase session, and generates the JWT.
 const callbackUrl = window.location.href
 
-const success = await handleOAuthCallback(callbackUrl)
-if (success) {
-  await nextTick()
-  try {
-    await getAndSetUserProfile()
-  } catch (error) {
-    console.warn(
-      "Profile setup (getAndSetUserProfile) incomplete on first login, will retry on home:",
-      error
+onMounted(async () => {
+  const success = await handleOAuthCallback(callbackUrl)
+  if (success) {
+    await nextTick()
+    try {
+      await getAndSetUserProfile()
+    } catch (error) {
+      console.warn(
+        "Profile setup (getAndSetUserProfile) incomplete on first login, will retry on home:",
+        error
+      )
+    }
+  } else {
+    console.error(
+      "No auth params found in URL, redirecting to home, handleOAuthCallback(callbackUrl) failed",
+      callbackUrl
     )
   }
-  navigateTo("/home")
-} else {
-  // If no auth params were found (e.g. user navigated here directly), just go home
-  console.error(
-    "No auth params found in URL, redirecting to home, handleOAuthCallback(callbackUrl) failed",
-    callbackUrl
-  )
-  navigateTo("/home")
-}
+  await navigateTo("/home", { replace: true })
+})
 </script>
 <template>
   <div class="confirm-page">
