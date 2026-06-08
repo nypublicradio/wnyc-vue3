@@ -136,6 +136,7 @@ const handleScheduleDownload = () => {
 const toShowPageClick = (entry, current = false) => {
   const title = entry.attributes.parentTitle
   const slug = stripShowUrl(entry.attributes.parentUrl)
+  if (!slug) return
   trackClickEvent(
     `Click Tracking - ${current ? "current live show " : "Show Title"} - ${title}`,
     "Schedule",
@@ -143,6 +144,9 @@ const toShowPageClick = (entry, current = false) => {
   )
   navigateTo(`/browse/shows/${slug}`)
 }
+
+// returns the show slug if the entry has one
+const getShowSlug = (entry) => stripShowUrl(entry.attributes?.parentUrl)
 
 // determine if the entry is the current episode and if the first entry should be featured (New Sounds (q2) and the holiday channel are excluded)
 const handleCurrentEpisode = (entry, index) => {
@@ -245,13 +249,12 @@ const handleScheduleNavigationButtonLabel = (date) => {
               v-for="(entry, entryIndex) in data"
               :key="entryIndex"
               class="schedule-entry flex justify-content-between align-items-stretch gap-3 style-mode-light light-mode"
-              :class="
-                handleCurrentEpisode(entry, entryIndex)
-                  ? 'selected -ml-3 -mr-3 xl:mr-0 cursor-pointer'
-                  : ''
-              "
+              :class="[
+                handleCurrentEpisode(entry, entryIndex) ? 'selected -ml-3 -mr-3 xl:mr-0' : '',
+                handleCurrentEpisode(entry, entryIndex) && getShowSlug(entry) ? 'cursor-pointer' : ''
+              ]"
               @click="
-                handleCurrentEpisode(entry, entryIndex)
+                handleCurrentEpisode(entry, entryIndex) && getShowSlug(entry)
                   ? toShowPageClick(entry, true)
                   : null
               "
@@ -264,6 +267,7 @@ const handleScheduleNavigationButtonLabel = (date) => {
                     }}
                   </p>
                   <Button
+                    v-if="getShowSlug(entry)"
                     @click="toShowPageClick(entry)"
                     severity="secondary"
                     variant="link"
@@ -273,6 +277,11 @@ const handleScheduleNavigationButtonLabel = (date) => {
                       {{ getEntryTitle(entry) }}
                     </h2>
                   </Button>
+                  <div v-else class="title-link -mt-2">
+                    <h2 class="title truncate t2lines">
+                      {{ getEntryTitle(entry) }}
+                    </h2>
+                  </div>
                   <HtmlConvert
                     v-if="
                       entry.station.episodeBody && handleCurrentEpisode(entry, entryIndex)
