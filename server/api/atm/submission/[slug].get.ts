@@ -5,8 +5,6 @@ export default defineEventHandler(async (event) => {
     let user = await serverSupabaseUser(event)
     const client = await serverSupabaseClient(event)
     const slug = getRouterParam(event, 'slug')
-    console.log("slug", slug)
-    console.log("user", user)
     // Fallback: Check Authorization header
     if (!user) {
         const authHeader = getHeader(event, 'Authorization')
