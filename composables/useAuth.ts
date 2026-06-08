@@ -174,19 +174,6 @@ export const useAuth = () => {
             if (refreshToken) {
                 await Preferences.set({ key: 'refresh_token', value: refreshToken })
             }
-
-            // Fetch membership info after authentication is established
-            nextTick(async () => {
-                try {
-                    const { useProfileApi } = await import('~/composables/useProfileApi')
-                    const { getMembershipInfo } = useProfileApi()
-                    await getMembershipInfo()
-                } catch (error) {
-                    console.warn('Failed to fetch membership info after login:', error)
-                }
-            }).catch((error) => {
-                console.warn('Failed to schedule membership info fetch:', error)
-            })
         }
     }
 
