@@ -18,11 +18,13 @@ const { handleOAuthCallback } = useAuth()
 const { getAuthReturnRoute, clearAuthReturnRoute } = useAuthReturnRoute()
 
 // On web, the OAuth provider redirects back here with tokens in the hash or code in query.
-// handleOAuthCallback parses the URL, establishes the Supabase session, and generates the JWT.
+// handleOAuthCallback handles all cases including when the Supabase plugin has already
+// consumed the URL params — it falls back to initializing from the existing session.
 const callbackUrl = window.location.href
 
 onMounted(async () => {
   const success = await handleOAuthCallback(callbackUrl)
+
   if (success) {
     await nextTick()
     try {
@@ -35,11 +37,16 @@ onMounted(async () => {
     }
   } else {
     console.error(
-      "No auth params found in URL, redirecting to home, handleOAuthCallback(callbackUrl) failed",
+      "Auth callback failed — no params in URL and no active Supabase session.",
       callbackUrl
     )
   }
+
   const returnRoute = await getAuthReturnRoute()
+  console.log(
+    "Auth callback complete, navigating to return route:",
+    returnRoute
+  )
   clearAuthReturnRoute()
   await navigateTo(returnRoute || "/home", { replace: true })
 })

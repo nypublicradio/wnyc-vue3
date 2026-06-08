@@ -143,9 +143,6 @@ export const useAuth = () => {
                     console.error("Failed to exchange code for session:", error)
                     return false
                 }
-            } else {
-                // No auth params found in URL
-                return false
             }
         }
 
