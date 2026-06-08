@@ -1,4 +1,4 @@
-import { computed, readonly, nextTick } from 'vue'
+import { computed, readonly } from 'vue'
 import { Preferences } from "@capacitor/preferences"
 import { useIsNativeApp } from "~/composables/states"
 
