@@ -793,15 +793,21 @@ export const getAndSetUserProfile = async () => {
           avatar_image_url: user.data.session.user.user_metadata.avatar_url,
         })
         .match({ id: user.data.session.user.id })
+    }
 
-      // Set Firebase Analytics user ID on client side only
-      if (import.meta.client && currentUser.value) {
-        const FirebaseAnalytics = await loadFirebaseAnalytics()
-        if (FirebaseAnalytics) {
-          await FirebaseAnalytics.setUserId({
-            userId: currentUser.value.id,
+    // update the profile name for Apple (and other OAuth providers) if not already set
+    if (user.data.session?.user.app_metadata.provider === 'apple') {
+      const providerName = user.data.session.user.user_metadata.full_name
+        || user.data.session.user.user_metadata.name
+        || null
+      if (providerName) {
+        await client
+          .from('profiles')
+          .update({
+            updated_at: new Date().toISOString(),
+            name: providerName,
           })
-        }
+          .match({ id: user.data.session.user.id })
       }
     }
 

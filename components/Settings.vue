@@ -298,14 +298,14 @@ watch(
       </div>
       <div class="block md:hidden">
         <SBox
-          v-if="currentUserProfile?.name"
+          v-if="currentUserProfile"
           label="Name"
           @click="editField('name')"
           :clickable="!isDisabled"
           :ripple="!isDisabled"
         >
           <p :class="[{ disabled: isDisabled }]">
-            {{ currentUserProfile?.name }}
+            {{ currentUserProfile?.name || 'User' }}
           </p>
         </SBox>
         <SBox
@@ -337,7 +337,7 @@ watch(
             <div class="flex justify-content-between flex-wrap align-items-end">
               <div>
                 <p class="font-bold">Name</p>
-                <p>{{ currentUserProfile?.name }}</p>
+                <p>{{ currentUserProfile?.name || 'User' }}</p>
               </div>
               <Button
                 v-if="!isDisabled"

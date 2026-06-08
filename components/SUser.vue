@@ -163,7 +163,7 @@ const avatarUrl = computed(() => {
       />
     </Dialog>
     <div v-if="currentUser" class="info flex flex-column gap-2 mt-2">
-      <h2 :class="props.textSize">Hi, {{ currentUserProfile?.name }}</h2>
+      <h2 :class="props.textSize">Hi, {{ currentUserProfile?.name || 'User' }}</h2>
       <VFlexibleLink to="/home" class="p1" @click="onLogOut"
         >Log out</VFlexibleLink
       >

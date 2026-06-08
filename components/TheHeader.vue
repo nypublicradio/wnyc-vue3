@@ -114,7 +114,7 @@ const onLogOut = async () => {
                 class="hidden md:block"
                 :label="`${
                   currentUser
-                    ? currentUserProfile?.name || 'Loading...'
+                    ? currentUserProfile?.name || 'User'
                     : 'Log in/Sign up'
                 }`"
                 size="small"
@@ -178,7 +178,7 @@ const onLogOut = async () => {
                             <UserIcon />
                           </template>
                         </Avatar>
-                        <h2>Hi, {{ currentUserProfile?.name }}</h2>
+                        <h2>Hi, {{ currentUserProfile?.name || 'User' }}</h2>
                       </div>
                       <Button
                         label="View My Account"
