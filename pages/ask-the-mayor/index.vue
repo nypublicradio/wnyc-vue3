@@ -1,6 +1,9 @@
 
 <script setup>
 import { trackClickEvent } from "~/utilities/helpers"
+import { useIsApp } from "~/composables/states"
+
+const isApp = useIsApp()
 
 useHead({
   bodyAttrs: {
@@ -56,8 +59,9 @@ const readGuidelines = () => {
       </Head>
     </Html>
 
-    <section>
+    <section class="thinContent">
       <SHeader
+        v-if="isApp"
         class="pb-4"
         label="Ask the Mayor"
         @close-sidebar="() => navigateTo('/home')"
@@ -72,8 +76,8 @@ const readGuidelines = () => {
                 <div class="flex flex-column gap-1">
                   <h2>Have a question for the Mayor?</h2>
                   <p>
-                    Mayor Mamdani will be joining The Brian Lehrer Show 
-                    to answer your questions.
+                    Mayor Mamdani will be joining The Brian Lehrer Show to
+                    answer your questions.
                   </p>
                 </div>
               </div>

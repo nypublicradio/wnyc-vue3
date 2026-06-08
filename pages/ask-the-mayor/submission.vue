@@ -183,7 +183,7 @@ watch(
 </script>
 
 <template>
-  <div class="ask-the-mayor submission">
+  <div class="ask-the-mayor submission thinContent">
     <Html lang="en">
       <Head>
         <Title

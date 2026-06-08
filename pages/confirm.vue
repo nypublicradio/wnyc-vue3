@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { getAndSetUserProfile } from "~/utilities/helpers"
 import { useAuth } from "~/composables/useAuth"
+import { useAuthReturnRoute } from "~/composables/useAuthReturnRoute"
 
 useHead({
   bodyAttrs: {
@@ -14,6 +15,7 @@ definePageMeta({
 })
 
 const { handleOAuthCallback } = useAuth()
+const { getAuthReturnRoute, clearAuthReturnRoute } = useAuthReturnRoute()
 
 // On web, the OAuth provider redirects back here with tokens in the hash or code in query.
 // handleOAuthCallback parses the URL, establishes the Supabase session, and generates the JWT.
@@ -37,7 +39,9 @@ onMounted(async () => {
       callbackUrl
     )
   }
-  await navigateTo("/home", { replace: true })
+  const returnRoute = await getAuthReturnRoute()
+  clearAuthReturnRoute()
+  await navigateTo(returnRoute || "/home", { replace: true })
 })
 </script>
 <template>

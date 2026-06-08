@@ -18,7 +18,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="ask-the-mayor">
+  <div class="ask-the-mayor thinContent">
     <Html lang="en">
       <Head>
         <Title
