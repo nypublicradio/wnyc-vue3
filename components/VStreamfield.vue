@@ -48,8 +48,33 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  curatedListLayoutOverride: {
+    type: String,
+    default: "",
+  },
+  curatedListCardClass: {
+    type: String,
+    default: "col-12 lg:col-6",
+  },
+  enableCuratedListLoadMore: {
+    type: Boolean,
+    default: false,
+  },
+  curatedListInitialLimit: {
+    type: Number,
+    default: 15,
+  },
+  curatedListLimitIncrement: {
+    type: Number,
+    default: 15,
+  },
+  curatedListLoadMoreLabel: {
+    type: String,
+    default: "Load More",
+  },
 })
 
+const emit = defineEmits(["curated-list-load-more"])
 const streamfield = props.article?.body
 
 const defaultLayout = "river-thin"
@@ -59,6 +84,14 @@ const verticalSpacingClasses = "mb-6 md:mb-8"
 // Helper function to get the appropriate layout component based on the block's layout value
 const getLayoutComponent = (layout: string) => {
   return layoutComponentMap[layout] || layoutComponentMap[defaultLayout]
+}
+
+const getCuratedListLayout = (block: StreamfieldBlock) => {
+  return props.curatedListLayoutOverride || block?.value?.layout || defaultLayout
+}
+
+const enableLoadMoreForBlock = (block: StreamfieldBlock) => {
+  return props.enableCuratedListLoadMore && getCuratedListLayout(block) === "river"
 }
 
 onMounted(() => {
@@ -109,11 +142,17 @@ onMounted(() => {
           :id="slugify(block?.value?.label)"
         >
           <component
-            :is="getLayoutComponent(block?.value?.layout)"
+            :is="getLayoutComponent(getCuratedListLayout(block))"
             :list="block?.value?.list"
             :label="block?.value?.label"
             :seeMore="block?.value?.seeMoreLink"
+            :cardClass="props.curatedListCardClass"
             :loading="index === 0 ? 'eager' : 'lazy'"
+            :enableLoadMore="enableLoadMoreForBlock(block)"
+            :initialLimit="props.curatedListInitialLimit"
+            :limitIncrement="props.curatedListLimitIncrement"
+            :loadMoreLabel="props.curatedListLoadMoreLabel"
+            @load-more="emit('curated-list-load-more', block)"
           />
           <div
             v-if="block?.value?.seeMoreLink"
