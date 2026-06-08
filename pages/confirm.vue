@@ -48,7 +48,10 @@ onMounted(async () => {
     returnRoute
   )
   clearAuthReturnRoute()
-  await navigateTo(returnRoute || "/home", { replace: true })
+  // If returnRoute is not set or is still "/confirm" (the default), navigate to "/home"
+  const destination =
+    returnRoute && returnRoute !== "/confirm" ? returnRoute : "/home"
+  await navigateTo(destination, { replace: true })
 })
 </script>
 <template>
