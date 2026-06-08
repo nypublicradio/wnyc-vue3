@@ -1,7 +1,7 @@
 <script setup>
 import { useToast } from "primevue/usetoast"
 //import { FilterMatchMode } from "@primevue/core/api"
-import { useCurrentUser } from "~/composables/states.ts"
+import { useCurrentUser, useCurrentUserProfile } from "~/composables/states.ts"
 import { useAtmDashboard } from "~/composables/atm/useAtmDashboard"
 useHead({
   bodyAttrs: {
@@ -10,6 +10,7 @@ useHead({
 })
 const toast = useToast()
 const user = useCurrentUser()
+const userProfile = useCurrentUserProfile()
 const supabase = useSupabaseClient()
 const isAdmin = ref(false)
 const isLoading = ref(true)
@@ -111,6 +112,7 @@ const { toggleApproved, shareSubmission, downloadSubmission } =
 // handle navigate to slug page
 const navigateToSlug = (event) => {
   const submission = event.data
+  console.log("Navigating to submission:", submission)
   navigateTo(`/ask-the-mayor-dashboard/${submission.video_filename}`)
 }
 
@@ -132,7 +134,7 @@ onMounted(async () => {
   }
 })
 
-// check if th euser is an admin
+// check if the user is an admin
 // check if the user is an admin by fetching submissions
 watch(
   () => user.value,
@@ -166,7 +168,6 @@ watch(
         />
       </Head>
     </Html>
-
     <section class="full-width">
       <SHeader
         class="pb-4"

@@ -54,10 +54,11 @@ export default defineEventHandler(async (event) => {
 
     // Verify admin status
     // We use serviceRole to check profiles because RLS might hide other users' profiles
+    const userId = user.id ?? user.sub
     const { data: profile, error: profileError } = await serviceRole
         .from('profiles')
         .select('is_admin')
-        .eq('id', user.id)
+        .eq('id', userId)
         .single()
 
     if (profileError || !profile?.is_admin) {
