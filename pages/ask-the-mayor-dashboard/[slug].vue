@@ -103,7 +103,7 @@ const { toggleApproved, shareSubmission, downloadSubmission } =
       </Head>
     </Html>
 
-    <section>
+    <section class="thinContent">
       <div class="flex align-items-center mb-4">
         <Button
           class="back-btn text-color -ml-4"

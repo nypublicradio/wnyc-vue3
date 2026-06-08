@@ -58,10 +58,11 @@ export default defineEventHandler(async (event) => {
     })
 
     // Query for the specific user's latest submission
+    const userId = user.id ?? user.sub
     const { data: submissions, error } = await serviceRole
         .from('atm_submissions')
         .select('created_at')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .order('created_at', { ascending: false })
         .limit(1)
 
