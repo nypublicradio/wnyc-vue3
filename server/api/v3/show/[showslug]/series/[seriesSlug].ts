@@ -23,6 +23,7 @@ const getWagtailShow = async (showSlug: string) => {
         },
         headers: {
             'X-CMS-Site': config.public.cmsSite,
+            'Accept-Encoding': 'identity',
         },
     })
 
@@ -50,6 +51,7 @@ const getWagtailSeries = async (showSlug: string, seriesSlug: string) => {
             },
             headers: {
                 'X-CMS-Site': config.public.cmsSite,
+                'Accept-Encoding': 'identity',
             },
         })
 

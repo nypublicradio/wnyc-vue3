@@ -171,7 +171,9 @@ describe('server/api/v3/show/[showslug]/series/[seriesSlug]', () => {
 
     expect(showCall.params.slug).toBe('test-show')
     expect(seriesCall.params.html_path).toBe('/browse/shows/test-show/climate-series/')
+    expect(showCall.headers['Accept-Encoding']).toBe('identity')
     expect(seriesCall.headers['X-CMS-Site']).toBe('demo.wnyc.org:443')
+    expect(seriesCall.headers['Accept-Encoding']).toBe('identity')
     expect(setHeader).toHaveBeenCalledWith('Cache-Control', 'max-age=3600, stale-while-revalidate')
 
     expect(result.show.title).toBe('Test Show')
