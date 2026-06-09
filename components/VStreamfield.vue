@@ -54,7 +54,7 @@ const props = defineProps({
   },
   curatedListCardClass: {
     type: String,
-    default: "col-12 lg:col-6",
+    default: undefined,
   },
   enableCuratedListLoadMore: {
     type: Boolean,
@@ -92,6 +92,29 @@ const getCuratedListLayout = (block: StreamfieldBlock) => {
 
 const enableLoadMoreForBlock = (block: StreamfieldBlock) => {
   return props.enableCuratedListLoadMore && getCuratedListLayout(block) === "river"
+}
+
+const getCuratedListComponentProps = (block: StreamfieldBlock, index: number) => {
+  const layout = getCuratedListLayout(block)
+  const componentProps: Record<string, unknown> = {
+    list: block?.value?.list,
+    label: block?.value?.label,
+    seeMore: block?.value?.seeMoreLink,
+    loading: index === 0 ? "eager" : "lazy",
+  }
+
+  if (props.curatedListCardClass) {
+    componentProps.cardClass = props.curatedListCardClass
+  }
+
+  if (layout === "river") {
+    componentProps.enableLoadMore = enableLoadMoreForBlock(block)
+    componentProps.initialLimit = props.curatedListInitialLimit
+    componentProps.limitIncrement = props.curatedListLimitIncrement
+    componentProps.loadMoreLabel = props.curatedListLoadMoreLabel
+  }
+
+  return componentProps
 }
 
 onMounted(() => {
@@ -143,15 +166,7 @@ onMounted(() => {
         >
           <component
             :is="getLayoutComponent(getCuratedListLayout(block))"
-            :list="block?.value?.list"
-            :label="block?.value?.label"
-            :seeMore="block?.value?.seeMoreLink"
-            :cardClass="props.curatedListCardClass"
-            :loading="index === 0 ? 'eager' : 'lazy'"
-            :enableLoadMore="enableLoadMoreForBlock(block)"
-            :initialLimit="props.curatedListInitialLimit"
-            :limitIncrement="props.curatedListLimitIncrement"
-            :loadMoreLabel="props.curatedListLoadMoreLabel"
+            v-bind="getCuratedListComponentProps(block, index)"
             @load-more="emit('curated-list-load-more', block)"
           />
           <div

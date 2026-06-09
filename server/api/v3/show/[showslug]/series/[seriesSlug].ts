@@ -2,6 +2,7 @@ import axios from 'axios'
 import humps from 'humps'
 import { normalizeWagtailShowDetail } from '~/composables/data/shows'
 import { FALLBACKIMAGE } from '~/composables/globals'
+import { getCmsPathRedirect, getCmsRequestOptions, normalizeCmsLocation } from '~/server/utils/cmsRedirect'
 import { transformCuratedContent } from '~/utilities/curatedContent'
 
 const __getConfig = () => {
@@ -10,9 +11,14 @@ const __getConfig = () => {
 }
 
 const notFound = (message: string) => createError({ statusCode: 404, statusMessage: message })
+const upstreamError = (message: string) => createError({ statusCode: 502, statusMessage: message })
+
+const isSuccessfulStatus = (status?: number) => !status || (status >= 200 && status < 300)
+const isRedirectStatus = (status?: number) => Boolean(status && status >= 300 && status < 400)
 
 const getWagtailShow = async (showSlug: string) => {
     const config = __getConfig()
+    const requestOptions = getCmsRequestOptions(config.public.cmsSite)
     const res = await axios({
         method: 'GET',
         url: `${config.public.AVIARY_BASE_API}pages/`,
@@ -21,11 +27,15 @@ const getWagtailShow = async (showSlug: string) => {
             slug: showSlug,
             fields: 'description,topper_display_title,linked_data_source,show_art,show_logo,topper_background,body,about_module,can_download_episodes,can_embed_episodes,in_page_navigation',
         },
-        headers: {
-            'X-CMS-Site': config.public.cmsSite,
-            'Accept-Encoding': 'identity',
-        },
+        ...requestOptions,
     })
+
+    if (!isSuccessfulStatus(res.status)) {
+        if (res.status === 404) {
+            throw notFound(`Show not found: ${showSlug}`)
+        }
+        throw upstreamError(`CMS show request failed: ${showSlug}`)
+    }
 
     const resData = humps.camelizeKeys(res.data)
     const showData = resData.items?.[0]
@@ -41,19 +51,59 @@ const getWagtailShow = async (showSlug: string) => {
 
 const getWagtailSeries = async (showSlug: string, seriesSlug: string) => {
     const config = __getConfig()
+    const baseApi = config.public.AVIARY_BASE_API
+    const htmlPath = `/browse/shows/${showSlug}/${seriesSlug}/`
+    const requestOptions = getCmsRequestOptions(config.public.cmsSite)
 
     try {
         const res = await axios({
             method: 'GET',
-            url: `${config.public.AVIARY_BASE_API}pages/find/`,
+            url: `${baseApi}pages/find/`,
             params: {
-                html_path: `/browse/shows/${showSlug}/${seriesSlug}/`,
+                html_path: htmlPath,
             },
-            headers: {
-                'X-CMS-Site': config.public.cmsSite,
-                'Accept-Encoding': 'identity',
-            },
+            ...requestOptions,
         })
+
+        if (isRedirectStatus(res.status)) {
+            const location = res.headers?.location
+            if (!location) {
+                throw upstreamError('CMS redirect missing location header')
+            }
+
+            const nextUrl = normalizeCmsLocation(location, baseApi)
+            const pageRes = await axios({
+                method: 'GET',
+                url: nextUrl,
+                ...requestOptions,
+            })
+
+            if (!isSuccessfulStatus(pageRes.status)) {
+                if (pageRes.status === 404) {
+                    throw notFound(`Series not found: ${showSlug}/${seriesSlug}`)
+                }
+                throw upstreamError(`CMS series page fetch failed: ${showSlug}/${seriesSlug}`)
+            }
+
+            const redirectedSeriesData = humps.camelizeKeys(pageRes.data)
+            if (redirectedSeriesData?.meta?.type && redirectedSeriesData.meta.type !== 'shows.SeriesPage') {
+                throw notFound(`Series not found: ${showSlug}/${seriesSlug}`)
+            }
+
+            return redirectedSeriesData
+        }
+
+        if (res.status === 404) {
+            const redirect = await getCmsPathRedirect(baseApi, htmlPath, requestOptions)
+            if (redirect) {
+                return redirect
+            }
+            throw notFound(`Series not found: ${showSlug}/${seriesSlug}`)
+        }
+
+        if (!isSuccessfulStatus(res.status)) {
+            throw upstreamError(`CMS series request failed: ${showSlug}/${seriesSlug}`)
+        }
 
         const seriesData = humps.camelizeKeys(res.data)
         if (seriesData?.meta?.type && seriesData.meta.type !== 'shows.SeriesPage') {
@@ -63,11 +113,19 @@ const getWagtailSeries = async (showSlug: string, seriesSlug: string) => {
         return seriesData
     } catch (error: any) {
         if (error?.statusCode === 404 || error?.response?.status === 404) {
+            const redirect = await getCmsPathRedirect(baseApi, htmlPath, requestOptions)
+            if (redirect) {
+                return redirect
+            }
             throw notFound(`Series not found: ${showSlug}/${seriesSlug}`)
         }
 
+        if (error?.statusCode) {
+            throw error
+        }
+
         console.error('[Wagtail Series] Error fetching series:', error?.response?.data || error?.message || error)
-        throw error
+        throw upstreamError(`CMS series request failed: ${showSlug}/${seriesSlug}`)
     }
 }
 
@@ -119,6 +177,10 @@ export default defineEventHandler(async (event) => {
         getWagtailShow(showSlug),
         getWagtailSeries(showSlug, seriesSlug),
     ])
+
+    if (seriesData?.redirect) {
+        return seriesData
+    }
 
     const body = await transformCuratedContent(seriesData.body || [], 'default', showSlug, showResult.raw)
     event?.node?.res?.setHeader?.('Cache-Control', 'max-age=3600, stale-while-revalidate')

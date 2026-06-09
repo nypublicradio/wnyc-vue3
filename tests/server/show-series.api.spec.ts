@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const axiosMock = vi.fn()
-vi.mock('axios', () => ({ default: axiosMock }))
+const axiosMock = vi.hoisted(() => vi.fn())
+const axiosHeadMock = vi.hoisted(() => vi.fn())
+vi.mock('axios', () => ({ default: Object.assign(axiosMock, { head: axiosHeadMock }) }))
 
 vi.mock('~/composables/useVImage', () => ({
   useVImage: () => ({
@@ -25,10 +26,12 @@ vi.mock('~/composables/globals', () => ({
     NPR_EPISODE: 'npr_episode',
     NPR_ARTICLE: 'npr_article',
     CARD: 'card',
+    SERIES: 'series',
   },
   mediaTypeRoutes: {
     show: '/browse/shows/',
     simplecast: '/browse/shows/episode/simplecast/',
+    series: '/browse/shows/',
   },
   FALLBACKIMAGE: '/fallback/wnyc.webp',
   FALLBACKIMAGEEP: '/fallback/ep.webp',
@@ -153,6 +156,8 @@ const setupAxios = (seriesData = seriesResponse) => {
 describe('server/api/v3/show/[showslug]/series/[seriesSlug]', () => {
   beforeEach(() => {
     axiosMock.mockReset()
+    axiosHeadMock.mockReset()
+    axiosHeadMock.mockResolvedValue({ status: 404, headers: {} })
   })
 
   it('fetches the Wagtail series path, related show, metadata, and transformed body', async () => {
@@ -224,7 +229,7 @@ describe('server/api/v3/show/[showslug]/series/[seriesSlug]', () => {
         return Promise.resolve(showResponse)
       }
 
-      return Promise.reject({ response: { status: 404 } })
+      return Promise.resolve({ status: 404, data: {} })
     })
 
     const handler = (await import('../../server/api/v3/show/[showslug]/series/[seriesSlug]')).default
@@ -237,6 +242,62 @@ describe('server/api/v3/show/[showslug]/series/[seriesSlug]', () => {
     await expect(handler(event)).rejects.toMatchObject({
       statusCode: 404,
       statusMessage: 'Series not found: test-show/missing-series',
+    })
+  })
+
+  it('normalizes Wagtail pages/find redirects before fetching the detail URL', async () => {
+    axiosMock.mockImplementation((options: any) => {
+      if (options.url.endsWith('pages/')) {
+        return Promise.resolve(showResponse)
+      }
+
+      if (options.url.endsWith('pages/find/')) {
+        return Promise.resolve({
+          status: 302,
+          headers: { location: 'https://placeholder.example/api/v2/pages/20/' },
+        })
+      }
+
+      if (options.url === 'https://example.test/api/v2/pages/20/') {
+        return Promise.resolve(seriesResponse)
+      }
+
+      throw new Error(`Unexpected URL: ${options.url}`)
+    })
+
+    const handler = (await import('../../server/api/v3/show/[showslug]/series/[seriesSlug]')).default
+    const event: any = {
+      context: { params: { showslug: 'test-show', seriesSlug: 'climate-series' } },
+      query: {},
+      node: { res: { setHeader: vi.fn() } },
+    }
+
+    const result = await handler(event) as any
+    const redirectedCall = axiosMock.mock.calls.find(([options]) => options.url === 'https://example.test/api/v2/pages/20/')?.[0]
+
+    expect(redirectedCall).toBeTruthy()
+    expect(result.series.title).toBe('Climate Series')
+  })
+
+  it('wraps transient CMS series failures as 502 errors', async () => {
+    axiosMock.mockImplementation((options: any) => {
+      if (options.url.endsWith('pages/')) {
+        return Promise.resolve(showResponse)
+      }
+
+      return Promise.resolve({ status: 500, data: { detail: 'upstream unavailable' } })
+    })
+
+    const handler = (await import('../../server/api/v3/show/[showslug]/series/[seriesSlug]')).default
+    const event: any = {
+      context: { params: { showslug: 'test-show', seriesSlug: 'climate-series' } },
+      query: {},
+      node: { res: { setHeader: vi.fn() } },
+    }
+
+    await expect(handler(event)).rejects.toMatchObject({
+      statusCode: 502,
+      statusMessage: 'CMS series request failed: test-show/climate-series',
     })
   })
 })
