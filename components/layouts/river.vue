@@ -41,7 +41,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(["load-more"])
-const reactiveItems = toRef(props.list, "listItems")
+const reactiveItems = computed(() => props.list?.listItems)
 const visibleCount = ref(props.initialLimit)
 
 watch(

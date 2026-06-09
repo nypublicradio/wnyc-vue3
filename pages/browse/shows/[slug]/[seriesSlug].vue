@@ -1,22 +1,54 @@
 <script setup>
-import { FALLBACKIMAGE } from "~/composables/globals"
+import { useIsApp } from "~/composables/states"
+import { useFetchWrapper } from "~/composables/useFetchWrapper"
 import { trackClickEvent } from "~/utilities/helpers"
 
 const config = useRuntimeConfig()
 const route = useRoute()
+const isApp = useIsApp()
+
+if (route.params.slug === "episode") {
+  throw createError({
+    statusCode: 404,
+    statusMessage: "Series not found",
+  })
+}
 
 const endpoint = computed(
   () =>
     `${config.public.BFF_URL}/api/v3/show/${route.params.slug}/series/${route.params.seriesSlug}`
 )
 
+const seriesFetchArgs = [
+  endpoint,
+  {
+    key: `show-series-${route.params.slug}-${route.params.seriesSlug}`,
+    watch: false,
+  },
+]
+
 const {
   data: seriesResponse,
   status,
   error,
-} = await useFetchWrapper(endpoint, {
-  key: `show-series-${route.params.slug}-${route.params.seriesSlug}`,
+} = isApp.value
+  ? useFetchWrapper(...seriesFetchArgs)
+  : await useFetchWrapper(...seriesFetchArgs)
+
+const redirectIfNeeded = (response) => {
+  if (!response?.redirect) return
+
+  return navigateTo(response.location, {
+    redirectCode: response.statusCode || 301,
+    external: /^https?:\/\//.test(response.location),
+  })
+}
+
+watch(seriesResponse, (response) => {
+  redirectIfNeeded(response)
 })
+
+await redirectIfNeeded(seriesResponse.value)
 
 const series = computed(() => seriesResponse.value?.series)
 const show = computed(() => seriesResponse.value?.show)
@@ -60,7 +92,10 @@ const headTitle = computed(() => {
 const description = computed(() => series.value?.searchDescription)
 const ogTitle = computed(() => series.value?.socialTitle || headTitle.value)
 const ogDescription = computed(() => series.value?.socialDescription || description.value)
-const ogImage = computed(() => series.value?.thumbnail || FALLBACKIMAGE)
+const ogImage = computed(() => {
+  const image = series.value?.thumbnail
+  return /^https?:\/\//.test(image || "") ? image : undefined
+})
 
 useHead(() => ({
   title: headTitle.value,

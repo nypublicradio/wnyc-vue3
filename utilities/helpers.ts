@@ -1129,6 +1129,51 @@ export const goToShowPage = (show, params = null, returnRoute = false) => {
   }
   navigateTo(routeObj)
 }
+
+const extractShowSlugFromSeries = (series) => {
+  const explicitShowSlug = series.showSlug ?? series.show?.slug ?? series.show?.meta?.slug
+  if (explicitShowSlug) return explicitShowSlug
+
+  const parentUrl = series.meta?.parent?.meta?.htmlUrl
+    ?? series.meta?.parent?.htmlUrl
+    ?? series.meta?.parent?.url
+    ?? series.parent?.meta?.htmlUrl
+    ?? series.parent?.htmlUrl
+    ?? series.parent?.url
+
+  if (!parentUrl) return null
+
+  try {
+    const pathname = new URL(parentUrl, "https://www.wnyc.org").pathname
+    return pathname.match(/\/browse\/shows\/([^/]+)/)?.[1] ?? null
+  } catch {
+    return null
+  }
+}
+
+/* centralized function to route to a series page */
+export const goToSeriesPage = (series, params = null, returnRoute = false) => {
+  const seriesSlug = series.meta?.slug ?? series.slug
+  const showSlug = extractShowSlugFromSeries(series)
+  const fallbackUrl = series.meta?.htmlUrl ?? series.url
+
+  if (!showSlug || !seriesSlug) {
+    if (fallbackUrl) {
+      return goToUrlOverrideDestination({ ...series, url: fallbackUrl }, params, returnRoute)
+    }
+    return goToEpisodePage(series, params, true, returnRoute)
+  }
+
+  const routeObj = {
+    path: `${mediaTypeRoutes[mediaTypes.SERIES]}${showSlug}/${seriesSlug}`,
+    query: params,
+  }
+
+  if (returnRoute) {
+    return routeObj
+  }
+  navigateTo(routeObj)
+}
 /* centralized function to route to a card page */
 export const goToUrlOverrideDestination = (item, params = null, returnRoute = false) => {
   const path = `${getRouteOrLink(item.url)}`
@@ -1250,6 +1295,8 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
           : goToStoryPage(item, { src: item.cmsSource, downloaded: isDownloaded, id: item.id, }, isSaveHistory, returnRoute)
       case mediaTypes.SHOW:
         return goToShowPage(item, null, returnRoute)
+      case mediaTypes.SERIES:
+        return goToSeriesPage(item, null, returnRoute)
       case mediaTypes.NPR_EPISODE:
       case mediaTypes.NPR_ARTICLE:
         return goToNprPage(item, isSaveHistory, returnRoute)
