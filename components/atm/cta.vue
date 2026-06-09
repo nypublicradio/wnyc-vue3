@@ -16,7 +16,13 @@ const routeToPage = () => {
     class="atm-cta flex items-center w-full cursor-pointer"
     @click="routeToPage"
   >
-    <img src="/atm/mayor.png" loading="eager" :width="100" :height="100" />
+    <img
+      src="/atm/mayor.png"
+      loading="eager"
+      :width="100"
+      :height="100"
+      alt="Blank and white illustration of Mayor Zohran K. Mamdani"
+    />
     <div
       class="flex gap-1 sm:gap-2 p-2 sm:p-4 justify-content-center sm:justify-content-between align-items-center w-full flex-column sm:flex-row"
     >

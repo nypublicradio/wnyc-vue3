@@ -145,7 +145,11 @@ onMounted(async () => {
   await getAndSetUserProfile()
 
   if (isNativeApp.value) {
-    await ScreenOrientation.lock({ orientation: "portrait" })
+    // Don't lock orientation on wide screens (e.g. Android Automotive)
+    const isWideScreen = window.screen.width > window.screen.height
+    if (!isWideScreen) {
+      await ScreenOrientation.lock({ orientation: "portrait" })
+    }
     await initFileSystem()
     await initLocalNotifications()
 
@@ -265,8 +269,9 @@ useHead({
     { charset: "utf-8" },
     {
       name: "viewport",
-      content:
-        "viewport-fit=cover, width=device-width, initial-scale=1, maximum-scale=1",
+      content: isApp.value
+        ? "viewport-fit=cover, width=device-width, initial-scale=1, maximum-scale=1"
+        : "viewport-fit=cover, width=device-width, initial-scale=1",
     },
     { name: "robots", content: "index, follow" },
   ],

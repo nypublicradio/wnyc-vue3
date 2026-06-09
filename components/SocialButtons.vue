@@ -39,6 +39,8 @@ const props = defineProps({
         size="large"
         rounded
         tabindex="-1"
+        :aria-label="item.label"
+        aria-hidden="true"
       />
     </VFlexibleLink>
   </div>
