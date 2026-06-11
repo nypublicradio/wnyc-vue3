@@ -7,6 +7,7 @@ const pagesDir = join(process.cwd(), 'pages')
 const expectedPageViewFiles = [
   'pages/browse/browse-topic.vue',
   'pages/browse/index.vue',
+  'pages/browse/shows/[slug]/[seriesSlug].vue',
   'pages/browse/shows/[slug]/episodes.vue',
   'pages/browse/shows/[slug]/index.vue',
   'pages/browse/shows/episode/[cmsSource]/[slug]/index.vue',
