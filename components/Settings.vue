@@ -57,10 +57,6 @@ const isEmail = computed(
   () => currentUser.value?.app_metadata?.provider === "email"
 )
 const isDisabled = computed(() => {
-  console.log(
-    "currentUser.value?.app_metadata?.provider",
-    currentUser.value?.app_metadata?.provider
-  )
   return currentUser.value?.app_metadata?.provider !== "email"
 })
 
@@ -305,7 +301,7 @@ watch(
           :ripple="!isDisabled"
         >
           <p :class="[{ disabled: isDisabled }]">
-            {{ currentUserProfile?.name || 'User' }}
+            {{ currentUserProfile?.name || "User" }}
           </p>
         </SBox>
         <SBox
@@ -337,7 +333,7 @@ watch(
             <div class="flex justify-content-between flex-wrap align-items-end">
               <div>
                 <p class="font-bold">Name</p>
-                <p>{{ currentUserProfile?.name || 'User' }}</p>
+                <p>{{ currentUserProfile?.name || "User" }}</p>
               </div>
               <Button
                 v-if="!isDisabled"

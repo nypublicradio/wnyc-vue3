@@ -112,7 +112,6 @@ const { toggleApproved, shareSubmission, downloadSubmission } =
 // handle navigate to slug page
 const navigateToSlug = (event) => {
   const submission = event.data
-  console.log("Navigating to submission:", submission)
   navigateTo(`/ask-the-mayor-dashboard/${submission.video_filename}`)
 }
 
