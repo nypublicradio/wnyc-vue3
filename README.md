@@ -65,6 +65,32 @@ Install project dependencies:
 npm install
 ```
 
+### Pre-commit secret scanning
+
+Install the required tools:
+
+```bash
+python3 -m pip install --user pre-commit detect-secrets
+```
+
+Enable git hooks in this repository:
+
+```bash
+pre-commit install
+```
+
+Run the secret scan manually at any time:
+
+```bash
+pre-commit run detect-secrets --all-files
+```
+
+If secrets are intentionally added/removed, regenerate the baseline:
+
+```bash
+git ls-files -z | xargs -0 detect-secrets scan > .secrets.baseline
+```
+
 To start the development server, run the following command:
 
 ```bash
