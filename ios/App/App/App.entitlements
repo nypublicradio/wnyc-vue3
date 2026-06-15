@@ -4,6 +4,12 @@
 <dict>
 	<key>aps-environment</key>
 	<string>development</string>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>webcredentials:demo.wnyc.org</string>
+		<string>applinks:demo.wnyc.org</string>
+		<string>activitycontinuation:demo.wnyc.org</string>
+	</array>
 	<key>com.apple.security.application-groups</key>
 	<array>
 		<string>group.org.wnyc.iphone.onesignal</string>
