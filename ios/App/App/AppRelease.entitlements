@@ -6,9 +6,9 @@
 	<string>development</string>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>webcredentials:native-app.wnyc.org</string>
-		<string>applinks:native-app.wnyc.org</string>
-		<string>activitycontinuation:native-app.wnyc.org</string>
+		<string>webcredentials:wnyc.org</string>
+		<string>applinks:wnyc.org</string>
+		<string>activitycontinuation:wnyc.org</string>
 	</array>
 	<key>com.apple.security.application-groups</key>
 	<array>
