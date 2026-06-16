@@ -333,12 +333,6 @@ const getDotMenuItems = (bucketItem) => {
       : []),
   ]
 }
-// watch(
-//   () => props.episodeData,
-//   () => {
-//     console.log("episodeData in EpisodeTemplate:", props.episodeData)
-//   }
-// )
 </script>
 
 <template>

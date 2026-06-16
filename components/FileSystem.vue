@@ -6,22 +6,6 @@ import {
 
 //const fileSystem = useFileSystem()
 const fileSystemLS = useFileSystemLS()
-
-// const used = ref(0)
-// const granted = ref(0)
-
-// get the used and granted storage
-// watch(
-//   fileSystem,
-//   (/* value */) => {
-//     navigator.webkitPersistentStorage.queryUsageAndQuota((usedBytes, grantedBytes) => {
-//       //console.log('we are using ', usedBytes, ' of ', grantedBytes, 'bytes')
-//       used.value = usedBytes
-//       granted.value = grantedBytes
-//     })
-//   },
-//   { deep: true }
-// )
 </script>
 
 <template>

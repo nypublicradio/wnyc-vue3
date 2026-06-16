@@ -241,14 +241,6 @@ const togglePlayHere = async (e) => {
   // Remove the redundant isEpisodePlaying.value = e line
 }
 
-//const handleCast = () => {
-//console.log("playerRef.value = ", playerRef.value)
-//console.log("remoteControl = ", remoteControl)
-//playerRef.value.$mediaPlayerRef.requestGoogleCast()
-//playerRef.value.castToGoogleCast()
-//remoteControl.requestGoogleCast()
-//}
-
 // function that handles the expanded player from the persistent player emit
 const handleIsExpanded = (e) => {
   if (e) {
@@ -326,11 +318,6 @@ watch(isNetworkConnected, () => {
   }
 })
 
-//
-// watch(isBuffering, (e) => {
-//   console.log("watch: isBuffering = ", isBuffering.value, e)
-// })
-
 // function that handles the skip ahead toggle trigger
 const handleSkipAhead = () => {
   skipAheadTrigger.value = !skipAheadTrigger.value
@@ -341,8 +328,6 @@ const handleSkipBack = () => {
 }
 
 watch(currentEpisode, (newVal, oldVal) => {
-  //console.log("newVal", newVal)
-  //console.log("oldVal", oldVal)
   // only switches the episode if the new value is not null and the audio, hls, or file values have changed. so when coming back into focus, the data can be updated in the currentEpisode, like if it was live and the show changed.
   if (
     newVal !== null &&
@@ -449,9 +434,6 @@ onMounted(async () => {
       )
     }
   })
-  // await RemoteStreamer.addListener("id3Metadata", (e) => {
-  //   console.log("id3Metadata", e)
-  // })
 })
 </script>
 
