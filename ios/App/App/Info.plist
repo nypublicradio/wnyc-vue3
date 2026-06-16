@@ -69,7 +69,7 @@
 					<key>UISceneClassName</key>
 					<string>CPTemplateApplicationScene</string>
 					<key>UISceneDelegateClassName</key>
-					<string>NypublicradioCapacitorRemoteStreamer.CarPlaySceneDelegate</string>
+					<string>CarPlaySceneDelegate</string>
 					<key>UISceneConfigurationName</key>
 					<string>CarPlay</string>
 				</dict>
