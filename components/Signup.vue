@@ -7,7 +7,6 @@ import {
   useSignupSideBar,
   useLoginSideBar,
   useSettingSideBar,
-  useIsApp,
 } from "~/composables/states"
 
 import { trackClickEvent } from "~/utilities/helpers"

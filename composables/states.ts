@@ -1,6 +1,6 @@
 // notification channels array from the BFF server
 export const useMasterNotificationChannelsArray = () => useState<any[]>('masterNotificationChannelsArray', () => null)
-
+// global state for the master notification channels pulled from Supabase that the user can subscribed to
 export const getMasterNotificationChannels = async () => {
     const masterNotificationChannelsArray = useMasterNotificationChannelsArray()
     // get notification topics

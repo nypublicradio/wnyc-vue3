@@ -95,6 +95,27 @@ export const useAuth = () => {
         return config.public.supabaseAuthSignInRedirectTo || `${window.location.origin}/confirm`
     }
 
+
+    /**
+     * Set authentication state and fetch membership info
+     */
+    const setAuthState = async (token: string, user: User, refreshToken?: string) => {
+        authToken.value = token
+        currentUser.value = user
+
+        if (refreshToken) {
+            refreshTokenValue.value = refreshToken
+        }
+
+        if (import.meta.client) {
+            await Preferences.set({ key: 'auth_token', value: token })
+            await Preferences.set({ key: 'auth_user', value: JSON.stringify(user) })
+            if (refreshToken) {
+                await Preferences.set({ key: 'refresh_token', value: refreshToken })
+            }
+        }
+    }
+
     /**
      * Initialize authentication from Supabase session
      * Generates JWT from Supabase session and sets auth state
@@ -186,26 +207,6 @@ export const useAuth = () => {
     // ─────────────────────────────────────────────────────────────────────────
     // JWT state management
     // ─────────────────────────────────────────────────────────────────────────
-
-    /**
-     * Set authentication state and fetch membership info
-     */
-    const setAuthState = async (token: string, user: User, refreshToken?: string) => {
-        authToken.value = token
-        currentUser.value = user
-
-        if (refreshToken) {
-            refreshTokenValue.value = refreshToken
-        }
-
-        if (import.meta.client) {
-            await Preferences.set({ key: 'auth_token', value: token })
-            await Preferences.set({ key: 'auth_user', value: JSON.stringify(user) })
-            if (refreshToken) {
-                await Preferences.set({ key: 'refresh_token', value: refreshToken })
-            }
-        }
-    }
 
     /**
      * Logout and clear authentication state
