@@ -4,6 +4,8 @@ import Message from "primevue/message"
 import { ref } from "vue"
 import { useAuth } from "~/composables/useAuth"
 
+defineOptions({ inheritAttrs: false })
+
 const errorMessage = ref("")
 
 const props = defineProps({

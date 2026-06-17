@@ -19,6 +19,8 @@ import {
   useIsApp,
 } from "~/composables/states"
 
+defineOptions({ inheritAttrs: false })
+
 const props = defineProps({
   client: {
     default: null,
