@@ -70,6 +70,14 @@ const {
   const items = episodeData?.data || []
   return items.map((ep) => ({ ...ep, showTitle: showInfo?.title }))
 })
+watch(
+  () => error.value,
+  (e) => {
+    if (e) {
+      console.error("Error fetching recent episodes for show", e)
+    }
+  }
+)
 </script>
 <template>
   <div v-if="status === 'pending'">

@@ -95,6 +95,41 @@ export const useAuth = () => {
         return config.public.supabaseAuthSignInRedirectTo || `${window.location.origin}/confirm`
     }
 
+    /**
+     * Initialize authentication from Supabase session
+     * Generates JWT from Supabase session and sets auth state
+     */
+    const initializeFromSupabaseSession = async (): Promise<boolean> => {
+        const supabase = useSupabaseClient()
+        const config = useRuntimeConfig()
+        const { data: sessionData } = await supabase.auth.getSession()
+
+        if (!sessionData?.session) return false
+
+        try {
+            const jwtResponse = await $fetch(`${config.public.BFF_URL}/api/auth/session-to-jwt`, {
+                method: "POST",
+                body: {
+                    access_token: sessionData.session.access_token,
+                    refresh_token: sessionData.session.refresh_token,
+                },
+            })
+
+            if (jwtResponse.success && jwtResponse.token) {
+                await setAuthState(
+                    jwtResponse.token,
+                    jwtResponse.user,
+                    sessionData.session.refresh_token
+                )
+                return true
+            }
+        } catch (error) {
+            console.error("Failed to generate JWT:", error)
+        }
+
+        return false
+    }
+
     // ─────────────────────────────────────────────────────────────────────────
     // OAuth callback handling (THE single entry point for all OAuth returns)
     // ─────────────────────────────────────────────────────────────────────────
@@ -113,8 +148,6 @@ export const useAuth = () => {
      */
     const handleOAuthCallback = async (url: string): Promise<boolean> => {
         const supabase = useSupabaseClient()
-        const config = useRuntimeConfig()
-
         const urlObj = new URL(url)
 
         // Try implicit flow first: tokens in the hash fragment (#access_token=...&refresh_token=...)
@@ -359,41 +392,6 @@ export const useAuth = () => {
         } catch (error) {
             return false
         }
-    }
-
-    /**
-     * Initialize authentication from Supabase session
-     * Generates JWT from Supabase session and sets auth state
-     */
-    const initializeFromSupabaseSession = async (): Promise<boolean> => {
-        const supabase = useSupabaseClient()
-        const config = useRuntimeConfig()
-        const { data: sessionData } = await supabase.auth.getSession()
-
-        if (!sessionData?.session) return false
-
-        try {
-            const jwtResponse = await $fetch(`${config.public.BFF_URL}/api/auth/session-to-jwt`, {
-                method: "POST",
-                body: {
-                    access_token: sessionData.session.access_token,
-                    refresh_token: sessionData.session.refresh_token,
-                },
-            })
-
-            if (jwtResponse.success && jwtResponse.token) {
-                await setAuthState(
-                    jwtResponse.token,
-                    jwtResponse.user,
-                    sessionData.session.refresh_token
-                )
-                return true
-            }
-        } catch (error) {
-            console.error("Failed to generate JWT:", error)
-        }
-
-        return false
     }
 
     // Start the token refresh timer on client side

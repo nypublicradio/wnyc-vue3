@@ -226,11 +226,11 @@ export default function useCaptureMedia () {
     }
 
     // Stubs for other media types
-    const captureAudio = async (): Promise<File> => {
+    const captureAudio = (): Promise<File> => {
         throw new Error('Native audio capture temporarily disabled.')
     }
     // capture image stub
-    const captureImage = async (): Promise<File> => {
+    const captureImage = (): Promise<File> => {
         throw new Error('Native image capture temporarily disabled.')
     }
     // check if media capture is available

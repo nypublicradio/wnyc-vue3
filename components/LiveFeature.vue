@@ -63,7 +63,7 @@ const onUpdateStation = (station) => {
         class="card-click w-full h-full absolute top-0 left-0 z-1 p-ripple"
         tabindex="0"
         role="button"
-        :aria-label="`View live page with all current streams`"
+        aria-label="View live page with all current streams"
       ></VFlexibleLink>
       <div class="flex align-items-center z-2">
         <div class="image-holder relative">

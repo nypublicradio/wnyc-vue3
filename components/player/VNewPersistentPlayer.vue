@@ -333,6 +333,7 @@ let touchendTime = 0
 const swipeThreshold = props.swipeThreshold
 let isDraggingDown = false
 
+// function to check if the expanded content scroll position is at the top, used to only allow swipe down to minimize when the scroll is at the top to prevent accidental minimizing when the user is trying to scroll down the content
 function isExpandedContentAtTop() {
   const scrollTop = expandedContentHolder.value?.scrollTop
   if (typeof scrollTop !== "number") {

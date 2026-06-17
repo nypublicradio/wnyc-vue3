@@ -31,7 +31,6 @@ const props = defineProps({
 const settingsSideBar = useSettingSideBar()
 const signUpSideBar = useSignupSideBar()
 const loginSideBar = useLoginSideBar()
-const isApp = useIsApp()
 const { setAuthReturnRoute, clearAuthReturnRoute } = useAuthReturnRoute()
 
 const client = useSupabaseClient()

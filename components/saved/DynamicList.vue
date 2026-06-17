@@ -44,7 +44,7 @@ const loadComponent = (item) => {
   const componentName = item.type === mediaTypes.SHOW ? "ShowItem" : "MediaCard"
   return markRaw(componentMap[componentName])
 }
-
+// function that gets the favorited items data based on the type filter, if it exists
 const getFilteredItemsData = async () => {
   let typeFilterCondition = ""
   if (Array.isArray(props.typeFilter)) {

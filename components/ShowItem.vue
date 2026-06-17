@@ -92,7 +92,7 @@ const getDotMenuItems = (bucketItem) => {
       active: isFavorited.value,
       title: bucketItem.title,
       command: () => {
-        handleAddToFavorites(bucketItem)
+        handleAddToFavorites()
       },
     },
   ]

@@ -18,15 +18,15 @@ const emit = defineEmits(["image-load", "image-error"])
   <div class="v-image v-image-local">
     <div
       class="v-image-holder"
-      :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`"
+      :style="`aspect-ratio:${props.ratio[0]} / ${props.ratio[1]}`"
     >
       <img
         class="image"
-        :src="src"
-        :alt="isDecorative ? '' : alt"
-        :loading="loading"
-        :width="width ?? undefined"
-        :height="height ?? undefined"
+        :src="props.src"
+        :alt="props.isDecorative ? '' : props.alt"
+        :loading="props.loading"
+        :width="props.width ?? undefined"
+        :height="props.height ?? undefined"
         @load="emit('image-load')"
         @error="emit('image-error')"
       />

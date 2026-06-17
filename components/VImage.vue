@@ -144,32 +144,32 @@ const dynamicComponent = computed(() => {
 // Build a clean props object for the child — only pass defined props, not $attrs.
 // This prevents stray attributes from leaking through to actual HTML elements.
 const childProps = computed(() => {
-  const p = {}
+  const forwardedProps = {}
 
   // Pass-through props (only if defined/non-default, to let child defaults work)
-  if (props.alt) p.alt = props.alt
-  if (props.allowPreview) p.allowPreview = props.allowPreview
+  if (props.alt) forwardedProps.alt = props.alt
+  if (props.allowPreview) forwardedProps.allowPreview = props.allowPreview
   if (props.allowVerticalEffect)
-    p.allowVerticalEffect = props.allowVerticalEffect
-  if (props.density !== undefined) p.density = props.density
-  if (props.format !== undefined) p.format = props.format
-  if (props.isDecorative) p.isDecorative = props.isDecorative
-  if (props.loading !== "lazy") p.loading = props.loading
-  if (props.maxHeight !== Infinity) p.maxHeight = props.maxHeight
-  if (props.maxWidth !== Infinity) p.maxWidth = props.maxWidth
-  if (props.modifiers) p.modifiers = props.modifiers
-  if (props.quality !== undefined) p.quality = props.quality
-  if (props.sizes !== undefined) p.sizes = props.sizes
-  if (props.srcset !== undefined) p.srcset = props.srcset
-  if (props.to) p.to = props.to
+    forwardedProps.allowVerticalEffect = props.allowVerticalEffect
+  if (props.density !== undefined) forwardedProps.density = props.density
+  if (props.format !== undefined) forwardedProps.format = props.format
+  if (props.isDecorative) forwardedProps.isDecorative = props.isDecorative
+  if (props.loading !== "lazy") forwardedProps.loading = props.loading
+  if (props.maxHeight !== Infinity) forwardedProps.maxHeight = props.maxHeight
+  if (props.maxWidth !== Infinity) forwardedProps.maxWidth = props.maxWidth
+  if (props.modifiers) forwardedProps.modifiers = props.modifiers
+  if (props.quality !== undefined) forwardedProps.quality = props.quality
+  if (props.sizes !== undefined) forwardedProps.sizes = props.sizes
+  if (props.srcset !== undefined) forwardedProps.srcset = props.srcset
+  if (props.to) forwardedProps.to = props.to
 
   // These are always passed, overridden by VImage's own computed values
-  p.src = imageTemplate.value
-  p.width = imageWidth.value
-  p.height = imageHeight.value
-  p.ratio = props.ratio?.length ? props.ratio : imageRatio.value
+  forwardedProps.src = imageTemplate.value
+  forwardedProps.width = imageWidth.value
+  forwardedProps.height = imageHeight.value
+  forwardedProps.ratio = props.ratio?.length ? props.ratio : imageRatio.value
 
-  return p
+  return forwardedProps
 })
 </script>
 

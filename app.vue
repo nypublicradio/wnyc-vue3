@@ -206,7 +206,7 @@ watch(
   async (newPath, oldPath) => {
     if (newPath !== oldPath) {
       await nextTick()
-      if (window.htlbid && window.htlbid.cmd) {
+      if (window.htlbid?.cmd) {
         htlbid.cmd.push(() => {
           htlbid.layout("universal") // Leave as 'universal' or add custom layout
           htlbid.setTargeting("is_testing", config.public.HTL_IS_TESTING) // Set to "no" for production

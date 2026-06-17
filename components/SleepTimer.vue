@@ -20,8 +20,8 @@ import { useGlobalToast } from "~/composables/states"
 const globalToast = useGlobalToast()
 
 // Initialize device info on client-side only to avoid SSR errors
-let platform = ref(null)
-let osVersion = ref(null)
+const platform = ref(null)
+const osVersion = ref(null)
 if (process.client) {
   const deviceInfo = await Device.getInfo()
   platform.value = deviceInfo.platform

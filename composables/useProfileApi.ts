@@ -86,7 +86,7 @@ export const useProfileApi = () => {
         }
     }
 
-
+    // Fetches membership info for the current user, ensuring authentication and profile data are available.
     const getMembershipInfo = async () => {
         const authComposable = useAuth()
         await nextTick()
