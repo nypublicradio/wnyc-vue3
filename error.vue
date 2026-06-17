@@ -18,7 +18,7 @@ const props = defineProps({
 
 const requestEvent = import.meta.server ? useRequestEvent() : null
 const route = useRoute()
-
+// format and log the error details for debugging and monitoring purposes
 function logPageError(errorPayload: ErrorPayload | null) {
   if (!errorPayload) {
     return

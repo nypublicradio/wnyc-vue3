@@ -108,7 +108,7 @@ export const useProfileApi = () => {
                 { timeout: 10000 }
             )
         } catch (error) {
-            console.warn("Timeout waiting for currentUserProfile.salesforce_id to be populated")
+            console.warn("Timeout waiting for currentUserProfile.salesforce_id to be populated", error)
             // Continue anyway - will fall back to email if available
         }
 

@@ -13,7 +13,7 @@ export const useTopStories = () => {
   }
 
   const { data: topStoriesData, status, error } = useFetchWrapper(`${config.public.BFF_URL}/api/curated_lists/${listId}`)
-
+  // Helper function to normalize the top stories data structure, ensuring listItems is always an array
   const normalizeStories = (rawStories: any) => {
     if (!rawStories || typeof rawStories !== 'object') {
       return { listItems: [] }

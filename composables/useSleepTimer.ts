@@ -96,7 +96,7 @@ export default function useSleepTimer () {
             } else {
                 // restart new interval
                 clearTheInterval()
-                void startTimer(true)
+                startTimer(true).catch((error) => console.error('Sleep timer restart failed:', error))
             }
         }, 1000)
     }
@@ -185,7 +185,7 @@ export default function useSleepTimer () {
     function onUpdateDuration (e) {
         sleepTimerSelectedTime.value = e
         resetTimer()
-        void startTimer()
+        startTimer().catch((error) => console.error('Sleep timer start failed:', error))
         sleepTimerSideBar.value = false
         trackClickEvent(
             "Click Tracking - Sleep timer duration",

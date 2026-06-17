@@ -176,8 +176,8 @@ export default defineNuxtConfig({
   },
 
   sourcemap: {
-    client: !!process.env.SENTRY_AUTH_TOKEN,
-    server: !!process.env.SENTRY_AUTH_TOKEN,
+    client: Boolean(process.env.SENTRY_AUTH_TOKEN),
+    server: Boolean(process.env.SENTRY_AUTH_TOKEN),
   },
 
   components: ["~/components", "~/components/icons", "~/components/logos"],

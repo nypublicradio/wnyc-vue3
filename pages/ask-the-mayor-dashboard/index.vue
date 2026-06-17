@@ -1,7 +1,7 @@
 <script setup>
 import { useToast } from "primevue/usetoast"
 //import { FilterMatchMode } from "@primevue/core/api"
-import { useCurrentUser, useCurrentUserProfile } from "~/composables/states.ts"
+import { useCurrentUser } from "~/composables/states.ts"
 import { useAtmDashboard } from "~/composables/atm/useAtmDashboard"
 useHead({
   bodyAttrs: {
@@ -10,7 +10,6 @@ useHead({
 })
 const toast = useToast()
 const user = useCurrentUser()
-const userProfile = useCurrentUserProfile()
 const supabase = useSupabaseClient()
 const isAdmin = ref(false)
 const isLoading = ref(true)

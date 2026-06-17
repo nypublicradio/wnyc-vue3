@@ -43,10 +43,6 @@ onMounted(async () => {
   }
 
   const returnRoute = await getAuthReturnRoute()
-  console.log(
-    "Auth callback complete, navigating to return route:",
-    returnRoute
-  )
   clearAuthReturnRoute()
   // If returnRoute is not set or is still "/confirm" (the default), navigate to "/home"
   const destination =

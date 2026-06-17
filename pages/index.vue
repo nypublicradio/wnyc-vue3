@@ -28,11 +28,11 @@ onMounted(() => {
 <template>
   <div class="index">
     <div class="page" :class="[`${String(route.name)}`]">
-      <Transition name="fade">
-        <section class="loading-holder">
-          <WnycLoader class="loader-anim" color="var(--p-surface-950)" />
-        </section>
-      </Transition>
+      <!-- <Transition name="fade"> -->
+      <section class="loading-holder">
+        <WnycLoader class="loader-anim" color="var(--p-surface-950)" />
+      </section>
+      <!-- </Transition> -->
     </div>
   </div>
 </template>

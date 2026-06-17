@@ -1,7 +1,6 @@
 <script setup>
 import { useFuse } from "@vueuse/integrations/useFuse"
 //import { showTopics } from "~/composables/globals.ts"
-import { goToShowPage } from "~/utilities/helpers"
 import { useBreakpoints } from "~/composables/useBreakpoints"
 import { useIsApp } from "~/composables/states"
 const config = useRuntimeConfig()
