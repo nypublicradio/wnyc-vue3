@@ -69,7 +69,7 @@ const getNationalNewscast = async () => {
 		resData.attributes.headers.brand.logoImage = hardcodedNprImage
 		resData.attributes.duration = await handleDuration(resData.attributes.estimatedDuration, resData.attributes.audio)
 		resData.attributes.cardTitle = 'NPR News Now'
-		resData.attributes.showTitle = resData.attributes.channelTitle
+		resData.attributes.showTitle = 'NPR'
 		resData.attributes.type = resData.type
 		resData.attributes.id = resData.id
 		resData.attributes.cmsSource = cmsSources.PUBLISHER
