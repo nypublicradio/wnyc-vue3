@@ -3,6 +3,7 @@ import Capacitor
 import Firebase
 import FirebaseCore
 import CarPlay
+import NypublicradioCapacitorRemoteStreamer
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,6 +17,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
+
+        // Initialize CarPlayMediaManager early so it is ready to receive
+        // CarPlay connections before the Capacitor WebView / plugin loads.
+        // Without this, CarPlay shows a blank screen until the phone app is opened.
+        if #available(iOS 14.0, *) {
+            _ = CarPlayMediaManager.shared
+        }
+
         return true
     }
     
