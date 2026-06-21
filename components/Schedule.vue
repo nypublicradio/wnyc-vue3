@@ -107,7 +107,7 @@ watch(currentScheduleDate, () => {
   debouncedGetAllScheduleData()
 })
 
-onMounted(() => {
+onMounted(async () => {
   // Wait for allCurrentStations to be populated before fetching schedule data
   if (allCurrentStations.value && allCurrentStations.value.length > 0) {
     getAllScheduleData()
@@ -118,6 +118,16 @@ onMounted(() => {
         stopWatcher() // Stop watching once data is available
       }
     })
+  }
+
+  // Fetch valid show slugs to determine which schedule entries are linkable
+  try {
+    const showsData = await $fetch('/api/shows')
+    validShowSlugs.value = new Set(showsData.all.map((show) => show.slug))
+    showSlugsLoaded.value = true
+  } catch (e) {
+    console.error('Failed to fetch valid show slugs for schedule', e)
+    // Leave showSlugsLoaded false so isShowLinkValid defaults to true (all links remain active)
   }
 })
 
@@ -147,6 +157,18 @@ const toShowPageClick = (entry, current = false) => {
 
 // returns the show slug if the entry has one
 const getShowSlug = (entry) => stripShowUrl(entry.attributes?.parentUrl)
+
+// valid show slugs fetched from the Publisher API (via /api/shows)
+const validShowSlugs = ref(new Set())
+const showSlugsLoaded = ref(false)
+
+// returns true if the entry has a show page in the app
+const isShowLinkValid = (entry) => {
+  if (!showSlugsLoaded.value) return true // allow all clicks while loading
+  const slug = getShowSlug(entry)
+  if (!slug) return false
+  return validShowSlugs.value.has(slug)
+}
 
 // determine if the entry is the current episode and if the first entry should be featured (New Sounds (q2) and the holiday channel are excluded)
 const handleCurrentEpisode = (entry, index) => {
@@ -251,10 +273,10 @@ const handleScheduleNavigationButtonLabel = (date) => {
               class="schedule-entry flex justify-content-between align-items-stretch gap-3 style-mode-light light-mode"
               :class="[
                 handleCurrentEpisode(entry, entryIndex) ? 'selected -ml-3 -mr-3 xl:mr-0' : '',
-                handleCurrentEpisode(entry, entryIndex) && getShowSlug(entry) ? 'cursor-pointer' : ''
+                handleCurrentEpisode(entry, entryIndex) && getShowSlug(entry) && isShowLinkValid(entry) ? 'cursor-pointer' : ''
               ]"
               @click="
-                handleCurrentEpisode(entry, entryIndex) && getShowSlug(entry)
+                handleCurrentEpisode(entry, entryIndex) && getShowSlug(entry) && isShowLinkValid(entry)
                   ? toShowPageClick(entry, true)
                   : null
               "
@@ -268,10 +290,11 @@ const handleScheduleNavigationButtonLabel = (date) => {
                   </p>
                   <Button
                     v-if="getShowSlug(entry)"
-                    @click="toShowPageClick(entry)"
+                    @click="isShowLinkValid(entry) ? toShowPageClick(entry) : null"
                     severity="secondary"
                     variant="link"
                     class="title-link -mt-2"
+                    :class="{ 'pointer-events-none': !isShowLinkValid(entry) }"
                   >
                     <h2 class="title truncate t2lines">
                       {{ getEntryTitle(entry) }}
