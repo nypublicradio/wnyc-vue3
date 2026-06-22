@@ -174,8 +174,7 @@ useSocialMetaOverrides(eventData)
                         v-for="badge in eventBadges"
                         :key="badge.label"
                         :label="badge.label"
-                        :color="badge.color"
-                        :bg-color="badge.bg"
+                        :classNames="badge.classNames"
                       />
                     </div>
                   </div>
