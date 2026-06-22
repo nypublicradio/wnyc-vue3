@@ -5,19 +5,15 @@ const props = defineProps({
     default: null,
     required: true,
   },
-  bgColor: {
+  classNames: {
     type: String,
-    default: "var(--p-yellow-500)",
-  },
-  color: {
-    type: String,
-    default: "var(--p-surface-950)",
+    default: null,
   },
 })
 </script>
 
 <template>
-  <div class="badge">
+  <div :class="`badge ${props.classNames}`">
     <div class="content">{{ props.label }}</div>
   </div>
 </template>
@@ -31,11 +27,37 @@ const props = defineProps({
     font-size: var(--font-size-2);
     padding: 1px 6px;
     border-radius: 2px;
-    color: v-bind(color);
-    background-color: v-bind(bgColor);
     width: auto;
     font-weight: var(--font-weight-600);
     letter-spacing: 0.5px;
   }
+}
+.badge .content {
+  color: var(--p-surface-950);
+  background-color: var(--p-yellow-500);
+}
+.badge.news-card-badge .content {
+  color: var(--p-surface-950);
+  background-color: var(--p-yellow-500);
+}
+.badge.news-card-badge.local-news .content {
+  color: var(--p-surface-950);
+  background-color: var(--p-yellow-500);
+}
+.badge.news-card-badge.world-news .content {
+  color: var(--p-surface-0);
+  background-color: var(--p-indigo-500);
+}
+.badge.event-location-badge.in-person .content {
+  color: var(--p-surface-0);
+  background-color: var(--electric-violet);
+}
+.badge.event-location-badge.live-stream .content {
+  color: var(--p-text-color);
+  background-color: var(--sea-green);
+}
+.badge.event-type-badge .content {
+  color: var(--p-text-color);
+  background-color: var(--p-surface-25);
 }
 </style>

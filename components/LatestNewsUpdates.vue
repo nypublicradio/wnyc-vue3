@@ -21,6 +21,7 @@ const props = defineProps({
           :newsData="props.localNewscast"
           sourceLabel="WNYC"
           badgeLabel="NEW YORK NEWS"
+          badgeClass="news-card-badge local-news"
           @onClick="togglePlayEpisode(props.localNewscast)"
         />
       </div>
@@ -30,8 +31,7 @@ const props = defineProps({
           :newsData="props.nationalNewscast"
           sourceLabel="NPR"
           badgeLabel="U.S. & WORLD NEWS"
-          bagdeColor="var(--p-surface-0)"
-          badgeBgColor="var(--p-indigo-500)"
+          badgeClass="news-card-badge world-news"
           @onClick="togglePlayEpisode(props.nationalNewscast)"
         />
       </div>

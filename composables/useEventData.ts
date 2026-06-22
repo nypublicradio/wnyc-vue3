@@ -13,33 +13,27 @@ const IN_PERSON_TAG_NEEDLES = ["in_person", "in-person", "in_studio"]
 export const EVENT_BADGE_STYLES = {
   wnycEvents: {
     label: "WNYC EVENTS",
-    color: "var(--p-text-color)",
-    bg: "var(--p-surface-25",
+    classNames: "event-type-badge wnyc-events",
   },
   wqxrEvents: {
     label: "WQXR EVENTS",
-    color: "var(--p-text-color)",
-    bg: "var(--p-surface-25)",
+    classNames: "event-type-badge wqxr-events",
   },
   partnerEvents: {
     label: "PARTNER EVENTS",
-    color: "var(--p-text-color)",
-    bg: "var(--p-surface-25)",
+    classNames: "event-type-badge partner-events",
   },
   communityEvents: {
     label: "COMMUNITY EVENTS",
-    color: "var(--p-text-color)",
-    bg: "var(--p-surface-25)",
+    classNames: "event-type-badge community-events",
   },
   liveStream: {
     label: "LIVE STREAM",
-    color: "var(--p-text-color)",
-    bg: "var(--sea-green)",
+    classNames: "event-location-badge live-stream",
   },
   inPerson: {
     label: "IN-PERSON",
-    color: "var(--p-surface-0)",
-    bg: "var(--electric-violet)",
+    classNames: "event-location-badge in-person",
   },
 } as const
 
