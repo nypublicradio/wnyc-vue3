@@ -62,12 +62,19 @@ const {
   locationName,
   hasLiveStream,
   hasInPerson,
+  hasWnycEvents,
+  hasWqxrEvents,
+  hasPartnerEvents,
+  hasCommunityEvents,
   eventCtaUrl,
 } = useEventData(eventData)
 
 const eventTimeLabel = computed(() => timeLabel.value?.toLowerCase() ?? null)
 const eventBadges = computed(() => [
-  { label: "WNYC EVENTS", color: "var(--p-text-color)", bg: "var(--p-surface-200)" },
+  ...(hasWnycEvents.value ? [EVENT_BADGE_STYLES.wnycEvents] : []),
+  ...(hasWqxrEvents.value ? [EVENT_BADGE_STYLES.wqxrEvents] : []),
+  ...(hasPartnerEvents.value ? [EVENT_BADGE_STYLES.partnerEvents] : []),
+  ...(hasCommunityEvents.value ? [EVENT_BADGE_STYLES.communityEvents] : []),
   ...(hasInPerson.value ? [EVENT_BADGE_STYLES.inPerson] : []),
   ...(hasLiveStream.value ? [EVENT_BADGE_STYLES.liveStream] : []),
 ])

@@ -2,10 +2,35 @@ import { computed, unref } from "vue"
 import type { ComputedRef, Ref } from "vue"
 import { formatTime } from "~/utilities/helpers"
 
+
+const WNYC_EVENTS_TAGS_NEEDLES = ["wnyc_events", "wnyc-events", "wnyc events"]
+const WQXR_EVENTS_TAGS_NEEDLES = ["wqxr_events", "wqxr-events", "wqxr events"]
+const PARTNER_EVENTS_TAGS_NEEDLES = ["partner_events", "partner-events", "partner events"]
+const COMMUNITY_EVENTS_TAGS_NEEDLES = ["community_events", "community-events", "community events"]
 const LIVE_STREAM_TAG_NEEDLES = ["live_stream", "live-stream", "livestream"]
 const IN_PERSON_TAG_NEEDLES = ["in_person", "in-person", "in_studio"]
 
 export const EVENT_BADGE_STYLES = {
+  wnycEvents: {
+    label: "WNYC EVENTS",
+    color: "var(--p-text-color)",
+    bg: "var(--p-surface-25",
+  },
+  wqxrEvents: {
+    label: "WQXR EVENTS",
+    color: "var(--p-text-color)",
+    bg: "var(--p-surface-25)",
+  },
+  partnerEvents: {
+    label: "PARTNER EVENTS",
+    color: "var(--p-text-color)",
+    bg: "var(--p-surface-25)",
+  },
+  communityEvents: {
+    label: "COMMUNITY EVENTS",
+    color: "var(--p-text-color)",
+    bg: "var(--p-surface-25)",
+  },
   liveStream: {
     label: "LIVE STREAM",
     color: "var(--p-text-color)",
@@ -87,6 +112,18 @@ export const useEventData = (eventSource: EventLikeRef) => {
     () => venueName.value || eventLocation.value || null
   )
 
+  const hasWnycEvents = computed(() =>
+    matchesTag(tags.value, WNYC_EVENTS_TAGS_NEEDLES)
+  )
+  const hasWqxrEvents = computed(() =>
+    matchesTag(tags.value, WQXR_EVENTS_TAGS_NEEDLES)
+  )
+  const hasPartnerEvents = computed(() =>
+    matchesTag(tags.value, PARTNER_EVENTS_TAGS_NEEDLES)
+  )
+  const hasCommunityEvents = computed(() =>
+    matchesTag(tags.value, COMMUNITY_EVENTS_TAGS_NEEDLES)
+  )
   const hasLiveStream = computed(() =>
     matchesTag(tags.value, LIVE_STREAM_TAG_NEEDLES)
   )
@@ -95,6 +132,10 @@ export const useEventData = (eventSource: EventLikeRef) => {
   )
 
   const eventTypeBadges = computed(() => [
+    ...(hasWnycEvents.value ? [EVENT_BADGE_STYLES.wnycEvents] : []),
+    ...(hasWqxrEvents.value ? [EVENT_BADGE_STYLES.wqxrEvents] : []),
+    ...(hasPartnerEvents.value ? [EVENT_BADGE_STYLES.partnerEvents] : []),
+    ...(hasCommunityEvents.value ? [EVENT_BADGE_STYLES.communityEvents] : []),
     ...(hasInPerson.value ? [EVENT_BADGE_STYLES.inPerson] : []),
     ...(hasLiveStream.value ? [EVENT_BADGE_STYLES.liveStream] : []),
   ])
@@ -114,6 +155,10 @@ export const useEventData = (eventSource: EventLikeRef) => {
     locationName,
     hasLiveStream,
     hasInPerson,
+    hasWnycEvents,
+    hasWqxrEvents,
+    hasPartnerEvents,
+    hasCommunityEvents,
     eventTypeBadges,
     eventCtaUrl,
   }
