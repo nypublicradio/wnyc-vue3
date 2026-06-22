@@ -10,23 +10,28 @@ type CurrentEpisodeSelection = {
     cacheUntilMs: number | null
 }
 
+// Get the start time of an episode in milliseconds since the epoch
 function getEpisodeStartMs (episode: ScheduleEpisode) {
     return new Date(episode?.attributes?.start || '').getTime()
 }
 
+// Get the end time of an episode in milliseconds since the epoch
 function getEpisodeEndMs (episode: ScheduleEpisode) {
     return new Date(episode?.attributes?.end || '').getTime()
 }
 
+// Check if an episode has valid start and end times
 function hasValidTimes (episode: ScheduleEpisode) {
     return Number.isFinite(getEpisodeStartMs(episode)) &&
         Number.isFinite(getEpisodeEndMs(episode))
 }
+
 // easy BFF location to store the link to the schedule PDF
 export function getSchedulePdfLink () {
     return "https://images-prod.gothamist.com/documents/WNYC_New_Schedule_June_2026.pdf"
 }
 
+// Get the current episode selection from the schedule data
 export function getCurrentEpisodeSelectionFromSchedule (
     scheduleData: ScheduleEpisode[] | null | undefined,
     now = new Date()
@@ -73,6 +78,7 @@ export function getCurrentEpisodeSelectionFromSchedule (
     return null
 }
 
+// Get the current episode from the schedule data
 export function getCurrentEpisodeFromSchedule (
     scheduleData: ScheduleEpisode[] | null | undefined,
     now = new Date()
