@@ -2,7 +2,7 @@
 import { trackClickEvent, slugify, getRouteOrLink } from "~/utilities/helpers"
 import { cmsSources } from "~/composables/globals"
 import type { StreamfieldBlock } from "../composables/types/StreamfieldBlock"
-
+import { useIsApp } from "~/composables/states"
 // Static imports for all layout components to avoid defineAsyncComponent hydration mismatches
 import LayoutRiverThin from "~/components/layouts/river-thin.vue"
 import LayoutRiver from "~/components/layouts/river.vue"
@@ -49,7 +49,7 @@ const props = defineProps({
     default: true,
   },
 })
-
+const isApp = useIsApp()
 const streamfield = props.article?.body
 
 const defaultLayout = "river-thin"
@@ -58,6 +58,10 @@ const verticalSpacingClasses = "mb-6 md:mb-8"
 
 // Helper function to get the appropriate layout component based on the block's layout value
 const getLayoutComponent = (layout: string) => {
+  // if isApp is true and it is the personalities-banner layout, return null
+  if (isApp.value && layout === "personalities-banner") {
+    return null
+  }
   return layoutComponentMap[layout] || layoutComponentMap[defaultLayout]
 }
 
@@ -104,7 +108,10 @@ onMounted(() => {
         /> -->
         <div
           :key="`${block.id}-curated-list-${index}`"
-          v-if="block.type === 'curated_list' && block?.value?.list?.listItems?.length"
+          v-if="
+            block.type === 'curated_list' &&
+            block?.value?.list?.listItems?.length
+          "
           :class="verticalSpacingClasses"
           :id="slugify(block?.value?.label)"
         >
@@ -119,7 +126,10 @@ onMounted(() => {
             v-if="block?.value?.seeMoreLink"
             class="flex justify-content-center mt-4 w-full"
           >
-            <VFlexibleLink :to="getRouteOrLink(block?.value?.seeMoreLink.url)" raw>
+            <VFlexibleLink
+              :to="getRouteOrLink(block?.value?.seeMoreLink.url)"
+              raw
+            >
               <Button
                 severity="secondary"
                 class="px-5"
@@ -257,7 +267,10 @@ onMounted(() => {
         <!-- image -->
 
         <!-- block-quote -->
-        <div v-else-if="block.type === 'block_quote'" class="streamfield-block-quote">
+        <div
+          v-else-if="block.type === 'block_quote'"
+          class="streamfield-block-quote"
+        >
           <blockquote>
             <HtmlConvert
               v-if="block.value.blockQuote"
@@ -303,7 +316,9 @@ onMounted(() => {
       </div>
       <!-- 1/2 way through the streamfield, insert the donation block -->
       <streamfield-donation
-        v-if="props.showDonation && index === Math.floor(streamfield.length / 2)"
+        v-if="
+          props.showDonation && index === Math.floor(streamfield.length / 2)
+        "
         @onClick="
           trackClickEvent(
             `story page id ${props.article.id}`,

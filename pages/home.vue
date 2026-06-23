@@ -90,7 +90,7 @@ onMounted(() => {
       <layouts-horizontal-feature-ad-skeleton />
     </section>
 
-    <section>
+    <section v-if="!isApp">
       <div class="grid grid-lggutter mobile-lggutter">
         <div
           v-for="brand in brandCards"
@@ -103,7 +103,6 @@ onMounted(() => {
     </section>
 
     <LazyDonateBanner v-if="!isApp" class="mt-6" />
-
     <LazySponsorBanner v-if="isApp" class="mt-6" />
   </div>
 </template>
