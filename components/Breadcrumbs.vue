@@ -15,14 +15,18 @@ const lastItem = computed(() => {
   return props.items.length > 0 ? props.items[props.items.length - 1] : null
 })
 
+const parentItem = computed(() => {
+  return props.items.length > 1 ? props.items[props.items.length - 2] : null
+})
+
 // navigate back to the parent page and track it
 const routeBack = () => {
   trackClickEvent(
     "Click Tracking - Back Button",
-    `${lastItem?.label} breadcrumbs`,
+    `${lastItem.value?.label} breadcrumbs`,
     "route back"
   )
-  navigateTo(lastItem.value?.route || "/home")
+  navigateTo(parentItem.value?.route || "/home")
 }
 </script>
 

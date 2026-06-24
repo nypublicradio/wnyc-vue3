@@ -126,13 +126,11 @@ onMounted(() => {
             v-if="block?.value?.seeMoreLink"
             class="flex justify-content-center mt-4 w-full"
           >
-            <VFlexibleLink
-              :to="getRouteOrLink(block?.value?.seeMoreLink.url)"
-              raw
-            >
+            <VFlexibleLink :to="getRouteOrLink(block?.value?.seeMoreLink.url)">
               <Button
                 severity="secondary"
-                class="px-5"
+                variant="link"
+                class="link px-5 text-sm md:text-base no-underline"
                 :label="block?.value?.seeMoreLink.label"
                 tabindex="-1"
               />
