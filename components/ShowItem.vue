@@ -120,7 +120,7 @@ const getDotMenuItems = (bucketItem) => {
         :src="props.data.image"
         :size="props.size"
         :class="props.imageClass"
-        style="background-color: var(--p-surface-25)"
+        style="background-color: var(--p-surface-25); flex: none"
         isDecorative
       />
       <div class="flex gap-1 flex-column align-items-start">

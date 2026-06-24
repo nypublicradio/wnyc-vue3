@@ -277,11 +277,6 @@ useHead({
         <div class="col-fixed hidden xl:block xxl:w-15rem xl:w-7rem"></div>
       </section>
     </div>
-    <!-- <pre class="overflow-hidden">{{ allCurrentStations }}</pre> -->
-    <!-- <pre>{{ liveScheduleData }}</pre> -->
-    <!-- <pre>{{ allLiveScheduleData }}</pre> -->
-    <!-- <pre>{{ currentEpisode }}</pre> -->
-    <!-- <pre class="overflow-hidden">{{ currentEpisodeHolder }}</pre> -->
     <section class="schedule-holder">
       <div class="grid grid-nogutter m-auto">
         <div class="col w-full md:pr-2 lg:pr-4" ref="scheduleHolderRef">

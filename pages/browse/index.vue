@@ -135,88 +135,20 @@ useSeoMeta({
     <!-- <pre>{{ shows }}</pre> -->
     <div class="content-holder md:mt-3">
       <div v-if="!searchFieldValue">
-        <!-- <div class="topics">
-          <section
-            class="topics-header flex justify-content-between align-items-center"
-          >
-            <h2>Browse By Topic</h2>
-          </section>
-          <HorizontalScrollFeature
-            v-if="isMobileBreakpoint"
-            class="topics-holder"
-            :data="shows"
-          >
-            <div
-              v-for="topic in showTopics"
-              class="station-holder item"
-              :key="topic.label"
-            >
-              <div class="relative topic-btn-holder btn-holder">
-                <Button
-                  class="topic-btn text-sm white-space-nowrap btn"
-                  :label="topic.label"
-                  :aria-label="`${topic.label} topic button`"
-                  @click="selectTopic(topic)"
-                  :style="`background-color: ${topic.color};`"
-                />
-              </div>
-            </div>
-          </HorizontalScrollFeature>
-          <section v-else>
-            <div class="grid">
-              <div
-                v-for="topic in showTopics.slice(0, -1)"
-                class="station-holder desktop item col-4"
-                :key="topic.label"
-              >
-                <div class="relative topic-btn-holder">
-                  <Button
-                    class="topic-btn text-lg"
-                    :label="topic.label"
-                    :aria-label="`${topic.label} topic button`"
-                    @click="selectTopic(topic)"
-                    :style="`background-image: url(${topic.image});`"
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
-        </div> -->
         <FetchError v-if="error" />
 
         <section class="tabs mt-2">
-          <div
-            class="flex md:justify-content-between align-items-center mb-4 gap-3"
+          <Tabs
+            class="mb-5"
+            :value="allOrFeatured ? '0' : '1'"
+            @update:value="toggleAllShows"
           >
-            <Transition name="fade" mode="out-in">
-              <h2 :key="allOrFeatured ? 'featured' : 'all'">
-                {{ allOrFeatured ? "Featured" : "All" }} Shows
-              </h2>
-            </Transition>
-            <div class="-mr-2">
-              <Transition name="fade" mode="out-in">
-                <Button
-                  v-if="allOrFeatured"
-                  severity="secondary"
-                  variant="link"
-                  class="link"
-                  @click="toggleAllShows"
-                  label="All Shows"
-                  :size="isMobileBreakpoint ? 'small' : 'base'"
-                ></Button>
-                <Button
-                  v-else
-                  severity="secondary"
-                  variant="link"
-                  class="link"
-                  @click="toggleAllShows"
-                  label="Featured Shows"
-                  :size="isMobileBreakpoint ? 'small' : 'base'"
-                ></Button>
-              </Transition>
-            </div>
-          </div>
-          <!-- <pre>{{ currentShows }}</pre> -->
+            <TabList>
+              <Tab value="0">Featured Shows</Tab>
+              <Tab value="1">All Shows</Tab>
+            </TabList>
+          </Tabs>
+
           <Transition name="fade" mode="out-in">
             <div
               v-if="status === 'success'"
@@ -251,7 +183,7 @@ useSeoMeta({
       <div v-else>
         <section class="results">
           <!-- if results show them -->
-          <div class="results-list mb-2">
+          <div class="results-list mb-4 mt-2">
             <h2>Search Results</h2>
           </div>
           <div class="shows grid">
