@@ -118,6 +118,9 @@ const goToMemberCenter = () => {
     padding: 1rem 1.5rem 1rem 1rem !important;
     background-color: var(--s-box-background-color);
     border-radius: var(--p-border-radius-xl);
+    @include media("<md") {
+      padding: 1rem !important;
+    }
   }
 }
 </style>

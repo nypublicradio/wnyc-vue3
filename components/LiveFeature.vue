@@ -92,7 +92,7 @@ const onUpdateStation = (station) => {
             class="flex flex-column gap-1 xl:gap-3 justify-content-center px-3"
           >
             <div
-              class="indicator-schedule flex align-items-center gap-1 md:gap-2 flex-wrap"
+              class="indicator-schedule hidden md:flex align-items-center gap-1 md:gap-2 flex-wrap"
             >
               <LiveBadge />
               <div class="schedule-text flex gap-1">
@@ -143,16 +143,19 @@ const onUpdateStation = (station) => {
               <div class="flex flex-row gap-3 flex-wrap md:flex-column">
                 <PlayButton
                   :label="
-                    isEpisodePlaying && isLiveStream
+                    isApp
+                      ? currentEpisodeHolder?.station
+                      : isEpisodePlaying && isLiveStream
                       ? listeningButtonLabel
                       : defaultButtonLabel
                   "
                   :data="currentEpisodeHolder"
                   @onClick="togglePlayHere"
-                  severity="primary"
-                  buttonClass="w-9rem md:w-21rem h-2rem justify-content-start"
+                  :severity="isApp ? 'secondary' : 'primary'"
+                  buttonClass="w-auto md:w-21rem h-2rem justify-content-start"
                   labelClass="md:-ml-3"
                   live
+                  :liveBadge="isApp"
                   class="z-2"
                 />
                 <div
@@ -304,7 +307,9 @@ const onUpdateStation = (station) => {
 .live-feature {
   container-type: inline-size;
   position: relative;
-  //background-color: var(--live-feature-background);
+  @include media("<md") {
+    background-color: var(--live-feature-background);
+  }
   .image-holder {
     position: relative;
     flex: none;
