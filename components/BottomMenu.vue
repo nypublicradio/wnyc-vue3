@@ -60,7 +60,7 @@ const menuClick = (item) => {
             <div class="item">
               <component
                 :is="getIconComponent(item.icon)"
-                :active="bottomMenuState.value?.value === item.value"
+                :active="bottomMenuState.value === item.value"
               >
               </component>
               {{ capitalizeFirstLetter(item.value) }}

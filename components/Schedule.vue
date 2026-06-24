@@ -1,5 +1,9 @@
 <script setup>
-import { trackClickEvent, formatDate, getCustomStationLabel } from "~/utilities/helpers"
+import {
+  trackClickEvent,
+  formatDate,
+  getCustomStationLabel,
+} from "~/utilities/helpers"
 import { useBreakpoints } from "~/composables/useBreakpoints"
 import { stripShowUrl } from "~/composables/useNavigationData"
 import useLiveStream from "~/composables/data/liveStream"
@@ -11,7 +15,10 @@ import {
 } from "~/composables/states"
 import { useDebounceFn } from "@vueuse/core"
 import { getSchedulePdfLink } from "~/server/utils/liveSchedule"
-import { scheduleLocalNotification, getEntryTitle } from "~/utilities/local-notifications"
+import {
+  scheduleLocalNotification,
+  getEntryTitle,
+} from "~/utilities/local-notifications"
 
 const {
   getTheTime,
@@ -137,7 +144,9 @@ const toShowPageClick = (entry, current = false) => {
   const title = entry.attributes.parentTitle
   const slug = stripShowUrl(entry.attributes.parentUrl)
   trackClickEvent(
-    `Click Tracking - ${current ? "current live show " : "Show Title"} - ${title}`,
+    `Click Tracking - ${
+      current ? "current live show " : "Show Title"
+    } - ${title}`,
     "Schedule",
     title
   )
@@ -191,7 +200,9 @@ const handleScheduleNavigationButtonLabel = (date) => {
         <div>&nbsp;</div>
       </TabList>
       <hr class="w-full mt-5 opacity-40" />
-      <div class="date-tools flex justify-content-between align-items-center my-4">
+      <div
+        class="date-tools flex justify-content-between align-items-center my-4"
+      >
         <Button
           severity="secondary"
           variant="text"
@@ -206,7 +217,9 @@ const handleScheduleNavigationButtonLabel = (date) => {
               : 'day-change-btn link'
           "
         ></Button>
-        <div class="today flex flex-column gap-0 align-items-center text-center">
+        <div
+          class="today flex flex-column gap-0 align-items-center text-center"
+        >
           <span class="day font-bold text-lg">{{
             formatDate(currentScheduleDate, "EEEE")
           }}</span>
@@ -256,11 +269,17 @@ const handleScheduleNavigationButtonLabel = (date) => {
                   : null
               "
             >
-              <div class="active-content flex flex-column justify-content-between">
+              <div
+                class="active-content flex flex-column justify-content-between"
+              >
                 <div>
                   <p class="time">
                     {{
-                      getTheTime(entry.attributes.start, entry.attributes.end, entryIndex)
+                      getTheTime(
+                        entry.attributes.start,
+                        entry.attributes.end,
+                        entryIndex
+                      )
                     }}
                   </p>
                   <Button
@@ -275,7 +294,8 @@ const handleScheduleNavigationButtonLabel = (date) => {
                   </Button>
                   <HtmlConvert
                     v-if="
-                      entry.station.episodeBody && handleCurrentEpisode(entry, entryIndex)
+                      entry.station.episodeBody &&
+                      handleCurrentEpisode(entry, entryIndex)
                     "
                     :htmlContent="entry.station.episodeBody"
                     class="desc truncate t3lines mt-1"
@@ -297,7 +317,8 @@ const handleScheduleNavigationButtonLabel = (date) => {
                     entry.station.onTodaysShowImage
                   "
                   :alt="
-                    entry.station.onTodaysShowImageAltText || 'on today\'s show image'
+                    entry.station.onTodaysShowImageAltText ||
+                    'on today\'s show image'
                   "
                   :size="{ xs: [208, 208] }"
                   :allowVerticalEffect="true"
@@ -362,7 +383,12 @@ const handleScheduleNavigationButtonLabel = (date) => {
       >
         <div class="flex gap-3">
           <div class="flex flex-column gap-2">
-            <Skeleton class="opacity-50" height="14px" width="64px" borderRadius="4px" />
+            <Skeleton
+              class="opacity-50"
+              height="14px"
+              width="64px"
+              borderRadius="4px"
+            />
             <Skeleton height="22px" width="174px" borderRadius="4px" />
           </div>
         </div>
@@ -518,6 +544,7 @@ html {
     }
     .title-link {
       margin-left: -0.8rem;
+      text-align: left;
       * {
         transition: color var(--p-transition-duration);
       }
