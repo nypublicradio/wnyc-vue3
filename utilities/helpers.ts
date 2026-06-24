@@ -265,8 +265,7 @@ export function getDate (data = null, formatString = "EEE, MMM do") {
 
     return format(inputDate, formatString)
   } else {
-    //return format(new Date(), formatString)
-    return null
+    return format(new Date(), formatString)
   }
 }
 

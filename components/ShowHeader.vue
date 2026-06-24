@@ -19,6 +19,7 @@ import {
   useCurrentEpisodeHolder,
   useCurrentEpisode,
   useIsLiveStream,
+  useIsDarkMode,
 } from "~/composables/states"
 //import { mediaTypeRoutes, mediaTypes } from "~/composables/globals"
 import useSleepTimer from "~/composables/useSleepTimer"
@@ -37,6 +38,7 @@ const { show } = toRefs(props)
 const toast = useToast()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const currentEpisode = useCurrentEpisode()
+const isDarkMode = useIsDarkMode()
 
 // Computed properties derived from the show data
 const showImage = computed(
@@ -50,6 +52,9 @@ const topperTitle = computed(
 )
 const topperDescription = computed(() => show.value?.topper?.topperDescription)
 const topperBackground = computed(() => {
+  if (isApp.value) {
+    return "background: var(--background)"
+  }
   if (show.value?.topper?.topperBackground.includes("background:")) {
     return show.value?.topper?.topperBackground
   } else if (show.value?.topper?.topperBackground.includes("#")) {
@@ -197,7 +202,8 @@ const isThisShowPlaying = computed(() => {
 
 <template>
   <div
-    class="show-header-holder py-3 style-mode-dark"
+    class="show-header-holder py-3"
+    :class="isDarkMode ? 'style-mode-dark' : ''"
     :style="topperBackground"
   >
     <section class="grid grid-nogutter m-auto">
