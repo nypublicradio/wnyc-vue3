@@ -2,12 +2,11 @@
 import { useToast } from "primevue/usetoast"
 import { useTopStories } from "~/composables/useTopStories"
 import { EVENT_BADGE_STYLES, useEventData } from "~/composables/useEventData"
-import { dynamicNavigation } from "~/utilities/helpers"
 import { getEventTitle, getEventDescription, getEventImage } from "~/utilities/metadataHelpers"
 import useSeoMetaOverrides from "~/composables/useSeoMetaOverrides"
 import useSocialMetaOverrides from "~/composables/useSocialMetaOverrides"
 
-const { getFilteredTopStories,topStories } = useTopStories()
+const { getFilteredTopStories } = useTopStories()
 const config = useRuntimeConfig()
 const route = useRoute()
 const toast = useToast()
@@ -122,7 +121,7 @@ useHead({
 })
 useSeoMeta({
   title: pageTitle,
-  description: description,
+  description,
   ogTitle: pageTitle,
   ogDescription: description,
 })
