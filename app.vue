@@ -148,7 +148,12 @@ onMounted(async () => {
     // Don't lock orientation on wide screens (e.g. Android Automotive)
     const isWideScreen = window.screen.width > window.screen.height
     if (!isWideScreen) {
-      await ScreenOrientation.lock({ orientation: "portrait" })
+      try {
+        await ScreenOrientation.lock({ orientation: "portrait" })
+      } catch (e) {
+        // May fail when launched by CarPlay without a window scene
+        console.warn("ScreenOrientation.lock failed:", e)
+      }
     }
     await initFileSystem()
     await initLocalNotifications()

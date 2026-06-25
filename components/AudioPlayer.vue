@@ -473,6 +473,11 @@ onMounted(async () => {
     // Set the flag so switchEpisode skips the native play call
     playbackFromAuto.value = true
     currentEpisode.value = episode
+    // Update global duration immediately — the "play" event won't fire again
+    // if playback is already in progress (e.g. app opened after CarPlay started)
+    if (episode.duration > 0) {
+      currentEpisodeDuration.value = episode.duration
+    }
   }
 
   await RemoteStreamer.addListener("playFromCarPlay", handleAutoPlayEvent)
