@@ -1,7 +1,7 @@
 <script setup>
 import { RemoteStreamer } from "@nypublicradio/capacitor-remote-streamer"
 import { Capacitor } from "@capacitor/core"
-import { ref, watch } from "vue"
+import { ref, watch, nextTick } from "vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
 import PauseIcon from "~/components/icons/PauseIcon.vue"
 import Previous10 from "~/components/icons/Previous10.vue"
@@ -60,6 +60,7 @@ const showPlayer = ref(false)
 const playerRef = ref(null)
 const isBuffering = ref(false)
 const suppressTransitionErrorsUntil = ref(0)
+const playbackFromAuto = ref(false)
 
 const route = useRoute()
 
@@ -170,23 +171,32 @@ const switchEpisode = async (val) => {
     ? Date.now() + 5000
     : 0
 
-  await releasePlayer()
+  // Skip native teardown/play if Auto/CarPlay already started playback
+  const fromAuto = playbackFromAuto.value
+  playbackFromAuto.value = false
 
-  // Small delay to ensure cleanup completes
-  await new Promise((resolve) => setTimeout(resolve, 100))
+  if (!fromAuto) {
+    await releasePlayer()
+    // Small delay to ensure cleanup completes
+    await new Promise((resolve) => setTimeout(resolve, 100))
+  }
 
   currentEpisode.value = val
-  isStreamLoading.value = true
+  isStreamLoading.value = !fromAuto // already playing if from Auto
   await nextTick()
 
-  await RemoteStreamer.play({
-    url: getConfiguredAudioUrl.value,
-    enableCommandCenter: true,
-    enableCommandCenterSeek: !isLiveStream.value,
-  })
+  if (!fromAuto) {
+    await RemoteStreamer.play({
+      url: getConfiguredAudioUrl.value,
+      enableCommandCenter: true,
+      enableCommandCenterSeek: !isLiveStream.value,
+    })
+  }
 
-  // initializes the media session in ~/utilities/media-session.js
-  initMediaSession(currentEpisode.value)
+  // Skip media session update when Auto initiated — it already has correct metadata
+  if (!fromAuto) {
+    initMediaSession(currentEpisode.value)
+  }
   setTimeout(() => {
     showPlayer.value = true
     delay = 250
@@ -434,6 +444,61 @@ onMounted(async () => {
       )
     }
   })
+
+  // Auto/CarPlay initiated playback — load the content in the app player
+  const handleAutoPlayEvent = (data) => {
+    const mediaId = data.mediaId || data.id || ""
+    const isLive = !!data.isLive
+    isLiveStream.value = isLive
+
+    // Build a minimal episode object from the metadata
+    const episode = {
+      id: mediaId,
+      title: data.title || mediaId,
+      showTitle: data.artist || "",
+      station: data.artist || "",
+      player_image: data.imageUrl || null,
+      image: data.imageUrl || null,
+      duration: data.duration || 0,
+      estimatedDuration: data.duration || 0,
+    }
+
+    if (isLive) {
+      episode.hls = data.streamUrl || ""
+    } else {
+      episode.audio = data.streamUrl || ""
+      episode.file = data.streamUrl || ""
+    }
+
+    // Set the flag so switchEpisode skips the native play call
+    playbackFromAuto.value = true
+    currentEpisode.value = episode
+  }
+
+  await RemoteStreamer.addListener("playFromCarPlay", handleAutoPlayEvent)
+  await RemoteStreamer.addListener("playFromMediaId", handleAutoPlayEvent)
+
+  // Sync with Auto/CarPlay if playback is already in progress when app opens
+  if (Capacitor.isNativePlatform()) {
+    try {
+      const state = await RemoteStreamer.getCurrentState()
+      if (state.currentMediaId && !currentEpisode.value) {
+        handleAutoPlayEvent({
+          mediaId: state.currentMediaId,
+          isLive: state.isLiveStream,
+          streamUrl: state.streamUrl || state.currentUrl,
+          title: state.title,
+          artist: state.artist,
+          imageUrl: state.imageUrl,
+          duration: state.duration,
+        })
+        // Match the play/pause state from Auto
+        isEpisodePlaying.value = !!state.isPlaying
+      }
+    } catch (e) {
+      console.warn("Failed to get current playback state:", e)
+    }
+  }
 })
 </script>
 
