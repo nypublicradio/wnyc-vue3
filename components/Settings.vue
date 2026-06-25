@@ -397,7 +397,7 @@ watch(
       </div>
 
       <!--  <SBoxEmpty :clickable="false" :ripple="false" class="py-2"> -->
-      <MemberCenter class="px-2 md:px-0 m-0 grid-nogutter -mx-0" />
+      <MemberCenter class="px-3 md:px-0 m-0 grid-nogutter mx-0" />
       <!-- </SBoxEmpty> -->
     </section>
 
