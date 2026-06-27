@@ -16,6 +16,8 @@ vi.mock('h3', () => ({
 // @ts-expect-error test-only global
 globalThis.defineEventHandler = (handler: unknown) => handler
 // @ts-expect-error test-only global
+globalThis.defineCachedEventHandler = (handler: unknown) => handler
+// @ts-expect-error test-only global
 globalThis.useRuntimeConfig = () => ({
   public: {
     AVIARY_BASE_API: 'https://cms.prod.nypr.digital/api/v2/',
