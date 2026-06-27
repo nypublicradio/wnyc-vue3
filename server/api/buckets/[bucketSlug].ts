@@ -12,7 +12,7 @@ const getPublisherBucketData = async (bucketSlug: string) => {
 };
 
 // get bucket data from CMS
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
     const bucketSlug: string | undefined = event?.context?.params?.bucketSlug;
     if (bucketSlug) {
         const BucketData = await getPublisherBucketData(bucketSlug);
@@ -20,4 +20,9 @@ export default defineEventHandler(async (event) => {
     } else {
         return null
     }
+}, {
+    maxAge: 300,
+    swr: true,
+    name: 'buckets',
+    getKey: (event) => event?.context?.params?.bucketSlug
 });

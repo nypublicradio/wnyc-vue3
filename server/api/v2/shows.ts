@@ -107,11 +107,12 @@ const mergeShows = (sourceShows, nprShows) => {
     return Array.from(showMap.values())
 }
 
-export default defineEventHandler(async (event) => {
-    const res = event?.node?.res
-    const allShowsData = await allShows()
-    const featuredShowsData = await featuredShows()
-    const nprShowsData = await nprShows()
+export default defineCachedEventHandler(async () => {
+    const [allShowsData, featuredShowsData, nprShowsData] = await Promise.all([
+        allShows(),
+        featuredShows(),
+        nprShows(),
+    ])
 
     //Merge the data from all the sources allshowsData with the all shows data from the nprShowsData    
     const allShowsDataMerged = mergeShows(allShowsData, nprShowsData.all)
@@ -127,9 +128,12 @@ export default defineEventHandler(async (event) => {
             show.id = match.id
         }
     })
-    res.setHeader('Cache-Control', 'max-age=3600, stale-while-revalidate')
     return {
         all: allShowsDataMerged,
         featuredShows: featuredShowsDataMerged
     }
+}, {
+    maxAge: 3600, // 1 hour
+    swr: true,
+    name: 'v2-shows'
 })

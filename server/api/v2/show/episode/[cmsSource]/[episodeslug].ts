@@ -139,7 +139,7 @@ const getEpisode = async (slug: string) => {
 
 }
 
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
     //Fetching slug and type from the path params
     const slug: string | undefined = event?.context?.params?.episodeslug
     const cmsSource: string | undefined = event?.context?.params?.cmsSource
@@ -160,4 +160,9 @@ export default defineEventHandler(async (event) => {
         return episode?.data
     }
     return null
+}, {
+    maxAge: 300,
+    swr: true,
+    name: 'v2-show-episode',
+    getKey: (event) => `${event?.context?.params?.cmsSource}:${event?.context?.params?.episodeslug}`
 })

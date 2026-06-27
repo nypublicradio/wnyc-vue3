@@ -37,7 +37,7 @@ const getPersonData = async (personSlug: string, cmsSource: string) => {
 
 // Get story data from CMS
 
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
     const personSlug: string | undefined = event?.context?.params?.personSlug;
     const cmsSource: string | undefined = event?.context?.params?.cmsSource;
 
@@ -47,4 +47,9 @@ export default defineEventHandler(async (event) => {
     } else {
         return null
     }
+}, {
+    maxAge: 300,
+    swr: true,
+    name: 'people',
+    getKey: (event) => `${event?.context?.params?.cmsSource}:${event?.context?.params?.personSlug}`
 });

@@ -28,7 +28,7 @@ const getEpisode = async (slug: string) => {
     return null
 }
 
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
     //Fetching slug and type from the path params
     const slug: string | undefined = event?.context?.params?.episodeslug
     //Fetching query params
@@ -40,4 +40,9 @@ export default defineEventHandler(async (event) => {
 
     }
     return null
+}, {
+    maxAge: 300,
+    swr: true,
+    name: 'show-episode',
+    getKey: (event) => event?.context?.params?.episodeslug
 })

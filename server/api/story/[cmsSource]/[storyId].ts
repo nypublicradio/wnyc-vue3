@@ -68,7 +68,7 @@ const getStoryData = async (id: string, cmsSource: string) => {
 
 // Get story data from CMS
 
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
     //console.log("getting story data")
     const id: string | undefined = event?.context?.params?.storyId
     const cmsSource: string | undefined = event?.context?.params?.cmsSource
@@ -77,4 +77,9 @@ export default defineEventHandler(async (event) => {
         return storyData
     }
     return null
+}, {
+    maxAge: 300,
+    swr: true,
+    name: 'story',
+    getKey: (event) => `${event?.context?.params?.cmsSource}:${event?.context?.params?.storyId}`
 })

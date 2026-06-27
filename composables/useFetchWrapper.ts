@@ -1,5 +1,5 @@
 import { onMounted } from 'vue'
-import { useFetch } from '#app'
+import { useFetch, useNuxtApp } from '#app'
 
 /**
  * useFetchWrapper - a composable to standardize Nuxt useFetch usage with SSR cache, error handling, and optional auto-refresh.
@@ -8,6 +8,7 @@ import { useFetch } from '#app'
  * @param {object} options - Options to pass to useFetch. Supports all useFetch options plus:
  *   - autoRefresh: boolean (default true) - if true, will auto-refresh on mount if data is missing or errored.
  *   - logKey: boolean (default false) - if true, logs the cache key and payload for debugging.
+ *   - maxAge: number (default 0) - if > 0, cached data older than this (in ms) will be refetched.
  * @returns {object} - The same as useFetch, but with standardized caching and refresh logic.
  */
 export function useFetchWrapper (request, options = {}) {
@@ -16,22 +17,37 @@ export function useFetchWrapper (request, options = {}) {
         autoRefresh = true,
         logKey = false,
         shallow = true,
+        maxAge = 0,
         ...rest
     } = options
 
     const fetchOptions = {
         key,
         shallow,
-        ...rest,
-    }
+        // Always provide getCachedData to leverage Nuxt's payload cache on client-side navigation.
+        getCachedData: (cacheKey, nuxtApp) => {
+            const cached = nuxtApp.isHydrating
+                ? nuxtApp.payload.data[cacheKey]
+                : nuxtApp.static.data?.[cacheKey]
 
-    if (logKey) {
-        fetchOptions.getCachedData = (key, nuxtApp) => {
-            const data = nuxtApp.isHydrating ? nuxtApp.payload.data[key] : nuxtApp.static.data?.[key]
-            // eslint-disable-next-line no-console
-            console.log('[useFetchWrapper] getCachedData', key, data)
-            return data
-        }
+            if (logKey) {
+                // eslint-disable-next-line no-console
+                console.log('[useFetchWrapper] getCachedData', cacheKey, cached)
+            }
+
+            if (!cached) return undefined
+
+            // If maxAge is set, check if the cached data has expired
+            if (maxAge > 0) {
+                const fetchedAt = nuxtApp.payload._fetchedAt?.[cacheKey]
+                if (fetchedAt && Date.now() - fetchedAt > maxAge) {
+                    return undefined // Expired, refetch
+                }
+            }
+
+            return cached
+        },
+        ...rest,
     }
 
     // Call useFetch with standardized getCachedData

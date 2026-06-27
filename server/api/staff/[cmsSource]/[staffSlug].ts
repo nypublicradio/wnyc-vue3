@@ -58,7 +58,7 @@ const getStaffData = async (staffSlug: string, cmsSource: string, offset: number
 
 // Get story data from CMS
 
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
     const staffSlug: string | undefined = event?.context?.params?.staffSlug;
     const cmsSource: string | undefined = event?.context?.params?.cmsSource;
     // query params
@@ -70,4 +70,9 @@ export default defineEventHandler(async (event) => {
     } else {
         return null
     }
+}, {
+    maxAge: 300,
+    swr: true,
+    name: 'staff',
+    getKey: (event) => `${event?.context?.params?.cmsSource}:${event?.context?.params?.staffSlug}:${getQuery(event).offset || 0}`
 });

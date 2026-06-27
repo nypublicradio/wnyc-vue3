@@ -94,8 +94,10 @@ const redirects = [
     { from: '/browse/shows/open-to-debate', to: 'https://opentodebate.org' },
 ]
 
-export default defineEventHandler((event) => {
-    // Cache for 24 hours (86400 seconds) in the client's browser/app
-    setResponseHeader(event, 'Cache-Control', 'public, max-age=86400, stale-while-revalidate=3600')
+export default defineCachedEventHandler(() => {
     return redirects
+}, {
+    maxAge: 86400,
+    swr: true,
+    name: 'show-slug-redirects'
 })

@@ -2,21 +2,23 @@
 import axios from 'axios'
 import humps from 'humps'
 import { showTopics } from '~/composables/globals'
-import { customAlphabeticalSort } from '~/utilities/helpers';
+import { customAlphabeticalSort } from '~/utilities/helpers'
 
-export default defineEventHandler(async (event) => {
-    const query = getQuery(event);
-    const topic = showTopics.find(topic => topic.value === query.topic);
+export default defineCachedEventHandler(async (event) => {
+    const query = getQuery(event)
+    const topic = showTopics.find(topic => topic.value === query.topic)
     try {
         const options = {
             method: 'GET',
             url: topic.url,
+            timeout: 10000,
         }
         const res = await axios(options)
         const resData = humps.camelizeKeys(res.data)
 
         // Sort resData
-        resData.sort(customAlphabeticalSort());
+        resData.sort(customAlphabeticalSort())
+
         return resData
     } catch (error) {
         console.error('An error occurred:', error.message)
@@ -33,6 +35,16 @@ export default defineEventHandler(async (event) => {
             console.error('Request error:', error.message)
         }
         console.error('Config:', error.config)
+        throw createError({
+            statusCode: error.response?.status || 500,
+            statusMessage: `Failed to fetch data for topic: ${topic?.value}`
+        })
     }
-    return null
+}, {
+    maxAge: 3600, // 1 hour
+    swr: true,
+    name: 'browse-topic',
+    // This ensures that each topic gets its own unique cache entry.
+    // For example, requests for `?topic=arts` and `?topic=news` will be cached separately.
+    getKey: (event) => `browse-topic:${getQuery(event).topic}`
 })

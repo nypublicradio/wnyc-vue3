@@ -9,6 +9,9 @@ export class NPR {
             options.headers = {}
         }
         options.headers['Authorization'] = `Bearer ${process.env.NPR_CDS_API_KEY}`
+        if (!options.timeout) {
+            options.timeout = 10000
+        }
         const url = `${process.env.NPR_CDS_API}${baseURL}${path}`
         return axios.get(url, options).catch(e => { console.error('NPR CDS error', e) })
     }

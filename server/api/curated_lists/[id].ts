@@ -38,5 +38,6 @@ export default defineCachedEventHandler(async (event) => {
 }, {
     swr: true,
     maxAge: 300,
-    name: 'curated-lists'
+    name: 'curated-lists',
+    getKey: (event) => getRouterParam(event, 'id')
 })

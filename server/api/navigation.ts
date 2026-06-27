@@ -77,10 +77,7 @@ async function getNavigationData () {
     }
 }
 
-export default defineEventHandler(async (event) => {
-    const res = event?.node?.res
-    res.setHeader('Cache-Control', 'max-age=120, stale-while-revalidate')
-
+export default defineCachedEventHandler(async () => {
     try {
         const data = await getNavigationData()
         return { data }
@@ -95,4 +92,8 @@ export default defineEventHandler(async (event) => {
             }
         }
     }
+}, {
+    maxAge: 120,
+    swr: true,
+    name: 'navigation'
 })

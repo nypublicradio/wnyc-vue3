@@ -18,6 +18,7 @@ const getLocalNewscast = async () => {
 		const options = {
 			method: 'GET',
 			url: `${config.public.PUBLISHER_BASE_API}v3/story/latest-newscast/`,
+			timeout: 8000,
 		}
 		const res = await axios(options)
 		const resData = humps.camelizeKeys(res.data).data
@@ -58,10 +59,12 @@ const getNationalNewscast = async () => {
 		const options = {
 			method: 'GET',
 			url: `${config.public.PUBLISHER_BASE_API}v3/story/npr-newscast`,
+			timeout: 8000,
 		}
 		const res = await axios(options)
 		const resData = humps.camelizeKeys(res.data).data
-		const mp3Res = await axios(resData.attributes.audio)
+		// Use HEAD request to get last-modified without downloading the full audio file
+		const mp3Res = await axios.head(resData.attributes.audio)
 		resData.attributes.newsdate = mp3Res.headers['last-modified']
 		resData.attributes.publicationDate = mp3Res.headers['last-modified']
 		resData.attributes.file = resData.attributes.audio
@@ -85,14 +88,17 @@ const getNationalNewscast = async () => {
  * Compress and simplify the global nav data.
  * Reachable /api/homepage
  */
-export default defineEventHandler(async (event) => {
-	//console.log('getting home page LATEST NEWS data')
-	const res = event?.node?.res
-	const local_newscast = await getLocalNewscast()
-	const national_newscast = await getNationalNewscast()
-	res.setHeader('Cache-Control', 'max-age=120, stale-while-revalidate')
+export default defineCachedEventHandler(async () => {
+	const [local_newscast, national_newscast] = await Promise.all([
+		getLocalNewscast(),
+		getNationalNewscast(),
+	])
 	return {
 		local_newscast,
 		national_newscast,
 	}
+}, {
+	maxAge: 120, // 2 minutes
+	swr: true,
+	name: 'homepage-latest-news'
 })

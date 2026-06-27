@@ -11,6 +11,7 @@ const allShows = async () => {
         const option = {
             method: 'GET',
             url: `${config.public.PUBLISHER_BASE_API}v1/list/shows-for-app/`,
+            timeout: 10000,
         }
         const res = await axios(option)
         res.data.results.forEach((show) => {
@@ -33,7 +34,8 @@ const featuredShows = async () => {
             params: {
                 discover_station: 'wnyc-vue3-app-featured',
                 api_key: 'spotlight',
-            }
+            },
+            timeout: 10000,
         }
         const res = await axios(option)
 
@@ -50,10 +52,11 @@ const featuredShows = async () => {
 }
 
 
-export default defineEventHandler(async (event) => {
-    const res = event?.node?.res
-    const allShowsData = await allShows()
-    const featuredShowsData = await featuredShows()
+export default defineCachedEventHandler(async () => {
+    const [allShowsData, featuredShowsData] = await Promise.all([
+        allShows(),
+        featuredShows(),
+    ])
 
     // Sort allShowsData
     allShowsData.sort(customAlphabeticalSort())
@@ -69,9 +72,12 @@ export default defineEventHandler(async (event) => {
         }
     })
 
-    res.setHeader('Cache-Control', 'max-age=3600, stale-while-revalidate')
     return {
         all: allShowsData,
         featuredShows: featuredShowsData
     }
+}, {
+    maxAge: 3600, // 1 hour
+    swr: true,
+    name: 'shows'
 })

@@ -29,7 +29,7 @@ const getTeamData = async (showSlug: string, cmsSource: string) => {
 };
 
 // Get team data from CMS
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
     const showSlug: string | undefined = event?.context?.params?.showSlug;
     const cmsSource: string | undefined = event?.context?.params?.cmsSource;
     if (showSlug && cmsSource) {
@@ -38,4 +38,9 @@ export default defineEventHandler(async (event) => {
     } else {
         return null
     }
+}, {
+    maxAge: 300,
+    swr: true,
+    name: 'team',
+    getKey: (event) => `${event?.context?.params?.cmsSource}:${event?.context?.params?.showSlug}`
 });

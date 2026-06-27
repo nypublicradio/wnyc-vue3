@@ -13,7 +13,7 @@ const config = useRuntimeConfig()
 const isApp = useIsApp()
 // get app settings
 const { getAppSettings, settings: appSettings } = useAppSettings()
-getAppSettings()
+await getAppSettings()
 
 const newsFetchArgs = [
   `${config.public.BFF_URL}/api/homepagelatestnewsupdates`,

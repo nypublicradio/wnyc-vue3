@@ -62,13 +62,17 @@ const getWagtailEvents = async (query: Record<string, any>) => {
     }
 }
 
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
     const query = getQuery(event)
-    const res = event?.node?.res
-
-    // Set cache header - short cache for dynamic list
-    res.setHeader('Cache-Control', 'max-age=300, stale-while-revalidate')
 
     const eventsData = await getWagtailEvents(query)
     return eventsData
+}, {
+    maxAge: 300,
+    swr: true,
+    name: 'events-list',
+    getKey: (event) => {
+        const query = getQuery(event)
+        return `${query.upcoming || ''}:${query.past || ''}:${query.venue || ''}:${query.offset || 0}:${query.limit || 10}`
+    }
 })

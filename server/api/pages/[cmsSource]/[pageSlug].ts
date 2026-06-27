@@ -126,7 +126,7 @@ const getPageData = async (pageSlug: string, cmsSource: string, isShowOnly?: boo
 }
 
 // get page data from CMS
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
     const pageSlug: string | undefined = event?.context?.params?.pageSlug
     const cmsSource: string | undefined = event?.context?.params?.cmsSource
 
@@ -143,5 +143,15 @@ export default defineEventHandler(async (event) => {
         return PageData
     } else {
         return null
+    }
+}, {
+    maxAge: 300,
+    swr: true,
+    name: 'pages',
+    getKey: (event) => {
+        const slug = event?.context?.params?.pageSlug ?? ''
+        const cmsSource = event?.context?.params?.cmsSource ?? ''
+        const query = getQuery(event)
+        return `${cmsSource}:${slug}:${query.showOnly ?? ''}:${query.downloadRulesOnly ?? ''}`
     }
 })

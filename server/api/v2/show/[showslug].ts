@@ -198,8 +198,7 @@ const getShow = async (slug: string, isSlugOnly?: boolean) => {
     }
 }
 
-export default defineEventHandler(async (event) => {
-    const res = event?.node?.res
+export default defineCachedEventHandler(async (event) => {
     //Fetching slug and type from the path params
     const slug: string | undefined = event?.context?.params?.showslug
 
@@ -229,12 +228,24 @@ export default defineEventHandler(async (event) => {
         } else {
             episodes = await getEpisodes(slug, show?.image?.template, show?.type, pageSize, page)
         }
-        res.setHeader('Cache-Control', 'max-age=3600, stale-while-revalidate')
         return {
             show,
             episodes,
         }
     } else {
         return null
+    }
+}, {
+    maxAge: 3600, // 1 hour
+    swr: true,
+    name: 'v2-show-detail',
+    // Create a unique key based on the show slug and query parameters
+    getKey: (event) => {
+        const slug = event.context.params?.showslug
+        const query = getQuery(event)
+        const page = query.page?.toString() ?? '1'
+        const pageSize = query.pageSize?.toString() ?? '10'
+        const slugOnly = (query.slugOnly === 'true').toString()
+        return `v2-show:${slug}:page:${page}:pageSize:${pageSize}:slugOnly:${slugOnly}`
     }
 })

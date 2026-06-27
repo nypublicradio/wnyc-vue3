@@ -56,7 +56,7 @@ const redirectResponse = (status: number, location?: string) => {
   }
 }
 
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
   const config = __getConfig()
   const { html_path, cms_site } = getQuery(event)
 
@@ -119,4 +119,12 @@ export default defineEventHandler(async (event) => {
   }
 
   throw createError({ statusCode: res.status || 500, statusMessage: 'CMS find request failed' })
+}, {
+  maxAge: 300,
+  swr: true,
+  name: 'pages-find',
+  getKey: (event) => {
+    const { html_path, cms_site } = getQuery(event)
+    return `${cms_site || 'default'}:${html_path}`
+  }
 })
