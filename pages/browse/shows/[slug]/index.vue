@@ -2,7 +2,11 @@
 import { checkIsFavorited, slugify } from "~/utilities/helpers"
 import { useIsApp } from "~/composables/states"
 import { useFetchWrapper } from "~/composables/useFetchWrapper"
-import { getShowTitle, getShowDescription, getShowImage } from "~/utilities/metadataHelpers"
+import {
+  getShowTitle,
+  getShowDescription,
+  getShowImage,
+} from "~/utilities/metadataHelpers"
 import useSeoMetaOverrides from "~/composables/useSeoMetaOverrides"
 import useSocialMetaOverrides from "~/composables/useSocialMetaOverrides"
 const config = useRuntimeConfig()
@@ -111,7 +115,7 @@ useSeoMeta({
 })
 if (image) {
   useSeoMeta({
-   ogImage: image,
+    ogImage: image,
   })
 }
 useSeoMetaOverrides(show)
@@ -160,7 +164,7 @@ useSocialMetaOverrides(show)
           </div>
         </div>
       </section>
-
+      <pre>{{ show }}</pre>
       <section class="pb-4">
         <div class="grid">
           <div class="col-fixed hidden xxl:block w-20rem"></div>

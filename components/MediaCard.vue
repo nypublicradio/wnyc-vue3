@@ -1067,12 +1067,3 @@ $contentPaddingY: 1.25rem;
   }
 }
 </style>
-
-<style lang="scss">
-@include media(">md") {
-  .media-card .badge.event-type-badge .content {
-    color: var(--p-text-color);
-    background-color: var(--p-surface-0);
-  }
-}
-</style>

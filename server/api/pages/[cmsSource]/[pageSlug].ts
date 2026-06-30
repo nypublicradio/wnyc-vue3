@@ -4,6 +4,7 @@ import { cmsSources, mediaTypeRoutes } from '~/composables/globals'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
 import { transformCuratedContent } from '~/utilities/curatedContent'
 import { getCmsPathRedirect, getCmsRequestOptions } from '~/server/utils/cmsRedirect'
+import { useIsApp } from '~/composables/states'
 
 // Helper to obtain runtime config, with test override support.
 const __getConfig = () => {
@@ -80,12 +81,23 @@ const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean, isDown
                 delete resData.inPageNavigation
             }
 
+            // if this is the APP experience, we only want to return the  items with the "type" of "curated_list" and not the rest of the page data
+            //const isApp = useIsApp()
+            // const isApp = false
+            // console.log('isApp:', isApp, 'transformedCuratedContent:', transformedCuratedContent)
+            // if (!isApp && transformedCuratedContent) {
+            //     const curatedListItemsOnly = transformedCuratedContent.filter(item => item.type === "curated_list")
+            //     return {
+            //         ...await normalizeArticlePage(resData),
+            //         body: curatedListItemsOnly
+            //     }
+            // }
+
             return {
                 ...await normalizeArticlePage(resData),
                 body: transformedCuratedContent
             }
         }
-
         return await normalizeArticlePage(resData)
     } catch (error: any) {
         if (error?.response?.status === 404) {
@@ -147,6 +159,10 @@ export default defineCachedEventHandler(async (event) => {
 }, {
     maxAge: 300,
     swr: true,
+    shouldBypassCache: () => {
+        const config = __getConfig()
+        return config.public.ENV === 'local'
+    },
     name: 'pages',
     getKey: (event) => {
         const slug = event?.context?.params?.pageSlug ?? ''
