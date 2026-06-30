@@ -301,3 +301,61 @@ describe('server/api/v3/show/[showslug]/series/[seriesSlug]', () => {
     })
   })
 })
+
+describe('server/api/v3/show/[showslug]/series-preview/[seriesSlug]', () => {
+  beforeEach(() => {
+    axiosMock.mockReset()
+    axiosHeadMock.mockReset()
+  })
+
+  it('fetches tokenized Wagtail preview data and normalizes it through the series response contract', async () => {
+    axiosMock.mockImplementation((options: any) => {
+      if (options.url.endsWith('pages/')) {
+        return Promise.resolve(showResponse)
+      }
+
+      if (options.url.endsWith('page_preview/')) {
+        return Promise.resolve(seriesResponse)
+      }
+
+      throw new Error(`Unexpected URL: ${options.url}`)
+    })
+
+    const handler = (await import('../../server/api/v3/show/[showslug]/series-preview/[seriesSlug]')).default
+    const setHeader = vi.fn()
+    const event: any = {
+      context: { params: { showslug: 'test-show', seriesSlug: 'climate-series' } },
+      query: { identifier: 'id=20', token: 'preview-token' },
+      node: { res: { setHeader } },
+    }
+
+    const result = await handler(event) as any
+    const previewCall = axiosMock.mock.calls.find(([options]) => options.url.endsWith('page_preview/'))?.[0]
+
+    expect(previewCall.params).toEqual({
+      identifier: 'id=20',
+      token: 'preview-token',
+    })
+    expect(previewCall.headers['X-CMS-Site']).toBe('demo.wnyc.org:443')
+    expect(previewCall.headers['Accept-Encoding']).toBe('identity')
+    expect(setHeader).toHaveBeenCalledWith('Cache-Control', 'no-store')
+    expect(result.series.title).toBe('Climate Series')
+    expect(result.show.title).toBe('Test Show')
+    expect(result.body[1].value.list.listItems).toHaveLength(2)
+  })
+
+  it('throws a 404 when preview token inputs are missing', async () => {
+    const handler = (await import('../../server/api/v3/show/[showslug]/series-preview/[seriesSlug]')).default
+    const event: any = {
+      context: { params: { showslug: 'test-show', seriesSlug: 'climate-series' } },
+      query: {},
+      node: { res: { setHeader: vi.fn() } },
+    }
+
+    await expect(handler(event)).rejects.toMatchObject({
+      statusCode: 404,
+      statusMessage: 'Series preview not found',
+    })
+    expect(axiosMock).not.toHaveBeenCalled()
+  })
+})

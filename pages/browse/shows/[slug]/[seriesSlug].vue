@@ -6,6 +6,10 @@ import { trackClickEvent } from "~/utilities/helpers"
 const config = useRuntimeConfig()
 const route = useRoute()
 const isApp = useIsApp()
+const getQueryValue = (value) => Array.isArray(value) ? value[0] : value
+const isPreview = computed(
+  () => route.query.preview === "true" && route.query.identifier && route.query.token
+)
 
 if (route.params.slug === "episode") {
   throw createError({
@@ -14,15 +18,27 @@ if (route.params.slug === "episode") {
   })
 }
 
-const endpoint = computed(
-  () =>
-    `${config.public.BFF_URL}/api/v3/show/${route.params.slug}/series/${route.params.seriesSlug}`
-)
+const endpoint = computed(() => {
+  const showSlug = route.params.slug
+  const seriesSlug = route.params.seriesSlug
+
+  if (isPreview.value) {
+    const params = new URLSearchParams({
+      identifier: getQueryValue(route.query.identifier),
+      token: getQueryValue(route.query.token),
+    })
+    return `${config.public.BFF_URL}/api/v3/show/${showSlug}/series-preview/${seriesSlug}?${params.toString()}`
+  }
+
+  return `${config.public.BFF_URL}/api/v3/show/${showSlug}/series/${seriesSlug}`
+})
 
 const seriesFetchArgs = [
   endpoint,
   {
-    key: `show-series-${route.params.slug}-${route.params.seriesSlug}`,
+    key: isPreview.value
+      ? `show-series-preview-${route.params.slug}-${route.params.seriesSlug}-${getQueryValue(route.query.identifier)}`
+      : `show-series-${route.params.slug}-${route.params.seriesSlug}`,
     watch: false,
   },
 ]
@@ -74,6 +90,7 @@ const trackSeriesLoadMore = () => {
 }
 
 onMounted(() => {
+  if (isPreview.value) return
   if (!series.value) return
 
   const { $analytics } = useNuxtApp()

@@ -54,6 +54,15 @@ watch(previewData, () => {
     //   return navigateTo(`${path}?preview=true`)
     case "standardpages.InformationPage":
       return navigateTo(`${path}?preview=true`)
+    case "shows.SeriesPage":
+      return navigateTo({
+        path,
+        query: {
+          preview: "true",
+          identifier,
+          token,
+        },
+      })
     default:
       break
   }
