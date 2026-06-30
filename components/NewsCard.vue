@@ -14,13 +14,9 @@ const props = defineProps({
     type: String,
     default: "Local News",
   },
-  bagdeColor: {
+  badgeClass: {
     type: String,
-    default: "var(--p-surface-950)",
-  },
-  badgeBgColor: {
-    type: String,
-    default: "var(--p-yellow-500)",
+    default: "news-card",
   },
 })
 
@@ -37,8 +33,7 @@ const emit = defineEmits(["on-click"])
     <div>
       <VBadge
         :label="props.badgeLabel"
-        :color="props.bagdeColor"
-        :bg-color="props.badgeBgColor"
+        :classNames="props.badgeClass"
       />
       <div class="news-title mt-2">
         <h2 class="text-sm md:text-base">{{ props.newsData?.cardTitle }}</h2>
