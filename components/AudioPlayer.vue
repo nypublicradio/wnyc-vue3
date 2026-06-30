@@ -448,7 +448,7 @@ onMounted(async () => {
   // Auto/CarPlay initiated playback — load the content in the app player
   const handleAutoPlayEvent = (data) => {
     const mediaId = data.mediaId || data.id || ""
-    const isLive = !!data.isLive
+    const isLive = Boolean(data.isLive)
     isLiveStream.value = isLive
 
     // Build a minimal episode object from the metadata
@@ -498,7 +498,7 @@ onMounted(async () => {
           duration: state.duration,
         })
         // Match the play/pause state from Auto
-        isEpisodePlaying.value = !!state.isPlaying
+        isEpisodePlaying.value = Boolean(state.isPlaying)
       }
     } catch (e) {
       console.warn("Failed to get current playback state:", e)

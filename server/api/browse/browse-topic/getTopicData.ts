@@ -44,6 +44,7 @@ export default defineCachedEventHandler(async (event) => {
     maxAge: 3600, // 1 hour
     swr: true,
     name: 'browse-topic',
+    shouldBypassCache: () => { const config = useRuntimeConfig(); return config.public.ENV === 'local' },
     // This ensures that each topic gets its own unique cache entry.
     // For example, requests for `?topic=arts` and `?topic=news` will be cached separately.
     getKey: (event) => `browse-topic:${getQuery(event).topic}`

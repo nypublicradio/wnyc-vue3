@@ -39,6 +39,7 @@ const toast = useToast()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const currentEpisode = useCurrentEpisode()
 const isDarkMode = useIsDarkMode()
+const isApp = useIsApp()
 
 // Computed properties derived from the show data
 const showImage = computed(
@@ -71,8 +72,6 @@ const topperBackground = computed(() => {
 
 const route = useRoute()
 const appDownloadLink = useAppDownloadLink()
-
-const isApp = useIsApp()
 const user = useCurrentUser()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isLiveStream = useIsLiveStream()
@@ -131,7 +130,7 @@ const isLoadedEpisode = computed(() => {
     )
     for (const item of listItems) {
       const items = item.value?.list?.listItems
-      if (items && items.some((ep) => ep.id === currentEpisode.value.id)) {
+      if (items?.some((ep) => ep.id === currentEpisode.value.id)) {
         return true
       }
     }

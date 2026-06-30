@@ -30,6 +30,7 @@ const {
   ? useFetchWrapper(...showFetchArgs)
   : await useFetchWrapper(...showFetchArgs)
 
+// redirect if the page has a redirect property
 const redirectIfNeeded = (page) => {
   if (!page?.redirect) return
 
@@ -111,7 +112,7 @@ useHead({
 useSeoMeta({
   title,
   ogTitle: title,
-  description: description,
+  description,
   ogDescription: description,
 })
 if (image) {
