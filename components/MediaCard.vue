@@ -751,8 +751,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                   v-for="badge in eventData?.eventTypeBadges"
                   :key="badge.label"
                   :label="badge.label"
-                  :color="badge.color"
-                  :bg-color="badge.bg"
+                  :classNames="badge.classNames"
                 />
               </div>
             </div>
@@ -1047,6 +1046,15 @@ $contentPaddingY: 1.25rem;
     :deep(.event-button .content) {
       color: #101012;
     }
+  }
+}
+</style>
+
+<style lang="scss">
+@include media(">md") {
+  .media-card .badge.event-type-badge .content {
+    color: var(--p-text-color);
+    background-color: var(--p-surface-0);
   }
 }
 </style>

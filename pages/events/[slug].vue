@@ -2,12 +2,11 @@
 import { useToast } from "primevue/usetoast"
 import { useTopStories } from "~/composables/useTopStories"
 import { EVENT_BADGE_STYLES, useEventData } from "~/composables/useEventData"
-import { dynamicNavigation } from "~/utilities/helpers"
 import { getEventTitle, getEventDescription, getEventImage } from "~/utilities/metadataHelpers"
 import useSeoMetaOverrides from "~/composables/useSeoMetaOverrides"
 import useSocialMetaOverrides from "~/composables/useSocialMetaOverrides"
 
-const { getFilteredTopStories,topStories } = useTopStories()
+const { getFilteredTopStories } = useTopStories()
 const config = useRuntimeConfig()
 const route = useRoute()
 const toast = useToast()
@@ -64,12 +63,19 @@ const {
   locationName,
   hasLiveStream,
   hasInPerson,
+  hasWnycEvents,
+  hasWqxrEvents,
+  hasPartnerEvents,
+  hasCommunityEvents,
   eventCtaUrl,
 } = useEventData(eventData)
 
 const eventTimeLabel = computed(() => timeLabel.value?.toLowerCase() ?? null)
 const eventBadges = computed(() => [
-  { label: "WNYC EVENTS", color: "var(--p-text-color)", bg: "var(--p-surface-200)" },
+  ...(hasWnycEvents.value ? [EVENT_BADGE_STYLES.wnycEvents] : []),
+  ...(hasWqxrEvents.value ? [EVENT_BADGE_STYLES.wqxrEvents] : []),
+  ...(hasPartnerEvents.value ? [EVENT_BADGE_STYLES.partnerEvents] : []),
+  ...(hasCommunityEvents.value ? [EVENT_BADGE_STYLES.communityEvents] : []),
   ...(hasInPerson.value ? [EVENT_BADGE_STYLES.inPerson] : []),
   ...(hasLiveStream.value ? [EVENT_BADGE_STYLES.liveStream] : []),
 ])
@@ -115,7 +121,7 @@ useHead({
 })
 useSeoMeta({
   title: pageTitle,
-  description: description,
+  description,
   ogTitle: pageTitle,
   ogDescription: description,
 })
@@ -167,8 +173,7 @@ useSocialMetaOverrides(eventData)
                         v-for="badge in eventBadges"
                         :key="badge.label"
                         :label="badge.label"
-                        :color="badge.color"
-                        :bg-color="badge.bg"
+                        :classNames="badge.classNames"
                       />
                     </div>
                   </div>
