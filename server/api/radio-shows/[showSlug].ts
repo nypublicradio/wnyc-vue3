@@ -23,6 +23,10 @@ export default defineCachedEventHandler(async (event) => {
 }, {
     maxAge: 300, // 5 minutes
     swr: true,
+    shouldBypassCache: () => {
+        const config = useRuntimeConfig()
+        return config.public.ENV === 'local'
+    },
     name: 'radio-shows',
     getKey: (event) => `radio-shows:${event.context.params.showSlug}`
 })

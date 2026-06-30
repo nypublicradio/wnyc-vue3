@@ -184,6 +184,10 @@ export default defineCachedEventHandler(async (event) => {
 }, {
     maxAge: 3600,
     swr: true,
+    shouldBypassCache: () => {
+        const config = useRuntimeConfig()
+        return config.public.ENV === 'local'
+    },
     name: 'v3-show',
     getKey: (event) => {
         const slug = event?.context?.params?.showslug

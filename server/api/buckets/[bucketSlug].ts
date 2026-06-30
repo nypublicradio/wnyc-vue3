@@ -23,6 +23,10 @@ export default defineCachedEventHandler(async (event) => {
 }, {
     maxAge: 300,
     swr: true,
+    shouldBypassCache: () => {
+        const config = useRuntimeConfig()
+        return config.public.ENV === 'local'
+    },
     name: 'buckets',
     getKey: (event) => event?.context?.params?.bucketSlug
 });

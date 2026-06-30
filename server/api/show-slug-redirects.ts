@@ -99,5 +99,9 @@ export default defineCachedEventHandler(() => {
 }, {
     maxAge: 86400,
     swr: true,
+    shouldBypassCache: () => {
+        const config = useRuntimeConfig()
+        return config.public.ENV === 'local'
+    },
     name: 'show-slug-redirects'
 })

@@ -70,6 +70,10 @@ export default defineCachedEventHandler(async (event) => {
 }, {
     maxAge: 300,
     swr: true,
+    shouldBypassCache: () => {
+        const config = useRuntimeConfig()
+        return config.public.ENV === 'local'
+    },
     name: 'events-list',
     getKey: (event) => {
         const query = getQuery(event)

@@ -37,5 +37,9 @@ export default defineCachedEventHandler(async () => {
 }, {
     maxAge: 3600,
     swr: true,
+    shouldBypassCache: () => {
+        const config = useRuntimeConfig()
+        return config.public.ENV === 'local'
+    },
     name: 'v2-showsmenu'
 })

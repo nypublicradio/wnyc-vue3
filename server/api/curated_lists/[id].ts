@@ -37,6 +37,10 @@ export default defineCachedEventHandler(async (event) => {
     }
 }, {
     swr: true,
+    shouldBypassCache: () => {
+        const config = useRuntimeConfig()
+        return config.public.ENV === 'local'
+    },
     maxAge: 300,
     name: 'curated-lists',
     getKey: (event) => getRouterParam(event, 'id')

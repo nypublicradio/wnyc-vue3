@@ -135,5 +135,9 @@ export default defineCachedEventHandler(async () => {
 }, {
     maxAge: 3600, // 1 hour
     swr: true,
+    shouldBypassCache: () => {
+        const config = useRuntimeConfig()
+        return config.public.ENV === 'local'
+    },
     name: 'v2-shows'
 })

@@ -28,6 +28,10 @@ export default defineCachedEventHandler(async (event) => {
 }, {
   maxAge: 3600,
   swr: true,
+  shouldBypassCache: () => {
+      const config = useRuntimeConfig()
+      return config.public.ENV === 'local'
+  },
   name: 'v2-discover-shows',
   getKey: (event) => JSON.stringify(getQuery(event))
 })

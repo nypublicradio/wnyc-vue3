@@ -59,6 +59,10 @@ export default defineCachedEventHandler(async () => {
 	, {
 		maxAge: 300,
 		swr: true,
+		shouldBypassCache: () => {
+		    const config = useRuntimeConfig()
+		    return config.public.ENV === 'local'
+		},
 		name: 'homepage-curation'
 	}
 )

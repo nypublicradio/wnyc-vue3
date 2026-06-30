@@ -151,7 +151,7 @@ export default defineCachedEventHandler(async (event) => {
     maxAge: 300,
     swr: true,
     shouldBypassCache: () => {
-        const config = __getConfig()
+        const config = useRuntimeConfig()
         return config.public.ENV === 'local'
     },
     name: 'pages',

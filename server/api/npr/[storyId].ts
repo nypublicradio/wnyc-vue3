@@ -41,6 +41,10 @@ export default defineCachedEventHandler(async (event) => {
 }, {
     maxAge: 300, // 5 minutes
     swr: true,
+    shouldBypassCache: () => {
+        const config = useRuntimeConfig()
+        return config.public.ENV === 'local'
+    },
     name: 'npr-story',
     getKey: (event) => `npr-story:${event.context.params.storyId}`
 })

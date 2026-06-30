@@ -238,6 +238,10 @@ export default defineCachedEventHandler(async (event) => {
 }, {
     maxAge: 3600, // 1 hour
     swr: true,
+    shouldBypassCache: () => {
+        const config = useRuntimeConfig()
+        return config.public.ENV === 'local'
+    },
     name: 'v2-show-detail',
     // Create a unique key based on the show slug and query parameters
     getKey: (event) => {

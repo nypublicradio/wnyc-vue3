@@ -23,6 +23,10 @@ export default defineCachedEventHandler(async (event) => {
 }, {
     maxAge: 300, // 5 minutes
     swr: true,
+    shouldBypassCache: () => {
+        const config = useRuntimeConfig()
+        return config.public.ENV === 'local'
+    },
     name: 'series-data',
     getKey: (event) => `series:${event.context.params.seriesSlug}`
 })

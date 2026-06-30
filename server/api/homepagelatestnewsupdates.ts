@@ -100,5 +100,9 @@ export default defineCachedEventHandler(async () => {
 }, {
 	maxAge: 120, // 2 minutes
 	swr: true,
+	shouldBypassCache: () => {
+	    const config = useRuntimeConfig()
+	    return config.public.ENV === 'local'
+	},
 	name: 'homepage-latest-news'
 })

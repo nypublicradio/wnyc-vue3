@@ -95,5 +95,9 @@ export default defineCachedEventHandler(async () => {
 }, {
     maxAge: 120,
     swr: true,
+    shouldBypassCache: () => {
+        const config = useRuntimeConfig()
+        return config.public.ENV === 'local'
+    },
     name: 'navigation'
 })
