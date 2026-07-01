@@ -97,6 +97,8 @@ const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean, isDown
             }
 
             // if this is the APP experience, and the transformedCuratedContent has not been nullified by the isShowOnly flag, we only want to return the items with the type of "curated_list" and not the rest of the page data
+            console.log('######## isApp inside:', isApp)
+            console.log('######## transformedCuratedContent inside:', transformedCuratedContent)
             if (isApp && transformedCuratedContent !== null) {
                 transformedCuratedContent = transformedCuratedContent.filter(item => item.type === "curated_list")
             }
@@ -155,6 +157,12 @@ export default defineCachedEventHandler(async (event) => {
     const isShowOnly = parseBooleanQuery(query.showOnly)
     const isDownloadRulesOnly = parseBooleanQuery(query.downloadRulesOnly)
     const isApp = parseBooleanQuery(query.isApp)
+    console.log('######## isApp query param:', isApp)
+    console.log('######## isShowOnly query param:', isShowOnly)
+    console.log('######## isDownloadRulesOnly query param:', isDownloadRulesOnly)
+    console.log('######## pageSlug:', pageSlug)
+    console.log('######## cmsSource:', cmsSource)
+
     if (pageSlug && cmsSource) {
         const PageData = await getPageData(pageSlug, cmsSource, isShowOnly, isDownloadRulesOnly, isApp)
 

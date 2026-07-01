@@ -14,11 +14,13 @@ const route = useRoute()
 const isApp = useIsApp()
 
 const showFetchArgs = [
-  () => `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`,
+  () =>
+    `${config.public.BFF_URL}/api/pages/wagtail/${
+      route.params.slug
+    }?isApp=${String(isApp.value)}`,
   {
-    key: `show-page-${route.params.slug}`,
+    key: `show-page-${route.params.slug}-${isApp.value ? "app" : "web"}`,
     watch: false,
-    query: { isApp: isApp.value },
   },
 ]
 
