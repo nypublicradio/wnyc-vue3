@@ -30,10 +30,10 @@ export function useFetchWrapper (request, options = {}) {
                 ? nuxtApp.payload.data[cacheKey]
                 : nuxtApp.static.data?.[cacheKey]
 
-            // if (logKey) {
-            //     // eslint-disable-next-line no-console
-            //     console.log('[useFetchWrapper] getCachedData', cacheKey, cached)
-            // }
+            if (logKey) {
+                // skipcq: JS
+                console.log('[useFetchWrapper] getCachedData', cacheKey, cached)
+            }
 
             if (!cached) return undefined
 
