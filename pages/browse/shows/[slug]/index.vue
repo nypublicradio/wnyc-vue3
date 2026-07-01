@@ -18,7 +18,7 @@ const showFetchArgs = [
   {
     key: `show-page-${route.params.slug}`,
     watch: false,
-    isApp: isApp.value,
+    query: { isApp: isApp.value },
   },
 ]
 

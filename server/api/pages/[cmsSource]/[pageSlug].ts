@@ -34,6 +34,22 @@ const routeLegacyShowLocation = (location: string) => {
     }
 }
 
+const parseBooleanQuery = (value: unknown): boolean => {
+    if (Array.isArray(value)) {
+        return parseBooleanQuery(value[0])
+    }
+
+    if (typeof value === 'boolean') {
+        return value
+    }
+
+    if (typeof value === 'string') {
+        return value.toLowerCase() === 'true'
+    }
+
+    return false
+}
+
 // getting flat page data from the publisher api
 const getPublisherPageData = async (pageSlug: string) => {
     const config = __getConfig()
@@ -136,10 +152,9 @@ export default defineCachedEventHandler(async (event) => {
 
     // Get query parameters (e.g. ?showOnly=true)
     const query = getQuery(event)
-    const isShowOnly = query.showOnly === 'true'
-    const isDownloadRulesOnly = query.downloadRulesOnly === 'true'
-    const isApp = query.isApp === 'true'
-
+    const isShowOnly = parseBooleanQuery(query.showOnly)
+    const isDownloadRulesOnly = parseBooleanQuery(query.downloadRulesOnly)
+    const isApp = parseBooleanQuery(query.isApp)
     if (pageSlug && cmsSource) {
         const PageData = await getPageData(pageSlug, cmsSource, isShowOnly, isDownloadRulesOnly, isApp)
 
