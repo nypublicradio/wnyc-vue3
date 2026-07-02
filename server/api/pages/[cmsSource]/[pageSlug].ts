@@ -96,9 +96,13 @@ const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean, isDown
                 delete resData.inPageNavigation
             }
 
-            // if this is the APP experience, and the transformedCuratedContent has not been nullified by the isShowOnly flag, we only want to return the items with the type of "curated_list" and not the rest of the page data
-            if (isApp && transformedCuratedContent !== null) {
-                transformedCuratedContent = transformedCuratedContent.filter(item => item.type === "curated_list")
+            // In app mode, prefer curated_list blocks, but do not blank the page if none exist.
+            console.log('######## isApp:', isApp, 'transformedCuratedContent:', transformedCuratedContent)
+            if (isApp && Array.isArray(transformedCuratedContent)) {
+                const curatedListOnly = transformedCuratedContent.filter((item: any) => item?.type === 'curated_list')
+                if (curatedListOnly.length > 0) {
+                    transformedCuratedContent = curatedListOnly
+                }
             }
 
             return {
