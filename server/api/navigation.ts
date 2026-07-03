@@ -77,7 +77,8 @@ async function getNavigationData () {
     }
 }
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
+    setResponseHeader(event, 'Cache-Control', 'max-age=3600, stale-while-revalidate=7200')
     try {
         const data = await getNavigationData()
         return { data }

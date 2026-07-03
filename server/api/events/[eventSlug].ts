@@ -81,6 +81,7 @@ const getWagtailEventBySlug = async (slug: string) => {
 }
 
 export default defineEventHandler(async (event) => {
+    setResponseHeader(event, 'Cache-Control', 'max-age=300, stale-while-revalidate=600')
     const eventSlug: string | undefined = event?.context?.params?.eventSlug
 
     if (eventSlug) {

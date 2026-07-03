@@ -124,7 +124,8 @@ export const getFeaturedShows = async (allShows: ReturnType<typeof normalizeWagt
     }
 }
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
+    setResponseHeader(event, 'Cache-Control', 'max-age=3600, stale-while-revalidate=7200')
     const allShows = await getShows()
     const featuredShows = await getFeaturedShows(allShows)
 

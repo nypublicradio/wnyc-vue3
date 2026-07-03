@@ -49,7 +49,8 @@ const getNewHomeTemplate = async () => {
  * Compress and simplify the global nav data.
  * Reachable /api/homepage
  */
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
+    setResponseHeader(event, 'Cache-Control', 'max-age=60, stale-while-revalidate=120')
 	const newHomeTemplate = await getNewHomeTemplate()
 
 	return {

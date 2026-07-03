@@ -32,6 +32,7 @@ const getNprStoryData = async (id: string) => {
 // Get story data from CMS
 
 export default defineEventHandler(async (event) => {
+    setResponseHeader(event, 'Cache-Control', 'max-age=60, stale-while-revalidate=120')
     const id: string | undefined = event?.context?.params?.storyId
     if (id) {
         const storyData = await getNprStoryData(id)

@@ -13,6 +13,7 @@ const getPublisherSeriesData = async (seriesSlug: string) => {
 
 // get series data from CMS
 export default defineEventHandler(async (event) => {
+    setResponseHeader(event, 'Cache-Control', 'max-age=60, stale-while-revalidate=120')
     const seriesSlug: string | undefined = event?.context?.params?.seriesSlug
     if (seriesSlug) {
         const SeriesData = await getPublisherSeriesData(seriesSlug)

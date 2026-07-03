@@ -57,6 +57,7 @@ const redirectResponse = (status: number, location?: string) => {
 }
 
 export default defineEventHandler(async (event) => {
+    setResponseHeader(event, 'Cache-Control', 'max-age=60, stale-while-revalidate=120')
   const config = __getConfig()
   const { html_path, cms_site } = getQuery(event)
 

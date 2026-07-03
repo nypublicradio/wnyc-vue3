@@ -52,7 +52,8 @@ const featuredShows = async () => {
 }
 
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
+    setResponseHeader(event, 'Cache-Control', 'max-age=3600, stale-while-revalidate=7200')
     const [allShowsData, featuredShowsData] = await Promise.all([
         allShows(),
         featuredShows(),

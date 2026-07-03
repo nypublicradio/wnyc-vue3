@@ -40,6 +40,7 @@ const getEpisodes = async (slug: string, showImage: string, type?: string, pageS
 
 
 export default defineEventHandler(async (event) => {
+    setResponseHeader(event, 'Cache-Control', 'max-age=60, stale-while-revalidate=120')
     //Fetching slug and type from the path params
     const slug: string | undefined = event?.context?.params?.showslug
 

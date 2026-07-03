@@ -5,6 +5,7 @@ import { showTopics } from '~/composables/globals'
 import { customAlphabeticalSort } from '~/utilities/helpers'
 
 export default defineEventHandler(async (event) => {
+    setResponseHeader(event, 'Cache-Control', 'max-age=60, stale-while-revalidate=120')
     const query = getQuery(event)
     const topic = showTopics.find(topic => topic.value === query.topic)
     try {

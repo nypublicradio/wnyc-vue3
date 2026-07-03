@@ -26,7 +26,8 @@ const featuredShowsInMenu = async () => {
     return resData
 }
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
+    setResponseHeader(event, 'Cache-Control', 'max-age=3600, stale-while-revalidate=7200')
     const featuredShowsData = await featuredShowsInMenu()
 
     //Sort the data by title

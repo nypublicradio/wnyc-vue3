@@ -21,6 +21,7 @@ vi.mock('#imports', () => ({
 
 // @ts-expect-error test-only global
 globalThis.defineEventHandler = (handler: unknown) => handler
+globalThis.setResponseHeader = () => {}
 // @ts-expect-error test-only global
 globalThis.defineCachedEventHandler = (handler: unknown) => handler
 // @ts-expect-error test-only global

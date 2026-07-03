@@ -94,6 +94,7 @@ const redirects = [
     { from: '/browse/shows/open-to-debate', to: 'https://opentodebate.org' },
 ]
 
-export default defineEventHandler(() => {
+export default defineEventHandler((event) => {
+    setResponseHeader(event, 'Cache-Control', 'max-age=3600, stale-while-revalidate=7200')
     return redirects
 })

@@ -88,7 +88,8 @@ const getNationalNewscast = async () => {
  * Compress and simplify the global nav data.
  * Reachable /api/homepage
  */
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
+    setResponseHeader(event, 'Cache-Control', 'max-age=60, stale-while-revalidate=120')
 	const [local_newscast, national_newscast] = await Promise.all([
 		getLocalNewscast(),
 		getNationalNewscast(),

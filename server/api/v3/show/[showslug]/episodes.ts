@@ -165,6 +165,7 @@ const getSimplecastEpisodes = async (podcastId: string, offset = 0, limit = 10) 
  * - GET /api/v3/show/{podcast-uuid}/episodes?offset=20&limit=20
  */
 export default defineEventHandler(async (event) => {
+    setResponseHeader(event, 'Cache-Control', 'max-age=300, stale-while-revalidate=600')
     const showslug: string | undefined = event?.context?.params?.showslug
     // Validate showslug parameter
     if (!showslug) {

@@ -2,6 +2,7 @@ import humps from 'humps'
 import { transformCuratedContent } from '~/utilities/curatedContent'
 
 export default defineEventHandler(async (event) => {
+    setResponseHeader(event, 'Cache-Control', 'max-age=60, stale-while-revalidate=120')
     const config = useRuntimeConfig()
     const id = getRouterParam(event, 'id')
 

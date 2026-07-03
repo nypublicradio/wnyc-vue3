@@ -150,6 +150,9 @@ const getPageData = async (pageSlug: string, cmsSource: string, isShowOnly?: boo
 
 // get page data from CMS
 export default defineEventHandler(async (event) => {
+    // HTTP-level caching: clients/CDN cache for 60s, serve stale while revalidating
+    setResponseHeader(event, 'Cache-Control', 'max-age=60, stale-while-revalidate=120')
+
     const pageSlug: string | undefined = event?.context?.params?.pageSlug
     const cmsSource: string | undefined = event?.context?.params?.cmsSource
 
@@ -158,8 +161,6 @@ export default defineEventHandler(async (event) => {
     const isShowOnly = parseBooleanQuery(query.showOnly)
     const isDownloadRulesOnly = parseBooleanQuery(query.downloadRulesOnly)
     const isApp = parseBooleanQuery(query.isApp)
-
-    // TEMP: log cache miss (this code only runs when cache is bypassed or expired)
 
     if (pageSlug && cmsSource) {
         const PageData = await getPageData(pageSlug, cmsSource, isShowOnly, isDownloadRulesOnly, isApp)
