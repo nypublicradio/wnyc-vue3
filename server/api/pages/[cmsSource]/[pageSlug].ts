@@ -163,7 +163,6 @@ export default defineCachedEventHandler(async (event) => {
 
     // TEMP: log cache miss (this code only runs when cache is bypassed or expired)
     console.log(`[pages cache MISS] ${cmsSource}:${pageSlug} isApp=${isApp}`)
-    setResponseHeader(event, 'x-cache-status', 'MISS')
 
     if (pageSlug && cmsSource) {
         const PageData = await getPageData(pageSlug, cmsSource, isShowOnly, isDownloadRulesOnly, isApp)
