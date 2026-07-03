@@ -1,3 +1,4 @@
+import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 const redirects = [
     { from: '/browse/shows/10-things-scare-me', to: '/browse/shows/10-things-that-scare-me' },
     { from: '/browse/shows/dopequeens', to: '/browse/shows/2-dope-queens' },
@@ -99,9 +100,6 @@ export default defineCachedEventHandler(() => {
 }, {
     maxAge: 86400,
     swr: true,
-    shouldBypassCache: () => {
-        const config = useRuntimeConfig()
-        return config.public.ENV === 'local'
-    },
+    shouldBypassCache: shouldBypassServerCache,
     name: 'show-slug-redirects'
 })

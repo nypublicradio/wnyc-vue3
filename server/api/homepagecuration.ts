@@ -1,5 +1,6 @@
 import humps from 'humps'
 import { transformCuratedContent } from '~/utilities/curatedContent'
+import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 // get curated content from the WNYC Wagtail CMS API
 const getNewHomeTemplate = async () => {
@@ -59,10 +60,7 @@ export default defineCachedEventHandler(async () => {
 	, {
 		maxAge: 300,
 		swr: true,
-		shouldBypassCache: () => {
-		    const config = useRuntimeConfig()
-		    return config.public.ENV === 'local'
-		},
+		shouldBypassCache: shouldBypassServerCache,
 		name: 'homepage-curation'
 	}
 )

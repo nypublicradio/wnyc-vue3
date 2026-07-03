@@ -2,6 +2,7 @@ import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
 import { normalizePerson } from '~/composables/data/articlePages'
+import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 
 const config = useRuntimeConfig();
@@ -50,10 +51,7 @@ export default defineCachedEventHandler(async (event) => {
 }, {
     maxAge: 300,
     swr: true,
-    shouldBypassCache: () => {
-        const config = useRuntimeConfig()
-        return config.public.ENV === 'local'
-    },
+    shouldBypassCache: shouldBypassServerCache,
     name: 'people',
     getKey: (event) => `${event?.context?.params?.cmsSource}:${event?.context?.params?.personSlug}`
 });

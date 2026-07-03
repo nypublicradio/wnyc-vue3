@@ -24,13 +24,7 @@ const showFetchArgs = [
   },
 ]
 
-const {
-  data: show,
-  status,
-  error,
-} = isApp.value
-  ? useFetchWrapper(...showFetchArgs)
-  : await useFetchWrapper(...showFetchArgs)
+const { data: show, status, error } = await useFetchWrapper(...showFetchArgs)
 
 // redirect if the page has a redirect property
 const redirectIfNeeded = (page) => {

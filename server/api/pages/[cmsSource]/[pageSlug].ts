@@ -4,6 +4,7 @@ import { cmsSources, mediaTypeRoutes } from '~/composables/globals'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
 import { transformCuratedContent } from '~/utilities/curatedContent'
 import { getCmsPathRedirect, getCmsRequestOptions } from '~/server/utils/cmsRedirect'
+import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 // Helper to obtain runtime config, with test override support.
 const __getConfig = () => {
@@ -170,10 +171,7 @@ export default defineCachedEventHandler(async (event) => {
 }, {
     maxAge: 300,
     swr: true,
-    shouldBypassCache: () => {
-        const config = useRuntimeConfig()
-        return config.public.ENV === 'local'
-    },
+    shouldBypassCache: shouldBypassServerCache,
     name: 'pages',
     getKey: (event) => {
         const slug = event?.context?.params?.pageSlug ?? ''

@@ -2,6 +2,7 @@ import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
 import { customAlphabeticalSort } from '~/utilities/helpers'
+import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 const config = useRuntimeConfig()
 
@@ -37,9 +38,6 @@ export default defineCachedEventHandler(async () => {
 }, {
     maxAge: 3600,
     swr: true,
-    shouldBypassCache: () => {
-        const config = useRuntimeConfig()
-        return config.public.ENV === 'local'
-    },
+    shouldBypassCache: shouldBypassServerCache,
     name: 'v2-showsmenu'
 })

@@ -5,6 +5,7 @@ import { NyprDb } from '~/server/utils/nyprdb'
 import { cmsSources, FALLBACKIMAGE } from '~/composables/globals'
 import { NPR } from '~/server/utils/npr'
 import { customAlphabeticalSort } from '~/utilities/helpers'
+import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 
 const config = useRuntimeConfig()
@@ -135,9 +136,6 @@ export default defineCachedEventHandler(async () => {
 }, {
     maxAge: 3600, // 1 hour
     swr: true,
-    shouldBypassCache: () => {
-        const config = useRuntimeConfig()
-        return config.public.ENV === 'local'
-    },
+    shouldBypassCache: shouldBypassServerCache,
     name: 'v2-shows'
 })

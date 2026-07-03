@@ -2,6 +2,7 @@ import axios from 'axios'
 import humps from 'humps'
 import { transformCuratedContent } from '~/utilities/curatedContent'
 import { normalizeWagtailShowDetail } from '~/composables/data/shows'
+import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 // Helper to obtain runtime config, with test override support.
 const __getConfig = () => {
@@ -184,10 +185,7 @@ export default defineCachedEventHandler(async (event) => {
 }, {
     maxAge: 3600,
     swr: true,
-    shouldBypassCache: () => {
-        const config = useRuntimeConfig()
-        return config.public.ENV === 'local'
-    },
+    shouldBypassCache: shouldBypassServerCache,
     name: 'v3-show',
     getKey: (event) => {
         const slug = event?.context?.params?.showslug

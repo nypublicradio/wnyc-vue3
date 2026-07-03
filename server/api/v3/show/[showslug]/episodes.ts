@@ -2,6 +2,7 @@ import axios from 'axios'
 import humps from 'humps'
 import { normalizeSimplecastListItem } from '~/composables/data/articlePages'
 import { cmsSources } from '~/composables/globals'
+import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 // Helper to obtain runtime config, with test override support.
 const __getConfig = () => {
@@ -202,10 +203,7 @@ export default defineCachedEventHandler(async (event) => {
 }, {
     maxAge: 300,
     swr: true,
-    shouldBypassCache: () => {
-        const config = useRuntimeConfig()
-        return config.public.ENV === 'local'
-    },
+    shouldBypassCache: shouldBypassServerCache,
     name: 'v3-show-episodes',
     getKey: (event) => {
         const slug = event?.context?.params?.showslug

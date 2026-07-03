@@ -2,6 +2,7 @@ import axios from 'axios'
 import humps from 'humps'
 import { cmsSources, mediaTypes } from '~/composables/globals'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
+import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 //import { checkUrl404 } from '~/utilities/helpers'
 
 const config = useRuntimeConfig()
@@ -61,10 +62,7 @@ export default defineCachedEventHandler(async (event) => {
 }, {
     maxAge: 3600, // 1 hour
     swr: true,
-    shouldBypassCache: () => {
-        const config = useRuntimeConfig()
-        return config.public.ENV === 'local'
-    },
+    shouldBypassCache: shouldBypassServerCache,
     name: 'show-detail',
     // Create a unique key based on the show slug and the requested page number
     getKey: (event) => {

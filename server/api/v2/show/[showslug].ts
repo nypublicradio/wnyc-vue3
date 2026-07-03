@@ -6,6 +6,7 @@ import { NyprDb } from '~/server/utils/nyprdb'
 import { supabaseClient } from '~/server/utils/supabaseClient'
 import { NPR } from '~/server/utils/npr'
 import { useVImage } from "~/composables/useVImage"
+import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 const { templatizeImageUrl } = useVImage()
 
@@ -238,10 +239,7 @@ export default defineCachedEventHandler(async (event) => {
 }, {
     maxAge: 3600, // 1 hour
     swr: true,
-    shouldBypassCache: () => {
-        const config = useRuntimeConfig()
-        return config.public.ENV === 'local'
-    },
+    shouldBypassCache: shouldBypassServerCache,
     name: 'v2-show-detail',
     // Create a unique key based on the show slug and query parameters
     getKey: (event) => {

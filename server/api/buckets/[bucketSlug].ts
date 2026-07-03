@@ -1,5 +1,6 @@
 import axios from 'axios'
 import humps from 'humps'
+import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 const config = useRuntimeConfig();
 
@@ -23,10 +24,7 @@ export default defineCachedEventHandler(async (event) => {
 }, {
     maxAge: 300,
     swr: true,
-    shouldBypassCache: () => {
-        const config = useRuntimeConfig()
-        return config.public.ENV === 'local'
-    },
+    shouldBypassCache: shouldBypassServerCache,
     name: 'buckets',
     getKey: (event) => event?.context?.params?.bucketSlug
 });

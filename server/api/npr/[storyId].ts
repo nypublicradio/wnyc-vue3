@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { normalizeNprPage } from '~/composables/data/articlePages'
+import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 const config = useRuntimeConfig()
 
@@ -41,10 +42,7 @@ export default defineCachedEventHandler(async (event) => {
 }, {
     maxAge: 300, // 5 minutes
     swr: true,
-    shouldBypassCache: () => {
-        const config = useRuntimeConfig()
-        return config.public.ENV === 'local'
-    },
+    shouldBypassCache: shouldBypassServerCache,
     name: 'npr-story',
     getKey: (event) => `npr-story:${event.context.params.storyId}`
 })

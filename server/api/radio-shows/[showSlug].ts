@@ -1,5 +1,6 @@
 import axios from 'axios'
 import humps from 'humps'
+import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 const config = useRuntimeConfig()
 
@@ -23,10 +24,7 @@ export default defineCachedEventHandler(async (event) => {
 }, {
     maxAge: 300, // 5 minutes
     swr: true,
-    shouldBypassCache: () => {
-        const config = useRuntimeConfig()
-        return config.public.ENV === 'local'
-    },
+    shouldBypassCache: shouldBypassServerCache,
     name: 'radio-shows',
     getKey: (event) => `radio-shows:${event.context.params.showSlug}`
 })

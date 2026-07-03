@@ -1,6 +1,7 @@
 import axios from "axios"
 import humps from "humps"
 import { normalizeWagtailShow } from '~/composables/data/shows'
+import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 // Helper to obtain runtime config, with test override support.
 const __getConfig = () => {
@@ -136,9 +137,6 @@ export default defineCachedEventHandler(async () => {
 }, {
     maxAge: 3600, // 1 hour
     swr: true,
-    shouldBypassCache: () => {
-        const config = useRuntimeConfig()
-        return config.public.ENV === 'local'
-    },
+    shouldBypassCache: shouldBypassServerCache,
     name: 'v3-shows'
 })

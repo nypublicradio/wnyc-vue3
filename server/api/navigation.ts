@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 // Normalize wagtail shows array -> { featuredShowsInMenu: [...] }
 function normalizeShowsResponseForMenu (shows: any[] | null) {
@@ -95,9 +96,6 @@ export default defineCachedEventHandler(async () => {
 }, {
     maxAge: 120,
     swr: true,
-    shouldBypassCache: () => {
-        const config = useRuntimeConfig()
-        return config.public.ENV === 'local'
-    },
+    shouldBypassCache: shouldBypassServerCache,
     name: 'navigation'
 })
