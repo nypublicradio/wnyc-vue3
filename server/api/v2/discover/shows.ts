@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 type LegacyDiscoverQuery = Record<string, unknown>
 
@@ -24,12 +23,6 @@ export const getLegacyDiscoverShows = async (query: LegacyDiscoverQuery) => {
   return res.data
 }
 
-export default defineCachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
   return getLegacyDiscoverShows(getQuery(event))
-}, {
-  maxAge: 3600,
-  swr: true,
-  shouldBypassCache: shouldBypassServerCache,
-  name: 'v2-discover-shows',
-  getKey: (event) => JSON.stringify(getQuery(event))
 })

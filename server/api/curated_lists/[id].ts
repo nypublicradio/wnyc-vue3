@@ -1,8 +1,7 @@
 import humps from 'humps'
 import { transformCuratedContent } from '~/utilities/curatedContent'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
-export default defineCachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig()
     const id = getRouterParam(event, 'id')
 
@@ -36,10 +35,4 @@ export default defineCachedEventHandler(async (event) => {
             statusMessage: `Failed to fetch curated list ${id}`
         })
     }
-}, {
-    swr: true,
-    shouldBypassCache: shouldBypassServerCache,
-    maxAge: 300,
-    name: 'curated-lists',
-    getKey: (event) => getRouterParam(event, 'id')
 })

@@ -1,7 +1,6 @@
 import axios from 'axios'
 import humps from 'humps'
 import { normalizeWagtailEvent } from '~/server/utils/events'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 const config = useRuntimeConfig()
 const queryLimit = 10
@@ -63,18 +62,9 @@ const getWagtailEvents = async (query: Record<string, any>) => {
     }
 }
 
-export default defineCachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
     const query = getQuery(event)
 
     const eventsData = await getWagtailEvents(query)
     return eventsData
-}, {
-    maxAge: 300,
-    swr: true,
-    shouldBypassCache: shouldBypassServerCache,
-    name: 'events-list',
-    getKey: (event) => {
-        const query = getQuery(event)
-        return `${query.upcoming || ''}:${query.past || ''}:${query.venue || ''}:${query.offset || 0}:${query.limit || 10}`
-    }
 })

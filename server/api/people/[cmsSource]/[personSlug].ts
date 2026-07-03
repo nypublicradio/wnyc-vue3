@@ -2,7 +2,6 @@ import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
 import { normalizePerson } from '~/composables/data/articlePages'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 
 const config = useRuntimeConfig();
@@ -38,7 +37,7 @@ const getPersonData = async (personSlug: string, cmsSource: string) => {
 
 // Get story data from CMS
 
-export default defineCachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
     const personSlug: string | undefined = event?.context?.params?.personSlug;
     const cmsSource: string | undefined = event?.context?.params?.cmsSource;
 
@@ -48,10 +47,4 @@ export default defineCachedEventHandler(async (event) => {
     } else {
         return null
     }
-}, {
-    maxAge: 300,
-    swr: true,
-    shouldBypassCache: shouldBypassServerCache,
-    name: 'people',
-    getKey: (event) => `${event?.context?.params?.cmsSource}:${event?.context?.params?.personSlug}`
 });

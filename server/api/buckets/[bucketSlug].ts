@@ -1,6 +1,5 @@
 import axios from 'axios'
 import humps from 'humps'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 const config = useRuntimeConfig();
 
@@ -13,7 +12,7 @@ const getPublisherBucketData = async (bucketSlug: string) => {
 };
 
 // get bucket data from CMS
-export default defineCachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
     const bucketSlug: string | undefined = event?.context?.params?.bucketSlug;
     if (bucketSlug) {
         const BucketData = await getPublisherBucketData(bucketSlug);
@@ -21,10 +20,4 @@ export default defineCachedEventHandler(async (event) => {
     } else {
         return null
     }
-}, {
-    maxAge: 300,
-    swr: true,
-    shouldBypassCache: shouldBypassServerCache,
-    name: 'buckets',
-    getKey: (event) => event?.context?.params?.bucketSlug
 });

@@ -2,7 +2,6 @@ import axios from 'axios'
 import humps from 'humps'
 import { cmsSources, mediaTypes } from '~/composables/globals'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 //import { checkUrl404 } from '~/utilities/helpers'
 
 const config = useRuntimeConfig()
@@ -40,7 +39,7 @@ const getEpisodes = async (slug: string, showImage: string, type?: string, pageS
 }
 
 
-export default defineCachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
     //Fetching slug and type from the path params
     const slug: string | undefined = event?.context?.params?.showslug
 
@@ -58,17 +57,5 @@ export default defineCachedEventHandler(async (event) => {
         }
     } else {
         return null
-    }
-}, {
-    maxAge: 3600, // 1 hour
-    swr: true,
-    shouldBypassCache: shouldBypassServerCache,
-    name: 'show-detail',
-    // Create a unique key based on the show slug and the requested page number
-    getKey: (event) => {
-        const slug = event.context.params?.showslug
-        const query = getQuery(event)
-        const pageKey = query.page?.toString() ?? '1'
-        return `show:${slug}:page:${pageKey}`
     }
 })

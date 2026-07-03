@@ -2,7 +2,6 @@ import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
 import { customAlphabeticalSort } from '~/utilities/helpers'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 const config = useRuntimeConfig()
 
@@ -27,7 +26,7 @@ const featuredShowsInMenu = async () => {
     return resData
 }
 
-export default defineCachedEventHandler(async () => {
+export default defineEventHandler(async () => {
     const featuredShowsData = await featuredShowsInMenu()
 
     //Sort the data by title
@@ -35,9 +34,4 @@ export default defineCachedEventHandler(async () => {
     return {
         featuredShowsInMenu: featuredShowsData
     }
-}, {
-    maxAge: 3600,
-    swr: true,
-    shouldBypassCache: shouldBypassServerCache,
-    name: 'v2-showsmenu'
 })

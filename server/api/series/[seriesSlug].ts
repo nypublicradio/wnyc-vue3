@@ -1,6 +1,5 @@
 import axios from 'axios'
 import humps from 'humps'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 const config = useRuntimeConfig()
 
@@ -13,7 +12,7 @@ const getPublisherSeriesData = async (seriesSlug: string) => {
 }
 
 // get series data from CMS
-export default defineCachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
     const seriesSlug: string | undefined = event?.context?.params?.seriesSlug
     if (seriesSlug) {
         const SeriesData = await getPublisherSeriesData(seriesSlug)
@@ -21,10 +20,4 @@ export default defineCachedEventHandler(async (event) => {
     } else {
         return null
     }
-}, {
-    maxAge: 300, // 5 minutes
-    swr: true,
-    shouldBypassCache: shouldBypassServerCache,
-    name: 'series-data',
-    getKey: (event) => `series:${event.context.params.seriesSlug}`
 })

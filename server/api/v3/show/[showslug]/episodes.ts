@@ -2,7 +2,6 @@ import axios from 'axios'
 import humps from 'humps'
 import { normalizeSimplecastListItem } from '~/composables/data/articlePages'
 import { cmsSources } from '~/composables/globals'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 // Helper to obtain runtime config, with test override support.
 const __getConfig = () => {
@@ -165,7 +164,7 @@ const getSimplecastEpisodes = async (podcastId: string, offset = 0, limit = 10) 
  * - GET /api/v3/show/{podcast-uuid}/episodes?offset=0&limit=20
  * - GET /api/v3/show/{podcast-uuid}/episodes?offset=20&limit=20
  */
-export default defineCachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
     const showslug: string | undefined = event?.context?.params?.showslug
     // Validate showslug parameter
     if (!showslug) {
@@ -200,14 +199,4 @@ export default defineCachedEventHandler(async (event) => {
     const episodes = await getSimplecastEpisodes(showslug, offset, limit)
 
     return episodes
-}, {
-    maxAge: 300,
-    swr: true,
-    shouldBypassCache: shouldBypassServerCache,
-    name: 'v3-show-episodes',
-    getKey: (event) => {
-        const slug = event?.context?.params?.showslug
-        const query = getQuery(event)
-        return `${slug}:${query.offset || 0}:${query.limit || 10}`
-    }
 })

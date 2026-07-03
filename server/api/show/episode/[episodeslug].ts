@@ -2,7 +2,6 @@ import axios from 'axios'
 import humps from 'humps'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
 import { cmsSources, FALLBACKIMAGE } from '~/composables/globals'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 const config = useRuntimeConfig()
 
@@ -29,7 +28,7 @@ const getEpisode = async (slug: string) => {
     return null
 }
 
-export default defineCachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
     //Fetching slug and type from the path params
     const slug: string | undefined = event?.context?.params?.episodeslug
     //Fetching query params
@@ -41,10 +40,4 @@ export default defineCachedEventHandler(async (event) => {
 
     }
     return null
-}, {
-    maxAge: 300,
-    swr: true,
-    shouldBypassCache: shouldBypassServerCache,
-    name: 'show-episode',
-    getKey: (event) => event?.context?.params?.episodeslug
 })

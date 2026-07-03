@@ -1,6 +1,5 @@
 import humps from 'humps'
 import { transformCuratedContent } from '~/utilities/curatedContent'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 // get curated content from the WNYC Wagtail CMS API
 const getNewHomeTemplate = async () => {
@@ -50,17 +49,10 @@ const getNewHomeTemplate = async () => {
  * Compress and simplify the global nav data.
  * Reachable /api/homepage
  */
-export default defineCachedEventHandler(async () => {
+export default defineEventHandler(async () => {
 	const newHomeTemplate = await getNewHomeTemplate()
 
 	return {
 		new_home_template: newHomeTemplate,
 	}
-}
-	, {
-		maxAge: 300,
-		swr: true,
-		shouldBypassCache: shouldBypassServerCache,
-		name: 'homepage-curation'
-	}
-)
+})

@@ -2,7 +2,6 @@ import axios from 'axios'
 import humps from 'humps'
 import { normalizePublisherPage, normalizeWagtailPage } from '~/composables/data/articlePages'
 import { getCmsPathRedirect, getCmsRequestOptions } from '~/server/utils/cmsRedirect'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 const config = useRuntimeConfig()
 
@@ -69,7 +68,7 @@ const getStoryData = async (id: string, cmsSource: string) => {
 
 // Get story data from CMS
 
-export default defineCachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
     //console.log("getting story data")
     const id: string | undefined = event?.context?.params?.storyId
     const cmsSource: string | undefined = event?.context?.params?.cmsSource
@@ -78,10 +77,4 @@ export default defineCachedEventHandler(async (event) => {
         return storyData
     }
     return null
-}, {
-    maxAge: 300,
-    swr: true,
-    shouldBypassCache: shouldBypassServerCache,
-    name: 'story',
-    getKey: (event) => `${event?.context?.params?.cmsSource}:${event?.context?.params?.storyId}`
 })

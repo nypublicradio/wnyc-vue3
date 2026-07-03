@@ -1,7 +1,6 @@
 import axios from 'axios'
 import humps from 'humps'
 import { getQuery, createError } from 'h3'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 // Helper to obtain runtime config, with test override support.
 const __getConfig = () => {
@@ -57,7 +56,7 @@ const redirectResponse = (status: number, location?: string) => {
   }
 }
 
-export default defineCachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
   const config = __getConfig()
   const { html_path, cms_site } = getQuery(event)
 
@@ -120,13 +119,4 @@ export default defineCachedEventHandler(async (event) => {
   }
 
   throw createError({ statusCode: res.status || 500, statusMessage: 'CMS find request failed' })
-}, {
-  maxAge: 300,
-  swr: true,
-  shouldBypassCache: shouldBypassServerCache,
-  name: 'pages-find',
-  getKey: (event) => {
-    const { html_path, cms_site } = getQuery(event)
-    return `${cms_site || 'default'}:${html_path}`
-  }
 })

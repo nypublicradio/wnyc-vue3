@@ -5,7 +5,6 @@ import { NyprDb } from '~/server/utils/nyprdb'
 import { cmsSources, FALLBACKIMAGE } from '~/composables/globals'
 import { NPR } from '~/server/utils/npr'
 import { customAlphabeticalSort } from '~/utilities/helpers'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 
 const config = useRuntimeConfig()
@@ -108,7 +107,7 @@ const mergeShows = (sourceShows, nprShows) => {
     return Array.from(showMap.values())
 }
 
-export default defineCachedEventHandler(async () => {
+export default defineEventHandler(async () => {
     const [allShowsData, featuredShowsData, nprShowsData] = await Promise.all([
         allShows(),
         featuredShows(),
@@ -133,9 +132,4 @@ export default defineCachedEventHandler(async () => {
         all: allShowsDataMerged,
         featuredShows: featuredShowsDataMerged
     }
-}, {
-    maxAge: 3600, // 1 hour
-    swr: true,
-    shouldBypassCache: shouldBypassServerCache,
-    name: 'v2-shows'
 })

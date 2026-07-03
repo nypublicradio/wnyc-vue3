@@ -2,7 +2,6 @@ import axios from 'axios'
 import humps from 'humps'
 import { transformCuratedContent } from '~/utilities/curatedContent'
 import { normalizeWagtailShowDetail } from '~/composables/data/shows'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 // Helper to obtain runtime config, with test override support.
 const __getConfig = () => {
@@ -148,7 +147,7 @@ const getWagtailShow = async (slug: string) => {
     }
 }
 
-export default defineCachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
     const slug: string | undefined = event?.context?.params?.showslug
 
     // Get query params
@@ -181,15 +180,5 @@ export default defineCachedEventHandler(async (event) => {
     return {
         show,
         episodes,
-    }
-}, {
-    maxAge: 3600,
-    swr: true,
-    shouldBypassCache: shouldBypassServerCache,
-    name: 'v3-show',
-    getKey: (event) => {
-        const slug = event?.context?.params?.showslug
-        const query = getQuery(event)
-        return `${slug}:${query.page || 1}:${query.pageSize || 10}`
     }
 })

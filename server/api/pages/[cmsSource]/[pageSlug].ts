@@ -4,7 +4,6 @@ import { cmsSources, mediaTypeRoutes } from '~/composables/globals'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
 import { transformCuratedContent } from '~/utilities/curatedContent'
 import { getCmsPathRedirect, getCmsRequestOptions } from '~/server/utils/cmsRedirect'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 // Helper to obtain runtime config, with test override support.
 const __getConfig = () => {
@@ -98,7 +97,6 @@ const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean, isDown
             }
 
             // In app mode, prefer curated_list blocks, but do not blank the page if none exist.
-            console.log('######## isApp:', isApp, 'transformedCuratedContent:', transformedCuratedContent)
             if (isApp && Array.isArray(transformedCuratedContent)) {
                 const curatedListOnly = transformedCuratedContent.filter((item: any) => item?.type === 'curated_list')
                 if (curatedListOnly.length > 0) {
@@ -151,7 +149,7 @@ const getPageData = async (pageSlug: string, cmsSource: string, isShowOnly?: boo
 }
 
 // get page data from CMS
-export default defineCachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
     const pageSlug: string | undefined = event?.context?.params?.pageSlug
     const cmsSource: string | undefined = event?.context?.params?.cmsSource
 
@@ -162,7 +160,6 @@ export default defineCachedEventHandler(async (event) => {
     const isApp = parseBooleanQuery(query.isApp)
 
     // TEMP: log cache miss (this code only runs when cache is bypassed or expired)
-    console.log(`[pages cache MISS] ${cmsSource}:${pageSlug} isApp=${isApp}`)
 
     if (pageSlug && cmsSource) {
         const PageData = await getPageData(pageSlug, cmsSource, isShowOnly, isDownloadRulesOnly, isApp)
@@ -170,16 +167,5 @@ export default defineCachedEventHandler(async (event) => {
         return PageData
     } else {
         return null
-    }
-}, {
-    maxAge: 60,
-    staleMaxAge: 0,
-    shouldBypassCache: shouldBypassServerCache,
-    name: 'pages',
-    getKey: (event) => {
-        const slug = event?.context?.params?.pageSlug ?? ''
-        const cmsSource = event?.context?.params?.cmsSource ?? ''
-        const query = getQuery(event)
-        return `${cmsSource}:${slug}:${query.showOnly ?? ''}:${query.downloadRulesOnly ?? ''}:${query.isApp ?? ''}`
     }
 })

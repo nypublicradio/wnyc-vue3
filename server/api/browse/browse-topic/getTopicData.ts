@@ -3,9 +3,8 @@ import axios from 'axios'
 import humps from 'humps'
 import { showTopics } from '~/composables/globals'
 import { customAlphabeticalSort } from '~/utilities/helpers'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
-export default defineCachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
     const query = getQuery(event)
     const topic = showTopics.find(topic => topic.value === query.topic)
     try {
@@ -41,12 +40,4 @@ export default defineCachedEventHandler(async (event) => {
             statusMessage: `Failed to fetch data for topic: ${topic?.value}`
         })
     }
-}, {
-    maxAge: 3600, // 1 hour
-    swr: true,
-    name: 'browse-topic',
-    shouldBypassCache: shouldBypassServerCache,
-    // This ensures that each topic gets its own unique cache entry.
-    // For example, requests for `?topic=arts` and `?topic=news` will be cached separately.
-    getKey: (event) => `browse-topic:${getQuery(event).topic}`
 })

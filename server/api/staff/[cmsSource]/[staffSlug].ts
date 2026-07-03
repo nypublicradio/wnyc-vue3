@@ -2,7 +2,6 @@ import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
 import { normalizeAuthor, normalizeArticlePage } from '~/composables/data/articlePages'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 const config = useRuntimeConfig();
 
@@ -59,7 +58,7 @@ const getStaffData = async (staffSlug: string, cmsSource: string, offset: number
 
 // Get story data from CMS
 
-export default defineCachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
     const staffSlug: string | undefined = event?.context?.params?.staffSlug;
     const cmsSource: string | undefined = event?.context?.params?.cmsSource;
     // query params
@@ -71,10 +70,4 @@ export default defineCachedEventHandler(async (event) => {
     } else {
         return null
     }
-}, {
-    maxAge: 300,
-    swr: true,
-    shouldBypassCache: shouldBypassServerCache,
-    name: 'staff',
-    getKey: (event) => `${event?.context?.params?.cmsSource}:${event?.context?.params?.staffSlug}:${getQuery(event).offset || 0}`
 });

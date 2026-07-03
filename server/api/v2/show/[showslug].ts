@@ -6,7 +6,6 @@ import { NyprDb } from '~/server/utils/nyprdb'
 import { supabaseClient } from '~/server/utils/supabaseClient'
 import { NPR } from '~/server/utils/npr'
 import { useVImage } from "~/composables/useVImage"
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 const { templatizeImageUrl } = useVImage()
 
@@ -199,7 +198,7 @@ const getShow = async (slug: string, isSlugOnly?: boolean) => {
     }
 }
 
-export default defineCachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
     //Fetching slug and type from the path params
     const slug: string | undefined = event?.context?.params?.showslug
 
@@ -235,19 +234,5 @@ export default defineCachedEventHandler(async (event) => {
         }
     } else {
         return null
-    }
-}, {
-    maxAge: 3600, // 1 hour
-    swr: true,
-    shouldBypassCache: shouldBypassServerCache,
-    name: 'v2-show-detail',
-    // Create a unique key based on the show slug and query parameters
-    getKey: (event) => {
-        const slug = event.context.params?.showslug
-        const query = getQuery(event)
-        const page = query.page?.toString() ?? '1'
-        const pageSize = query.pageSize?.toString() ?? '10'
-        const slugOnly = (query.slugOnly === 'true').toString()
-        return `v2-show:${slug}:page:${page}:pageSize:${pageSize}:slugOnly:${slugOnly}`
     }
 })

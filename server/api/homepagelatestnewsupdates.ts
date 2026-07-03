@@ -3,7 +3,6 @@ import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
 import { estimateMp3Duration } from '~/server/utils/duration'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 // handleDuration is a helper function that checks if the estimated duration is available and if not, it estimates it using the audio URL in the estimateMp3Duration function.
 const handleDuration = async (estimatedDuration: number, audioURL: string) => {
@@ -89,7 +88,7 @@ const getNationalNewscast = async () => {
  * Compress and simplify the global nav data.
  * Reachable /api/homepage
  */
-export default defineCachedEventHandler(async () => {
+export default defineEventHandler(async () => {
 	const [local_newscast, national_newscast] = await Promise.all([
 		getLocalNewscast(),
 		getNationalNewscast(),
@@ -98,9 +97,4 @@ export default defineCachedEventHandler(async () => {
 		local_newscast,
 		national_newscast,
 	}
-}, {
-	maxAge: 120, // 2 minutes
-	swr: true,
-	shouldBypassCache: shouldBypassServerCache,
-	name: 'homepage-latest-news'
 })

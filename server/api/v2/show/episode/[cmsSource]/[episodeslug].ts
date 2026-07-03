@@ -5,7 +5,6 @@ import { cmsSources, FALLBACKIMAGE } from '~/composables/globals'
 import { NyprDb } from '~/server/utils/nyprdb'
 import { supabaseClient } from '~/server/utils/supabaseClient'
 import { NPR } from '~/server/utils/npr'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 const config = useRuntimeConfig()
 
 // Get Simplecast episode data directly by UUID
@@ -140,7 +139,7 @@ const getEpisode = async (slug: string) => {
 
 }
 
-export default defineCachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
     //Fetching slug and type from the path params
     const slug: string | undefined = event?.context?.params?.episodeslug
     const cmsSource: string | undefined = event?.context?.params?.cmsSource
@@ -161,10 +160,4 @@ export default defineCachedEventHandler(async (event) => {
         return episode?.data
     }
     return null
-}, {
-    maxAge: 300,
-    swr: true,
-    shouldBypassCache: shouldBypassServerCache,
-    name: 'v2-show-episode',
-    getKey: (event) => `${event?.context?.params?.cmsSource}:${event?.context?.params?.episodeslug}`
 })

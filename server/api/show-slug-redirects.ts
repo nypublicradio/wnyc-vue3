@@ -1,4 +1,3 @@
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 const redirects = [
     { from: '/browse/shows/10-things-scare-me', to: '/browse/shows/10-things-that-scare-me' },
     { from: '/browse/shows/dopequeens', to: '/browse/shows/2-dope-queens' },
@@ -95,11 +94,6 @@ const redirects = [
     { from: '/browse/shows/open-to-debate', to: 'https://opentodebate.org' },
 ]
 
-export default defineCachedEventHandler(() => {
+export default defineEventHandler(() => {
     return redirects
-}, {
-    maxAge: 86400,
-    swr: true,
-    shouldBypassCache: shouldBypassServerCache,
-    name: 'show-slug-redirects'
 })

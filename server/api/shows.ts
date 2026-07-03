@@ -2,7 +2,6 @@ import axios from 'axios'
 import humps from 'humps'
 import { cmsSources, FALLBACKIMAGE } from '~/composables/globals'
 import { customAlphabeticalSort } from '~/utilities/helpers'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 const config = useRuntimeConfig()
 
@@ -53,7 +52,7 @@ const featuredShows = async () => {
 }
 
 
-export default defineCachedEventHandler(async () => {
+export default defineEventHandler(async () => {
     const [allShowsData, featuredShowsData] = await Promise.all([
         allShows(),
         featuredShows(),
@@ -77,9 +76,4 @@ export default defineCachedEventHandler(async () => {
         all: allShowsData,
         featuredShows: featuredShowsData
     }
-}, {
-    maxAge: 3600, // 1 hour
-    swr: true,
-    shouldBypassCache: shouldBypassServerCache,
-    name: 'shows'
 })

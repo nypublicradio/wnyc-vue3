@@ -1,7 +1,6 @@
 import axios from "axios"
 import humps from "humps"
 import { normalizeWagtailShow } from '~/composables/data/shows'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 // Helper to obtain runtime config, with test override support.
 const __getConfig = () => {
@@ -125,7 +124,7 @@ export const getFeaturedShows = async (allShows: ReturnType<typeof normalizeWagt
     }
 }
 
-export default defineCachedEventHandler(async () => {
+export default defineEventHandler(async () => {
     const allShows = await getShows()
     const featuredShows = await getFeaturedShows(allShows)
 
@@ -134,9 +133,4 @@ export default defineCachedEventHandler(async () => {
         all: allShows,
         featuredShows
     }
-}, {
-    maxAge: 3600, // 1 hour
-    swr: true,
-    shouldBypassCache: shouldBypassServerCache,
-    name: 'v3-shows'
 })

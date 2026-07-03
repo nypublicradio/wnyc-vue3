@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 // Normalize wagtail shows array -> { featuredShowsInMenu: [...] }
 function normalizeShowsResponseForMenu (shows: any[] | null) {
@@ -78,7 +77,7 @@ async function getNavigationData () {
     }
 }
 
-export default defineCachedEventHandler(async () => {
+export default defineEventHandler(async () => {
     try {
         const data = await getNavigationData()
         return { data }
@@ -93,9 +92,4 @@ export default defineCachedEventHandler(async () => {
             }
         }
     }
-}, {
-    maxAge: 120,
-    swr: true,
-    shouldBypassCache: shouldBypassServerCache,
-    name: 'navigation'
 })

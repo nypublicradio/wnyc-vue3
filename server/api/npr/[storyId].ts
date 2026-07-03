@@ -1,6 +1,5 @@
 import axios from 'axios'
 import { normalizeNprPage } from '~/composables/data/articlePages'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 const config = useRuntimeConfig()
 
@@ -32,17 +31,11 @@ const getNprStoryData = async (id: string) => {
 
 // Get story data from CMS
 
-export default defineCachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
     const id: string | undefined = event?.context?.params?.storyId
     if (id) {
         const storyData = await getNprStoryData(id)
         return storyData
     }
     return null
-}, {
-    maxAge: 300, // 5 minutes
-    swr: true,
-    shouldBypassCache: shouldBypassServerCache,
-    name: 'npr-story',
-    getKey: (event) => `npr-story:${event.context.params.storyId}`
 })

@@ -1,6 +1,5 @@
 import axios from 'axios'
 import humps from 'humps'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 const config = useRuntimeConfig()
 
@@ -13,7 +12,7 @@ const getPublisherRadioShowsData = async (showSlug: string) => {
 }
 
 // get radio shows data from CMS
-export default defineCachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
     const showSlug: string | undefined = event?.context?.params?.showSlug
     if (showSlug) {
         const radioShowsData = await getPublisherRadioShowsData(showSlug)
@@ -21,10 +20,4 @@ export default defineCachedEventHandler(async (event) => {
     } else {
         return null
     }
-}, {
-    maxAge: 300, // 5 minutes
-    swr: true,
-    shouldBypassCache: shouldBypassServerCache,
-    name: 'radio-shows',
-    getKey: (event) => `radio-shows:${event.context.params.showSlug}`
 })

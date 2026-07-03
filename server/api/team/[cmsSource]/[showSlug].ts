@@ -1,7 +1,6 @@
 import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
-import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 const config = useRuntimeConfig();
 
@@ -30,7 +29,7 @@ const getTeamData = async (showSlug: string, cmsSource: string) => {
 };
 
 // Get team data from CMS
-export default defineCachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
     const showSlug: string | undefined = event?.context?.params?.showSlug;
     const cmsSource: string | undefined = event?.context?.params?.cmsSource;
     if (showSlug && cmsSource) {
@@ -39,10 +38,4 @@ export default defineCachedEventHandler(async (event) => {
     } else {
         return null
     }
-}, {
-    maxAge: 300,
-    swr: true,
-    shouldBypassCache: shouldBypassServerCache,
-    name: 'team',
-    getKey: (event) => `${event?.context?.params?.cmsSource}:${event?.context?.params?.showSlug}`
 });
