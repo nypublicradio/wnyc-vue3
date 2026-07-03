@@ -4,6 +4,7 @@ import { cmsSources, mediaTypeRoutes } from '~/composables/globals'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
 import { transformCuratedContent } from '~/utilities/curatedContent'
 import { getCmsPathRedirect, getCmsRequestOptions } from '~/server/utils/cmsRedirect'
+import { shouldBypassServerCache } from '~/server/utils/cacheOptions'
 
 // Helper to obtain runtime config, with test override support.
 const __getConfig = () => {
@@ -150,7 +151,7 @@ const getPageData = async (pageSlug: string, cmsSource: string, isShowOnly?: boo
 }
 
 // get page data from CMS
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
     const pageSlug: string | undefined = event?.context?.params?.pageSlug
     const cmsSource: string | undefined = event?.context?.params?.cmsSource
 
@@ -160,11 +161,26 @@ export default defineEventHandler(async (event) => {
     const isDownloadRulesOnly = parseBooleanQuery(query.downloadRulesOnly)
     const isApp = parseBooleanQuery(query.isApp)
 
+    // TEMP: log cache miss (this code only runs when cache is bypassed or expired)
+    console.log(`[pages cache MISS] ${cmsSource}:${pageSlug} isApp=${isApp}`)
+    setResponseHeader(event, 'x-cache-status', 'MISS')
+
     if (pageSlug && cmsSource) {
         const PageData = await getPageData(pageSlug, cmsSource, isShowOnly, isDownloadRulesOnly, isApp)
 
         return PageData
     } else {
         return null
+    }
+}, {
+    maxAge: 60,
+    staleMaxAge: 0,
+    shouldBypassCache: shouldBypassServerCache,
+    name: 'pages',
+    getKey: (event) => {
+        const slug = event?.context?.params?.pageSlug ?? ''
+        const cmsSource = event?.context?.params?.cmsSource ?? ''
+        const query = getQuery(event)
+        return `${cmsSource}:${slug}:${query.showOnly ?? ''}:${query.downloadRulesOnly ?? ''}:${query.isApp ?? ''}`
     }
 })
