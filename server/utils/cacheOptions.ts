@@ -10,5 +10,5 @@
  */
 export const shouldBypassServerCache = (): boolean => {
     const config = useRuntimeConfig()
-    return config.public.ENV === 'local'
+    return config.public.ENV === 'local' || config.public.ENV === 'demo'
 }
