@@ -201,7 +201,7 @@ const isThisShowPlaying = computed(() => {
 
 <template>
   <div
-    class="show-header-holder py-3 style-mode-dark"
+    class="show-header-holder py-3"
     :class="!isApp ? 'style-mode-dark' : isDarkMode ? 'style-mode-dark' : ''"
     :style="topperBackground"
   >
