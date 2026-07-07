@@ -1044,6 +1044,7 @@ export const goToEpisodePage = (ep, params, log = true, returnRoute = false) => 
   if (log) {
     saveRecentlyPlayed(ep)
   }
+  return undefined
 }
 
 /* centralized function to route to a live page */
@@ -1059,6 +1060,7 @@ export const goToLivePage = (ep, params, log = true, returnRoute = false) => {
   if (log) {
     saveRecentlyPlayed(ep)
   }
+  return undefined
 }
 
 /* centralized function to route to a story page */
@@ -1088,6 +1090,7 @@ export const goToStoryPage = (story, params, log = true, returnRoute = false) =>
   if (log) {
     saveRecentlyPlayed(story)
   }
+  return undefined
 }
 
 /* centralized function to route to a story page */
@@ -1102,6 +1105,7 @@ export const goToNprPage = (story, log = true, returnRoute = false) => {
   if (log) {
     saveRecentlyPlayed(story)
   }
+  return undefined
 }
 
 /* centralized function to route to a event page */
@@ -1116,6 +1120,7 @@ export const goToEventPage = (story/* , log = true */, returnRoute = false) => {
   // if (log) {
   //   saveRecentlyPlayed(story)
   // }
+  return undefined
 }
 /* centralized function to route to a show page */
 export const goToShowPage = (show, params = null, returnRoute = false) => {
@@ -1128,8 +1133,33 @@ export const goToShowPage = (show, params = null, returnRoute = false) => {
     return routeObj
   }
   navigateTo(routeObj)
+  return undefined
 }
 
+/* centralized function to route to a card page */
+export const goToUrlOverrideDestination = (item, params = null, returnRoute = false) => {
+  const path = `${getRouteOrLink(item.url)}`
+
+  if (returnRoute) {
+    if (path.startsWith("http")) return path
+    return { path, query: params }
+  }
+
+  // if the path is a full url, open in new tab
+  if (path.startsWith("http")) {
+    window.open(path, "_blank")
+  } else {
+    navigateTo({
+      path,
+      query: params,
+    })
+  }
+  return undefined
+}
+
+/**
+ * Extracts the parent show slug for a series from explicit fields or parent URLs.
+ */
 const extractShowSlugFromSeries = (series) => {
   const explicitShowSlug = series.showSlug ?? series.show?.slug ?? series.show?.meta?.slug
   if (explicitShowSlug) return explicitShowSlug
@@ -1173,25 +1203,7 @@ export const goToSeriesPage = (series, params = null, returnRoute = false) => {
     return routeObj
   }
   navigateTo(routeObj)
-}
-/* centralized function to route to a card page */
-export const goToUrlOverrideDestination = (item, params = null, returnRoute = false) => {
-  const path = `${getRouteOrLink(item.url)}`
-
-  if (returnRoute) {
-    if (path.startsWith("http")) return path
-    return { path, query: params }
-  }
-
-  // if the path is a full url, open in new tab
-  if (path.startsWith("http")) {
-    window.open(path, "_blank")
-  } else {
-    navigateTo({
-      path,
-      query: params,
-    })
-  }
+  return undefined
 }
 
 // return bool if the url has a query param
@@ -1276,9 +1288,7 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
   if (isNetworkConnected.value || returnRoute) {
     // if the item has a url, we ignore everything and route based on the url, because it is the override destination
     if (item.url) {
-      const res = goToUrlOverrideDestination(item, null, returnRoute)
-      if (returnRoute) return res
-      return
+      return goToUrlOverrideDestination(item, null, returnRoute)
     }
     switch (item.type || item.contentType) {
       case mediaTypes.LIVE:
@@ -1315,6 +1325,7 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
       life: 3000,
       closable: true,
     }
+    return undefined
   }
 }
 
