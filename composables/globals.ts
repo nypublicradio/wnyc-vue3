@@ -62,6 +62,7 @@ export const mediaTypes = {
     CARD: 'card',
     STAFF: 'staff',
     PEOPLE: 'people',
+    SERIES: 'series',
 }
 
 export const mediaTypeRoutes = {
@@ -79,6 +80,7 @@ export const mediaTypeRoutes = {
     [mediaTypes.EVENT]: '/events/',
     [mediaTypes.SIMPLECAST]: '/browse/shows/episode/simplecast/',
     [mediaTypes.CARD]: '',
+    [mediaTypes.SERIES]: '/browse/shows/',
 }
 
 export const FALLBACKIMAGE = '/fallback/wnyc.webp'

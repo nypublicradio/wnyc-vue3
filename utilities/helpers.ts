@@ -1044,6 +1044,7 @@ export const goToEpisodePage = (ep, params, log = true, returnRoute = false) => 
   if (log) {
     saveRecentlyPlayed(ep)
   }
+  return undefined
 }
 
 /* centralized function to route to a live page */
@@ -1059,6 +1060,7 @@ export const goToLivePage = (ep, params, log = true, returnRoute = false) => {
   if (log) {
     saveRecentlyPlayed(ep)
   }
+  return undefined
 }
 
 /* centralized function to route to a story page */
@@ -1088,6 +1090,7 @@ export const goToStoryPage = (story, params, log = true, returnRoute = false) =>
   if (log) {
     saveRecentlyPlayed(story)
   }
+  return undefined
 }
 
 /* centralized function to route to a story page */
@@ -1102,6 +1105,7 @@ export const goToNprPage = (story, log = true, returnRoute = false) => {
   if (log) {
     saveRecentlyPlayed(story)
   }
+  return undefined
 }
 
 /* centralized function to route to a event page */
@@ -1116,6 +1120,7 @@ export const goToEventPage = (story/* , log = true */, returnRoute = false) => {
   // if (log) {
   //   saveRecentlyPlayed(story)
   // }
+  return undefined
 }
 /* centralized function to route to a show page */
 export const goToShowPage = (show, params = null, returnRoute = false) => {
@@ -1128,7 +1133,9 @@ export const goToShowPage = (show, params = null, returnRoute = false) => {
     return routeObj
   }
   navigateTo(routeObj)
+  return undefined
 }
+
 /* centralized function to route to a card page */
 export const goToUrlOverrideDestination = (item, params = null, returnRoute = false) => {
   const path = `${getRouteOrLink(item.url)}`
@@ -1147,6 +1154,56 @@ export const goToUrlOverrideDestination = (item, params = null, returnRoute = fa
       query: params,
     })
   }
+  return undefined
+}
+
+/**
+ * Extracts the parent show slug for a series from explicit fields or parent URLs.
+ */
+const extractShowSlugFromSeries = (series) => {
+  const explicitShowSlug = series.showSlug ?? series.show?.slug ?? series.show?.meta?.slug
+  if (explicitShowSlug) return explicitShowSlug
+
+  const parentUrl = series.meta?.parent?.meta?.htmlUrl
+    ?? series.meta?.parent?.htmlUrl
+    ?? series.meta?.parent?.url
+    ?? series.parent?.meta?.htmlUrl
+    ?? series.parent?.htmlUrl
+    ?? series.parent?.url
+
+  if (!parentUrl) return null
+
+  try {
+    const pathname = new URL(parentUrl, "https://www.wnyc.org").pathname
+    return pathname.match(/\/browse\/shows\/([^/]+)/)?.[1] ?? null
+  } catch {
+    return null
+  }
+}
+
+/* centralized function to route to a series page */
+export const goToSeriesPage = (series, params = null, returnRoute = false) => {
+  const seriesSlug = series.meta?.slug ?? series.slug
+  const showSlug = extractShowSlugFromSeries(series)
+  const fallbackUrl = series.meta?.htmlUrl ?? series.url
+
+  if (!showSlug || !seriesSlug) {
+    if (fallbackUrl) {
+      return goToUrlOverrideDestination({ ...series, url: fallbackUrl }, params, returnRoute)
+    }
+    return goToEpisodePage(series, params, true, returnRoute)
+  }
+
+  const routeObj = {
+    path: `${mediaTypeRoutes[mediaTypes.SERIES]}${showSlug}/${seriesSlug}`,
+    query: params,
+  }
+
+  if (returnRoute) {
+    return routeObj
+  }
+  navigateTo(routeObj)
+  return undefined
 }
 
 // return bool if the url has a query param
@@ -1231,9 +1288,7 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
   if (isNetworkConnected.value || returnRoute) {
     // if the item has a url, we ignore everything and route based on the url, because it is the override destination
     if (item.url) {
-      const res = goToUrlOverrideDestination(item, null, returnRoute)
-      if (returnRoute) return res
-      return
+      return goToUrlOverrideDestination(item, null, returnRoute)
     }
     switch (item.type || item.contentType) {
       case mediaTypes.LIVE:
@@ -1250,6 +1305,8 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
           : goToStoryPage(item, { src: item.cmsSource, downloaded: isDownloaded, id: item.id, }, isSaveHistory, returnRoute)
       case mediaTypes.SHOW:
         return goToShowPage(item, null, returnRoute)
+      case mediaTypes.SERIES:
+        return goToSeriesPage(item, null, returnRoute)
       case mediaTypes.NPR_EPISODE:
       case mediaTypes.NPR_ARTICLE:
         return goToNprPage(item, isSaveHistory, returnRoute)
@@ -1268,6 +1325,7 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
       life: 3000,
       closable: true,
     }
+    return undefined
   }
 }
 

@@ -121,7 +121,6 @@ describe('server/api/pages [wagtail] passes through body.curated_list', () => {
     const list = result.body[0].value.list
     expect(Array.isArray(list.listItems)).toBe(true)
     const first = list.listItems[0]
-    console.log("FIRST LOG:", first)
     // After transformCuratedContent, `content` is merged to root-level by handleOtherContentType,
     // then normalizeSimplecastListItem maps the fields:
     //   content.id       → uuid

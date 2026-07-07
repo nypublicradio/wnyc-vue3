@@ -22,9 +22,48 @@ const props = defineProps({
     type: String,
     default: "lazy",
   },
+  enableLoadMore: {
+    type: Boolean,
+    default: false,
+  },
+  initialLimit: {
+    type: Number,
+    default: 15,
+  },
+  limitIncrement: {
+    type: Number,
+    default: 15,
+  },
+  loadMoreLabel: {
+    type: String,
+    default: "Load More",
+  },
 })
 
-const reactiveItems = toRef(props.list, "listItems")
+const emit = defineEmits(["load-more"])
+const reactiveItems = computed(() => props.list?.listItems)
+const visibleCount = ref(props.initialLimit)
+
+watch(
+  () => props.list?.listItems,
+  () => {
+    visibleCount.value = props.initialLimit
+  }
+)
+
+const visibleItems = computed(() => {
+  const items = reactiveItems.value || []
+  return props.enableLoadMore ? items.slice(0, visibleCount.value) : items
+})
+
+const hasMoreItems = computed(
+  () => props.enableLoadMore && (reactiveItems.value?.length || 0) > visibleItems.value.length
+)
+
+const loadMore = () => {
+  visibleCount.value += props.limitIncrement
+  emit("load-more")
+}
 </script>
 
 <template>
@@ -35,7 +74,7 @@ const reactiveItems = toRef(props.list, "listItems")
     />
     <div v-if="reactiveItems?.length > 0" class="grid">
       <div
-        v-for="(article, index) in reactiveItems"
+        v-for="(article, index) in visibleItems"
         :key="`${article.id}-${index}`"
         :class="props.cardClass"
       >
@@ -50,7 +89,15 @@ const reactiveItems = toRef(props.list, "listItems")
         />
       </div>
     </div>
-    <div v-else class="grid">
+    <div v-if="hasMoreItems" class="flex justify-content-center mt-5">
+      <Button
+        :label="props.loadMoreLabel"
+        severity="secondary"
+        class="px-5"
+        @click="loadMore"
+      />
+    </div>
+    <div v-if="!reactiveItems?.length" class="grid">
       <div v-for="index in 4" :key="`skeleton-river-${index}`" :class="props.cardClass" v-once>
         <skeleton-media-card
           isHorizontal

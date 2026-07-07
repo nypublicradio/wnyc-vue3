@@ -48,8 +48,33 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  curatedListLayoutOverride: {
+    type: String,
+    default: "",
+  },
+  curatedListCardClass: {
+    type: String,
+    default: undefined,
+  },
+  enableCuratedListLoadMore: {
+    type: Boolean,
+    default: false,
+  },
+  curatedListInitialLimit: {
+    type: Number,
+    default: 15,
+  },
+  curatedListLimitIncrement: {
+    type: Number,
+    default: 15,
+  },
+  curatedListLoadMoreLabel: {
+    type: String,
+    default: "Load More",
+  },
 })
 
+const emit = defineEmits(["curated-list-load-more"])
 const streamfield = props.article?.body
 
 const defaultLayout = "river-thin"
@@ -59,6 +84,37 @@ const verticalSpacingClasses = "mb-6 md:mb-8"
 // Helper function to get the appropriate layout component based on the block's layout value
 const getLayoutComponent = (layout: string) => {
   return layoutComponentMap[layout] || layoutComponentMap[defaultLayout]
+}
+
+const getCuratedListLayout = (block: StreamfieldBlock) => {
+  return props.curatedListLayoutOverride || block?.value?.layout || defaultLayout
+}
+
+const enableLoadMoreForBlock = (block: StreamfieldBlock) => {
+  return props.enableCuratedListLoadMore && getCuratedListLayout(block) === "river"
+}
+
+const getCuratedListComponentProps = (block: StreamfieldBlock, index: number) => {
+  const layout = getCuratedListLayout(block)
+  const componentProps: Record<string, unknown> = {
+    list: block?.value?.list,
+    label: block?.value?.label,
+    seeMore: block?.value?.seeMoreLink,
+    loading: index === 0 ? "eager" : "lazy",
+  }
+
+  if (props.curatedListCardClass) {
+    componentProps.cardClass = props.curatedListCardClass
+  }
+
+  if (layout === "river") {
+    componentProps.enableLoadMore = enableLoadMoreForBlock(block)
+    componentProps.initialLimit = props.curatedListInitialLimit
+    componentProps.limitIncrement = props.curatedListLimitIncrement
+    componentProps.loadMoreLabel = props.curatedListLoadMoreLabel
+  }
+
+  return componentProps
 }
 
 onMounted(() => {
@@ -109,11 +165,9 @@ onMounted(() => {
           :id="slugify(block?.value?.label)"
         >
           <component
-            :is="getLayoutComponent(block?.value?.layout)"
-            :list="block?.value?.list"
-            :label="block?.value?.label"
-            :seeMore="block?.value?.seeMoreLink"
-            :loading="index === 0 ? 'eager' : 'lazy'"
+            :is="getLayoutComponent(getCuratedListLayout(block))"
+            v-bind="getCuratedListComponentProps(block, index)"
+            @load-more="emit('curated-list-load-more', block)"
           />
           <div
             v-if="block?.value?.seeMoreLink"
