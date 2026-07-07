@@ -47,7 +47,7 @@ const emit = defineEmits(["emit-click"])
 <style lang="scss" scoped>
 .bottom {
   //height: var(--header-bottom-height);
-  background: var(--header-background);
+  //background: var(--header-background);
 
   .content {
     margin-left: -12px;

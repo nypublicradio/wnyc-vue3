@@ -69,7 +69,7 @@ watch(
           reverse
           transitionName=""
         >
-          <TheHeader />
+          <TheHeader showMenu animMenu />
         </VSmartHeader>
       </div>
     </header>
