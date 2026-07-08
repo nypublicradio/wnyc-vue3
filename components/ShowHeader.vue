@@ -121,7 +121,6 @@ const firstEpisodeWithAudio = () => {
 }
 // computed properties to identify what is currently loaded
 const isLoadedEpisode = computed(() => {
-  console.log("isLoadedEpisode: isLiveStream.value", isLiveStream.value)
   if (isLiveStream.value || !currentEpisode.value) return false
 
   // 1. Standard check: do the show titles match?
