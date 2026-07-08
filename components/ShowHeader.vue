@@ -210,10 +210,7 @@ const isThisShowPlaying = computed(() => {
     <section class="grid grid-nogutter m-auto">
       <div class="col-fixed hidden xxl:block w-20rem"></div>
       <div class="col">
-        <div
-          class="show-header flex justify-content-start gap-3 md:gap-5"
-          :class="isApp ? 'justify-content-center' : 'justify-content-start'"
-        >
+        <div class="show-header flex justify-content-start gap-3 md:gap-5">
           <!-- <pre class="text-white">{{ showSlug }}</pre> -->
           <VImage
             v-if="show"
@@ -230,7 +227,7 @@ const isThisShowPlaying = computed(() => {
             class="flex-none show-image w-7rem md:w-13rem h-7rem md:h-13rem"
             borderRadius="0px"
           />
-          <div v-if="!isApp">
+          <div>
             <div
               v-if="show"
               class="flex flex-column justify-content-start gap-2"

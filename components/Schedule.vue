@@ -270,7 +270,7 @@ const handleScheduleNavigationButtonLabel = (date) => {
               "
             >
               <div
-                class="active-content flex flex-column justify-content-between"
+                class="active-content flex flex-column justify-content-between w-full"
               >
                 <div>
                   <p class="time">
