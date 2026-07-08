@@ -1624,3 +1624,30 @@ export const getTrueSlug = async (slug: string, isolateReturn = true) => {
     return newSlug
   }
 }
+
+export const normalizeShowTitle = (title?: string): string => {
+  if (!title || typeof title !== "string") return ""
+
+  return title
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/\s+(with|w\/)\s+.*$/, "")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+}
+
+export const areShowTitlesEquivalent = (a?: string, b?: string): boolean => {
+  const normalizedA = normalizeShowTitle(a)
+  const normalizedB = normalizeShowTitle(b)
+
+  if (!normalizedA || !normalizedB) return false
+  if (normalizedA === normalizedB) return true
+
+  const shortestLength = Math.min(normalizedA.length, normalizedB.length)
+  if (shortestLength < 6) return false
+
+  return (
+    normalizedA.includes(normalizedB) || normalizedB.includes(normalizedA)
+  )
+}

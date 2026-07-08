@@ -68,13 +68,7 @@ const getMarqueeSpeed = computed(() => {
           v-if="props.livestream"
           class="track-info-livestream flex gap-1 align-content-center"
         >
-          <!-- <media-live-button class="media-live-button">
-            <span class="media-live-button-text">LIVE</span>
-          </media-live-button> -->
-          <div class="track-info-livestream-indicator">
-            <span class="track-info-livestream-indicator-text">Live</span>
-            <span class="track-info-livestream-indicator-dot pulse" />
-          </div>
+          <LiveBadge fontSize="0.6rem" />
           <div class="track-info-livestream-station">{{ station }}</div>
         </div>
         <div class="track-info-title">
@@ -119,7 +113,11 @@ const getMarqueeSpeed = computed(() => {
                 </div>
               </div>
             </div>
-            <div v-else class="track-info-description" v-html="props.description"></div>
+            <div
+              v-else
+              class="track-info-description"
+              v-html="props.description"
+            ></div>
           </VFlexibleLink>
         </div>
         <!-- <div
@@ -165,6 +163,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
         font-family: var(--font-family);
         font-size: 10px;
         font-weight: var(--font-weight-400);
+        line-height: unset;
       }
     }
     .track-info-title {
@@ -233,7 +232,8 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
               display: flex;
               flex-shrink: 0;
               align-items: center;
-              animation: slide-left v-bind(getMarqueeSpeed) linear v-bind(marqueeLoops);
+              animation: slide-left v-bind(getMarqueeSpeed) linear
+                v-bind(marqueeLoops);
               animation-delay: v-bind(marqueeDelay);
               .content {
               }

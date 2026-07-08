@@ -9,6 +9,7 @@ import {
   hasAudio,
   addToFavorites2,
   isolateSlug,
+  areShowTitlesEquivalent,
 } from "~/utilities/helpers"
 import { useFallbackImages } from "~/composables/useFallbackImages"
 import {
@@ -20,6 +21,7 @@ import {
   useCurrentEpisode,
   useIsLiveStream,
   useIsDarkMode,
+  useIsStreamLoading,
 } from "~/composables/states"
 //import { mediaTypeRoutes, mediaTypes } from "~/composables/globals"
 import useSleepTimer from "~/composables/useSleepTimer"
@@ -38,6 +40,7 @@ const { show } = toRefs(props)
 const toast = useToast()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const currentEpisode = useCurrentEpisode()
+const isStreamLoading = useIsStreamLoading()
 const isDarkMode = useIsDarkMode()
 const isApp = useIsApp()
 
@@ -118,10 +121,14 @@ const firstEpisodeWithAudio = () => {
 }
 // computed properties to identify what is currently loaded
 const isLoadedEpisode = computed(() => {
+  console.log("isLoadedEpisode: isLiveStream.value", isLiveStream.value)
   if (isLiveStream.value || !currentEpisode.value) return false
 
   // 1. Standard check: do the show titles match?
-  if (currentEpisode?.value?.showTitle === props.show?.title) return true
+  if (
+    areShowTitlesEquivalent(currentEpisode?.value?.showTitle, props.show?.title)
+  )
+    return true
 
   // 2. Archives check: is the current episode in the show's curated lists?
   if (currentEpisode.value.id && props.show?.body) {
@@ -142,8 +149,11 @@ const isLoadedEpisode = computed(() => {
 const isLoadedLiveStream = computed(() => {
   return (
     isLiveStream.value &&
-    (currentEpisodeHolder.value?.title === props.show?.title ||
-      currentEpisode.value?.title === props.show?.title)
+    (areShowTitlesEquivalent(
+      currentEpisodeHolder.value?.title,
+      props.show?.title
+    ) ||
+      areShowTitlesEquivalent(currentEpisode.value?.title, props.show?.title))
   )
 })
 
@@ -169,14 +179,6 @@ const togglePlayMostRecentEpisode = () => {
     }
   }
 }
-
-// watch(
-//   currentEpisodeHolder,
-//   () => {
-//     currentEpisodeHolder.value.title = "All Of It with Alison Stewart"
-//   },
-//   { once: true }
-// )
 
 // add item to favorites
 const handleAddToFavorites = () => {
@@ -254,19 +256,24 @@ const isThisShowPlaying = computed(() => {
               <!-- desktop buttons -->
               <div class="hidden md:flex align-items-center gap-3">
                 <Button
-                  class="play-btn flex-none"
-                  severity="secondary"
                   rounded
-                  aria-label="play toggle"
                   tabindex="0"
+                  :disabled="isStreamLoading"
+                  class="play-btn flex-none"
+                  :aria-label="
+                    isEpisodePlaying ? 'Pause button' : 'Play button'
+                  "
                   @click="togglePlayMostRecentEpisode"
+                  severity="secondary"
                 >
-                  <template #icon>
-                    <PauseIcon v-if="isThisShowPlaying" />
-                    <PlayIcon v-else />
-                  </template>
+                  <slot v-if="isStreamLoading" name="loading">
+                    <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
+                  </slot>
+                  <slot v-else-if="!isThisShowPlaying" name="play"
+                    ><PlayIcon
+                  /></slot>
+                  <slot v-else name="pause"><PauseIcon /></slot>
                 </Button>
-
                 <Button
                   rounded
                   severity="secondary"
