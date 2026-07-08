@@ -94,6 +94,7 @@ const onLogOut = async () => {
 }
 
 if (props.animMenu) {
+  // handle scroll events to minimize the header menu
   const calcScroll = (y, isScrolling, previousY) => {
     if (!props.showMenu) {
       return

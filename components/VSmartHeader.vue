@@ -116,7 +116,6 @@ watch(
   top: env(safe-area-inset-top);
   width: 100%;
   z-index: 999;
-  display: block !important;
 }
 //expand
 .v-smart-header-minimize-enter-active {
