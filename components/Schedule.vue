@@ -252,21 +252,21 @@ const handleScheduleNavigationButtonLabel = (date) => {
           :value="index.toString()"
           :class="[{ selected: index === 0 }]"
         >
-          <div class="flex flex-column gap-4">
-            <!-- <pre class="overflow-hidden">{{ currentEpisodeHolder }}</pre> -->
+          <div class="flex flex-column gap-1">
             <div
               v-for="(entry, entryIndex) in data"
               :key="entryIndex"
-              class="schedule-entry flex justify-content-between align-items-stretch gap-3 style-mode-light light-mode"
+              class="schedule-entry flex justify-content-between align-items-stretch gap-3 style-mode-light light-mode p-ripple cursor-pointer"
+              v-ripple
               :class="
                 handleCurrentEpisode(entry, entryIndex)
-                  ? 'selected -ml-3 -mr-3 xl:mr-0 cursor-pointer'
+                  ? 'selected py-3 md:p-0'
                   : ''
               "
               @click="
                 handleCurrentEpisode(entry, entryIndex)
                   ? toShowPageClick(entry, true)
-                  : null
+                  : toShowPageClick(entry)
               "
             >
               <div
@@ -282,16 +282,9 @@ const handleScheduleNavigationButtonLabel = (date) => {
                       )
                     }}
                   </p>
-                  <Button
-                    @click="toShowPageClick(entry)"
-                    severity="secondary"
-                    variant="link"
-                    class="title-link -mt-2"
-                  >
-                    <h2 class="title truncate t2lines">
-                      {{ getEntryTitle(entry) }}
-                    </h2>
-                  </Button>
+                  <h2 class="title truncate t2lines">
+                    {{ getEntryTitle(entry) }}
+                  </h2>
                   <HtmlConvert
                     v-if="
                       entry.station.episodeBody &&
@@ -332,9 +325,9 @@ const handleScheduleNavigationButtonLabel = (date) => {
                 text
                 plain
                 rounded
-                class="flex-none"
+                class="flex-none z-1"
                 aria-label="set notification"
-                @click="handleScheduleLocalNotification(entry)"
+                @click.stop="handleScheduleLocalNotification(entry)"
               >
                 <template #icon>
                   <NotificationIcon :entry="entry" />
@@ -523,11 +516,8 @@ html {
   }
   .schedule-entry {
     position: relative;
-    // .left {
-    //   border: 2px solid transparent;
-    //   border-radius: 8px;
-    //   margin-right: 1rem;
-    // }
+    padding: 1rem;
+    border-radius: var(--p-border-radius-xl);
     &:before {
       content: "";
       border: 2px solid transparent;
@@ -535,31 +525,21 @@ html {
       border-radius: 8px;
       margin-right: 1rem;
       position: absolute;
-      height: 100%;
+      height: 80%;
+      top: 10%;
+      bottom: 0;
       display: none;
     }
 
     .active-content {
       min-height: 0; // Allow flex shrinking
     }
-    .title-link {
-      margin-left: -0.8rem;
-      text-align: left;
-      * {
-        transition: color var(--p-transition-duration);
-      }
-      &:hover {
-        * {
-          color: var(--link-button-hover-color);
-          text-decoration: underline;
-        }
-      }
-    }
     .more-from {
       margin-left: -0.8rem;
       display: none;
     }
     &.selected {
+      padding: 0;
       &:before {
         display: block;
       }
@@ -582,6 +562,16 @@ html {
     .follow-icon {
       width: 28px;
       height: 28px;
+    }
+    .title {
+      transition: color var(--p-transition-duration);
+      -webkit-transition: color var(--p-transition-duration);
+    }
+    &:hover {
+      .title {
+        color: var(--link-button-hover-color);
+        text-decoration: underline;
+      }
     }
   }
   &.dark-mode {
