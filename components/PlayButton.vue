@@ -185,11 +185,8 @@ watch(
   .content {
     font-size: 0.875rem;
     font-weight: var(--font-weight-700);
-    //line-height: normal;
+    line-height: 0;
     align-items: center;
-    * {
-      //line-height: 1;
-    }
   }
   &.circle {
     height: 40px;

@@ -150,7 +150,7 @@ const onUpdateStation = (station) => {
                   :data="currentEpisodeHolder"
                   @onClick="togglePlayHere"
                   severity="primary"
-                  buttonClass="w-auto md:w-21rem h-2rem justify-content-start"
+                  buttonClass="w-9rem md:w-21rem h-2rem justify-content-start pr-3"
                   labelClass="md:-ml-3"
                   live
                   class="z-2"
@@ -253,7 +253,7 @@ const onUpdateStation = (station) => {
               />
             </div>
             <Skeleton
-              class="w-7rem md:w-21rem"
+              class="w-9rem md:w-21rem"
               height="28px"
               borderRadius="16px"
             />
@@ -304,9 +304,9 @@ const onUpdateStation = (station) => {
 .live-feature {
   container-type: inline-size;
   position: relative;
-  // @include media("<md") {
-  //   background-color: var(--live-feature-background);
-  // }
+  @include media("<md") {
+    background-color: var(--live-feature-background);
+  }
   .image-holder {
     position: relative;
     flex: none;
