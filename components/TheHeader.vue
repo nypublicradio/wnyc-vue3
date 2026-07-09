@@ -329,13 +329,13 @@ if (props.animMenu) {
 }
 //transition for the header menu when it minimizes
 .header-menu-minimize-enter-active {
-  transition: margin-top calc(var(--p-transition-duration) * 4) ease,
-    opacity calc(var(--p-transition-duration) * 1.5) linear 0.5s;
+  transition: margin-top calc(var(--p-transition-duration) * 2) ease,
+    opacity calc(var(--p-transition-duration) * 0.75) linear 0.25s;
 }
 .header-menu-minimize-leave-active {
-  transition: margin-top calc(var(--p-transition-duration) * 2) ease-out,
-    opacity calc(var(--p-transition-duration) * 1.5);
-  transition-delay: calc(var(--p-transition-duration) * 1);
+  transition: margin-top calc(var(--p-transition-duration) * 1) ease-out,
+    opacity calc(var(--p-transition-duration) * 0.75);
+  transition-delay: calc(var(--p-transition-duration) * 0.5);
 }
 .header-menu-minimize-enter-from,
 .header-menu-minimize-leave-to {
