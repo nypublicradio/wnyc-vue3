@@ -92,7 +92,7 @@ const onUpdateStation = (station) => {
             class="flex flex-column gap-1 xl:gap-3 justify-content-center px-3"
           >
             <div
-              class="indicator-schedule hidden md:flex align-items-center gap-1 md:gap-2 flex-wrap"
+              class="indicator-schedule flex align-items-center gap-1 md:gap-2 flex-wrap"
             >
               <LiveBadge />
               <div class="schedule-text flex gap-1">
@@ -143,19 +143,16 @@ const onUpdateStation = (station) => {
               <div class="flex flex-row gap-3 flex-wrap md:flex-column">
                 <PlayButton
                   :label="
-                    isApp
-                      ? currentEpisodeHolder?.station
-                      : isEpisodePlaying && isLiveStream
+                    isEpisodePlaying && isLiveStream
                       ? listeningButtonLabel
                       : defaultButtonLabel
                   "
                   :data="currentEpisodeHolder"
                   @onClick="togglePlayHere"
-                  :severity="isApp ? 'secondary' : 'primary'"
+                  severity="primary"
                   buttonClass="w-auto md:w-21rem h-2rem justify-content-start"
                   labelClass="md:-ml-3"
                   live
-                  :liveBadge="isApp"
                   class="z-2"
                 />
                 <div
@@ -218,16 +215,16 @@ const onUpdateStation = (station) => {
           </div>
           <div
             v-else
-            class="skeleton-holder flex flex-column justify-content-center gap-2 lg:gap-3 w-full px-3 mt-1"
+            class="skeleton-holder flex flex-column justify-content-center gap-2 lg:gap-3 w-full px-3"
           >
             <Skeleton
               class="hidden md:block mb-2 mt-1"
-              height="0.75rem"
-              width="40%"
-              borderRadius="16px"
+              height="1.25rem"
+              width="45%"
+              borderRadius="4px"
             />
             <Skeleton
-              class="hidden lg:block"
+              class="hidden lg:block mb-2"
               height="2rem"
               width="60%"
               borderRadius="16px"
@@ -245,7 +242,7 @@ const onUpdateStation = (station) => {
               borderRadius="16px"
               style="min-width: 120px !important"
             />
-            <div class="w-full desc flex-column gap-2 hidden xs:flex">
+            <div class="w-full desc flex-column gap-2 hidden xs:flex md:mb-2">
               <Skeleton height="1rem" width="85%" borderRadius="16px" />
               <Skeleton height="1rem" width="90%" borderRadius="16px" />
               <Skeleton
@@ -256,7 +253,7 @@ const onUpdateStation = (station) => {
               />
             </div>
             <Skeleton
-              class="w-9rem md:w-21rem"
+              class="w-7rem md:w-21rem"
               height="28px"
               borderRadius="16px"
             />
@@ -307,9 +304,9 @@ const onUpdateStation = (station) => {
 .live-feature {
   container-type: inline-size;
   position: relative;
-  @include media("<md") {
-    background-color: var(--live-feature-background);
-  }
+  // @include media("<md") {
+  //   background-color: var(--live-feature-background);
+  // }
   .image-holder {
     position: relative;
     flex: none;
