@@ -55,6 +55,7 @@ watch(previewData, () => {
     case "standardpages.InformationPage":
       return navigateTo(`${path}?preview=true`)
     case "shows.ShowPage":
+      // A full load is required for the async ShowPage route to replace the preview spinner.
       return navigateTo({
         path,
         query: {
