@@ -202,4 +202,23 @@ describe('server/api/pages [wagtail] passes through body.curated_list', () => {
     })
     expect(axiosHeadMock).not.toHaveBeenCalled()
   })
+
+  it('rejects preview data for a different page type', async () => {
+    mockResponse.meta.type = 'shows.SeriesPage'
+    const handler = (await import('../../server/api/pages/[cmsSource]/[pageSlug]')).default
+    const event: any = {
+      context: { params: { cmsSource: 'wagtail', pageSlug: 'new-sounds' } },
+      query: {
+        preview: 'true',
+        identifier: 'id=47',
+        token: 'preview-token',
+      },
+    }
+
+    await expect(handler(event)).rejects.toMatchObject({
+      statusCode: 404,
+      statusMessage: 'Show preview not found',
+    })
+    expect(axiosHeadMock).not.toHaveBeenCalled()
+  })
 })
