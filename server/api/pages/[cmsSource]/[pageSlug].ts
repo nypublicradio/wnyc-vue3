@@ -108,6 +108,16 @@ const getWagtailPageData = async (
 
         return await normalizeArticlePage(resData)
     } catch (error: any) {
+        if (preview) {
+            if (error?.statusCode) {
+                throw error
+            }
+            if (error?.response?.status === 404) {
+                throw createError({ statusCode: 404, statusMessage: 'Show preview not found' })
+            }
+            console.error('[Wagtail Show Preview] Error fetching preview:', error?.response?.data || error?.message || error)
+            throw createError({ statusCode: 502, statusMessage: 'CMS show preview request failed' })
+        }
         if (error?.response?.status === 404) {
             const requestOptions = getCmsRequestOptions(config.public.cmsSite)
             const redirectPaths = [
