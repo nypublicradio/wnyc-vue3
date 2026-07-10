@@ -81,6 +81,10 @@ const getWagtailPageData = async (
         const res = await axios(options)
         const resData = humps.camelizeKeys(res.data)
 
+        if (preview && resData.meta?.type !== 'shows.ShowPage') {
+            throw createError({ statusCode: 404, statusMessage: 'Show preview not found' })
+        }
+
         if (isDownloadRulesOnly) {
             return { canDownloadEpisodes: resData.canDownloadEpisodes ?? false }
         }
