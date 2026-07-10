@@ -107,6 +107,8 @@ const breadcrumbs = computed(() => [
 ])
 
 onMounted(() => {
+  if (isPreview.value) return
+
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
