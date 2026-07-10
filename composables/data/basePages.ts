@@ -11,6 +11,7 @@ export const WAGTAIL_PAGE_TYPES = {
   'card': 'card',
   'shows.ShowPage': 'show',
   'show': 'show',
+  'shows.SeriesPage': 'series',
 }
 
 /**

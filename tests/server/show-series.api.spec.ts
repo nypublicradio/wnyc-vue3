@@ -1,0 +1,361 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+const axiosMock = vi.hoisted(() => vi.fn())
+const axiosHeadMock = vi.hoisted(() => vi.fn())
+vi.mock('axios', () => ({ default: Object.assign(axiosMock, { head: axiosHeadMock }) }))
+
+vi.mock('~/composables/useVImage', () => ({
+  useVImage: () => ({
+    templatizeImageUrl: (url: string) => url,
+  }),
+}))
+
+vi.mock('~/composables/globals', () => ({
+  cmsSources: { PUBLISHER: 'publisher', WAGTAIL: 'wagtail', NPR: 'npr', SIMPLECAST: 'simplecast' },
+  mediaTypes: {
+    LIVE: 'live',
+    SIMPLECAST: 'simplecast',
+    SHOW: 'show',
+    EVENT: 'event',
+    EPISODE: 'episode',
+    FULL: 'full',
+    SEGMENT: 'segment',
+    STORY: 'story',
+    ARTICLE_PAGE: 'article_page',
+    ARTICLE: 'article',
+    NPR_EPISODE: 'npr_episode',
+    NPR_ARTICLE: 'npr_article',
+    CARD: 'card',
+    SERIES: 'series',
+  },
+  mediaTypeRoutes: {
+    show: '/browse/shows/',
+    simplecast: '/browse/shows/episode/simplecast/',
+    series: '/browse/shows/',
+  },
+  FALLBACKIMAGE: '/fallback/wnyc.webp',
+  FALLBACKIMAGEEP: '/fallback/ep.webp',
+  NPRIMAGEDOMAINSOURCES: [],
+  WAGTAILIMAGEDOMAINSOURCES: [],
+}))
+
+// @ts-expect-error test-only global
+globalThis.defineEventHandler = (handler: unknown) => handler
+// @ts-expect-error test-only global
+globalThis.getQuery = (event: any) => event?.query || {}
+// @ts-expect-error test-only global
+globalThis.createError = (input: any) => Object.assign(new Error(input.statusMessage), input)
+// @ts-expect-error test-only global
+globalThis.__testRuntimeConfig = {
+  public: {
+    AVIARY_BASE_API: 'https://example.test/api/v2/',
+    cmsSite: 'demo.wnyc.org:443',
+  },
+}
+// @ts-expect-error test-only global
+globalThis.useRuntimeConfig = () => globalThis.__testRuntimeConfig
+
+const showResponse = {
+  data: {
+    items: [
+      {
+        id: 10,
+        title: 'Test Show',
+        meta: { type: 'shows.ShowPage', slug: 'test-show' },
+        description: 'A show about tests.',
+        show_art: { file: 'https://example.test/show.jpg' },
+        about_module: [{ type: 'rich_text', value: '<p>About Test Show.</p>' }],
+        can_download_episodes: true,
+        can_embed_episodes: true,
+      },
+    ],
+  },
+}
+
+const seriesResponse = {
+  data: {
+    id: 20,
+    title: 'Climate Series',
+    meta: {
+      type: 'shows.SeriesPage',
+      slug: 'climate-series',
+      seo_title: 'Climate Desk',
+      search_description: 'CMS search description.',
+      html_url: 'https://www.wnyc.org/browse/shows/test-show/climate-series/',
+    },
+    prevent_search_indexing: true,
+    social_title: 'Climate Desk Social',
+    social_text: 'CMS social description.',
+    social_image: { file: 'https://example.test/social.jpg' },
+    body: [
+      {
+        id: 'paragraph-1',
+        type: 'paragraph',
+        value: 'Series explainer body.',
+      },
+      {
+        id: 'curated-block-1',
+        type: 'curated_list',
+        value: {
+          label: 'Featured',
+          layout: 'river',
+          list: {
+            id: 1,
+            title: 'Featured Cards',
+            list_items: [
+              {
+                id: 'card-1',
+                content_type: 'card',
+                title: 'First Card',
+                subtitle: 'First tease',
+                body: '<p>First body.</p>',
+                url: 'https://example.test/first',
+              },
+              {
+                id: 'card-2',
+                content_type: 'card',
+                title: 'Second Card',
+                subtitle: 'Second tease',
+                body: '<p>Second body.</p>',
+                url: 'https://example.test/second',
+              },
+            ],
+          },
+        },
+      },
+    ],
+  },
+}
+
+const defaultSeriesResponse = {
+  data: {
+    id: 21,
+    title: 'Default Series',
+    meta: {
+      type: 'shows.SeriesPage',
+      slug: 'default-series',
+    },
+    body: [],
+  },
+}
+
+const setupAxios = (seriesData = seriesResponse) => {
+  axiosMock.mockImplementation((options: any) => {
+    if (options.url.endsWith('pages/')) {
+      return Promise.resolve(showResponse)
+    }
+
+    if (options.url.endsWith('pages/find/')) {
+      return Promise.resolve(seriesData)
+    }
+
+    throw new Error(`Unexpected URL: ${options.url}`)
+  })
+}
+
+describe('server/api/v3/show/[showslug]/series/[seriesSlug]', () => {
+  beforeEach(() => {
+    axiosMock.mockReset()
+    axiosHeadMock.mockReset()
+    axiosHeadMock.mockResolvedValue({ status: 404, headers: {} })
+  })
+
+  it('fetches the Wagtail series path, related show, metadata, and transformed body', async () => {
+    setupAxios()
+    const handler = (await import('../../server/api/v3/show/[showslug]/series/[seriesSlug]')).default
+    const setHeader = vi.fn()
+    const event: any = {
+      context: { params: { showslug: 'test-show', seriesSlug: 'climate-series' } },
+      query: { offset: 0, limit: 1 },
+      node: { res: { setHeader } },
+    }
+
+    const result = await handler(event) as any
+    const seriesCall = axiosMock.mock.calls.find(([options]) => options.url.endsWith('pages/find/'))?.[0]
+    const showCall = axiosMock.mock.calls.find(([options]) => options.url.endsWith('pages/'))?.[0]
+
+    expect(showCall.params.slug).toBe('test-show')
+    expect(seriesCall.params.html_path).toBe('/browse/shows/test-show/climate-series/')
+    expect(showCall.headers['Accept-Encoding']).toBe('identity')
+    expect(seriesCall.headers['X-CMS-Site']).toBe('demo.wnyc.org:443')
+    expect(seriesCall.headers['Accept-Encoding']).toBe('identity')
+    expect(setHeader).toHaveBeenCalledWith('Cache-Control', 'max-age=3600, stale-while-revalidate')
+
+    expect(result.show.title).toBe('Test Show')
+    expect(result.series.title).toBe('Climate Series')
+    expect(result.series.seoTitle).toBe('Climate Desk')
+    expect(result.series.searchDescription).toBe('CMS search description.')
+    expect(result.series.socialTitle).toBe('Climate Desk Social')
+    expect(result.series.socialDescription).toBe('CMS social description.')
+    expect(result.series.thumbnail).toContain('social.jpg')
+    expect(result.series.preventSearchIndexing).toBe(true)
+
+    expect(result.body).toHaveLength(2)
+    expect(result.body[0]).toMatchObject({
+      id: 'paragraph-1',
+      type: 'paragraph',
+      value: 'Series explainer body.',
+    })
+    expect(result.body[1].type).toBe('curated_list')
+    expect(result.body[1].value.layout).toBe('river')
+    expect(result.body[1].value.list.listItems).toHaveLength(2)
+    expect(result.body[1].value.list.listItems[0].title).toBe('First Card')
+    expect(result.cards).toBeUndefined()
+  })
+
+  it('uses default metadata and the WNYC fallback thumbnail when promote fields are absent', async () => {
+    setupAxios(defaultSeriesResponse)
+    const handler = (await import('../../server/api/v3/show/[showslug]/series/[seriesSlug]')).default
+    const event: any = {
+      context: { params: { showslug: 'test-show', seriesSlug: 'default-series' } },
+      query: {},
+      node: { res: { setHeader: vi.fn() } },
+    }
+
+    const result = await handler(event) as any
+
+    expect(result.series.seoTitle).toBe('Default Series')
+    expect(result.series.searchDescription).toBe('See articles and episodes related to Default Series from Test Show.')
+    expect(result.series.socialTitle).toBe('Default Series')
+    expect(result.series.socialDescription).toBe('See articles and episodes related to Default Series from Test Show.')
+    expect(result.series.thumbnail).toBe('/fallback/wnyc.webp')
+    expect(result.series.preventSearchIndexing).toBe(false)
+    expect(result.body).toEqual([])
+  })
+
+  it('throws a 404 when Wagtail cannot find the series page', async () => {
+    axiosMock.mockImplementation((options: any) => {
+      if (options.url.endsWith('pages/')) {
+        return Promise.resolve(showResponse)
+      }
+
+      return Promise.resolve({ status: 404, data: {} })
+    })
+
+    const handler = (await import('../../server/api/v3/show/[showslug]/series/[seriesSlug]')).default
+    const event: any = {
+      context: { params: { showslug: 'test-show', seriesSlug: 'missing-series' } },
+      query: {},
+      node: { res: { setHeader: vi.fn() } },
+    }
+
+    await expect(handler(event)).rejects.toMatchObject({
+      statusCode: 404,
+      statusMessage: 'Series not found: test-show/missing-series',
+    })
+  })
+
+  it('normalizes Wagtail pages/find redirects before fetching the detail URL', async () => {
+    axiosMock.mockImplementation((options: any) => {
+      if (options.url.endsWith('pages/')) {
+        return Promise.resolve(showResponse)
+      }
+
+      if (options.url.endsWith('pages/find/')) {
+        return Promise.resolve({
+          status: 302,
+          headers: { location: 'https://placeholder.example/api/v2/pages/20/' },
+        })
+      }
+
+      if (options.url === 'https://example.test/api/v2/pages/20/') {
+        return Promise.resolve(seriesResponse)
+      }
+
+      throw new Error(`Unexpected URL: ${options.url}`)
+    })
+
+    const handler = (await import('../../server/api/v3/show/[showslug]/series/[seriesSlug]')).default
+    const event: any = {
+      context: { params: { showslug: 'test-show', seriesSlug: 'climate-series' } },
+      query: {},
+      node: { res: { setHeader: vi.fn() } },
+    }
+
+    const result = await handler(event) as any
+    const redirectedCall = axiosMock.mock.calls.find(([options]) => options.url === 'https://example.test/api/v2/pages/20/')?.[0]
+
+    expect(redirectedCall).toBeTruthy()
+    expect(result.series.title).toBe('Climate Series')
+  })
+
+  it('wraps transient CMS series failures as 502 errors', async () => {
+    axiosMock.mockImplementation((options: any) => {
+      if (options.url.endsWith('pages/')) {
+        return Promise.resolve(showResponse)
+      }
+
+      return Promise.resolve({ status: 500, data: { detail: 'upstream unavailable' } })
+    })
+
+    const handler = (await import('../../server/api/v3/show/[showslug]/series/[seriesSlug]')).default
+    const event: any = {
+      context: { params: { showslug: 'test-show', seriesSlug: 'climate-series' } },
+      query: {},
+      node: { res: { setHeader: vi.fn() } },
+    }
+
+    await expect(handler(event)).rejects.toMatchObject({
+      statusCode: 502,
+      statusMessage: 'CMS series request failed: test-show/climate-series',
+    })
+  })
+})
+
+describe('server/api/v3/show/[showslug]/series-preview/[seriesSlug]', () => {
+  beforeEach(() => {
+    axiosMock.mockReset()
+    axiosHeadMock.mockReset()
+  })
+
+  it('fetches tokenized Wagtail preview data and normalizes it through the series response contract', async () => {
+    axiosMock.mockImplementation((options: any) => {
+      if (options.url.endsWith('pages/')) {
+        return Promise.resolve(showResponse)
+      }
+
+      if (options.url.endsWith('page_preview/')) {
+        return Promise.resolve(seriesResponse)
+      }
+
+      throw new Error(`Unexpected URL: ${options.url}`)
+    })
+
+    const handler = (await import('../../server/api/v3/show/[showslug]/series-preview/[seriesSlug]')).default
+    const setHeader = vi.fn()
+    const event: any = {
+      context: { params: { showslug: 'test-show', seriesSlug: 'climate-series' } },
+      query: { identifier: 'id=20', token: 'preview-token' },
+      node: { res: { setHeader } },
+    }
+
+    const result = await handler(event) as any
+    const previewCall = axiosMock.mock.calls.find(([options]) => options.url.endsWith('page_preview/'))?.[0]
+
+    expect(previewCall.params).toEqual({
+      identifier: 'id=20',
+      token: 'preview-token',
+    })
+    expect(previewCall.headers['X-CMS-Site']).toBe('demo.wnyc.org:443')
+    expect(previewCall.headers['Accept-Encoding']).toBe('identity')
+    expect(setHeader).toHaveBeenCalledWith('Cache-Control', 'no-store')
+    expect(result.series.title).toBe('Climate Series')
+    expect(result.show.title).toBe('Test Show')
+    expect(result.body[1].value.list.listItems).toHaveLength(2)
+  })
+
+  it('throws a 404 when preview token inputs are missing', async () => {
+    const handler = (await import('../../server/api/v3/show/[showslug]/series-preview/[seriesSlug]')).default
+    const event: any = {
+      context: { params: { showslug: 'test-show', seriesSlug: 'climate-series' } },
+      query: {},
+      node: { res: { setHeader: vi.fn() } },
+    }
+
+    await expect(handler(event)).rejects.toMatchObject({
+      statusCode: 404,
+      statusMessage: 'Series preview not found',
+    })
+    expect(axiosMock).not.toHaveBeenCalled()
+  })
+})

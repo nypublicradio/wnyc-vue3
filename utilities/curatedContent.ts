@@ -126,6 +126,10 @@ export async function transformCuratedContent (curatedContent: any[], componentT
 	try {
 		return await Promise.all(
 			curatedContent.map(async (item) => {
+				if (item?.type !== 'curated_list') {
+					return item
+				}
+
 				// Safely check if the item has the expected structure
 				if (!item?.value?.list?.listItems || !Array.isArray(item.value.list.listItems)) {
 					console.warn('Curated content item missing expected structure:', item)

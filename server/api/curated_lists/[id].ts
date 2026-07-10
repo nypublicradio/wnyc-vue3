@@ -17,6 +17,7 @@ export default defineEventHandler(async (event) => {
         const camelized = humps.camelizeKeys(res)
         // Wrap the payload in the Wagtail streamfield block structure that transformCuratedContent expects
         const mockCuratedContent = [{
+            type: 'curated_list',
             value: {
                 list: {
                     title: camelized.title,

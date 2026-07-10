@@ -12,6 +12,7 @@ const expectedPageViewFiles = [
   'pages/ask-the-mayor/submission.vue',
   'pages/browse/browse-topic.vue',
   'pages/browse/index.vue',
+  'pages/browse/shows/[slug]/[seriesSlug].vue',
   'pages/browse/shows/[slug]/episodes.vue',
   'pages/browse/shows/[slug]/index.vue',
   'pages/browse/shows/episode/[cmsSource]/[slug]/index.vue',
