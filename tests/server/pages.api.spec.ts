@@ -3,7 +3,8 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 // Mock axios to return our fixture without making network calls
 let mockResponse: any
 const axiosMock = vi.fn((_arg: any) => ({ data: mockResponse }))
-vi.mock('axios', () => ({ default: axiosMock }))
+const axiosHeadMock = vi.fn()
+vi.mock('axios', () => ({ default: Object.assign(axiosMock, { head: axiosHeadMock }) }))
 
 // Keep server import tree minimal by mocking globals composable to avoid UI imports
 vi.mock('~/composables/globals', () => ({
@@ -54,6 +55,7 @@ globalThis.useRuntimeConfig = () => globalThis.__testRuntimeConfig
 describe('server/api/pages [wagtail] passes through body.curated_list', () => {
   beforeEach(() => {
     axiosMock.mockClear()
+    axiosHeadMock.mockClear()
     // Minimal fixture resembling the Aviary /pages response for a ShowPage
     mockResponse = {
       id: 47,
@@ -180,5 +182,24 @@ describe('server/api/pages [wagtail] passes through body.curated_list', () => {
       statusMessage: 'Show preview not found',
     })
     expect(axiosMock).not.toHaveBeenCalled()
+  })
+
+  it('does not fall back to a published redirect when a preview is not found', async () => {
+    axiosMock.mockRejectedValueOnce({ response: { status: 404 } })
+    const handler = (await import('../../server/api/pages/[cmsSource]/[pageSlug]')).default
+    const event: any = {
+      context: { params: { cmsSource: 'wagtail', pageSlug: 'new-sounds' } },
+      query: {
+        preview: 'true',
+        identifier: 'id=47',
+        token: 'expired-token',
+      },
+    }
+
+    await expect(handler(event)).rejects.toMatchObject({
+      statusCode: 404,
+      statusMessage: 'Show preview not found',
+    })
+    expect(axiosHeadMock).not.toHaveBeenCalled()
   })
 })
