@@ -90,16 +90,23 @@ const getLayoutComponent = (layout: string) => {
   }
   return layoutComponentMap[layout] || layoutComponentMap[defaultLayout]
 }
-
+// Helper function to determine the layout for a curated list block, taking into account any override specified in the props
 const getCuratedListLayout = (block: StreamfieldBlock) => {
-  return props.curatedListLayoutOverride || block?.value?.layout || defaultLayout
+  return (
+    props.curatedListLayoutOverride || block?.value?.layout || defaultLayout
+  )
 }
-
+// Helper function to determine if the "Load More" functionality should be enabled for a given curated list block
 const enableLoadMoreForBlock = (block: StreamfieldBlock) => {
-  return props.enableCuratedListLoadMore && getCuratedListLayout(block) === "river"
+  return (
+    props.enableCuratedListLoadMore && getCuratedListLayout(block) === "river"
+  )
 }
-
-const getCuratedListComponentProps = (block: StreamfieldBlock, index: number) => {
+//
+const getCuratedListComponentProps = (
+  block: StreamfieldBlock,
+  index: number
+) => {
   const layout = getCuratedListLayout(block)
   const componentProps: Record<string, unknown> = {
     list: block?.value?.list,
