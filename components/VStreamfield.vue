@@ -102,7 +102,7 @@ const enableLoadMoreForBlock = (block: StreamfieldBlock) => {
     props.enableCuratedListLoadMore && getCuratedListLayout(block) === "river"
   )
 }
-//
+// Helper function to get the props for a curated list component, including handling the "Load More" functionality and any card class overrides
 const getCuratedListComponentProps = (
   block: StreamfieldBlock,
   index: number
