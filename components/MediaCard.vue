@@ -536,13 +536,6 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
     ></nuxt-link>
     <div class="holder flex flex-nogutter">
       <div
-        v-if="isEvent"
-        class="date-block event flex flex-column w-4rem h-4rem absolute top-0 left-0 z-2"
-      >
-        <p class="date day">{{ formatTime(eventDate, "d") }}</p>
-        <p class="date month">{{ formatTime(eventDate, "MMM") }}</p>
-      </div>
-      <div
         class="image p-0 col-fixed"
         :class="props.imgCol"
         v-if="props.showImage"
@@ -574,6 +567,9 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                 v-if="props.showLive && !props.saved"
                 class="align-self-start"
               />
+              <h2 v-if="isEvent" class="event-date">
+                {{ formatTime(eventDate, "MMMM d h:mm a") }}
+              </h2>
               <p v-if="props.showTitle" :class="props.showTitleClasses">
                 {{ props.data?.org ?? props.data?.showTitle }}
               </p>
@@ -625,26 +621,11 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
               </div>
             </div>
             <div v-if="isEvent">
-              <div class="hidden md:flex flex-column gap-2">
-                <p class="text-sm" :class="props.pipeClasses">
-                  {{ formatTime(props.data.startDatetime) }}
-                </p>
-                <p class="text-sm" :class="props.pipeClasses">
+              <div class="flex flex-column gap-2">
+                <p class="text-md" style="word-break: break-word">
                   {{ props.data.eventLocation }}
                 </p>
               </div>
-              <PipeData
-                :hidePipe="props.hideDate"
-                :class="props.pipeClasses"
-                class="md:hidden"
-              >
-                <template #left>
-                  {{ formatTime(props.data.startDatetime) }}
-                </template>
-                <template #right v-if="!props.hideDate">
-                  {{ props.data.eventLocation }}
-                </template>
-              </PipeData>
             </div>
           </div>
           <div
@@ -1045,12 +1026,9 @@ $contentPaddingY: 1.25rem;
     }
   }
   &.is-event {
-    @include media("<md") {
-      // center the 64x64 date bloc in the 112x112 image <md breakpoint
-      .date-block {
-        top: 24px !important;
-        left: 24px !important;
-      }
+    .event-date {
+      color: var(--p-primary-color);
+      //color: #4561c5;
     }
   }
   &.event {

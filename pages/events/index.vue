@@ -167,10 +167,10 @@ useSeoMeta({
         <aside class="events-rail">
           <h3 class="events-rail__title">Rent The Greene Space</h3>
           <p class="events-rail__copy">
-            Host your next event at WNYC and WQXR! The Greene Space will provide you with
-            the same turn-key service for broadcast quality audio and video recording and
-            live streaming that we use to power our own radio stations, podcasts, and
-            concerts.
+            Host your next event at WNYC and WQXR! The Greene Space will provide
+            you with the same turn-key service for broadcast quality audio and
+            video recording and live streaming that we use to power our own
+            radio stations, podcasts, and concerts.
           </p>
           <VFlexibleLink :to="greeneSpaceUrl" class="events-rail__link">
             Learn more
@@ -312,15 +312,16 @@ useSeoMeta({
         "divider"
         "rail";
       justify-content: stretch;
+      display: block;
     }
 
     .events-divider {
       display: block;
-      margin: 32px 0 20px;
+      padding: 32px 0;
     }
 
     .events-rail {
-      max-width: 340px;
+      //max-width: 340px;
     }
   }
 
