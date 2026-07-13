@@ -1027,8 +1027,7 @@ $contentPaddingY: 1.25rem;
   }
   &.is-event {
     .event-date {
-      color: var(--p-primary-color);
-      //color: #4561c5;
+      color: var(--event-date-color);
     }
   }
   &.event {

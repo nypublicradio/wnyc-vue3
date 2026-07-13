@@ -87,6 +87,7 @@
     --header-menu-background: var(--p-surface-0);
     --header-submenu-background: var(--p-surface-25);
     --badge-background-event-type-badge: var(--p-surface-50);
+    --event-date-color: #4561c5;
 }
 [data-style-mode='dark'],
 .style-mode-dark {
@@ -118,6 +119,7 @@
     --header-menu-background: var(--p-darkblue-500);
     --header-submenu-background: #00000033;
     --badge-background-event-type-badge: var(--p-surface-700);
+    --event-date-color: #ffffff80;
 }
 
 // darkmode in global darkmode
