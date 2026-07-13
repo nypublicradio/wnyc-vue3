@@ -16,6 +16,17 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  animMenu: {
+    type: Boolean,
+    default: false,
+  },
+  /**
+   * number of pixels at the top of the page before the header minimizes
+   */
+  heroBuffer: {
+    default: 400,
+    type: Number,
+  },
 })
 
 const settingsSideBarBrowser = useSettingsSideBarBrowser()
@@ -24,6 +35,8 @@ const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
 const appDownloadLink = useAppDownloadLink()
 const toast = useToast()
+// scroll handlers
+const isMinimized = ref(false)
 // handle when the logo is clicked
 const handleLogoClick = () => {
   trackClickEvent("Click Tracking - Header WNYC Logo", "Header", "WNYC Logo")
@@ -79,6 +92,35 @@ const onLogOut = async () => {
     life: 3000,
   })
 }
+
+if (props.animMenu) {
+  // handle scroll events to minimize the header menu
+  const calcScroll = (y, isScrolling, previousY) => {
+    if (!props.showMenu) {
+      return
+    }
+    if (y <= props.heroBuffer) {
+      isMinimized.value = false
+      return
+    }
+    if (y > previousY) {
+      isMinimized.value = true
+    } else if (previousY - y > 5) {
+      isMinimized.value = false
+    }
+  }
+
+  onMounted(() => {
+    const scroll = useScroll(window, {
+      behavior: "smooth",
+    })
+
+    watch([scroll.y, scroll.isScrolling], ([y, isScrolling], [previousY]) => {
+      calcScroll(y, isScrolling, previousY)
+    })
+    calcScroll(1, true, 1)
+  })
+}
 </script>
 
 <template>
@@ -114,7 +156,7 @@ const onLogOut = async () => {
                 class="hidden md:block"
                 :label="`${
                   currentUser
-                    ? currentUserProfile?.name || 'Loading...'
+                    ? currentUserProfile?.name || 'User'
                     : 'Log in/Sign up'
                 }`"
                 size="small"
@@ -173,12 +215,16 @@ const onLogOut = async () => {
                     </div>
                     <div v-else class="flex flex-column p-4 gap-3">
                       <div class="flex align-items-center gap-2">
-                        <Avatar :image="avatarUrl" shape="circle" class="flex-none">
+                        <Avatar
+                          :image="avatarUrl"
+                          shape="circle"
+                          class="flex-none"
+                        >
                           <template #icon v-if="!avatarUrl">
                             <UserIcon />
                           </template>
                         </Avatar>
-                        <h2>Hi, {{ currentUserProfile?.name }}</h2>
+                        <h2>Hi, {{ currentUserProfile?.name || "User" }}</h2>
                       </div>
                       <Button
                         label="View My Account"
@@ -234,7 +280,10 @@ const onLogOut = async () => {
           </div>
         </section>
       </div>
-      <TheHeaderMenu v-if="props.showMenu" />
+      <TheHeaderMenu v-if="!props.animMenu && props.showMenu" />
+      <Transition v-else name="header-menu-minimize">
+        <TheHeaderMenu v-if="!isMinimized" />
+      </Transition>
     </div>
   </div>
 </template>
@@ -248,6 +297,8 @@ const onLogOut = async () => {
   .content {
     max-width: $contentWidth;
     margin: auto;
+    transition: height calc(var(--p-transition-duration) * 2) ease-out;
+    -webkit-transition: height calc(var(--p-transition-duration) * 2) ease-out;
     .top {
       height: var(--header-height);
       display: flex;
@@ -275,5 +326,20 @@ const onLogOut = async () => {
       }
     }
   }
+}
+//transition for the header menu when it minimizes
+.header-menu-minimize-enter-active {
+  transition: margin-top calc(var(--p-transition-duration) * 2) ease,
+    opacity calc(var(--p-transition-duration) * 0.75) linear 0.25s;
+}
+.header-menu-minimize-leave-active {
+  transition: margin-top calc(var(--p-transition-duration) * 1) ease-out,
+    opacity calc(var(--p-transition-duration) * 0.75);
+  transition-delay: calc(var(--p-transition-duration) * 0.5);
+}
+.header-menu-minimize-enter-from,
+.header-menu-minimize-leave-to {
+  margin-top: calc(-1 * 60px);
+  opacity: 0;
 }
 </style>
