@@ -61,14 +61,20 @@ const headerHeightCssVar = ref(props.headerHeightCssVar)
 const isMinimized = ref(props.reverse ? true : false)
 
 onMounted(() => {
-  const scroll = useScroll(
-    props.targetWindowClass
-      ? document.getElementsByClassName(props.targetWindowClass)[0]
-      : window,
-    {
-      behavior: "smooth",
-    }
-  )
+  const scrollTarget = props.targetWindowClass
+    ? document.getElementsByClassName(props.targetWindowClass)[0]
+    : window
+
+  const scroll = useScroll(scrollTarget, {
+    behavior: "smooth",
+  })
+
+  // initialize the scroll position and determine if the header should be minimized based on the initial scroll position. This is for when pages are reloaded in the middle of the page. Otherwise the header would be missing until the user initially scrolled.
+  const initScrollTop =
+    scrollTarget === window ? window.scrollY : scrollTarget.scrollTop
+  if (initScrollTop > 0) {
+    isMinimized.value = props.reverse ? false : true
+  }
 
   watch(
     [scroll.y, scroll.directions, scroll.isScrolling],
@@ -87,7 +93,8 @@ onMounted(() => {
             : false
         isMinimized.value = props.reverse ? !minimized : minimized
       }
-    }
+    },
+    { immediate: true }
   )
 })
 
@@ -116,7 +123,6 @@ watch(
   top: env(safe-area-inset-top);
   width: 100%;
   z-index: 999;
-  //box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.36);
 }
 //expand
 .v-smart-header-minimize-enter-active {

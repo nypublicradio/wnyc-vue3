@@ -4,11 +4,13 @@ import { trackClickEvent, getDate } from "~/utilities/helpers"
 import {
   useSettingSideBar,
   useIsNetworkConnected,
+  useIsApp,
 } from "~/composables/states.ts"
 
 const config = useRuntimeConfig()
 const settingsSideBar = useSettingSideBar()
 const isNetworkConnected = useIsNetworkConnected()
+const isApp = useIsApp()
 
 const donateButtonText = ref(null)
 const donateButtonLink = ref(null)
@@ -36,8 +38,7 @@ if (messageData.value?.product_banners?.length > 0) {
       <div class="flex justify-content-between align-items-center">
         <div class="flex align-items-center">
           <WnycLogo class="w-5rem mr-3" />
-
-          <span class="head-date font-meta">{{ getDate() }}</span>
+          <span v-if="isApp" class="head-date font-meta">{{ getDate() }}</span>
         </div>
         <div class="flex">
           <VFlexibleLink
