@@ -63,6 +63,7 @@
     --background: var(--p-surface-0);
     --background2: var(--p-surface-0);
     --background3: var(--p-surface-50);
+    --background4: var(--p-surface-950);
     --solid-dark-bg-color: var(--p-surface-950);
     --stroke-toggle-color: var(--p-surface-50);
     --wnyc-logo-color: #de1e3d;
@@ -85,6 +86,8 @@
 
     --header-menu-background: var(--p-surface-0);
     --header-submenu-background: var(--p-surface-25);
+    --badge-background-event-type-badge: var(--p-surface-50);
+    --event-date-color: #4561c5;
 }
 [data-style-mode='dark'],
 .style-mode-dark {
@@ -94,6 +97,7 @@
     //--background: var(--p-surface-25);
     --background2: var(--p-surface-25);
     --background3: #ffffff1a;
+    --background4: #ffffff1a;
     --solid-dark-bg-color: var(--p-darkblue-500);
     --stroke-toggle-color: var(--p-surface-25);
     --wnyc-logo-color: #ffffff;
@@ -114,6 +118,8 @@
 
     --header-menu-background: var(--p-darkblue-500);
     --header-submenu-background: #00000033;
+    --badge-background-event-type-badge: var(--p-surface-700);
+    --event-date-color: #ffffff80;
 }
 
 // darkmode in global darkmode
