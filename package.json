@@ -91,7 +91,7 @@
     "jsonwebtoken": "^9.0.2",
     "memoize": "^10.0.0",
     "music-metadata": "^7.14.0",
-    "onesignal-cordova-plugin": "^5.2.15",
+    "onesignal-cordova-plugin": "5.3.11",
     "piexifjs": "^1.0.6",
     "podcast-feed-parser": "^1.0.4",
     "primeflex": "^3.3.1",

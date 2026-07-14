@@ -1643,6 +1643,19 @@ export const getFirstSentence = (text: string): string => {
   return sentences ? sentences[0] : text
 }
 
+// Cached show-slug-redirects (this list rarely changes)
+let cachedSlugRedirects: { from: string; to: string }[] | null = null
+
+const getSlugRedirects = async (config: any) => {
+  if (!cachedSlugRedirects) {
+    const data = await $fetch<{ from: string; to: string }[]>(
+      `${config.public.BFF_URL}/api/show-slug-redirects`
+    )
+    cachedSlugRedirects = Array.isArray(data) ? data : []
+  }
+  return cachedSlugRedirects
+}
+
 // return match redirects and return true slug
 export const getTrueSlug = async (slug: string, isolateReturn = true) => {
   const config = useRuntimeConfig()
@@ -1672,10 +1685,8 @@ export const getTrueSlug = async (slug: string, isolateReturn = true) => {
 
   // check redirect table
   try {
-    // get the list of redirects
-    const redirectsData: any[] = await $fetch(
-      `${config.public.BFF_URL}/api/show-slug-redirects`
-    )
+    // get the list of redirects (cached)
+    const redirectsData = await getSlugRedirects(config)
     // find the redirect in the list
     const redirect = redirectsData?.find((r) => isolateSlug(r.from) === newSlug)
     return redirect ? isolateReturn ? isolateSlug(redirect.to) : redirect.to : newSlug
