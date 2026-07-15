@@ -85,6 +85,11 @@ export default defineNuxtConfig({
   ssr: isSsrEnabled,
 
   nitro: {
+    prerender: {
+      // Don't crawl into show pages during generate — they are client-rendered
+      // and transient CMS 500s should not block the entire build
+      ignore: ['/browse/shows/**'],
+    },
     // Route rules only apply in SSR/website mode
     routeRules: isSsrEnabled && process.env.NODE_ENV === 'production' ? {
       '/home': { swr: 60 },
