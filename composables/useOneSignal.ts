@@ -40,6 +40,7 @@ import { ref } from "vue"
 import { doActionId, doTrigger } from "~/server/utils/oneSignalNotificationCustomActions"
 import { Capacitor } from "@capacitor/core"
 import { LocalNotifications } from "@capacitor/local-notifications"
+import { PushNotifications } from "@capacitor/push-notifications"
 import { useAuthReturnRoute } from "./useAuthReturnRoute"
 
 // shared state for in-app notification
@@ -425,14 +426,21 @@ export default function useOneSignal () {
 
   // function to trigger the OS permission request
   async function requestNotificationPermission () {
+    // Android 16+: OneSignal's canRequestPermission() incorrectly returns false
+    // on fresh installs in release builds. Use Capacitor's API instead.
+    if (Capacitor.getPlatform() === 'android') {
+      const result = await PushNotifications.requestPermissions()
+      if (result.receive !== 'granted') {
+        await notificationPermissionSync()
+      }
+      return
+    }
+    // iOS: use OneSignal's flow which works correctly
     const OneSignal = await loadOneSignal()
     if (!OneSignal) return
     await OneSignal.Notifications.canRequestPermission().then(async (canRequest) => {
-      // if the user can request permission, request it, otherwise send them to the system settings to change it manually
-      canRequest ? await OneSignal.Notifications.requestPermission(false).then(async (accepted: boolean) => {
+      canRequest ? await OneSignal.Notifications.requestPermission(true).then(async (accepted: boolean) => {
         if (!accepted) {
-          // they deny after being asked for permission
-          // resync the setting tabs
           await notificationPermissionSync()
         }
       }) : toSystemSettings()
