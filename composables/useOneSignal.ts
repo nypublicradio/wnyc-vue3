@@ -429,7 +429,7 @@ export default function useOneSignal () {
     if (!OneSignal) return
     await OneSignal.Notifications.canRequestPermission().then(async (canRequest) => {
       // if the user can request permission, request it, otherwise send them to the system settings to change it manually
-      canRequest ? await OneSignal.Notifications.requestPermission(true).then(async (accepted: boolean) => {
+      canRequest ? await OneSignal.Notifications.requestPermission(false).then(async (accepted: boolean) => {
         if (!accepted) {
           // they deny after being asked for permission
           // resync the setting tabs
