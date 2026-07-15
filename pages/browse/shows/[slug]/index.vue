@@ -8,11 +8,33 @@ import useSocialMetaOverrides from "~/composables/useSocialMetaOverrides"
 const config = useRuntimeConfig()
 const route = useRoute()
 const isApp = useIsApp()
+/**
+ * Return the first value when a route query parameter is repeated.
+ */
+const getQueryValue = (value) => Array.isArray(value) ? value[0] : value
+const isPreview = computed(
+  () => route.query.preview === "true" && route.query.identifier && route.query.token
+)
+
+const showEndpoint = computed(() => {
+  const baseUrl = `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`
+
+  if (!isPreview.value) return baseUrl
+
+  const params = new URLSearchParams({
+    preview: "true",
+    identifier: getQueryValue(route.query.identifier),
+    token: getQueryValue(route.query.token),
+  })
+  return `${baseUrl}?${params.toString()}`
+})
 
 const showFetchArgs = [
-  () => `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`,
+  showEndpoint,
   {
-    key: `show-page-${route.params.slug}`,
+    key: isPreview.value
+      ? `show-page-preview-${route.params.slug}-${getQueryValue(route.query.identifier)}`
+      : `show-page-${route.params.slug}`,
     watch: false,
   },
 ]
@@ -88,6 +110,8 @@ const breadcrumbs = computed(() => [
 ])
 
 onMounted(() => {
+  if (isPreview.value) return
+
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
