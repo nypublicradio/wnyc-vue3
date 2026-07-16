@@ -42,7 +42,7 @@ watch(
 
 <template>
   <div
-    class="page flex flex-column h-full"
+    class="page flex flex-column h-screen"
     :class="[
       `${String(route.name)} ${currentEpisode ? 'player-is-visible' : ''}`,
     ]"
