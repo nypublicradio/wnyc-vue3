@@ -97,8 +97,12 @@ const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean, isDown
             }
 
             // In app mode, prefer curated_list blocks, but do not blank the page if none exist.
+            console.log('###### isApp', isApp)
+            console.log('###### transformedCuratedContent is an array', Array.isArray(transformedCuratedContent))
             if (isApp && Array.isArray(transformedCuratedContent)) {
                 const curatedListOnly = transformedCuratedContent.filter((item: any) => item?.type === 'curated_list')
+                console.log('###### curatedListOnly', curatedListOnly)
+                console.log('###### curatedListOnly.length', curatedListOnly.length)
                 if (curatedListOnly.length > 0) {
                     transformedCuratedContent = curatedListOnly
                 }
