@@ -57,7 +57,7 @@ const topperTitle = computed(
 const topperDescription = computed(() => show.value?.topper?.topperDescription)
 const topperBackground = computed(() => {
   if (isApp.value) {
-    return "background: var(--background)"
+    return ""
   }
   if (show.value?.topper?.topperBackground.includes("background:")) {
     return show.value?.topper?.topperBackground
