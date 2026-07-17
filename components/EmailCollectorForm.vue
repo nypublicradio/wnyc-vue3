@@ -136,7 +136,11 @@ function submitForm() {
                 :aria-label="submitButtonText"
                 @click="submitForm"
               >
-                <i v-if="isSubmitting" class="pi pi-spin pi-spinner" />
+                <i
+                  v-if="isSubmitting"
+                  class="pi pi-spin pi-spinner"
+                  aria-hidden="true"
+                />
               </Button>
             </i>
           </div>

@@ -165,7 +165,7 @@ const getSimplecastEpisodes = async (podcastId: string, offset = 0, limit = 10) 
  * - GET /api/v3/show/{podcast-uuid}/episodes?offset=20&limit=20
  */
 export default defineEventHandler(async (event) => {
-    const res = event?.node?.res
+    setResponseHeader(event, 'Cache-Control', 'max-age=300, stale-while-revalidate=600')
     const showslug: string | undefined = event?.context?.params?.showslug
     // Validate showslug parameter
     if (!showslug) {
@@ -198,9 +198,6 @@ export default defineEventHandler(async (event) => {
 
     // Fetch episodes from Simplecast
     const episodes = await getSimplecastEpisodes(showslug, offset, limit)
-
-    // Set cache header for better performance
-    res.setHeader('Cache-Control', 'max-age=300, stale-while-revalidate=600')
 
     return episodes
 })

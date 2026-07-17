@@ -8,6 +8,7 @@ import {
   useDeviceId,
   useTextSizeOption,
   useIsApp,
+  useIsNativeApp,
   useCurrentUser,
   useCurrentUserProfile,
   useLocalUserProfileDefault,
@@ -50,16 +51,22 @@ import {
   type AppTrackingStatusResponse,
 } from "capacitor-plugin-app-tracking-transparency"
 import { initMediaSession } from "~/utilities/media-session.js"
-import useOneSignal from "~/composables/useOneSignal"
 import { capacitorIosNotificationSettings } from '@nypublicradio/capacitor-ios-notification-settings'
+import { FirebaseAnalytics } from '@capacitor-firebase/analytics'
+import { WAGTAIL_PAGE_TYPES } from "~/composables/data/basePages"
 
 // Dynamic import for FirebaseAnalytics to avoid SSR errors
 const loadFirebaseAnalytics = async () => {
-  const isApp = useIsApp()
-  if (typeof window === 'undefined' || !isApp.value) return null
+  const isNativeApp = useIsNativeApp()
+  if (typeof window === 'undefined' || !isNativeApp.value) return null
   try {
     const module = await import('@capacitor-firebase/analytics')
-    return module.FirebaseAnalytics
+    // Return plain function wrappers instead of the raw Capacitor plugin proxy.
+    // Returning the proxy directly from an async function can trigger a `.then`
+    // lookup and cause: "FirebaseAnalytics.then() is not implemented on android".
+    return {
+      setUserId: (options) => module.FirebaseAnalytics.setUserId(options),
+    }
   } catch (error) {
     console.error('Failed to load FirebaseAnalytics:', error)
     return null
@@ -146,7 +153,8 @@ export function formatTime (date: any, formatString = "h:mm a") {
 
 // Function to strip HTML tags and return text content
 export function stripHtmlTags (str) {
-  return str ? str.replace(/<[^>]*>?/gm, '') : ''
+  if (!str || typeof str !== 'string') return ''
+  return str.replace(/<[^>]*>?/gm, '')
 }
 
 // Computed property to calculate reading time
@@ -257,8 +265,7 @@ export function getDate (data = null, formatString = "EEE, MMM do") {
 
     return format(inputDate, formatString)
   } else {
-    //return format(new Date(), formatString)
-    return null
+    return format(new Date(), formatString)
   }
 }
 
@@ -309,8 +316,8 @@ export function setFontSize (size: string) {
 export async function setStatusDarkMode (bool: boolean) {
   if (!import.meta.client) return
   await nextTick()
-  const isApp = useIsApp()
-  if (isApp.value) {
+  const isNativeApp = useIsNativeApp()
+  if (isNativeApp.value) {
     // delay needed for some reason
     setTimeout(async () => {
       bool
@@ -368,14 +375,24 @@ export const getRandomNumber = (min, max) => {
 }
 
 // will take the user to their native os system settings
-export const toSystemSettings = () => {
+export const toSystemSettings = (type = 'notification') => {
   if (Capacitor.getPlatform() === "android") {
-    NativeSettings.openAndroid({
-      option: AndroidSettings.AppNotification,
-    })
+    if (type === 'notification') {
+      NativeSettings.openAndroid({
+        option: AndroidSettings.AppNotification,
+      })
+    } else if (type === 'base') {
+      NativeSettings.openAndroid({
+        option: AndroidSettings.ApplicationDetails,
+      })
+    }
   } else {
     // for iOS, we are using a custom plugin
-    capacitorIosNotificationSettings.openNotificationSettings()
+    if (type === 'notification') {
+      capacitorIosNotificationSettings.openNotificationSettings()
+    } else if (type === 'base') {
+      capacitorIosNotificationSettings.openBaseSettings()
+    }
   }
 }
 
@@ -467,12 +484,15 @@ export const shareAPI = async (
 ) => {
   const shareData = {
     title: stripHtmlTags(content.socialTitle || content.title),
-    text: stripHtmlTags(content.rawBody || content.description || content.title),
+    text: stripHtmlTags(content.tease || content.description || content.title),
     url: content.shareUrl || content.url || content.titleLink,
   }
   trackClickEvent("Click Tracking - Share", componentOfOrigin, shareData.title)
   // Native Mobile Sharing
   if (Capacitor.isNativePlatform()) {
+    const { useIsShareDialogOpen } = await import('~/composables/states')
+    const isShareDialogOpen = useIsShareDialogOpen()
+    isShareDialogOpen.value = true
     await Share.share({
       title: shareData.title,
       text: shareData.text,
@@ -568,7 +588,7 @@ export const convertTime = (val) => {
 // get and set the user profile
 export const getAndSetUserProfile = async () => {
   const isNetworkConnected = useIsNetworkConnected()
-  const isApp = useIsApp()
+  const isNativeApp = useIsNativeApp()
   const currentUser = useCurrentUser()
   const currentUserProfile = useCurrentUserProfile()
   const localUserProfileDefault = useLocalUserProfileDefault()
@@ -579,22 +599,50 @@ export const getAndSetUserProfile = async () => {
   const masterNotificationChannelsArray = await getMasterNotificationChannels()
   // function that gets a user profile
   const getProfile = async () => {
-    const { data, error } = await client
-      .from("profiles")
-      .select("*")
-      .eq("id", currentUser.value.id)
-      .single()
-    if (error) {
-      console.error(error)
-      //account does not exist anymore, wipe local storage and session and hard refresh
-      if (error.code === 'PGRST116') {
-        await Preferences.clear()
-        await localStorage.clear()
-        location.reload()
+    // Guard: if currentUser was nulled by a parallel execution, bail out
+    if (!currentUser.value?.id) return
+
+    // Retry logic: the Supabase trigger that creates the profile row may not
+    // have completed by the time we query, especially for brand-new OAuth users.
+    const maxRetries = 5
+    const retryDelayMs = 500
+    let data = null
+    let error = null
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      if (!currentUser.value?.id) return // guard against race condition
+
+      const result = await client
+        .from("profiles")
+        .select("*")
+        .eq("id", currentUser.value.id)
+        .single()
+      data = result.data
+      error = result.error
+
+      if (!error || error.code !== 'PGRST116') break // success or non-retryable error
+
+      if (attempt < maxRetries) {
+        console.warn(`Profile not found (attempt ${attempt}/${maxRetries}), retrying in ${retryDelayMs}ms...`)
+        await new Promise(resolve => setTimeout(resolve, retryDelayMs))
       }
-    } else if (data) {
+    }
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // Profile row doesn't exist — let the initial-login branch handle creation
+        console.warn('Profile not found after retries, treating as initial login')
+        if (!currentUser.value?.id) return
+        data = { id: currentUser.value.id, initial: true }
+      } else {
+        console.error('Unexpected profile fetch error:', error)
+        return
+      }
+    }
+
+    if (data) {
       const lsSTRING = await Preferences.get({ key: localUserProfileKey })
-      const ls = JSON.parse(lsSTRING.value)
+      const ls = JSON.parse(lsSTRING.value) || localUserProfileDefault.value
 
       //what the user has already selected in the local storage OR the default
       const defaultNotificationChannels = ls?.one_signal_notification_channels || masterNotificationChannelsArray
@@ -623,11 +671,12 @@ export const getAndSetUserProfile = async () => {
         data.dark_mode = ls.dark_mode
         data.text_size = ls.text_size
 
-        // update supabase profile data
+        // upsert supabase profile data (upsert handles case where trigger didn't create the row)
         // set the supabase preferences with what is currently set in the local storage
         await client
           .from("profiles")
-          .update({
+          .upsert({
+            id: currentUser.value.id,
             initial: data.initial,
             autodownload: data.autodownload,
             default_live_stream: data.default_live_stream,
@@ -636,7 +685,6 @@ export const getAndSetUserProfile = async () => {
             dark_mode: data.dark_mode,
             text_size: data.text_size,
           })
-          .match({ id: currentUser.value.id })
 
         // set the current user profile state
         currentUserProfile.value = data
@@ -744,15 +792,21 @@ export const getAndSetUserProfile = async () => {
           avatar_image_url: user.data.session.user.user_metadata.avatar_url,
         })
         .match({ id: user.data.session.user.id })
+    }
 
-      // Set Firebase Analytics user ID on client side only
-      if (import.meta.client && currentUser.value) {
-        const FirebaseAnalytics = await loadFirebaseAnalytics()
-        if (FirebaseAnalytics) {
-          await FirebaseAnalytics.setUserId({
-            userId: currentUser.value.id,
+    // update the profile name for Apple (and other OAuth providers) if not already set
+    if (user.data.session?.user.app_metadata.provider === 'apple') {
+      const providerName = user.data.session.user.user_metadata.full_name
+        || user.data.session.user.user_metadata.name
+        || null
+      if (providerName) {
+        await client
+          .from('profiles')
+          .update({
+            updated_at: new Date().toISOString(),
+            name: providerName,
           })
-        }
+          .match({ id: user.data.session.user.id })
       }
     }
 
@@ -780,6 +834,12 @@ export const getAndSetUserProfile = async () => {
 
           // get the system's notification permission and apply it to the initial defaults
           defaults.receive_general_notifications = await useOneSignal().checkPermissions()
+
+          // keep local settings aligned with master notification topics
+          defaults.one_signal_notification_channels = await syncMasterNotificationChannels(
+            defaults,
+            masterNotificationChannelsArray
+          )
 
 
           const defaultsSTRING = JSON.stringify(defaults)
@@ -833,7 +893,7 @@ export const getAndSetUserProfile = async () => {
         }
 
         // get the device id if it's an app and not a browser
-        if (isApp.value) {
+        if (isNativeApp.value) {
           await initDeviceId()
         }
         await getFavoritedItems()
@@ -1004,7 +1064,6 @@ export const togglePlayEpisode = (media, type = mediaTypes.EPISODE) => {
     saveRecentlyPlayed(media, type)
     return
   }
-
   togglePlayTrigger.value = !togglePlayTrigger.value
 }
 
@@ -1016,8 +1075,10 @@ export const getCssVar = (name: string, px = false) => {
   return px ? val : Number(parseInt(val))
 }
 // ROUTING
-export const shouldOpenStoryInNewTab = (platform, storyLink, cmsSource) =>
-  platform === "web" && Boolean(storyLink) && cmsSource === cmsSources.WAGTAIL
+export const shouldOpenStoryInNewTab = (storyLink, cmsSource) => {
+  const isApp = useIsApp()
+  return !isApp.value && Boolean(storyLink) && cmsSource === cmsSources.WAGTAIL
+}
 
 // returns true if the story link is from gothamist.com
 export const shouldTrackOutgoingGothamistClick = (storyLink) =>
@@ -1066,7 +1127,7 @@ export const goToLivePage = (ep, params, log = true, returnRoute = false) => {
 /* centralized function to route to a story page */
 export const goToStoryPage = (story, params, log = true, returnRoute = false) => {
   const theLink = story.url || story.link || stripApiSubdomain(story.meta?.htmlUrl)
-  if (shouldOpenStoryInNewTab(Capacitor.getPlatform(), theLink, story.cmsSource)) {
+  if (shouldOpenStoryInNewTab(theLink, story.cmsSource)) {
     if (returnRoute) return theLink
 
     if (shouldTrackOutgoingGothamistClick(theLink)) {
@@ -1259,8 +1320,10 @@ export const addToFavorites2 = async ({ item, isFavorited, message = isFavorited
       if (callback) {
         callback()
       }
+
     } else {
-      await saveFavorite(episode, episode.type)
+      const type = WAGTAIL_PAGE_TYPES[episode.type] || episode.type
+      await saveFavorite(episode, type)
       getFavoritedItems()
       if (callback) {
         callback()
@@ -1286,9 +1349,11 @@ export const addToFavorites2 = async ({ item, isFavorited, message = isFavorited
 export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = false, returnRoute = false) => {
   const isNetworkConnected = useIsNetworkConnected()
   if (isNetworkConnected.value || returnRoute) {
-    // if the item has a url, we ignore everything and route based on the url, because it is the override destination
-    if (item.url) {
-      return goToUrlOverrideDestination(item, null, returnRoute)
+    // if the item has a url, we ignore everything and route based on the url, because it is the override destination, unless it is a gothamist link, then it will route in the app
+    if (item.url && !item.url.includes("gothamist.com")) {
+      const res = goToUrlOverrideDestination(item, null, returnRoute)
+      if (returnRoute) return res
+      return
     }
     switch (item.type || item.contentType) {
       case mediaTypes.LIVE:
@@ -1384,9 +1449,6 @@ export const logOutUser = async () => {
   currentEpisode.value = null
   currentEpisodeHolder.value = null
   isEpisodePlaying.value = false
-
-  // clear the local storage
-  await Preferences.clear()
 
   // logout of OneSignal
   useOneSignal().logout()
@@ -1581,6 +1643,19 @@ export const getFirstSentence = (text: string): string => {
   return sentences ? sentences[0] : text
 }
 
+// Cached show-slug-redirects (this list rarely changes)
+let cachedSlugRedirects: { from: string; to: string }[] | null = null
+
+const getSlugRedirects = async (config: any) => {
+  if (!cachedSlugRedirects) {
+    const data = await $fetch<{ from: string; to: string }[]>(
+      `${config.public.BFF_URL}/api/show-slug-redirects`
+    )
+    cachedSlugRedirects = Array.isArray(data) ? data : []
+  }
+  return cachedSlugRedirects
+}
+
 // return match redirects and return true slug
 export const getTrueSlug = async (slug: string, isolateReturn = true) => {
   const config = useRuntimeConfig()
@@ -1610,10 +1685,8 @@ export const getTrueSlug = async (slug: string, isolateReturn = true) => {
 
   // check redirect table
   try {
-    // get the list of redirects
-    const redirectsData: any[] = await $fetch(
-      `${config.public.BFF_URL}/api/show-slug-redirects`
-    )
+    // get the list of redirects (cached)
+    const redirectsData = await getSlugRedirects(config)
     // find the redirect in the list
     const redirect = redirectsData?.find((r) => isolateSlug(r.from) === newSlug)
     return redirect ? isolateReturn ? isolateSlug(redirect.to) : redirect.to : newSlug
@@ -1621,4 +1694,31 @@ export const getTrueSlug = async (slug: string, isolateReturn = true) => {
     console.error(`Error getting true slug from id: ${error}`)
     return newSlug
   }
+}
+
+export const normalizeShowTitle = (title?: string): string => {
+  if (!title || typeof title !== "string") return ""
+
+  return title
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/\s+(with|w\/)\s+.*$/, "")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+}
+
+export const areShowTitlesEquivalent = (a?: string, b?: string): boolean => {
+  const normalizedA = normalizeShowTitle(a)
+  const normalizedB = normalizeShowTitle(b)
+
+  if (!normalizedA || !normalizedB) return false
+  if (normalizedA === normalizedB) return true
+
+  const shortestLength = Math.min(normalizedA.length, normalizedB.length)
+  if (shortestLength < 6) return false
+
+  return (
+    normalizedA.includes(normalizedB) || normalizedB.includes(normalizedA)
+  )
 }

@@ -9,6 +9,7 @@ import {
   hasAudio,
   addToFavorites2,
   isolateSlug,
+  areShowTitlesEquivalent,
 } from "~/utilities/helpers"
 import { useFallbackImages } from "~/composables/useFallbackImages"
 import {
@@ -19,6 +20,8 @@ import {
   useCurrentEpisodeHolder,
   useCurrentEpisode,
   useIsLiveStream,
+  useIsDarkMode,
+  useIsStreamLoading,
 } from "~/composables/states"
 //import { mediaTypeRoutes, mediaTypes } from "~/composables/globals"
 import useSleepTimer from "~/composables/useSleepTimer"
@@ -37,6 +40,9 @@ const { show } = toRefs(props)
 const toast = useToast()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const currentEpisode = useCurrentEpisode()
+const isStreamLoading = useIsStreamLoading()
+const isDarkMode = useIsDarkMode()
+const isApp = useIsApp()
 
 // Computed properties derived from the show data
 const showImage = computed(
@@ -45,9 +51,14 @@ const showImage = computed(
     show.value?.showArt ||
     show.value?.linkedDataSource?.value?.imageUrl
 )
-const topperTitle = computed(() => show.value?.topper?.topperTitle || show.value?.title)
+const topperTitle = computed(
+  () => show.value?.topper?.topperTitle || show.value?.title
+)
 const topperDescription = computed(() => show.value?.topper?.topperDescription)
 const topperBackground = computed(() => {
+  if (isApp.value) {
+    return ""
+  }
   if (show.value?.topper?.topperBackground.includes("background:")) {
     return show.value?.topper?.topperBackground
   } else if (show.value?.topper?.topperBackground.includes("#")) {
@@ -64,8 +75,6 @@ const topperBackground = computed(() => {
 
 const route = useRoute()
 const appDownloadLink = useAppDownloadLink()
-
-const isApp = useIsApp()
 const user = useCurrentUser()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isLiveStream = useIsLiveStream()
@@ -83,7 +92,9 @@ if (import.meta.client) {
 // finds first episode with audio to play
 const firstEpisodeWithAudio = () => {
   const allListItems = []
-  const listItems = show.value?.body?.filter((item) => item.type === "curated_list")
+  const listItems = show.value?.body?.filter(
+    (item) => item.type === "curated_list"
+  )
 
   listItems?.forEach((item) => {
     allListItems.push(...item.value?.list?.listItems)
@@ -113,14 +124,19 @@ const isLoadedEpisode = computed(() => {
   if (isLiveStream.value || !currentEpisode.value) return false
 
   // 1. Standard check: do the show titles match?
-  if (currentEpisode?.value?.showTitle === props.show?.title) return true
+  if (
+    areShowTitlesEquivalent(currentEpisode?.value?.showTitle, props.show?.title)
+  )
+    return true
 
   // 2. Archives check: is the current episode in the show's curated lists?
   if (currentEpisode.value.id && props.show?.body) {
-    const listItems = props.show.body.filter((item) => item.type === "curated_list")
+    const listItems = props.show.body.filter(
+      (item) => item.type === "curated_list"
+    )
     for (const item of listItems) {
       const items = item.value?.list?.listItems
-      if (items && items.some((ep) => ep.id === currentEpisode.value.id)) {
+      if (items?.some((ep) => ep.id === currentEpisode.value.id)) {
         return true
       }
     }
@@ -132,14 +148,20 @@ const isLoadedEpisode = computed(() => {
 const isLoadedLiveStream = computed(() => {
   return (
     isLiveStream.value &&
-    (currentEpisodeHolder.value?.title === props.show?.title ||
-      currentEpisode.value?.title === props.show?.title)
+    (areShowTitlesEquivalent(
+      currentEpisodeHolder.value?.title,
+      props.show?.title
+    ) ||
+      areShowTitlesEquivalent(currentEpisode.value?.title, props.show?.title))
   )
 })
 
 // check if the show is currently live
 const isCurrentlyLive = computed(() => {
-  return isolateSlug(currentEpisodeHolder.value?.detailsLink) === props.show?.meta?.slug
+  return (
+    isolateSlug(currentEpisodeHolder.value?.detailsLink) ===
+    props.show?.meta?.slug
+  )
 })
 // handle the toggle play button at the top to play the most recent episode with audio and tracking
 const togglePlayMostRecentEpisode = () => {
@@ -157,14 +179,6 @@ const togglePlayMostRecentEpisode = () => {
   }
 }
 
-// watch(
-//   currentEpisodeHolder,
-//   () => {
-//     currentEpisodeHolder.value.title = "All Of It with Alison Stewart"
-//   },
-//   { once: true }
-// )
-
 // add item to favorites
 const handleAddToFavorites = () => {
   // helper func for adding to favorites, also handles account prompt if not logged in
@@ -179,19 +193,23 @@ const handleAddToFavorites = () => {
 }
 
 const isThisShowPlaying = computed(() => {
-  return isEpisodePlaying.value && (isLoadedEpisode.value || isLoadedLiveStream.value)
+  return (
+    isEpisodePlaying.value &&
+    (isLoadedEpisode.value || isLoadedLiveStream.value)
+  )
 })
 </script>
 
 <template>
-  <div class="show-header-holder py-3 style-mode-dark" :style="topperBackground">
+  <div
+    class="show-header-holder py-3"
+    :class="!isApp ? 'style-mode-dark' : isDarkMode ? 'style-mode-dark' : ''"
+    :style="topperBackground"
+  >
     <section class="grid grid-nogutter m-auto">
       <div class="col-fixed hidden xxl:block w-20rem"></div>
       <div class="col">
-        <div
-          class="show-header flex justify-content-start gap-3 md:gap-5"
-          :class="isApp ? 'justify-content-center' : 'justify-content-start'"
-        >
+        <div class="show-header flex justify-content-start gap-3 md:gap-5">
           <!-- <pre class="text-white">{{ showSlug }}</pre> -->
           <VImage
             v-if="show"
@@ -208,10 +226,16 @@ const isThisShowPlaying = computed(() => {
             class="flex-none show-image w-7rem md:w-13rem h-7rem md:h-13rem"
             borderRadius="0px"
           />
-          <div v-if="!isApp">
-            <div v-if="show" class="flex flex-column justify-content-start gap-2">
+          <div>
+            <div
+              v-if="show"
+              class="flex flex-column justify-content-start gap-2"
+            >
               <transition name="zoom">
-                <LiveBadge v-if="isCurrentlyLive" class="mb-1 align-self-start" />
+                <LiveBadge
+                  v-if="isCurrentlyLive"
+                  class="mb-1 align-self-start"
+                />
               </transition>
               <h2 class="line-height-1 text-2xl md:text-6xl">
                 {{ topperTitle }}
@@ -219,25 +243,33 @@ const isThisShowPlaying = computed(() => {
               <!-- <p v-if="showScheduleSummary" class="mt-0 md:-mt-3">
                 {{ showScheduleSummary }}
               </p> -->
-              <p v-if="topperDescription" class="hidden md:block text-sm md:text-base">
+              <p
+                v-if="topperDescription"
+                class="hidden md:block text-sm md:text-base"
+              >
                 {{ topperDescription }}
               </p>
               <!-- desktop buttons -->
               <div class="hidden md:flex align-items-center gap-3">
                 <Button
-                  class="play-btn flex-none"
-                  severity="secondary"
                   rounded
-                  aria-label="play toggle"
                   tabindex="0"
+                  :disabled="isStreamLoading"
+                  class="play-btn flex-none"
+                  :aria-label="
+                    isEpisodePlaying ? 'Pause button' : 'Play button'
+                  "
                   @click="togglePlayMostRecentEpisode"
+                  severity="secondary"
                 >
-                  <template #icon>
-                    <PauseIcon v-if="isThisShowPlaying" />
-                    <PlayIcon v-else />
-                  </template>
+                  <slot v-if="isStreamLoading" name="loading">
+                    <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
+                  </slot>
+                  <slot v-else-if="!isThisShowPlaying" name="play"
+                    ><PlayIcon
+                  /></slot>
+                  <slot v-else name="pause"><PauseIcon /></slot>
                 </Button>
-
                 <Button
                   rounded
                   severity="secondary"
@@ -246,7 +278,10 @@ const isThisShowPlaying = computed(() => {
                   @click="handleAddToFavorites"
                 >
                   <template #icon>
-                    <FollowIcon :active="isFavorited" style="height: 20px; width: 20px" />
+                    <FollowIcon
+                      :active="isFavorited"
+                      style="height: 20px; width: 20px"
+                    />
                   </template>
                 </Button>
 
@@ -268,7 +303,9 @@ const isThisShowPlaying = computed(() => {
                   class=""
                   @click="
                     navigateTo(appDownloadLink, {
-                      external: appDownloadLink.startsWith('http') ? true : false,
+                      external: appDownloadLink.startsWith('http')
+                        ? true
+                        : false,
                     })
                   "
                 >
@@ -280,7 +317,12 @@ const isThisShowPlaying = computed(() => {
             </div>
             <div v-else class="hidden md:flex flex-column gap-3 w-full">
               <div class="flex flex-column gap-0">
-                <Skeleton class="my-2" height="48px" width="65%" borderRadius="24px" />
+                <Skeleton
+                  class="my-2"
+                  height="48px"
+                  width="65%"
+                  borderRadius="24px"
+                />
                 <!-- <Skeleton
                   v-if="showScheduleSummary"
                   height="14px"

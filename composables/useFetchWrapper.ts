@@ -1,55 +1,60 @@
 import { onMounted } from 'vue'
-import { useFetch } from '#app'
+import { useFetch, useNuxtApp, useRuntimeConfig } from '#app'
 
 /**
- * useFetchWrapper - a composable to standardize Nuxt useFetch usage with SSR cache, error handling, and optional auto-refresh.
+ * useFetchWrapper - thin wrapper around useFetch that adds client-side cache expiration.
  *
- * @param {string|Function} request - The URL or function returning the URL for the fetch.
- * @param {object} options - Options to pass to useFetch. Supports all useFetch options plus:
- *   - autoRefresh: boolean (default true) - if true, will auto-refresh on mount if data is missing or errored.
- *   - logKey: boolean (default false) - if true, logs the cache key and payload for debugging.
- * @returns {object} - The same as useFetch, but with standardized caching and refresh logic.
+ * - In local dev: no client cache, always fetches fresh.
+ * - In production: caches responses for `maxAge` ms on client-side navigations.
+ * - For generated/app builds: refreshes on mount if payload data has no timestamp (stale from build time).
+ *
+ * @param {string|Function} request - The URL or getter function for the fetch.
+ * @param {object} options - All useFetch options, plus:
+ *   - maxAge: number (default 300000, 5 min) - how long client-cached data is considered fresh.
  */
 export function useFetchWrapper (request, options = {}) {
-    const {
-        key,
-        autoRefresh = true,
-        logKey = false,
-        shallow = true,
-        ...rest
-    } = options
+    const { key, maxAge = 300000, ...rest } = options
 
-    const fetchOptions = {
+    const nuxtApp = useNuxtApp()
+    const config = useRuntimeConfig()
+    const isLocal = config.public.ENV === 'local'
+
+    const fetchResult = useFetch(request, {
         key,
-        shallow,
+        // In local dev, omit getCachedData entirely so useFetch always fetches fresh.
+        // In production, cache on client navigations for maxAge duration.
+        ...(!isLocal && {
+            getCachedData: (cacheKey, nuxtApp) => {
+                // Always honour payload during hydration to prevent mismatches
+                if (nuxtApp.isHydrating) {
+                    return nuxtApp.payload.data[cacheKey]
+                }
+
+                const cached = nuxtApp.static.data?.[cacheKey]
+                if (!cached) return undefined
+
+                const fetchedAt = nuxtApp.payload._fetchedAt?.[cacheKey]
+                if (fetchedAt && Date.now() - fetchedAt > maxAge) {
+                    return undefined // stale, let useFetch refetch
+                }
+
+                return cached
+            },
+        }),
         ...rest,
-    }
+    })
 
-    if (logKey) {
-        fetchOptions.getCachedData = (key, nuxtApp) => {
-            const data = nuxtApp.isHydrating ? nuxtApp.payload.data[key] : nuxtApp.static.data?.[key]
-            // eslint-disable-next-line no-console
-            console.log('[useFetchWrapper] getCachedData', key, data)
-            return data
-        }
-    }
-
-    // Call useFetch with standardized getCachedData
-    const fetchResult = useFetch(request, fetchOptions)
-
-    // Auto-refresh on mount if data is missing or errored
-    if (autoRefresh) {
+    // For generated/app builds: payload data from build time has no _fetchedAt timestamp.
+    // Refresh once on mount so users get fresh data after the initial render.
+    if (!isLocal) {
         onMounted(() => {
-            if (!fetchResult.data.value || fetchResult.status.value === 'error') {
+            const cacheKey = fetchResult.key || key
+            const fetchedAt = nuxtApp.payload._fetchedAt?.[cacheKey]
+
+            if (!fetchedAt && fetchResult.data.value && fetchResult.status.value !== 'pending') {
                 fetchResult.refresh()
             }
         })
-    }
-
-    // Workaround: When Nuxt loads payload data from cache during client-side navigation, 
-    // it leaves status as 'idle' instead of 'success', causing skeletons to hang.
-    if (fetchResult.status.value === 'idle' && fetchResult.data.value) {
-        fetchResult.status.value = 'success'
     }
 
     return fetchResult

@@ -58,7 +58,9 @@ onMounted(() => {
 
 // check if the show is currently live
 const isCurrentlyLive = computed(() => {
-  return isolateSlug(currentEpisodeHolder.value?.detailsLink) === props.data?.slug
+  return (
+    isolateSlug(currentEpisodeHolder.value?.detailsLink) === props.data?.slug
+  )
 })
 
 // add item to favorites
@@ -110,7 +112,7 @@ const getDotMenuItems = (bucketItem) => {
       @click="emit('on-click')"
       @keypress.enter.space="emit('on-click')"
       tabindex="0"
-      aria-role="button"
+      role="button"
       :aria-label="`${props.data.title} show details`"
       v-ripple
     >
@@ -118,16 +120,22 @@ const getDotMenuItems = (bucketItem) => {
         :src="props.data.image"
         :size="props.size"
         :class="props.imageClass"
-        style="background-color: var(--p-surface-25)"
+        style="background-color: var(--p-surface-25); flex: none"
         isDecorative
       />
       <div class="flex gap-1 flex-column align-items-start">
         <LiveBadge v-if="isCurrentlyLive" class="mb-1" />
-        <h2 class="text-base md:text-lg line-height-2 truncate t2lines no-hyphens">
+        <h2
+          class="text-base md:text-lg line-height-2 truncate t2lines no-hyphens"
+        >
           {{ props.data.title }}
         </h2>
         <p class="font-meta" v-if="props.data?.producingOrganizations?.length">
-          {{ props.data.producingOrganizations.map((org) => org.name).join(" and ") }}
+          {{
+            props.data.producingOrganizations
+              .map((org) => org.name)
+              .join(" and ")
+          }}
         </p>
       </div>
     </NuxtLink>

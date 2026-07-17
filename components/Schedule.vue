@@ -1,5 +1,9 @@
 <script setup>
-import { trackClickEvent, formatDate, getCustomStationLabel } from "~/utilities/helpers"
+import {
+  trackClickEvent,
+  formatDate,
+  getCustomStationLabel,
+} from "~/utilities/helpers"
 import { useBreakpoints } from "~/composables/useBreakpoints"
 import { stripShowUrl } from "~/composables/useNavigationData"
 import useLiveStream from "~/composables/data/liveStream"
@@ -11,7 +15,10 @@ import {
 } from "~/composables/states"
 import { useDebounceFn } from "@vueuse/core"
 import { getSchedulePdfLink } from "~/server/utils/liveSchedule"
-import { scheduleLocalNotification, getEntryTitle } from "~/utilities/local-notifications"
+import {
+  scheduleLocalNotification,
+  getEntryTitle,
+} from "~/utilities/local-notifications"
 
 const {
   getTheTime,
@@ -137,7 +144,9 @@ const toShowPageClick = (entry, current = false) => {
   const title = entry.attributes.parentTitle
   const slug = stripShowUrl(entry.attributes.parentUrl)
   trackClickEvent(
-    `Click Tracking - ${current ? "current live show " : "Show Title"} - ${title}`,
+    `Click Tracking - ${
+      current ? "current live show " : "Show Title"
+    } - ${title}`,
     "Schedule",
     title
   )
@@ -191,7 +200,9 @@ const handleScheduleNavigationButtonLabel = (date) => {
         <div>&nbsp;</div>
       </TabList>
       <hr class="w-full mt-5 opacity-40" />
-      <div class="date-tools flex justify-content-between align-items-center my-4">
+      <div
+        class="date-tools flex justify-content-between align-items-center my-4"
+      >
         <Button
           severity="secondary"
           variant="text"
@@ -206,7 +217,9 @@ const handleScheduleNavigationButtonLabel = (date) => {
               : 'day-change-btn link'
           "
         ></Button>
-        <div class="today flex flex-column gap-0 align-items-center text-center">
+        <div
+          class="today flex flex-column gap-0 align-items-center text-center"
+        >
           <span class="day font-bold text-lg">{{
             formatDate(currentScheduleDate, "EEEE")
           }}</span>
@@ -239,43 +252,43 @@ const handleScheduleNavigationButtonLabel = (date) => {
           :value="index.toString()"
           :class="[{ selected: index === 0 }]"
         >
-          <div class="flex flex-column gap-4">
-            <!-- <pre class="overflow-hidden">{{ currentEpisodeHolder }}</pre> -->
+          <div class="flex flex-column gap-1">
             <div
               v-for="(entry, entryIndex) in data"
               :key="entryIndex"
-              class="schedule-entry flex justify-content-between align-items-stretch gap-3 style-mode-light light-mode"
+              class="schedule-entry flex justify-content-between align-items-stretch gap-3 style-mode-light light-mode p-ripple cursor-pointer"
+              v-ripple
               :class="
                 handleCurrentEpisode(entry, entryIndex)
-                  ? 'selected -ml-3 -mr-3 xl:mr-0 cursor-pointer'
+                  ? 'selected py-3 md:p-0'
                   : ''
               "
               @click="
                 handleCurrentEpisode(entry, entryIndex)
                   ? toShowPageClick(entry, true)
-                  : null
+                  : toShowPageClick(entry)
               "
             >
-              <div class="active-content flex flex-column justify-content-between">
+              <div
+                class="active-content flex flex-column justify-content-between w-full"
+              >
                 <div>
                   <p class="time">
                     {{
-                      getTheTime(entry.attributes.start, entry.attributes.end, entryIndex)
+                      getTheTime(
+                        entry.attributes.start,
+                        entry.attributes.end,
+                        entryIndex
+                      )
                     }}
                   </p>
-                  <Button
-                    @click="toShowPageClick(entry)"
-                    severity="secondary"
-                    variant="link"
-                    class="title-link -mt-2"
-                  >
-                    <h2 class="title truncate t2lines">
-                      {{ getEntryTitle(entry) }}
-                    </h2>
-                  </Button>
+                  <h2 class="title truncate t2lines">
+                    {{ getEntryTitle(entry) }}
+                  </h2>
                   <HtmlConvert
                     v-if="
-                      entry.station.episodeBody && handleCurrentEpisode(entry, entryIndex)
+                      entry.station.episodeBody &&
+                      handleCurrentEpisode(entry, entryIndex)
                     "
                     :htmlContent="entry.station.episodeBody"
                     class="desc truncate t3lines mt-1"
@@ -297,7 +310,8 @@ const handleScheduleNavigationButtonLabel = (date) => {
                     entry.station.onTodaysShowImage
                   "
                   :alt="
-                    entry.station.onTodaysShowImageAltText || 'on today\'s show image'
+                    entry.station.onTodaysShowImageAltText ||
+                    'on today\'s show image'
                   "
                   :size="{ xs: [208, 208] }"
                   :allowVerticalEffect="true"
@@ -311,9 +325,9 @@ const handleScheduleNavigationButtonLabel = (date) => {
                 text
                 plain
                 rounded
-                class="flex-none"
+                class="flex-none z-1"
                 aria-label="set notification"
-                @click="handleScheduleLocalNotification(entry)"
+                @click.stop="handleScheduleLocalNotification(entry)"
               >
                 <template #icon>
                   <NotificationIcon :entry="entry" />
@@ -362,7 +376,12 @@ const handleScheduleNavigationButtonLabel = (date) => {
       >
         <div class="flex gap-3">
           <div class="flex flex-column gap-2">
-            <Skeleton class="opacity-50" height="14px" width="64px" borderRadius="4px" />
+            <Skeleton
+              class="opacity-50"
+              height="14px"
+              width="64px"
+              borderRadius="4px"
+            />
             <Skeleton height="22px" width="174px" borderRadius="4px" />
           </div>
         </div>
@@ -497,11 +516,8 @@ html {
   }
   .schedule-entry {
     position: relative;
-    // .left {
-    //   border: 2px solid transparent;
-    //   border-radius: 8px;
-    //   margin-right: 1rem;
-    // }
+    padding: 1rem;
+    border-radius: var(--p-border-radius-xl);
     &:before {
       content: "";
       border: 2px solid transparent;
@@ -509,30 +525,21 @@ html {
       border-radius: 8px;
       margin-right: 1rem;
       position: absolute;
-      height: 100%;
+      height: 80%;
+      top: 10%;
+      bottom: 0;
       display: none;
     }
 
     .active-content {
       min-height: 0; // Allow flex shrinking
     }
-    .title-link {
-      margin-left: -0.8rem;
-      * {
-        transition: color var(--p-transition-duration);
-      }
-      &:hover {
-        * {
-          color: var(--link-button-hover-color);
-          text-decoration: underline;
-        }
-      }
-    }
     .more-from {
       margin-left: -0.8rem;
       display: none;
     }
     &.selected {
+      padding: 0;
       &:before {
         display: block;
       }
@@ -555,6 +562,16 @@ html {
     .follow-icon {
       width: 28px;
       height: 28px;
+    }
+    .title {
+      transition: color var(--p-transition-duration);
+      -webkit-transition: color var(--p-transition-duration);
+    }
+    &:hover {
+      .title {
+        color: var(--link-button-hover-color);
+        text-decoration: underline;
+      }
     }
   }
   &.dark-mode {

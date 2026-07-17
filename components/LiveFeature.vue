@@ -9,7 +9,11 @@ import {
   useAppDownloadLink,
   useAllCurrentStations,
 } from "~/composables/states"
-import { togglePlayEpisode, initializeStationList, getOrg } from "~/utilities/helpers"
+import {
+  togglePlayEpisode,
+  initializeStationList,
+  getOrg,
+} from "~/utilities/helpers"
 import useLiveStream, {
   updateLiveStream,
   updateAllLiveStreams,
@@ -58,7 +62,8 @@ const onUpdateStation = (station) => {
         v-ripple
         class="card-click w-full h-full absolute top-0 left-0 z-1 p-ripple"
         tabindex="0"
-        aria-role="button"
+        role="button"
+        aria-label="View live page with all current streams"
       ></VFlexibleLink>
       <div class="flex align-items-center z-2">
         <div class="image-holder relative">
@@ -72,7 +77,13 @@ const onUpdateStation = (station) => {
               :key="currentEpisodeHolder?.id"
               loading="eager"
             />
-            <WnycLoader v-else class="image-loader-anim" size="1rem" bg spinner />
+            <WnycLoader
+              v-else
+              class="image-loader-anim"
+              size="1rem"
+              bg
+              spinner
+            />
           </Transition>
         </div>
         <div class="content w-full relative">
@@ -99,7 +110,10 @@ const onUpdateStation = (station) => {
                   |
                 </p>
                 <p
-                  v-if="currentEpisodeHolder.timeStart && currentEpisodeHolder.timeEnd"
+                  v-if="
+                    currentEpisodeHolder.timeStart &&
+                    currentEpisodeHolder.timeEnd
+                  "
                   class="font-bold"
                 >
                   {{ formatAndRoundTime(currentEpisodeHolder.timeStart) }} -
@@ -107,7 +121,9 @@ const onUpdateStation = (station) => {
                 </p>
               </div>
             </div>
-            <h2 class="md:text-xl lg:text-2xl xl:text-4xl line-height-2 truncate t2lines">
+            <h2
+              class="md:text-xl lg:text-2xl xl:text-4xl line-height-2 truncate t2lines"
+            >
               {{ currentEpisodeHolder?.title }}
             </h2>
             <div
@@ -121,7 +137,9 @@ const onUpdateStation = (station) => {
                 currentEpisodeHolder?.details
               "
             ></div>
-            <div class="flex align-items-start justify-content-start mt-1 gap-0 md:gap-2">
+            <div
+              class="flex align-items-start justify-content-start mt-1 gap-0 md:gap-2"
+            >
               <div class="flex flex-row gap-3 flex-wrap md:flex-column">
                 <PlayButton
                   :label="
@@ -132,19 +150,24 @@ const onUpdateStation = (station) => {
                   :data="currentEpisodeHolder"
                   @onClick="togglePlayHere"
                   severity="primary"
-                  buttonClass="w-9rem md:w-21rem h-2rem justify-content-start"
+                  buttonClass="w-9rem md:w-21rem h-2rem justify-content-start pr-3"
                   labelClass="md:-ml-3"
                   live
                   class="z-2"
                 />
-                <div v-if="!isApp" class="hidden md:flex flex-row gap-3 flex-wrap">
+                <div
+                  v-if="!isApp"
+                  class="hidden md:flex flex-row gap-3 flex-wrap"
+                >
                   <Button
                     label="Get the App"
                     severity="secondary"
                     class="p-button-sm flex w-10rem justify-content-start h-2rem p-button-center-label-with-icon z-2"
                     @click.prevent="
                       navigateTo(appDownloadLink, {
-                        external: appDownloadLink.startsWith('http') ? true : false,
+                        external: appDownloadLink.startsWith('http')
+                          ? true
+                          : false,
                       })
                     "
                   >
@@ -192,16 +215,16 @@ const onUpdateStation = (station) => {
           </div>
           <div
             v-else
-            class="skeleton-holder flex flex-column justify-content-center gap-2 lg:gap-3 w-full px-3 mt-1"
+            class="skeleton-holder flex flex-column justify-content-center gap-2 lg:gap-3 w-full px-3"
           >
             <Skeleton
               class="hidden md:block mb-2 mt-1"
-              height="0.75rem"
-              width="40%"
-              borderRadius="16px"
+              height="1.25rem"
+              width="45%"
+              borderRadius="4px"
             />
             <Skeleton
-              class="hidden lg:block"
+              class="hidden lg:block mb-2"
               height="2rem"
               width="60%"
               borderRadius="16px"
@@ -219,7 +242,7 @@ const onUpdateStation = (station) => {
               borderRadius="16px"
               style="min-width: 120px !important"
             />
-            <div class="w-full desc flex-column gap-2 hidden xs:flex">
+            <div class="w-full desc flex-column gap-2 hidden xs:flex md:mb-2">
               <Skeleton height="1rem" width="85%" borderRadius="16px" />
               <Skeleton height="1rem" width="90%" borderRadius="16px" />
               <Skeleton
@@ -229,10 +252,24 @@ const onUpdateStation = (station) => {
                 borderRadius="16px"
               />
             </div>
-            <Skeleton class="w-9rem md:w-21rem" height="28px" borderRadius="16px" />
+            <Skeleton
+              class="w-9rem md:w-21rem"
+              height="28px"
+              borderRadius="16px"
+            />
             <div class="hidden md:flex flex-row gap-3 mt-1 lg:-mt-1">
-              <Skeleton class="w-10rem" height="28px" width="9rem" borderRadius="16px" />
-              <Skeleton class="w-10rem" height="28px" width="9rem" borderRadius="16px" />
+              <Skeleton
+                class="w-10rem"
+                height="28px"
+                width="9rem"
+                borderRadius="16px"
+              />
+              <Skeleton
+                class="w-10rem"
+                height="28px"
+                width="9rem"
+                borderRadius="16px"
+              />
             </div>
           </div>
         </div>
@@ -267,7 +304,9 @@ const onUpdateStation = (station) => {
 .live-feature {
   container-type: inline-size;
   position: relative;
-  //background-color: var(--live-feature-background);
+  @include media("<md") {
+    background-color: var(--live-feature-background);
+  }
   .image-holder {
     position: relative;
     flex: none;

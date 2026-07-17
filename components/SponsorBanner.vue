@@ -35,6 +35,7 @@ const props = defineProps({
       color: #ffffff;
       font-size: 1rem;
       text-align: center;
+      color: #ffffff;
     }
     .sponsor {
       width: 100%;

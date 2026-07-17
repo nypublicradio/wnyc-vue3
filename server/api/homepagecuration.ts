@@ -35,7 +35,13 @@ const getNewHomeTemplate = async () => {
 
 	} catch (e) {
 		console.error('getHomeTemplate = ', e)
-		return null
+		// Throwing an error here instead of returning null is critical.
+		// It prevents caching a failed state and ensures the client and server
+		// are in sync, which resolves the hydration mismatch.
+		throw createError({
+			statusCode: e.statusCode || 500,
+			statusMessage: 'Failed to fetch homepage curation data from Aviary CMS.'
+		})
 	}
 }
 
@@ -43,16 +49,11 @@ const getNewHomeTemplate = async () => {
  * Compress and simplify the global nav data.
  * Reachable /api/homepage
  */
-export default defineCachedEventHandler(async () => {
+export default defineEventHandler(async (event) => {
+    setResponseHeader(event, 'Cache-Control', 'max-age=60, stale-while-revalidate=120')
 	const newHomeTemplate = await getNewHomeTemplate()
 
 	return {
 		new_home_template: newHomeTemplate,
 	}
-}
-	, {
-		//maxAge: 300,
-		swr: false,
-		name: 'homepage-curation'
-	}
-)
+})

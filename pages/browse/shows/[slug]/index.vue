@@ -2,7 +2,11 @@
 import { checkIsFavorited, slugify } from "~/utilities/helpers"
 import { useIsApp } from "~/composables/states"
 import { useFetchWrapper } from "~/composables/useFetchWrapper"
-import { getShowTitle, getShowDescription, getShowImage } from "~/utilities/metadataHelpers"
+import {
+  getShowTitle,
+  getShowDescription,
+  getShowImage,
+} from "~/utilities/metadataHelpers"
 import useSeoMetaOverrides from "~/composables/useSeoMetaOverrides"
 import useSocialMetaOverrides from "~/composables/useSocialMetaOverrides"
 const config = useRuntimeConfig()
@@ -18,14 +22,16 @@ const isPreview = computed(
 
 const showEndpoint = computed(() => {
   const baseUrl = `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`
-
-  if (!isPreview.value) return baseUrl
-
   const params = new URLSearchParams({
-    preview: "true",
-    identifier: getQueryValue(route.query.identifier),
-    token: getQueryValue(route.query.token),
+    isApp: String(isApp.value),
   })
+
+  if (isPreview.value) {
+    params.set("preview", "true")
+    params.set("identifier", getQueryValue(route.query.identifier))
+    params.set("token", getQueryValue(route.query.token))
+  }
+
   return `${baseUrl}?${params.toString()}`
 })
 
@@ -33,20 +39,15 @@ const showFetchArgs = [
   showEndpoint,
   {
     key: isPreview.value
-      ? `show-page-preview-${route.params.slug}-${getQueryValue(route.query.identifier)}`
-      : `show-page-${route.params.slug}`,
+      ? `show-page-preview-${route.params.slug}-${getQueryValue(route.query.identifier)}-${isApp.value ? "app" : "web"}`
+      : `show-page-${route.params.slug}-${isApp.value ? "app" : "web"}`,
     watch: false,
   },
 ]
 
-const {
-  data: show,
-  status,
-  error,
-} = isApp.value
-  ? useFetchWrapper(...showFetchArgs)
-  : await useFetchWrapper(...showFetchArgs)
+const { data: show, status, error } = await useFetchWrapper(...showFetchArgs)
 
+// redirect if the page has a redirect property
 const redirectIfNeeded = (page) => {
   if (!page?.redirect) return
 
@@ -130,12 +131,12 @@ useHead({
 useSeoMeta({
   title,
   ogTitle: title,
-  description: description,
+  description,
   ogDescription: description,
 })
 if (image) {
   useSeoMeta({
-   ogImage: image,
+    ogImage: image,
   })
 }
 useSeoMetaOverrides(show)
@@ -153,12 +154,12 @@ useSocialMetaOverrides(show)
     <template v-if="!error">
       <ShowHeader :show="show" />
       <!-- JUMP LINKS -->
-      <section class="hidden md:block">
+      <section v-if="!isApp" class="hidden md:block">
         <div class="grid">
           <div class="col-fixed hidden xxl:block w-20rem"></div>
           <div class="col pr-2 lg:pr-4">
             <div
-              class="flex flex-wrap justify-content-start align-items-center gap-3 my-5"
+              class="flex flex-wrap justify-content-start align-items-center gap-3 my-4"
             >
               <template v-if="sectionAnchorData.length">
                 <Button
@@ -170,7 +171,7 @@ useSocialMetaOverrides(show)
                   @click="scrollToSection(i.id)"
                 />
               </template>
-              <template v-else-if="isApp">
+              <template v-else>
                 <Skeleton
                   v-for="i in 3"
                   :key="`jump-link-${i}`"
@@ -184,8 +185,8 @@ useSocialMetaOverrides(show)
           </div>
         </div>
       </section>
-
-      <section class="pb-4">
+      <!-- <pre>{{ show }}</pre> -->
+      <section class="py-4">
         <div class="grid">
           <div class="col-fixed hidden xxl:block w-20rem"></div>
           <div class="col pr-2 lg:pr-4">

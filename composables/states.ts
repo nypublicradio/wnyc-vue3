@@ -1,16 +1,16 @@
 // notification channels array from the BFF server
 export const useMasterNotificationChannelsArray = () => useState<any[]>('masterNotificationChannelsArray', () => null)
-
+// global state for the master notification channels pulled from Supabase that the user can subscribed to
 export const getMasterNotificationChannels = async () => {
-  const masterNotificationChannelsArray = useMasterNotificationChannelsArray()
-  // get notification topics
-  const client = useSupabaseClient()
-  const { data } = await client
-    .from("notification_topics")
-    .select("*")
+    const masterNotificationChannelsArray = useMasterNotificationChannelsArray()
+    // get notification topics
+    const client = useSupabaseClient()
+    const { data } = await client
+        .from("notification_topics")
+        .select("*")
 
-  masterNotificationChannelsArray.value = data
-  return data
+    masterNotificationChannelsArray.value = data
+    return data
 }
 
 // Homepage data
@@ -37,6 +37,12 @@ export const useLocalUserProfileDefault = () => useState('localUserProfileDefaul
 
 // keep track of dark mode
 export const useIsDarkMode = () => useState('useIsDarkMode', () => false)
+
+// keep track if the app is int eh foreground and active
+export const useIsActive = () => useState('useIsActive', () => true)
+
+// flag to suppress appStateChange refresh when the native share sheet is open
+export const useIsShareDialogOpen = () => useState('useIsShareDialogOpen', () => false)
 
 const currentUser = null
 // global state for the current authorized user
@@ -102,6 +108,9 @@ export const useIsNetworkConnected = () => useState('useIsNetworkConnected', () 
 
 // global state if this instance is a native app
 export const useIsApp = () => useState('useIsApp', () => false)
+
+// global state for the actual Capacitor native runtime (ios/android only)
+export const useIsNativeApp = () => useState('useIsNativeApp', () => false)
 
 
 // audio player globals

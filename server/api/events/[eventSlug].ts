@@ -81,6 +81,7 @@ const getWagtailEventBySlug = async (slug: string) => {
 }
 
 export default defineEventHandler(async (event) => {
+    setResponseHeader(event, 'Cache-Control', 'max-age=300, stale-while-revalidate=600')
     const eventSlug: string | undefined = event?.context?.params?.eventSlug
 
     if (eventSlug) {
@@ -90,12 +91,12 @@ export default defineEventHandler(async (event) => {
             : await getWagtailEventBySlug(eventSlug)
         const normalizedEvent = eventData ? normalizeWagtailEvent(eventData) : null
 
-        // Set cache headers - longer cache for past events
+        // Dynamic cache: longer for past events (immutable), shorter for upcoming (may update)
         const res = event?.node?.res
         if (normalizedEvent?.startDatetime) {
             const eventDate = new Date(normalizedEvent.startDatetime)
             const now = new Date()
-            const cacheTime = eventDate < now ? 3600 : 1800 // 1 hour for past events, 30 min for future
+            const cacheTime = eventDate < now ? 3600 : 1800
             res.setHeader('Cache-Control', `max-age=${cacheTime}, stale-while-revalidate`)
         } else {
             res.setHeader('Cache-Control', 'max-age=1800, stale-while-revalidate')

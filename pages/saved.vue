@@ -40,6 +40,7 @@ const isDarkMode = useIsDarkMode()
 const scrollToActiveItem = () => {
   const selectedItem = document.getElementsByClassName("selected")
   if (selectedItem[0]) {
+    selectedItem[0].style.scrollMarginInlineStart = "1.5rem"
     selectedItem[0].scrollIntoView({
       behavior: "smooth",
       block: "center",

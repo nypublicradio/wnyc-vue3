@@ -1,6 +1,9 @@
 import { sentryVitePlugin } from "@sentry/vite-plugin"
 import MyPreset from "./assets/wnyc-theme.js"
 
+const isSsrEnabled =
+  process.env.NUXT_SSR === "true" && process.env.FORCE_APP_MODE !== "true"
+
 export default defineNuxtConfig({
   //devtools: { enabled: true },
 
@@ -11,13 +14,19 @@ export default defineNuxtConfig({
 
   modules: [
     "@nuxtjs/supabase",
-    ...(process.env.NUXT_SSR === "true" ? [] : ["@nuxtjs/ionic"]),
+    ...(isSsrEnabled ? [] : ["@nuxtjs/ionic"]),
     "@nuxtjs/device",
     "@nuxt/image",
     "@hypernym/nuxt-gsap",
     "@vueuse/nuxt",
     "@primevue/nuxt-module",
   ],
+
+  vue: {
+    runtimeCompiler: true,
+  },
+
+
 
   primevue: {
     options: {
@@ -36,7 +45,7 @@ export default defineNuxtConfig({
     url: process.env.SUPABASE_URL,
     key: process.env.SUPABASE_KEY,
     redirect: false,
-    useSsrCookies: process.env.NUXT_SSR === "true",
+    useSsrCookies: isSsrEnabled,
     // Allow insecure cookies on localhost:
     cookieOptions: {
       secure: process.env.NODE_ENV === 'production',
@@ -44,6 +53,9 @@ export default defineNuxtConfig({
   },
 
   image: {
+    // In app/client-only builds there is no runtime IPX server at https://localhost,
+    // so default to original image URLs instead of /_ipx transformed URLs.
+    provider: isSsrEnabled ? 'ipx' : 'none',
     dir: "public/",
     screens: {
       xxs: 375,
@@ -70,10 +82,16 @@ export default defineNuxtConfig({
     },
   },
 
-  ssr: process.env.NUXT_SSR === 'true',
+  ssr: isSsrEnabled,
 
   nitro: {
-    routeRules: process.env.NODE_ENV === 'production' ? {
+    prerender: {
+      // Don't crawl into show pages during generate — they are client-rendered
+      // and transient CMS 500s should not block the entire build
+      ignore: ['/browse/shows/**'],
+    },
+    // Route rules only apply in SSR/website mode
+    routeRules: isSsrEnabled && process.env.NODE_ENV === 'production' ? {
       '/home': { swr: 60 },
       // Cache ALL shows and any nested episode pages under a show for 15 minutes
       '/browse/shows/**': { swr: 900 },
@@ -163,8 +181,8 @@ export default defineNuxtConfig({
   },
 
   sourcemap: {
-    client: !!process.env.SENTRY_AUTH_TOKEN,
-    server: !!process.env.SENTRY_AUTH_TOKEN,
+    client: Boolean(process.env.SENTRY_AUTH_TOKEN),
+    server: Boolean(process.env.SENTRY_AUTH_TOKEN),
   },
 
   components: ["~/components", "~/components/icons", "~/components/logos"],
@@ -187,8 +205,11 @@ export default defineNuxtConfig({
   ],
 
   experimental: {
-    crossOriginPrefetch: true,
+    // crossOriginPrefetch only makes sense in SSR/website mode
+    crossOriginPrefetch: isSsrEnabled,
   },
+
+
 
   runtimeConfig: {
     // Server-only runtime values (read at runtime by Nitro)
@@ -209,6 +230,9 @@ export default defineNuxtConfig({
         process.env.LIVESTREAM_URL ?? "https://api.prod.nypr.digital/api/v4/whats_on/",
       HEADER_NAVIGATION_API:
         process.env.HEADER_NAVIGATION_API ??
+        "https://cms.prod.nypr.digital/api/v2/navigation/4/",
+      NAVIGATION_API:
+        process.env.NAVIGATION_API ??
         "https://cms.prod.nypr.digital/api/v2/navigation/4/",
       SYSTEM_MESSAGES_API:
         process.env.SYSTEM_MESSAGES_API ??
@@ -238,6 +262,7 @@ export default defineNuxtConfig({
       FB_APP_ID_ANDROID: process.env.FB_APP_ID_ANDROID,
       ONESIGNAL_APP_ID: process.env.ONESIGNAL_APP_ID,
       BFF_URL: process.env.BFF_URL ?? "https://demo.wnyc.org",
+      NATIVE_URL_SCHEME: process.env.NATIVE_URL_SCHEME ?? "wnycalpha",
       GTM_ID: process.env.GTM_ID ?? "GTM-TKFJ684",
       environment: process.env.environment ?? "prod",
       supabaseUrl: process.env.SUPABASE_URL,
@@ -260,7 +285,8 @@ export default defineNuxtConfig({
       SPRINGBOARD_URL: process.env.SPRINGBOARD_URL ?? "https://nypr.hosted.jacksonriverdev.com",
       NEWSLETTER_API: process.env.NEWSLETTER_API ?? 'https://api.demo.nypr.digital/email-proxy/subscribe',
       NEWSLETTER_MULTI_LIST_IDS: 'WNYC Weekly Brief++WNYC Membership',
-      NUXT_SSR: process.env.NUXT_SSR === 'true' ? 'true' : 'false',
+      NUXT_SSR: isSsrEnabled ? 'true' : 'false',
+      FORCE_APP_MODE: process.env.FORCE_APP_MODE === 'true' ? 'true' : 'false',
     },
   },
 

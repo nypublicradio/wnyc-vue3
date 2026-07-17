@@ -43,7 +43,7 @@ async function getNavigationData () {
             }),
             // Use $fetch for internal API call instead of axios to avoid circular dependency
             Promise.race([
-                $fetch('/api/streams').then(data => ({ data })),
+                $fetch(`${config.public.BFF_URL}/api/streams`).then(data => ({ data })),
                 new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), API_TIMEOUT))
             ]),
             axios.get(`${config.public.AVIARY_BASE_API}curated_lists/${allShows}/`, {
@@ -78,9 +78,7 @@ async function getNavigationData () {
 }
 
 export default defineEventHandler(async (event) => {
-    const res = event?.node?.res
-    res.setHeader('Cache-Control', 'max-age=120, stale-while-revalidate')
-
+    setResponseHeader(event, 'Cache-Control', 'max-age=3600, stale-while-revalidate=7200')
     try {
         const data = await getNavigationData()
         return { data }

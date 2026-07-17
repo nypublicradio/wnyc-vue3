@@ -7,6 +7,7 @@ import Message from "primevue/message"
 import Password from "primevue/password"
 import { computed, reactive, ref } from "vue"
 import { useRouter } from "vue-router"
+import { getAndSetUserProfile } from "~/utilities/helpers"
 
 const props = defineProps({
   client: {
@@ -29,7 +30,7 @@ const props = defineProps({
     default: "Log in with email",
     type: String,
   },
-  slug: {
+  returnRoute: {
     default: "/confirm",
     type: String,
   },
@@ -81,11 +82,21 @@ const submitForm = async () => {
     )
     if (!sbError.error) {
       //success with Supabase
-      emit("submit-success", props.slug)
-      router.push(`${props.slug}`)
+      emit("submit-success", props.returnRoute)
+      router.push(`${props.returnRoute}`)
+      // Run profile/bootstrap side effects in the background.
+      Promise.resolve().then(async () => {
+        try {
+          await getAndSetUserProfile()
+        } catch (profileError) {
+          // Do not block successful auth UX on profile/bootstrap side effects.
+          console.warn("Post-login profile bootstrap failed:", profileError)
+        }
+      })
     } else {
       // error with Supabase
       emit("submit-error", sbError?.error?.message)
+      console.error("Error during sign in:", sbError.error.message)
       if (sbError?.error?.message?.includes("Invalid login credentials")) {
         sbErrorMsg.value = props.error
       } else {

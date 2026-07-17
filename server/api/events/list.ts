@@ -63,11 +63,8 @@ const getWagtailEvents = async (query: Record<string, any>) => {
 }
 
 export default defineEventHandler(async (event) => {
+    setResponseHeader(event, 'Cache-Control', 'max-age=300, stale-while-revalidate=600')
     const query = getQuery(event)
-    const res = event?.node?.res
-
-    // Set cache header - short cache for dynamic list
-    res.setHeader('Cache-Control', 'max-age=300, stale-while-revalidate')
 
     const eventsData = await getWagtailEvents(query)
     return eventsData

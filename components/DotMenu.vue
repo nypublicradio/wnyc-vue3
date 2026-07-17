@@ -76,7 +76,7 @@ const emit = defineEmits(["changeEmit"])
       </slot>
     </template>
     <template #header="slotProps">
-      <div class="style-mode-dark">
+      <div>
         <slot name="header-bottom" />
       </div>
     </template>

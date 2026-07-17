@@ -12,6 +12,7 @@ const getNprStoryData = async (id: string) => {
             headers: {
                 Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
             },
+            timeout: 10000,
         }
 
         const res = await axios(option)
@@ -22,7 +23,7 @@ const getNprStoryData = async (id: string) => {
         if (e.response && e.response.status === 404) {
             console.error('404 = ', e)
         } else {
-            console.error(e)
+            console.error(`Error fetching NPR story ${id}:`, e)
         }
     }
     return null
@@ -31,6 +32,7 @@ const getNprStoryData = async (id: string) => {
 // Get story data from CMS
 
 export default defineEventHandler(async (event) => {
+    setResponseHeader(event, 'Cache-Control', 'max-age=60, stale-while-revalidate=120')
     const id: string | undefined = event?.context?.params?.storyId
     if (id) {
         const storyData = await getNprStoryData(id)

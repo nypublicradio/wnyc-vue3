@@ -251,13 +251,17 @@ const handleProvider = computed(() => {
       raw
       :to="props.to"
       :aria-hidden="props.isDecorative ? true : false"
-      :tabindex="props.isDecorative ? -1 : 0"
+      :tabindex="props.isDecorative ? undefined : 0"
+      :inert="props.isDecorative ? true : undefined"
       class="v-image-link"
+      :class="{ 'is-decorative': props.isDecorative }"
       @click="props.to ? emit('image-click', props.to) : null"
     >
       <div
         class="v-image-holder"
-        :style="`${props.sizes ? `` : `aspect-ratio:${ratio[0]} / ${ratio[1]}`}`"
+        :style="`${
+          props.sizes ? `` : `aspect-ratio:${ratio[0]} / ${ratio[1]}`
+        }`"
       >
         <div v-if="isVertical" class="bg">
           <nuxt-img
@@ -271,7 +275,9 @@ const handleProvider = computed(() => {
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
             :modifiers="props.modifiers"
             :loading="props.loading"
-            :preload="{ fetchPriority: props.loading === 'eager' ? 'high' : 'low' }"
+            :preload="{
+              fetchPriority: props.loading === 'eager' ? 'high' : 'low',
+            }"
           />
         </div>
         <nuxt-img
@@ -293,7 +299,9 @@ const handleProvider = computed(() => {
           :alt="props.isDecorative ? '' : props.alt"
           :quality="String(props.quality)"
           :loading="props.loading"
-          :preload="{ fetchPriority: props.loading === 'eager' ? 'high' : 'low' }"
+          :preload="{
+            fetchPriority: props.loading === 'eager' ? 'high' : 'low',
+          }"
           :modifiers="props.modifiers"
           @load="handleImageLoad"
           @error="emit('image-error')"
@@ -370,6 +378,9 @@ const handleProvider = computed(() => {
 .v-image-link {
   width: auto;
   height: inherit;
+}
+.v-image-link.is-decorative {
+  pointer-events: none;
 }
 .v-image {
   line-height: 0;

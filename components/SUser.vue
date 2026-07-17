@@ -44,7 +44,6 @@ const client = useSupabaseClient()
 const config = useRuntimeConfig()
 const imageUploadModal = shallowRef(false)
 
-const user = await client.auth.getSession()
 // actions to be taken with the log in button is clicked
 const onLogIn = () => {
   if (isApp.value) {
@@ -108,7 +107,6 @@ const handleModal = () => {
 
 const avatarUrl = computed(() => {
   return (
-    user.value?.data?.user?.user_metadata?.avatar_url ||
     currentUser.value?.user_metadata?.avatar_url ||
     currentUserProfile.value?.avatar_image_url ||
     null
@@ -165,7 +163,7 @@ const avatarUrl = computed(() => {
       />
     </Dialog>
     <div v-if="currentUser" class="info flex flex-column gap-2 mt-2">
-      <h2 :class="props.textSize">Hi, {{ currentUserProfile?.name }}</h2>
+      <h2 :class="props.textSize">Hi, {{ currentUserProfile?.name || 'User' }}</h2>
       <VFlexibleLink to="/home" class="p1" @click="onLogOut"
         >Log out</VFlexibleLink
       >
@@ -218,6 +216,8 @@ const avatarUrl = computed(() => {
 .s-user {
   .p-avatar {
     img {
+      width: 100%;
+      height: 100%;
       object-fit: cover;
     }
   }
