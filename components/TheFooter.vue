@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { getYear } from "~/utilities/helpers"
 import { useCurrentEpisode } from "~/composables/states"
 import { allSocialData } from "~/composables/navigationData.js"
 
@@ -7,7 +6,12 @@ const emit = defineEmits<(e: "submit", value: any) => void>()
 
 const config = useRuntimeConfig()
 
-const { footerNavigationData, footerLegalLinksData } = await useNavigationData()
+const {
+  footerNavigationData,
+  footerLegalLinksData,
+  footerPropertyDescription,
+  copyrightYear,
+} = await useNavigationData()
 const isCurrentEpisode = useCurrentEpisode()
 const isSubmitting = ref(false)
 const submissionStatus = ref(null)
@@ -37,6 +41,9 @@ const submitForm = (email) => {
 </script>
 
 <template>
+  <!-- <pre>{{ footerNavigationData }}</pre>
+  <pre>{{ footerLegalLinksData }}</pre>
+  <pre>{{ footerPropertyDescription }}</pre> -->
   <section class="the-footer style-mode-dark py-5 overflow-hidden relative">
     <div class="content" :class="[{ 'is-playing': isCurrentEpisode }]">
       <div class="grid content mb-5">
@@ -49,11 +56,20 @@ const submitForm = (email) => {
                 <WnycLogo class="wnyc-logo cursor-pointer" />
               </div>
               <div>
-                <p class="blurb line-height-3 text-xs">
-                  Listener-supported WNYC is the home for independent journalism and
-                  courageous conversation on air and online. Broadcasting live from New
-                  York City on 93.9 FM and AM 820 and available online and on the go.
-                </p>
+                <!-- <div class="blurb line-height-3 text-xs">
+                  Listener-supported WNYC is the home for independent journalism
+                  and courageous conversation on air and online. Broadcasting
+                  live from New York City on 93.9 FM and AM 820 and available
+                  online and on the go
+                </div> -->
+                <!-- <div
+                  class="blurb line-height-3 text-xs"
+                  v-html="footerPropertyDescription"
+                ></div> -->
+                <HtmlConvert
+                  :htmlContent="footerPropertyDescription"
+                  :tagClassMap="{ p: 'text-xs line-height-3' }"
+                />
               </div>
             </div>
             <div class="flex gap-5 align-items-center">
@@ -63,8 +79,8 @@ const submitForm = (email) => {
               <div class="newsletter">
                 <h2 class="mb-3">Sign up for our newsletter</h2>
                 <p class="line-height-3 text-xs">
-                  Sign up for for a weekly, behind-the-scenes update from the people
-                  behind your favorite shows.
+                  Sign up for for a weekly, behind-the-scenes update from the
+                  people behind your favorite shows.
                   <VFlexibleLink to="https://cloud.lists.wnyc.org/Preferences"
                     >See More
                   </VFlexibleLink>
@@ -76,7 +92,8 @@ const submitForm = (email) => {
                   :submission-status="submissionStatus"
                 >
                   By submitting your information, you're agreeing to receive
-                  communications from New York Public Radio in accordance with our
+                  communications from New York Public Radio in accordance with
+                  our
                   <VFlexibleLink to="/terms"> Terms </VFlexibleLink>.
                 </email-collector-form>
               </div>
@@ -107,7 +124,10 @@ const submitForm = (email) => {
       <div
         class="grid justify-content-between align-items-center mt-4 gap-4 grid-nogutter"
       >
-        <div v-if="footerLegalLinksData.length > 0" class="flex flex-wrap gap-3 -ml-2">
+        <div
+          v-if="footerLegalLinksData.length > 0"
+          class="flex flex-wrap gap-3 -ml-2"
+        >
           <NavButton
             v-for="item in footerLegalLinksData"
             :key="item.id"
@@ -119,7 +139,7 @@ const submitForm = (email) => {
           />
         </div>
         <p class="flex-none text-sm">
-          &copy; {{ getYear() }} New York Public Radio. All rights reserved.
+          &copy; {{ copyrightYear }} New York Public Radio. All rights reserved.
         </p>
       </div>
     </div>
