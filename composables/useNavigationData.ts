@@ -10,9 +10,13 @@ import {
 import { getYear } from '~/utilities/helpers'
 
 // strip any wnyc.org domain from the url for local routes
+// but preserve URLs with subdomains (e.g. sponsorship.wnyc.org)
 const stripWNYCUrl = (url) => {
     if (url) {
-        return url.replace(/https?:\/\/(?:[a-zA-Z0-9-]+\.)*wnyc\.org/i, '')
+        if (/https?:\/\/(?!www\.)[a-zA-Z0-9-]+\.wnyc\.org/i.test(url)) {
+            return url
+        }
+        return url.replace(/https?:\/\/(?:www\.)?wnyc\.org/i, '')
     }
     return url
 }
@@ -155,6 +159,13 @@ function processNavigationData (bffData, appDownloadLink: string, isApp: boolean
     console.log('bffData.wagtailResponse', bffData.wagtailResponse)
     const copyrightYear = bffData.wagtailResponse?.copyright_year || getYear()
 
+    // populate Inside WNYC(id:3) menu with Wagtail primary navigation items
+    const primaryFooterNavItems = normalizeWagtailMenuData(bffData.wagtailResponse?.primary_footer_links)
+    workingAllNav.find((item) => item.id === '3').items[0] = primaryFooterNavItems
+
+    // populate Get Involved(id:4) menu with Wagtail primary secondary items
+    const secondaryFooterNavItems = normalizeWagtailMenuData(bffData.wagtailResponse?.secondary_footer_links)
+    workingAllNav.find((item) => item.id === '4').items[0] = secondaryFooterNavItems
 
     return {
         headerNavigationData: workingHeaderNav,
