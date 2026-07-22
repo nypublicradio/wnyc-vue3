@@ -156,7 +156,6 @@ function processNavigationData (bffData, appDownloadLink: string, isApp: boolean
     }
 
     // copy write year for footer
-    console.log('bffData.wagtailResponse', bffData.wagtailResponse)
     const copyrightYear = bffData.wagtailResponse?.copyright_year || getYear()
 
     // populate Inside WNYC(id:3) menu with Wagtail primary navigation items
@@ -167,6 +166,13 @@ function processNavigationData (bffData, appDownloadLink: string, isApp: boolean
     const secondaryFooterNavItems = normalizeWagtailMenuData(bffData.wagtailResponse?.secondary_footer_links)
     workingAllNav.find((item) => item.id === '4').items[0] = secondaryFooterNavItems
 
+    // populate Get in Touch Footer Links (id:5) menu with Wagtail tertiary footer items
+    const tertiaryFooterNavItems = normalizeWagtailMenuData(bffData.wagtailResponse?.tertiary_footer_links)
+    workingAllNav.find((item) => item.id === '5').items[0] = tertiaryFooterNavItems
+
+    // get social links
+    const socialLinks = bffData.wagtailResponse?.social_links || []
+
     return {
         headerNavigationData: workingHeaderNav,
         allNavigationData: workingAllNav,
@@ -174,6 +180,7 @@ function processNavigationData (bffData, appDownloadLink: string, isApp: boolean
         footerLegalLinksData: legalLinkItems,
         footerPropertyDescription: bffData.wagtailResponse?.property_description || '',
         donateButtonData: finalDonateData,
+        socialLinks,
         copyrightYear
     }
 }
@@ -218,6 +225,7 @@ export default async function useNavigationData () {
         footerLegalLinksData: computed(() => data.value?.footerLegalLinksData ?? []),
         footerPropertyDescription: computed(() => data.value?.footerPropertyDescription ?? ''),
         donateButtonData: computed(() => data.value?.donateButtonData ?? { buttonText: '', buttonLink: '' }),
+        socialLinks: computed(() => data.value?.socialLinks ?? []),
         copyrightYear: computed(() => data.value?.copyrightYear),
         status,
         error,
