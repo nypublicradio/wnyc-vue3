@@ -2,9 +2,10 @@
 import { useToast } from "primevue/usetoast"
 import { useTopStories } from "~/composables/useTopStories"
 import { useIntersectionObserver } from "@vueuse/core"
-import { allSocialData } from "~/composables/navigationData.js"
-
-const { getFilteredTopStories, topStories } = useTopStories()
+const {
+  socialLinks,
+} = await useNavigationData()
+const { topStories } = useTopStories()
 const config = useRuntimeConfig()
 const toast = useToast()
 
@@ -141,8 +142,9 @@ useSeoMeta({
               imgCol="w-7rem md:w-12rem"
               titleClasses="text-sm md:text-lg"
               pipeClasses="text-xs md:text-base"
+              :allowVerticalEffect="false"
               :data="event"
-              :size="{ xs: [112, 112], md: [176, 176] }"
+              :size="{ xs: [112, 112], md: [192, 192] }"
             />
           </template>
           <template v-else>
@@ -167,15 +169,15 @@ useSeoMeta({
         <aside class="events-rail">
           <h3 class="events-rail__title">Rent The Greene Space</h3>
           <p class="events-rail__copy">
-            Host your next event at WNYC and WQXR! The Greene Space will provide you with
-            the same turn-key service for broadcast quality audio and video recording and
-            live streaming that we use to power our own radio stations, podcasts, and
-            concerts.
+            Host your next event at WNYC and WQXR! The Greene Space will provide
+            you with the same turn-key service for broadcast quality audio and
+            video recording and live streaming that we use to power our own
+            radio stations, podcasts, and concerts.
           </p>
           <VFlexibleLink :to="greeneSpaceUrl" class="events-rail__link">
             Learn more
           </VFlexibleLink>
-          <SocialButtons class="events-rail__social" :data="allSocialData" />
+          <SocialButtons class="events-rail__social" :data="socialLinks" />
           <div class="events-rail__ad">
             <story-htlAd
               layout="rectangle"
@@ -187,9 +189,8 @@ useSeoMeta({
       </div>
     </section>
 
-    <section v-if="getFilteredTopStories" class="thinContent">
+    <section v-if="topStories" class="thinContent">
       <Divider class="mt-2 mb-5" />
-      <h2 class="mb-3">Top Stories From Gothamist</h2>
       <TopStories :articles="topStories" />
     </section>
 
