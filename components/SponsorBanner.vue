@@ -25,6 +25,7 @@ const props = defineProps({
   background-color: #000000;
   color: #ffffff;
   padding: 3rem;
+  padding-bottom: calc($bottomMenuHeight + $playerHeight + 3rem);
   .content {
     display: flex;
     flex-direction: column;
