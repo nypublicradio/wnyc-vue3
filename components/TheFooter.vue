@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { useCurrentEpisode } from "~/composables/states"
-import { allSocialData } from "~/composables/navigationData.js"
 
 const emit = defineEmits<(e: "submit", value: any) => void>()
 
@@ -10,6 +9,7 @@ const {
   footerNavigationData,
   footerLegalLinksData,
   footerPropertyDescription,
+  socialLinks,
   copyrightYear,
 } = await useNavigationData()
 const isCurrentEpisode = useCurrentEpisode()
@@ -102,7 +102,7 @@ const submitForm = (email) => {
         </div>
         <div class="hidden xl:block col-1"></div>
         <div class="col">
-          <SocialButtons :data="allSocialData" />
+          <SocialButtons :data="socialLinks" />
           <div class="menu pt-6 flex flex-wrap md:flex-nowrap gap-4">
             <ExpandedMenuItem
               v-for="item in footerNavigationData"

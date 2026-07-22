@@ -116,24 +116,7 @@ const allMenuData = [
         inHeaderMenu: false,
         inFooterMenu: true,
         items: [
-            [
-                {
-                    label: "Contact Us",
-                    url: "https://newyorkpublicradio.my.site.com/wnyc/s/"
-                },
-                {
-                    label: "Get the App",
-                    url: "__USE_APP_DOWNLOAD_LINK__"
-                },
-                {
-                    label: "Careers",
-                    url: "https://nypublicradio.org/careers/"
-                },
-                {
-                    label: "Press",
-                    url: "https://nypublicradio.org/press-room/"
-                },
-            ],
+            // populated from Wagtail tertiary navigation
         ],
     },
     {
@@ -209,37 +192,4 @@ const allMenuData = [
 
 ]
 
-const allSocialData = [
-    {
-        label: "Instagram",
-        url: "https://www.instagram.com/wnyc",
-        id: "3",
-        icon: "pi pi-instagram",
-    },
-    // {
-    //     label: "X",
-    //     url: "https://x.com/wnyc",
-    //     id: "1",
-    //     icon: "pi pi-twitter",
-    // },
-    // {
-    //     label: "Bluesky",
-    //     url: "https://bsky.app/profile/wnyc.org",
-    //     id: "5",
-    //     icon: "pi pi-bluesky",
-    // },
-    {
-        label: "YouTube",
-        url: "https://www.youtube.com/@WnycOrg",
-        id: "2",
-        icon: "pi pi-youtube",
-    },
-    {
-        label: "Facebook",
-        url: "https://www.facebook.com/wnyc",
-        id: "0",
-        icon: "pi pi-facebook",
-    },
-]
-
-export { allMenuData, allSocialData }
+export { allMenuData }
