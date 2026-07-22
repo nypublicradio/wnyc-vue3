@@ -94,24 +94,7 @@ const allMenuData = [
         inHeaderMenu: false,
         inFooterMenu: true,
         items: [
-            [
-                {
-                    label: "About Us",
-                    url: "/about"
-                },
-                {
-                    label: "Archives",
-                    url: "/browse/shows/wnyc-archives"
-                },
-                {
-                    label: "Giveaways",
-                    url: "/giveaways"
-                },
-                {
-                    label: "Diversity (DEI)",
-                    url: "https://www.nypublicradio.org/diversity-dei-overview/"
-                },
-            ],
+            // populated from Wagtail primary navigation
         ],
     },
     {
@@ -122,24 +105,7 @@ const allMenuData = [
         inHeaderMenu: false,
         inFooterMenu: true,
         items: [
-            [
-                {
-                    label: "Support Us",
-                    url: "https://www.nypublicradio.org/support/"
-                },
-                {
-                    label: "Become a Sponsor",
-                    url: "https://sponsorship.wnyc.org/"
-                },
-                {
-                    label: "Events",
-                    url: "/events"
-                },
-                {
-                    label: "Community",
-                    url: "https://nypublicradio.org/community-advisory-board/ "
-                },
-            ],
+            // populated from Wagtail secondary navigation
         ],
     },
     {
