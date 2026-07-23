@@ -65,7 +65,7 @@ const op = ref()
 // handle the closing of the popover
 const closePopover = () => {
   if (hasMenuSlot.value) {
-    op?.value.hide()
+    op?.value?.hide()
   }
 }
 
@@ -111,10 +111,10 @@ const handleMouseLeave = () => {
         }
         closePopover()
         emit('emit-click')
-        
+
         const route = useRoute()
         // Vue Router does not natively fire watchers when clicking a link to the exact same route.
-        // We increment this global state so that target pages (like /live) can manually listen for 
+        // We increment this global state so that target pages (like /live) can manually listen for
         // same-page clicks and re-trigger scrolling or other logic.
         if (route.fullPath === props.route) {
           useState('useSamePageNavTrigger', () => 0).value++
