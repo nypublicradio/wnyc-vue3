@@ -160,7 +160,7 @@ useSocialMetaOverrides(show)
       <FetchError v-if="status === 'error'" />
     </section>
     <template v-if="!error">
-      <ShowHeader :show="show" />
+      <ShowHeader :show="show" :class="route.params.slug" />
       <!-- JUMP LINKS -->
       <section class="hidden md:block">
         <div class="grid">
