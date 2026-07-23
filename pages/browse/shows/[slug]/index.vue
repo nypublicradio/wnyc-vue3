@@ -2,7 +2,11 @@
 import { checkIsFavorited, slugify } from "~/utilities/helpers"
 import { useIsApp } from "~/composables/states"
 import { useFetchWrapper } from "~/composables/useFetchWrapper"
-import { getShowTitle, getShowDescription, getShowImage } from "~/utilities/metadataHelpers"
+import {
+  getShowTitle,
+  getShowDescription,
+  getShowImage,
+} from "~/utilities/metadataHelpers"
 import useSeoMetaOverrides from "~/composables/useSeoMetaOverrides"
 import useSocialMetaOverrides from "~/composables/useSocialMetaOverrides"
 const config = useRuntimeConfig()
@@ -11,9 +15,12 @@ const isApp = useIsApp()
 /**
  * Return the first value when a route query parameter is repeated.
  */
-const getQueryValue = (value) => Array.isArray(value) ? value[0] : value
+const getQueryValue = (value) => (Array.isArray(value) ? value[0] : value)
 const isPreview = computed(
-  () => route.query.preview === "true" && route.query.identifier && route.query.token
+  () =>
+    route.query.preview === "true" &&
+    route.query.identifier &&
+    route.query.token
 )
 
 const showEndpoint = computed(() => {
@@ -33,7 +40,9 @@ const showFetchArgs = [
   showEndpoint,
   {
     key: isPreview.value
-      ? `show-page-preview-${route.params.slug}-${getQueryValue(route.query.identifier)}`
+      ? `show-page-preview-${route.params.slug}-${getQueryValue(
+          route.query.identifier
+        )}`
       : `show-page-${route.params.slug}`,
     watch: false,
   },
@@ -135,7 +144,7 @@ useSeoMeta({
 })
 if (image) {
   useSeoMeta({
-   ogImage: image,
+    ogImage: image,
   })
 }
 useSeoMetaOverrides(show)
