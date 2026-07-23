@@ -34,17 +34,15 @@ const routeSlug = ref(route.query.slug)
 const samePageNavTrigger = useState("useSamePageNavTrigger", () => 0)
 
 // centralize the scrolling logic for the page
-const performScroll = (newQuery, delay = 300) => {
+const performScroll = (newQuery) => {
   if (import.meta.client) {
     // the actual scrolling code
     const doScroll = () => {
-      if (newQuery.schedule) {
-        setTimeout(() => {
-          window.scrollTo({
-            top: scheduleHolderRef?.value?.offsetTop + 10,
-            behavior: "smooth",
-          })
-        }, delay)
+      if (newQuery.schedule && scheduleHolderRef?.value) {
+        window.scrollTo({
+          top: scheduleHolderRef?.value?.offsetTop + 15,
+          behavior: "smooth",
+        })
       } else {
         if (window.scrollY !== 0) {
           window.scrollTo({
@@ -59,7 +57,9 @@ const performScroll = (newQuery, delay = 300) => {
       const unwatch = watch(isPageMounted, (mounted) => {
         if (mounted) {
           // Delay an extra moment on initial mount to let layout settle
-          setTimeout(doScroll, 150)
+          setTimeout(() => {
+            doScroll()
+          }, 150)
           unwatch()
         }
       })
@@ -107,7 +107,7 @@ watch(
 // watcher for same-page navigation clicks (e.g., clicking menu link while already on that page)
 watch(samePageNavTrigger, () => {
   if (router.currentRoute.value.name === "live") {
-    performScroll(router.currentRoute.value.query, 0)
+    performScroll(router.currentRoute.value.query)
   }
 })
 
