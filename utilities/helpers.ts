@@ -146,7 +146,7 @@ export function formatTime (date: any, formatString = "h:mm a") {
 
 // Function to strip HTML tags and return text content
 export function stripHtmlTags (str) {
-  return str ? str.replace(/<[^>]*>?/gm, '') : ''
+  return typeof str === 'string' ? str.replace(/<[^>]*>?/gm, '') : ''
 }
 
 // Computed property to calculate reading time
