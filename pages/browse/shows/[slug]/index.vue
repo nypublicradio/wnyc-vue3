@@ -56,10 +56,11 @@ const {
   ? useFetchWrapper(...showFetchArgs)
   : await useFetchWrapper(...showFetchArgs)
 
+// redirect if the show has a redirect property.
 const redirectIfNeeded = (page) => {
   if (!page?.redirect) return
 
-  return navigateTo(page.location, {
+  navigateTo(page.location, {
     redirectCode: page.statusCode || 301,
     external: /^https?:\/\//.test(page.location),
   })
@@ -139,7 +140,7 @@ useHead({
 useSeoMeta({
   title,
   ogTitle: title,
-  description: description,
+  description,
   ogDescription: description,
 })
 if (image) {

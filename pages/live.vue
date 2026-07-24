@@ -107,7 +107,7 @@ watch(
 // watcher for same-page navigation clicks (e.g., clicking menu link while already on that page)
 watch(samePageNavTrigger, () => {
   if (router.currentRoute.value.name === "live") {
-    performScroll(router.currentRoute.value.query, 0)
+    performScroll(router.currentRoute.value.query)
   }
 })
 
