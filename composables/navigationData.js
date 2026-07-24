@@ -94,24 +94,7 @@ const allMenuData = [
         inHeaderMenu: false,
         inFooterMenu: true,
         items: [
-            [
-                {
-                    label: "About Us",
-                    url: "/about"
-                },
-                {
-                    label: "Archives",
-                    url: "/browse/shows/wnyc-archives"
-                },
-                {
-                    label: "Giveaways",
-                    url: "/giveaways"
-                },
-                {
-                    label: "Diversity (DEI)",
-                    url: "https://www.nypublicradio.org/diversity-dei-overview/"
-                },
-            ],
+            // populated from Wagtail primary navigation
         ],
     },
     {
@@ -122,24 +105,7 @@ const allMenuData = [
         inHeaderMenu: false,
         inFooterMenu: true,
         items: [
-            [
-                {
-                    label: "Support Us",
-                    url: "https://www.nypublicradio.org/support/"
-                },
-                {
-                    label: "Become a Sponsor",
-                    url: "https://sponsorship.wnyc.org/"
-                },
-                {
-                    label: "Events",
-                    url: "/events"
-                },
-                {
-                    label: "Community",
-                    url: "https://nypublicradio.org/community-advisory-board/ "
-                },
-            ],
+            // populated from Wagtail secondary navigation
         ],
     },
     {
@@ -150,24 +116,7 @@ const allMenuData = [
         inHeaderMenu: false,
         inFooterMenu: true,
         items: [
-            [
-                {
-                    label: "Contact Us",
-                    url: "https://newyorkpublicradio.my.site.com/wnyc/s/"
-                },
-                {
-                    label: "Get the App",
-                    url: "__USE_APP_DOWNLOAD_LINK__"
-                },
-                {
-                    label: "Careers",
-                    url: "https://nypublicradio.org/careers/"
-                },
-                {
-                    label: "Press",
-                    url: "https://nypublicradio.org/press-room/"
-                },
-            ],
+            // populated from Wagtail tertiary navigation
         ],
     },
     {
@@ -243,37 +192,4 @@ const allMenuData = [
 
 ]
 
-const allSocialData = [
-    {
-        label: "Instagram",
-        url: "https://www.instagram.com/wnyc",
-        id: "3",
-        icon: "pi pi-instagram",
-    },
-    // {
-    //     label: "X",
-    //     url: "https://x.com/wnyc",
-    //     id: "1",
-    //     icon: "pi pi-twitter",
-    // },
-    // {
-    //     label: "Bluesky",
-    //     url: "https://bsky.app/profile/wnyc.org",
-    //     id: "5",
-    //     icon: "pi pi-bluesky",
-    // },
-    {
-        label: "YouTube",
-        url: "https://www.youtube.com/@WnycOrg",
-        id: "2",
-        icon: "pi pi-youtube",
-    },
-    {
-        label: "Facebook",
-        url: "https://www.facebook.com/wnyc",
-        id: "0",
-        icon: "pi pi-facebook",
-    },
-]
-
-export { allMenuData, allSocialData }
+export { allMenuData }
