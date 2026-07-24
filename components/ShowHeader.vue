@@ -127,7 +127,7 @@ const isLoadedEpisode = computed(() => {
     )
     for (const item of listItems) {
       const items = item.value?.list?.listItems
-      if (items && items.some((ep) => ep.id === currentEpisode.value.id)) {
+      if (items?.some((ep) => ep.id === currentEpisode.value.id)) {
         return true
       }
     }
@@ -166,12 +166,21 @@ const togglePlayMostRecentEpisode = () => {
     }
   }
 }
-
+// handle the listen live button. grabs the station from the liveStationPreferences array and plays it. If the show is not in the array, it does nothing.
 const listenLiveNow = () => {
   const station = liveStationPreferences.find(
     (station) => station.label === props.show?.title
   )
-  getStationBySlugAndPlayIt(station?.slug, true)
+  if (station) {
+    getStationBySlugAndPlayIt(station?.slug, true)
+  } else {
+    toast.add({
+      severity: "info",
+      summary: "No live stream available",
+      detail: "We couldn't find a live stream for this show right now.",
+      life: 3000,
+    })
+  }
 }
 
 // watch(
@@ -236,12 +245,12 @@ const isThisShowPlaying = computed(() => {
               v-if="show"
               class="flex flex-column justify-content-start gap-2"
             >
-              <transition name="zoom">
+              <!-- <transition name="zoom">
                 <LiveBadge
                   v-if="isCurrentlyLive"
                   class="mb-1 align-self-start"
                 />
-              </transition>
+              </transition> -->
               <h2 class="line-height-1 text-2xl md:text-6xl">
                 {{ topperTitle }}
               </h2>
@@ -439,7 +448,13 @@ const isThisShowPlaying = computed(() => {
 
 <style lang="scss" scoped>
 @mixin glass {
-  background-color: #ffffff33;
+  //background-color: #ffffff33;
+  background: linear-gradient(
+    -200deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 100%
+  ); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+
   color: #ffffff;
 }
 
