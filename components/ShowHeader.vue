@@ -210,6 +210,15 @@ const isThisShowPlaying = computed(() => {
     (isLoadedEpisode.value || isLoadedLiveStream.value)
   )
 })
+const isThisShowStreaming = computed(() => {
+  return (
+    isEpisodePlaying.value &&
+    isLiveStream.value &&
+    (currentEpisodeHolder.value?.title.includes(props.show?.title) ||
+      currentEpisode.value?.title.includes(props.show?.title) ||
+      currentEpisode.value?.title === props.show?.title)
+  )
+})
 </script>
 
 <template>
@@ -291,7 +300,7 @@ const isThisShowPlaying = computed(() => {
                   @click="listenLiveNow"
                 >
                   <template #icon>
-                    <PauseIcon v-if="isThisShowPlaying" />
+                    <PauseIcon v-if="isThisShowStreaming" />
                     <PlayIcon v-else />
                   </template>
                 </Button>
@@ -448,14 +457,33 @@ const isThisShowPlaying = computed(() => {
 
 <style lang="scss" scoped>
 @mixin glass {
-  //background-color: #ffffff33;
+  position: relative;
+  overflow: hidden;
+  color: #ffffff;
   background: linear-gradient(
     -200deg,
     rgba(255, 255, 255, 0) 0%,
     rgba(255, 255, 255, 0.2) 100%
-  ); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  );
+  border: 1px solid rgb(255, 255, 255) !important;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      -200deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.15) 100%
+    );
+    opacity: 0;
+    transition: opacity var(--p-transition-duration);
+    pointer-events: none;
+  }
 
-  color: #ffffff;
+  &:hover::after {
+    opacity: 1;
+  }
 }
 
 .show-header-holder {
