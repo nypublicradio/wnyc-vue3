@@ -86,7 +86,7 @@
     "jsforce": "^3.9.5",
     "jsonwebtoken": "^9.0.2",
     "memoize": "^10.0.0",
-    "music-metadata": "^7.14.0",
+    "music-metadata": "^11.14.0",
     "onesignal-cordova-plugin": "^5.2.15",
     "piexifjs": "^1.0.6",
     "podcast-feed-parser": "^1.0.4",
