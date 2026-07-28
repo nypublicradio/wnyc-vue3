@@ -303,6 +303,7 @@ export async function normalizeWagtailListItem (article: Record<string, any | un
     eventUrl: article.eventUrl,
     startDatetime: article.startDatetime,
     endDatetime: article.endDatetime,
+    tags: article.tags,
   })
 }
 

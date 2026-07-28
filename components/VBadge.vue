@@ -58,6 +58,6 @@ const props = defineProps({
 }
 .badge.event-type-badge .content {
   color: var(--p-text-color);
-  background-color: var(--p-surface-25);
+  background-color: var(--badge-background-event-type-badge);
 }
 </style>
