@@ -11,6 +11,11 @@ const __getConfig = () => {
     return testCfg ?? useRuntimeConfig()
 }
 
+type PreviewCredentials = {
+    identifier: string
+    token: string
+}
+
 const isWnycHost = (hostname: string) => hostname === 'wnyc.org' || hostname.endsWith('.wnyc.org')
 
 const routeLegacyShowLocation = (location: string) => {
@@ -59,14 +64,28 @@ const getPublisherPageData = async (pageSlug: string) => {
 }
 
 // getting page data from the wagtail api
-const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean, isDownloadRulesOnly?: boolean, isApp?: boolean) => {
+const getWagtailPageData = async (
+    pageSlug: string,
+    isShowOnly?: boolean,
+    isDownloadRulesOnly?: boolean,
+    isApp?: boolean
+    preview?: PreviewCredentials,
+) => {
     // if the pageSlug is a url (www.example.com or example.com), just return null
     if (/^(www\.)?[^/]+\.[a-z]{2,}$/i.test(pageSlug)) {
         return {}
     }
 
     const config = __getConfig()
-    const options = {
+    const options = preview ? {
+        method: 'GET',
+        url: `${config.public.AVIARY_BASE_API}page_preview/`,
+        params: preview,
+        headers: {
+            'Accept-Encoding': 'identity',
+            'X-CMS-Site': config.public.cmsSite,
+        },
+    } : {
         method: 'GET',
         url: `${config.public.AVIARY_BASE_API}pages/find/`,
         params: { html_path: `${mediaTypeRoutes.show}${pageSlug}/` },
@@ -77,6 +96,10 @@ const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean, isDown
     try {
         const res = await axios(options)
         const resData = humps.camelizeKeys(res.data)
+
+        if (preview && resData.meta?.type !== 'shows.ShowPage') {
+            throw createError({ statusCode: 404, statusMessage: 'Show preview not found' })
+        }
 
         if (isDownloadRulesOnly) {
             return { canDownloadEpisodes: resData.canDownloadEpisodes ?? false }
@@ -111,6 +134,16 @@ const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean, isDown
         }
         return await normalizeArticlePage(resData)
     } catch (error: any) {
+        if (preview) {
+            if (error?.statusCode) {
+                throw error
+            }
+            if (error?.response?.status === 404) {
+                throw createError({ statusCode: 404, statusMessage: 'Show preview not found' })
+            }
+            console.error('[Wagtail Show Preview] Error fetching preview:', error?.response?.data || error?.message || error)
+            throw createError({ statusCode: 502, statusMessage: 'CMS show preview request failed' })
+        }
         if (error?.response?.status === 404) {
             const requestOptions = getCmsRequestOptions(config.public.cmsSite)
             const redirectPaths = [
@@ -137,10 +170,17 @@ const getWagtailPageData = async (pageSlug: string, isShowOnly?: boolean, isDown
 }
 
 // get page data from the proper CMS
-const getPageData = async (pageSlug: string, cmsSource: string, isShowOnly?: boolean, isDownloadRulesOnly?: boolean, isApp?: boolean) => {
+const getPageData = async (
+    pageSlug: string,
+    cmsSource: string,
+    isShowOnly?: boolean,
+    isDownloadRulesOnly?: boolean,
+    isApp?: boolean
+    preview?: PreviewCredentials,
+) => {
     switch (cmsSource) {
         case cmsSources.WAGTAIL:
-            return await getWagtailPageData(pageSlug, isShowOnly, isDownloadRulesOnly, isApp)
+            return await getWagtailPageData(pageSlug, isShowOnly, isDownloadRulesOnly, isApp, preview)
         case cmsSources.PUBLISHER:
             return await getPublisherPageData(pageSlug)
         default:
@@ -158,12 +198,30 @@ export default defineEventHandler(async (event) => {
 
     // Get query parameters (e.g. ?showOnly=true)
     const query = getQuery(event)
-    const isShowOnly = parseBooleanQuery(query.showOnly)
+    const showOnly: string | undefined = query.showOnly as string | undefined
+
+    const isShowOnly = parseBooleanQuery(showOnly)
     const isDownloadRulesOnly = parseBooleanQuery(query.downloadRulesOnly)
     const isApp = parseBooleanQuery(query.isApp)
+    const isPreview = query.preview === 'true'
+    const identifier = Array.isArray(query.identifier) ? query.identifier[0] : query.identifier
+    const token = Array.isArray(query.token) ? query.token[0] : query.token
+
+    if (isPreview && (!identifier || !token)) {
+        throw createError({ statusCode: 404, statusMessage: 'Show preview not found' })
+    }
+
+    const preview = isPreview ? {
+        identifier: identifier.toString(),
+        token: token.toString(),
+    } : undefined
 
     if (pageSlug && cmsSource) {
-        const PageData = await getPageData(pageSlug, cmsSource, isShowOnly, isDownloadRulesOnly, isApp)
+        const PageData = await getPageData(pageSlug, cmsSource, isShowOnly, isDownloadRulesOnly, isApp, preview)
+
+        if (isPreview) {
+            event?.node?.res?.setHeader?.('Cache-Control', 'no-store')
+        }
 
         return PageData
     } else {

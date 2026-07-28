@@ -144,7 +144,10 @@ onMounted(() => {
 
 <template>
   <div ref="htmlConvertRef" class="html-convert-container">
-    <div class="html-formatting" :class="[{ 'no-blocks': noBlocks }, props.htmlClasses]">
+    <div
+      class="html-formatting"
+      :class="[{ 'no-blocks': noBlocks }, props.htmlClasses]"
+    >
       <component :is="parsedNodes" v-if="parsedNodes" />
     </div>
   </div>
@@ -155,7 +158,4 @@ onMounted(() => {
   width: 100%;
   max-width: 100%;
 }
-</style>
-<style lang="scss">
-// Add global styles for html-convert if needed
 </style>

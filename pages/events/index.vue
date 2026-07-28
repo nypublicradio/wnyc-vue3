@@ -2,7 +2,9 @@
 import { useToast } from "primevue/usetoast"
 import { useTopStories } from "~/composables/useTopStories"
 import { useIntersectionObserver } from "@vueuse/core"
-import { allSocialData } from "~/composables/navigationData.js"
+const {
+  socialLinks,
+} = await useNavigationData()
 const { topStories } = useTopStories()
 const config = useRuntimeConfig()
 const toast = useToast()
@@ -175,7 +177,7 @@ useSeoMeta({
           <VFlexibleLink :to="greeneSpaceUrl" class="events-rail__link">
             Learn more
           </VFlexibleLink>
-          <SocialButtons class="events-rail__social" :data="allSocialData" />
+          <SocialButtons class="events-rail__social" :data="socialLinks" />
           <div class="events-rail__ad">
             <story-htlAd
               layout="rectangle"
