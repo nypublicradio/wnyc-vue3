@@ -80,8 +80,8 @@ watch(searchFieldValue, () => {
 })
 
 onMounted(() => {
-  // set focus on search field
-  if (searchFieldRef.value) {
+  // set focus on search field for desktop only
+  if (searchFieldRef.value && !isApp.value) {
     searchFieldRef.value.$el.focus()
   }
 
