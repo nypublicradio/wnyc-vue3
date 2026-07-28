@@ -17,7 +17,6 @@ const {
 
 const router = useRouter()
 const searchFieldValue = ref("")
-const searchFieldRef = ref(null)
 const isSearching = ref(false)
 const allOrFeatured = computed(() => route.query.all !== "true")
 const { isMobileBreakpoint } = useBreakpoints()
@@ -80,11 +79,6 @@ watch(searchFieldValue, () => {
 })
 
 onMounted(() => {
-  // set focus on search field for desktop only
-  if (searchFieldRef.value && !isApp.value) {
-    searchFieldRef.value.$el.focus()
-  }
-
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
@@ -120,7 +114,6 @@ useSeoMeta({
             v-model="searchFieldValue"
             placeholder="Search"
             class="search w-full on-white"
-            ref="searchFieldRef"
           />
           <InputIcon v-if="searchFieldValue" class="relative">
             <Button
