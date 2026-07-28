@@ -9,7 +9,11 @@ import {
   useAppDownloadLink,
   useAllCurrentStations,
 } from "~/composables/states"
+<<<<<<< Updated upstream
 import { togglePlayEpisode, initializeStationList, getOrg } from "~/utilities/helpers"
+=======
+import { togglePlayEpisode, initializeStationList } from "~/utilities/helpers"
+>>>>>>> Stashed changes
 import useLiveStream, {
   updateLiveStream,
   updateAllLiveStreams,
@@ -85,13 +89,22 @@ const onUpdateStation = (station) => {
             >
               <LiveBadge />
               <div class="schedule-text flex gap-1">
-                <p class="font-bold" v-if="currentEpisodeHolder?.cmsSource">
-                  {{ getOrg(currentEpisodeHolder) }}
+                <p
+                  class="font-bold"
+                  v-if="
+                    currentEpisodeHolder?.station &&
+                    currentEpisodeHolder?.station !==
+                      currentEpisodeHolder.showTitle
+                  "
+                >
+                  {{ currentEpisodeHolder.station }}
                 </p>
                 <p
                   class="font-bold"
                   v-if="
-                    currentEpisodeHolder?.cmsSource &&
+                    currentEpisodeHolder?.station &&
+                    currentEpisodeHolder?.station !==
+                      currentEpisodeHolder.showTitle &&
                     currentEpisodeHolder.timeStart &&
                     currentEpisodeHolder.timeEnd
                   "
