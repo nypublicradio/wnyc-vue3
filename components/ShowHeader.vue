@@ -272,6 +272,7 @@ const isThisShowStreaming = computed(() => {
               >
                 {{ topperDescription }}
               </p>
+              <WavePulse class="mobile hidden" />
               <!-- desktop buttons -->
               <div
                 class="hidden md:flex align-items-center gap-3 flex-wrap desktop-buttons"
@@ -349,13 +350,10 @@ const isThisShowStreaming = computed(() => {
                     <DevicesIcon style="height: 20px; width: 20px" />
                   </template>
                 </Button>
-                <WavePulse class="hidden" />
+                <WavePulse class="desktop hidden" />
               </div>
             </div>
-            <div
-              v-else
-              class="hidden md:flex flex-column gap-3 w-full mobile-buttons"
-            >
+            <div v-else class="hidden md:flex flex-column gap-3 w-full">
               <div class="flex flex-column gap-0">
                 <Skeleton
                   class="my-2"
@@ -386,7 +384,7 @@ const isThisShowStreaming = computed(() => {
         <!-- mobile buttons -->
         <div
           v-if="show"
-          class="flex md:hidden justify-content-center align-items-center gap-2 mt-3"
+          class="mobile-buttons flex md:hidden justify-content-center align-items-center gap-2 mt-3"
         >
           <Button
             rounded
@@ -410,6 +408,21 @@ const isThisShowStreaming = computed(() => {
           >
             <template #icon>
               <PauseIcon v-if="isThisShowPlaying" />
+              <PlayIcon v-else />
+            </template>
+          </Button>
+
+          <Button
+            class="hidden play-live-stream-btn flex-none"
+            severity="secondary"
+            rounded
+            aria-label="listen live toggle"
+            tabindex="0"
+            label="Listen Live"
+            @click="listenLiveNow"
+          >
+            <template #icon>
+              <PauseIcon v-if="isThisShowStreaming" />
               <PlayIcon v-else />
             </template>
           </Button>
@@ -509,7 +522,7 @@ const isThisShowStreaming = computed(() => {
       }
     }
   }
-
+  // New Sounds specific styles
   &.new-sounds {
     .desktop-buttons {
       .play-btn,
@@ -523,10 +536,32 @@ const isThisShowStreaming = computed(() => {
       .follow-btn {
         @include glass;
       }
-      .wave-pulse {
+    }
+    .mobile-buttons {
+      padding-top: 1rem;
+      gap: 1.5rem !important;
+      .play-btn {
+        display: none;
+      }
+      .play-live-stream-btn {
+        display: inline-flex !important;
+        @include glass;
+      }
+    }
+    .wave-pulse {
+      transform-origin: left;
+
+      &.desktop {
         display: inline-flex !important;
         transform: scaleX(1.2);
-        transform-origin: left;
+      }
+      &.mobile {
+        @include media("<md") {
+          display: inline-flex !important;
+        }
+        transform: scaleX(0.8);
+        width: 100%;
+        margin-top: 1rem;
       }
     }
   }
