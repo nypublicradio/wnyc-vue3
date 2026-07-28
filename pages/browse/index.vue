@@ -7,15 +7,17 @@ import { useIsApp } from "~/composables/states"
 const config = useRuntimeConfig()
 const isApp = useIsApp()
 const route = useRoute()
-const { data: shows, status, error } = await useFetchWrapper(
-  `${config.public.BFF_URL}/api/v3/shows`,
-  {
-    key: "v3-shows",
-  }
-)
+const {
+  data: shows,
+  status,
+  error,
+} = await useFetchWrapper(`${config.public.BFF_URL}/api/v3/shows`, {
+  key: "v3-shows",
+})
 
 const router = useRouter()
 const searchFieldValue = ref("")
+const searchFieldRef = ref(null)
 const isSearching = ref(false)
 const allOrFeatured = computed(() => route.query.all !== "true")
 const { isMobileBreakpoint } = useBreakpoints()
@@ -78,6 +80,11 @@ watch(searchFieldValue, () => {
 })
 
 onMounted(() => {
+  // set focus on search field
+  if (searchFieldRef.value) {
+    searchFieldRef.value.$el.focus()
+  }
+
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
@@ -88,7 +95,8 @@ onMounted(() => {
 })
 
 const title = "Browse Shows | WNYC"
-const description = "Learn more about the shows airing on WNYC, America's most listened-to public radio station."
+const description =
+  "Learn more about the shows airing on WNYC, America's most listened-to public radio station."
 useHead({
   title,
 })
@@ -112,6 +120,7 @@ useSeoMeta({
             v-model="searchFieldValue"
             placeholder="Search"
             class="search w-full on-white"
+            ref="searchFieldRef"
           />
           <InputIcon v-if="searchFieldValue" class="relative">
             <Button
@@ -180,7 +189,9 @@ useSeoMeta({
         <FetchError v-if="error" />
 
         <section class="tabs mt-2">
-          <div class="flex md:justify-content-between align-items-center mb-4 gap-3">
+          <div
+            class="flex md:justify-content-between align-items-center mb-4 gap-3"
+          >
             <Transition name="fade" mode="out-in">
               <h2 :key="allOrFeatured ? 'featured' : 'all'">
                 {{ allOrFeatured ? "Featured" : "All" }} Shows

@@ -1,3 +1,14 @@
+<script setup>
+const uid = useId()
+const ids = {
+  soft: `n705-soft-${uid}`,
+  vivid: `n705-vivid-${uid}`,
+  wave: `n705-wave-${uid}`,
+  bandG: `n705-band-g-${uid}`,
+  band: `n705-band-${uid}`,
+}
+</script>
+
 <template>
   <svg
     role="img"
@@ -12,7 +23,7 @@
     <title>Wave Pulse</title>
     <defs>
       <linearGradient
-        id="n705-soft"
+        :id="ids.soft"
         gradientUnits="userSpaceOnUse"
         x1="0"
         y1="0"
@@ -28,7 +39,7 @@
         <stop offset="1" stop-color="#8C9CD4" />
       </linearGradient>
       <linearGradient
-        id="n705-vivid"
+        :id="ids.vivid"
         gradientUnits="userSpaceOnUse"
         x1="0"
         y1="0"
@@ -44,7 +55,7 @@
         <stop offset="1" stop-color="#B083F7" />
       </linearGradient>
       <mask
-        id="n705-wave"
+        :id="ids.wave"
         maskUnits="userSpaceOnUse"
         x="0"
         y="0"
@@ -77,21 +88,27 @@
           />
         </path>
       </mask>
-      <linearGradient id="n705-band-g" x1="0" y1="0" x2="1" y2="0">
+      <linearGradient :id="ids.bandG" x1="0" y1="0" x2="1" y2="0">
         <stop offset="0" stop-color="#fff" stop-opacity="0" />
         <stop offset="0.45" stop-color="#fff" stop-opacity="1" />
         <stop offset="0.55" stop-color="#fff" stop-opacity="1" />
         <stop offset="1" stop-color="#fff" stop-opacity="0" />
       </linearGradient>
       <mask
-        id="n705-band"
+        :id="ids.band"
         maskUnits="userSpaceOnUse"
         x="0"
         y="0"
         width="203"
         height="21.5"
       >
-        <rect x="-104" y="0" width="100" height="21.5" fill="url(#n705-band-g)">
+        <rect
+          x="-104"
+          y="0"
+          width="100"
+          height="21.5"
+          :fill="`url(#${ids.bandG})`"
+        >
           <animateTransform
             attributeName="transform"
             type="translate"
@@ -108,17 +125,17 @@
       y="0"
       width="203"
       height="21.5"
-      fill="url(#n705-soft)"
-      mask="url(#n705-wave)"
+      :fill="`url(#${ids.soft})`"
+      :mask="`url(#${ids.wave})`"
     />
-    <g mask="url(#n705-wave)">
+    <g :mask="`url(#${ids.wave})`">
       <rect
         x="0"
         y="0"
         width="203"
         height="21.5"
-        fill="url(#n705-vivid)"
-        mask="url(#n705-band)"
+        :fill="`url(#${ids.vivid})`"
+        :mask="`url(#${ids.band})`"
       />
     </g>
   </svg>
