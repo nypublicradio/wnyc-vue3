@@ -14,7 +14,7 @@ const props = defineProps({
 
 // if the service is "homepage", return "link", otherwise just return the service name in lowercase
 const getServiceIcon = (service) => {
-  if (service.toLowerCase() === "homepage") return "link"
+  if (service.toLowerCase() === "homepage") return "globe"
   return service.toLowerCase()
 }
 </script>
