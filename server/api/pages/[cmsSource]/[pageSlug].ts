@@ -68,7 +68,7 @@ const getWagtailPageData = async (
     pageSlug: string,
     isShowOnly?: boolean,
     isDownloadRulesOnly?: boolean,
-    isApp?: boolean
+    isApp?: boolean,
     preview?: PreviewCredentials,
 ) => {
     // if the pageSlug is a url (www.example.com or example.com), just return null
@@ -175,7 +175,7 @@ const getPageData = async (
     cmsSource: string,
     isShowOnly?: boolean,
     isDownloadRulesOnly?: boolean,
-    isApp?: boolean
+    isApp?: boolean,
     preview?: PreviewCredentials,
 ) => {
     switch (cmsSource) {
