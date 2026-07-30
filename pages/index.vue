@@ -30,7 +30,7 @@ onMounted(() => {
     <div class="page" :class="[`${String(route.name)}`]">
       <!-- <Transition name="fade"> -->
       <section class="loading-holder">
-        <WnycLoader class="loader-anim" color="var(--p-surface-950)" />
+        <WnycLoader class="loader-anim" color="#101012" />
       </section>
       <!-- </Transition> -->
     </div>
