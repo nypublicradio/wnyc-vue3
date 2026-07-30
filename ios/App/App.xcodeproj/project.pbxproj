@@ -3,11 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0BF33A31F753D42894823139 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
+		0BF33A31F753D42894823139 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		15F88FB02EB3C85000B7B7BB /* OneSignalNotificationServiceExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 15F88FA92EB3C85000B7B7BB /* OneSignalNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		15F88FC02EB3CB0A00B7B7BB /* OneSignalNotificationServiceExtensionAlpha.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 15F88FB92EB3CB0A00B7B7BB /* OneSignalNotificationServiceExtensionAlpha.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		15F88FD02EB3CB3600B7B7BB /* OneSignalNotificationServiceExtensionLocal.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 15F88FC92EB3CB3600B7B7BB /* OneSignalNotificationServiceExtensionLocal.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -203,21 +203,21 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		15F88FB12EB3C85000B7B7BB /* Exceptions for "OneSignalNotificationServiceExtension" folder in "OneSignalNotificationServiceExtension" target */ = {
+		15F88FB12EB3C85000B7B7BB /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
 			target = 15F88FA82EB3C85000B7B7BB /* OneSignalNotificationServiceExtension */;
 		};
-		15F88FC12EB3CB0A00B7B7BB /* Exceptions for "OneSignalNotificationServiceExtensionAlpha" folder in "OneSignalNotificationServiceExtensionAlpha" target */ = {
+		15F88FC12EB3CB0A00B7B7BB /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
 			target = 15F88FB82EB3CB0A00B7B7BB /* OneSignalNotificationServiceExtensionAlpha */;
 		};
-		15F88FD12EB3CB3600B7B7BB /* Exceptions for "OneSignalNotificationServiceExtensionLocal" folder in "OneSignalNotificationServiceExtensionLocal" target */ = {
+		15F88FD12EB3CB3600B7B7BB /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -227,42 +227,9 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		15F88FAA2EB3C85000B7B7BB /* OneSignalNotificationServiceExtension */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				15F88FB12EB3C85000B7B7BB /* Exceptions for "OneSignalNotificationServiceExtension" folder in "OneSignalNotificationServiceExtension" target */,
-			);
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
-			path = OneSignalNotificationServiceExtension;
-			sourceTree = "<group>";
-		};
-		15F88FBA2EB3CB0A00B7B7BB /* OneSignalNotificationServiceExtensionAlpha */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				15F88FC12EB3CB0A00B7B7BB /* Exceptions for "OneSignalNotificationServiceExtensionAlpha" folder in "OneSignalNotificationServiceExtensionAlpha" target */,
-			);
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
-			path = OneSignalNotificationServiceExtensionAlpha;
-			sourceTree = "<group>";
-		};
-		15F88FCA2EB3CB3600B7B7BB /* OneSignalNotificationServiceExtensionLocal */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				15F88FD12EB3CB3600B7B7BB /* Exceptions for "OneSignalNotificationServiceExtensionLocal" folder in "OneSignalNotificationServiceExtensionLocal" target */,
-			);
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
-			path = OneSignalNotificationServiceExtensionLocal;
-			sourceTree = "<group>";
-		};
+		15F88FAA2EB3C85000B7B7BB /* OneSignalNotificationServiceExtension */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (15F88FB12EB3C85000B7B7BB /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = OneSignalNotificationServiceExtension; sourceTree = "<group>"; };
+		15F88FBA2EB3CB0A00B7B7BB /* OneSignalNotificationServiceExtensionAlpha */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (15F88FC12EB3CB0A00B7B7BB /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = OneSignalNotificationServiceExtensionAlpha; sourceTree = "<group>"; };
+		15F88FCA2EB3CB3600B7B7BB /* OneSignalNotificationServiceExtensionLocal */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (15F88FD12EB3CB3600B7B7BB /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = OneSignalNotificationServiceExtensionLocal; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -294,7 +261,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0BF33A31F753D42894823139 /* BuildFile in Frameworks */,
+				0BF33A31F753D42894823139 /* (null) in Frameworks */,
 				78A9C32C9CB7D78DCA280864 /* Pods_AppAlpha.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -435,7 +402,6 @@
 				16310B96ADB8A4EAA200003D /* Pods-OneSignalNotificationServiceExtensionLocal.debug.xcconfig */,
 				E1A0DB4CFDEF48725CCCC59B /* Pods-OneSignalNotificationServiceExtensionLocal.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -1551,7 +1517,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 7214;
-				DEVELOPMENT_TEAM = 4337V994WQ;
+				DEVELOPMENT_TEAM = Z4WH892M38;
 				INFOPLIST_FILE = "AppLocal-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1579,7 +1545,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 7214;
-				DEVELOPMENT_TEAM = 4337V994WQ;
+				DEVELOPMENT_TEAM = Z4WH892M38;
 				INFOPLIST_FILE = "AppLocal-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
