@@ -212,6 +212,9 @@ jobs:
       - run:
           name: Capacitor Setup
           command: |
+            # Downgrade Xcode project objectVersion for CocoaPods compatibility
+            # (Xcode 26 uses objectVersion 70 which xcodeproj gem doesn't support yet)
+            sed -i '' 's/objectVersion = 70/objectVersion = 60/' ios/App/App.xcodeproj/project.pbxproj
             npm run generate-splash
             npm run generate
             npx cap sync ios
