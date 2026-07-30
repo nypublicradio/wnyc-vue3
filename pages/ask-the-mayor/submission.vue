@@ -274,7 +274,7 @@ watch(
                           }}
                           WNYC account
                         </h2>
-                        <p>Submit your question in the 3 easy steps</p>
+                        <p>Submit your question in 3 easy steps</p>
                       </div>
                     </div>
                   </div>
