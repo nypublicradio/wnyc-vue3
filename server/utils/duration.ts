@@ -19,8 +19,6 @@ import { hasAudio } from '~/utilities/helpers'
  * @returns 
  */
 export const estimateMp3Duration = memoize(async (audioTrackUrl: string): Promise<number> => {
-	//console.log(`Estimating duration for audio URL: ${audioTrackUrl}`)
-	//return 0
 	if (hasAudio(audioTrackUrl)) {
 		try {
 			const httpTokenizer = await makeTokenizer(audioTrackUrl)
@@ -32,7 +30,7 @@ export const estimateMp3Duration = memoize(async (audioTrackUrl: string): Promis
 			return 0
 		}
 	} else {
-		//console.error(`Failed to estimate duration of ${audioTrackUrl} because the audio URL is NULL or is an empty array`);
+		console.error(`Failed to estimate duration of ${audioTrackUrl} because the audio URL is NULL or is an empty array`)
 		return 0
 	}
 })
