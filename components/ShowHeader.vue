@@ -525,6 +525,7 @@ const isThisShowStreaming = computed(() => {
   // New Sounds specific styles
   &.new-sounds {
     .desktop-buttons {
+      gap: 1.5rem !important;
       .play-btn,
       .listen-in-the-app-btn {
         display: none;
