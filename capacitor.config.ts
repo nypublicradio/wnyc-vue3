@@ -62,6 +62,9 @@ const config: CapacitorConfig = {
       iconColor: "#de1e3d",
       sound: "notification.wav"
     },
+    RemoteStreamer: {
+      carExperienceEnabled: false,
+    }
   }
 }
 
