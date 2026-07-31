@@ -33,6 +33,10 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  buttonEl: {
+    type: Object,
+    default: null,
+  },
 })
 
 const emit = defineEmits(["change", "swipe-down"])
@@ -43,6 +47,7 @@ const vModel = defineModel({ type: [String, Object, Number] })
 
 // clicks the popover to close it
 const closeMenu = () => {
+  props.buttonEl?.focus()
   popover.value?.hide()
 }
 
