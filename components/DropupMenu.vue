@@ -42,6 +42,10 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  buttonEl: {
+    type: Object,
+    default: null,
+  },
 })
 
 const emit = defineEmits(["change", "swipe-down"])
@@ -77,6 +81,7 @@ defineExpose({
   <component
     :is="DropupMenuComponent"
     ref="menuRef"
+    :buttonEl="props.buttonEl"
     v-model="vModel"
     :options="props.options"
     :label="props.label"
