@@ -42,7 +42,7 @@ const props = defineProps({
     type: String,
     default: null,
   },
-  buttonEl: {
+  buttonElement: {
     type: Object,
     default: null,
   },
@@ -81,7 +81,7 @@ defineExpose({
   <component
     :is="DropupMenuComponent"
     ref="menuRef"
-    :buttonEl="props.buttonEl"
+    :buttonElement="props.buttonElement"
     v-model="vModel"
     :options="props.options"
     :label="props.label"
