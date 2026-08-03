@@ -33,7 +33,7 @@ const props = defineProps({
     type: String,
     default: null,
   },
-  buttonEl: {
+  buttonElement: {
     type: Object,
     default: null,
   },
@@ -47,7 +47,7 @@ const vModel = defineModel({ type: [String, Object, Number] })
 
 // clicks the popover to close it
 const closeMenu = () => {
-  props.buttonEl?.focus()
+  props.buttonElement?.focus()
   popover.value?.hide()
 }
 
