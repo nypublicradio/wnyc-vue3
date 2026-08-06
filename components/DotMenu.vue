@@ -46,6 +46,11 @@ const props = defineProps({
 })
 const dataRef = ref(props.label)
 const emit = defineEmits(["changeEmit"])
+const menuButton = ref(null)
+const menuButtonElement = ref(null)
+onMounted(() => {
+  menuButtonElement.value = menuButton.value?.$el
+})
 </script>
 <template>
   <DropupMenu
@@ -57,11 +62,13 @@ const emit = defineEmits(["changeEmit"])
     :initSelectedData="props.initSelectedData"
     :contentClassPopover="props.contentClassPopover"
     :contentClassDrawer="props.contentClassDrawer"
+    :buttonElement="menuButtonElement"
     @change="emit('changeEmit', $event)"
   >
     <template #customButton="slotProps">
       <slot name="myCustomButton" label="">
         <Button
+          ref="menuButton"
           class="rounded"
           :class="{ 'p-button-text': props.isText }"
           :severity="props.severity"
