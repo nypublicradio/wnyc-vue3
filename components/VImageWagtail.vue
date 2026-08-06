@@ -251,7 +251,7 @@ const handleProvider = computed(() => {
       raw
       :to="props.to"
       :aria-hidden="props.isDecorative ? true : false"
-      :tabindex="props.isDecorative ? -1 : 0"
+      :tabindex="props.isDecorative || !props.to ? -1 : 0"
       class="v-image-link"
       @click="props.to ? emit('image-click', props.to) : null"
     >
