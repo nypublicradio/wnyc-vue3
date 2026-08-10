@@ -11,6 +11,7 @@ const props = defineProps({
 // Set the HTTP response status code based on the error
 // This is critical for nginx to intercept 404s and proxy to CMS
 // MUST run only on server side when SSR is enabled
+console.error("Error page props.error:", props.error)
 if (import.meta.server && props.error?.statusCode) {
   const event = useRequestEvent()
   if (event) {
@@ -41,15 +42,17 @@ function handleGoHome() {
         />
         <div class="text-center md:text-left">
           <div class="header">
-            <h1 v-if="error.statusCode === 404">Sorry, this page can't be found.</h1>
+            <h1 v-if="error.statusCode === 404">
+              Sorry, this page can't be found.
+            </h1>
             <h1 v-else>Sorry, something went wrong.</h1>
           </div>
           <div
             class="mt-3 flex flex-column gap-3 justify-content-center lg:justify-content-start"
           >
             <p>
-              The page you're looking for isn't available. It may have been removed or the
-              link has expired.
+              The page you're looking for isn't available. It may have been
+              removed or the link has expired.
             </p>
             <Button
               severity="secondary"
