@@ -76,14 +76,14 @@ const handleMouseEnterKey = (event: MouseEvent) => {
     if (op?.value?.visible) {
       closePopover()
     } else {
-      op?.value.show(event)
+      op?.value?.show(event)
     }
   }
 }
 // handle the mouseenter hover event
 const handleMouseEnter = (event: MouseEvent) => {
   if (hasMenuSlot.value) {
-    op?.value.show(event)
+    op?.value?.show(event)
   }
   emit("emit-mouseenter", event)
 }
