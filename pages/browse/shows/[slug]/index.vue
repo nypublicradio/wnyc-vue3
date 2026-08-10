@@ -60,7 +60,7 @@ const {
 const redirectIfNeeded = (page) => {
   if (!page?.redirect) return
 
-  navigateTo(page.location, {
+  return navigateTo(page.location, {
     redirectCode: page.statusCode || 301,
     external: /^https?:\/\//.test(page.location),
   })
