@@ -423,7 +423,7 @@ async function getSimplecastDuration (article: SimplecastArticle): Promise<numbe
     return duration
   }
   const audioUrl = article.audioFileUrl || article.enclosureUrl
-  return await estimateMp3Duration(audioUrl)
+  return await estimateMp3Duration(audioUrl) ?? duration
 }
 
 /**
@@ -516,7 +516,7 @@ export async function normalizePublisherPage (article: Record<string, any | unde
     return null
   let duration = article.attributes.estimatedDuration
   if (!duration || typeof duration !== 'number' || duration === 0) {
-    duration = await estimateMp3Duration(article.attributes.audio)
+    duration = await estimateMp3Duration(article.attributes.audio) ?? duration
   }
 
   //segment audio duration
@@ -524,7 +524,7 @@ export async function normalizePublisherPage (article: Record<string, any | unde
   if (segments && segments.length > 0) {
     segments.forEach(async (segment, index) => {
       if (!segment.audioDurationReadable) {
-        article.attributes.segments[index].audioDurationReadable = await estimateMp3Duration(article.attributes.audio[index])
+        article.attributes.segments[index].audioDurationReadable = await estimateMp3Duration(article.attributes.audio[index]) ?? segment.audioDurationReadable
       }
     })
   }
@@ -606,7 +606,7 @@ export async function normalizePublisherListItem (article: Record<string, any | 
     return null
   let duration = article.attributes.estimatedDuration
   if (!duration || typeof duration !== 'number' || duration === 0) {
-    duration = await estimateMp3Duration(article.attributes.audio)
+    duration = await estimateMp3Duration(article.attributes.audio) ?? duration
   }
 
   //segment audio duration
@@ -614,7 +614,7 @@ export async function normalizePublisherListItem (article: Record<string, any | 
   if (segments && segments.length > 0) {
     segments.forEach(async (segment, index) => {
       if (!segment.audioDurationReadable) {
-        article.attributes.segments[index].audioDurationReadable = await estimateMp3Duration(article.attributes.audio[index])
+        article.attributes.segments[index].audioDurationReadable = await estimateMp3Duration(article.attributes.audio[index]) ?? segment.audioDurationReadable
       }
     })
   }
