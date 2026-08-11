@@ -9,7 +9,7 @@ import {
   useAppDownloadLink,
   useAllCurrentStations,
 } from "~/composables/states"
-import { togglePlayEpisode, initializeStationList, getOrg } from "~/utilities/helpers"
+import { togglePlayEpisode, initializeStationList } from "~/utilities/helpers"
 import useLiveStream, {
   updateLiveStream,
   updateAllLiveStreams,
@@ -72,7 +72,13 @@ const onUpdateStation = (station) => {
               :key="currentEpisodeHolder?.id"
               loading="eager"
             />
-            <WnycLoader v-else class="image-loader-anim" size="1rem" bg spinner />
+            <WnycLoader
+              v-else
+              class="image-loader-anim"
+              size="1rem"
+              bg
+              spinner
+            />
           </Transition>
         </div>
         <div class="content w-full relative">
@@ -85,13 +91,13 @@ const onUpdateStation = (station) => {
             >
               <LiveBadge />
               <div class="schedule-text flex gap-1">
-                <p class="font-bold" v-if="currentEpisodeHolder?.cmsSource">
-                  {{ getOrg(currentEpisodeHolder) }}
+                <p class="font-bold" v-if="currentEpisodeHolder?.station">
+                  {{ currentEpisodeHolder.station }}
                 </p>
                 <p
                   class="font-bold"
                   v-if="
-                    currentEpisodeHolder?.cmsSource &&
+                    currentEpisodeHolder?.station &&
                     currentEpisodeHolder.timeStart &&
                     currentEpisodeHolder.timeEnd
                   "
@@ -99,7 +105,10 @@ const onUpdateStation = (station) => {
                   |
                 </p>
                 <p
-                  v-if="currentEpisodeHolder.timeStart && currentEpisodeHolder.timeEnd"
+                  v-if="
+                    currentEpisodeHolder.timeStart &&
+                    currentEpisodeHolder.timeEnd
+                  "
                   class="font-bold"
                 >
                   {{ formatAndRoundTime(currentEpisodeHolder.timeStart) }} -
@@ -107,7 +116,9 @@ const onUpdateStation = (station) => {
                 </p>
               </div>
             </div>
-            <h2 class="md:text-xl lg:text-2xl xl:text-4xl line-height-2 truncate t2lines">
+            <h2
+              class="md:text-xl lg:text-2xl xl:text-4xl line-height-2 truncate t2lines"
+            >
               {{ currentEpisodeHolder?.title }}
             </h2>
             <div
@@ -121,7 +132,9 @@ const onUpdateStation = (station) => {
                 currentEpisodeHolder?.details
               "
             ></div>
-            <div class="flex align-items-start justify-content-start mt-1 gap-0 md:gap-2">
+            <div
+              class="flex align-items-start justify-content-start mt-1 gap-0 md:gap-2"
+            >
               <div class="flex flex-row gap-3 flex-wrap md:flex-column">
                 <PlayButton
                   :label="
@@ -137,14 +150,19 @@ const onUpdateStation = (station) => {
                   live
                   class="z-2"
                 />
-                <div v-if="!isApp" class="hidden md:flex flex-row gap-3 flex-wrap">
+                <div
+                  v-if="!isApp"
+                  class="hidden md:flex flex-row gap-3 flex-wrap"
+                >
                   <Button
                     label="Get the App"
                     severity="secondary"
                     class="p-button-sm flex w-10rem justify-content-start h-2rem p-button-center-label-with-icon z-2"
                     @click.prevent="
                       navigateTo(appDownloadLink, {
-                        external: appDownloadLink.startsWith('http') ? true : false,
+                        external: appDownloadLink.startsWith('http')
+                          ? true
+                          : false,
                       })
                     "
                   >
@@ -229,10 +247,24 @@ const onUpdateStation = (station) => {
                 borderRadius="16px"
               />
             </div>
-            <Skeleton class="w-9rem md:w-21rem" height="28px" borderRadius="16px" />
+            <Skeleton
+              class="w-9rem md:w-21rem"
+              height="28px"
+              borderRadius="16px"
+            />
             <div class="hidden md:flex flex-row gap-3 mt-1 lg:-mt-1">
-              <Skeleton class="w-10rem" height="28px" width="9rem" borderRadius="16px" />
-              <Skeleton class="w-10rem" height="28px" width="9rem" borderRadius="16px" />
+              <Skeleton
+                class="w-10rem"
+                height="28px"
+                width="9rem"
+                borderRadius="16px"
+              />
+              <Skeleton
+                class="w-10rem"
+                height="28px"
+                width="9rem"
+                borderRadius="16px"
+              />
             </div>
           </div>
         </div>
