@@ -934,7 +934,7 @@ const extractNprAudio = async (article: NprArticle): Promise<{ url?: string; dur
       return {
         url: audioURL,
         duration: asset.duration,
-        transcript: transcript
+        transcript,
       }
     }
   }
