@@ -34,17 +34,15 @@ const routeSlug = ref(route.query.slug)
 const samePageNavTrigger = useState("useSamePageNavTrigger", () => 0)
 
 // centralize the scrolling logic for the page
-const performScroll = (newQuery, delay = 300) => {
+const performScroll = (newQuery) => {
   if (import.meta.client) {
     // the actual scrolling code
     const doScroll = () => {
-      if (newQuery.schedule) {
-        setTimeout(() => {
-          window.scrollTo({
-            top: scheduleHolderRef?.value?.offsetTop + 10,
-            behavior: "smooth",
-          })
-        }, delay)
+      if (newQuery.schedule && scheduleHolderRef?.value) {
+        window.scrollTo({
+          top: scheduleHolderRef?.value?.offsetTop + 15,
+          behavior: "smooth",
+        })
       } else {
         if (window.scrollY !== 0) {
           window.scrollTo({
@@ -59,7 +57,9 @@ const performScroll = (newQuery, delay = 300) => {
       const unwatch = watch(isPageMounted, (mounted) => {
         if (mounted) {
           // Delay an extra moment on initial mount to let layout settle
-          setTimeout(doScroll, 150)
+          setTimeout(() => {
+            doScroll()
+          }, 150)
           unwatch()
         }
       })
@@ -107,7 +107,7 @@ watch(
 // watcher for same-page navigation clicks (e.g., clicking menu link while already on that page)
 watch(samePageNavTrigger, () => {
   if (router.currentRoute.value.name === "live") {
-    performScroll(router.currentRoute.value.query, 0)
+    performScroll(router.currentRoute.value.query)
   }
 })
 
@@ -134,17 +134,17 @@ onMounted(async () => {
     scrollToActiveStation("instant")
   }
 
-  // set mounted state for the performScroll watcher
-  nextTick(() => {
-    isPageMounted.value = true
-  })
-
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
     page_title: "Listen Live",
     page_type: "live_tab",
     content_group: "app_tab",
+  })
+
+  // set mounted state for the performScroll watcher
+  nextTick(() => {
+    isPageMounted.value = true
   })
 })
 
@@ -172,9 +172,14 @@ useHead({
 <template>
   <div class="page live-page">
     <div class="top flex flex-column gap-3 style-mode-dark mb-3">
-      <HorizontalScrollFeature :data="allCurrentStations" class="live-stations-holder">
+      <HorizontalScrollFeature
+        :data="allCurrentStations"
+        class="live-stations-holder"
+      >
         <template #default>
-          <div class="live-stations flex pb-2 md:w-full md:justify-content-center">
+          <div
+            class="live-stations flex pb-2 md:w-full md:justify-content-center"
+          >
             <div
               v-for="(station, index) in allCurrentStations"
               class="station-holder"
@@ -200,12 +205,17 @@ useHead({
                   @click="switchStation(station)"
                 >
                   <template #default>
-                    <div class="flex gap-1 align-items-center overflow-hidden w-full">
+                    <div
+                      class="flex gap-1 align-items-center overflow-hidden w-full"
+                    >
                       <div
                         v-if="currentEpisode?.station === station.station"
                         class="flex-shrink-0"
                       >
-                        <i v-if="isStreamLoading" class="pi pi-spin pi-spinner mr-2"></i>
+                        <i
+                          v-if="isStreamLoading"
+                          class="pi pi-spin pi-spinner mr-2"
+                        ></i>
                         <WnycLoader
                           v-else
                           class="pr-2"
@@ -276,7 +286,9 @@ useHead({
         <div class="col w-full md:pr-2 lg:pr-4" ref="scheduleHolderRef">
           <Schedule />
         </div>
-        <div class="col-fixed hidden xl:block xl:w-19rem justify-content-center">
+        <div
+          class="col-fixed hidden xl:block xl:w-19rem justify-content-center"
+        >
           <story-htlAd
             layout="rectangle"
             slotClass="htlad-wnyc_livepage_rectangle"
