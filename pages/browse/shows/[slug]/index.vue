@@ -15,9 +15,12 @@ const isApp = useIsApp()
 /**
  * Return the first value when a route query parameter is repeated.
  */
-const getQueryValue = (value) => Array.isArray(value) ? value[0] : value
+const getQueryValue = (value) => (Array.isArray(value) ? value[0] : value)
 const isPreview = computed(
-  () => route.query.preview === "true" && route.query.identifier && route.query.token
+  () =>
+    route.query.preview === "true" &&
+    route.query.identifier &&
+    route.query.token
 )
 
 const showEndpoint = computed(() => {
@@ -37,7 +40,9 @@ const showFetchArgs = [
   showEndpoint,
   {
     key: isPreview.value
-      ? `show-page-preview-${route.params.slug}-${getQueryValue(route.query.identifier)}`
+      ? `show-page-preview-${route.params.slug}-${getQueryValue(
+          route.query.identifier
+        )}`
       : `show-page-${route.params.slug}`,
     watch: false,
   },
@@ -45,7 +50,7 @@ const showFetchArgs = [
 
 const { data: show, status, error } = await useFetchWrapper(...showFetchArgs)
 
-// redirect if the page has a redirect property
+// redirect if the show has a redirect property.
 const redirectIfNeeded = (page) => {
   if (!page?.redirect) return
 
@@ -150,7 +155,7 @@ useSocialMetaOverrides(show)
       <FetchError v-if="status === 'error'" />
     </section>
     <template v-if="!error">
-      <ShowHeader :show="show" />
+      <ShowHeader :show="show" :class="route.params.slug" />
       <!-- JUMP LINKS -->
       <section v-if="!isApp" class="hidden md:block">
         <div class="grid">

@@ -27,6 +27,7 @@ import {
 import useSleepTimer from "~/composables/useSleepTimer"
 import useLiveStream from "~/composables/data/liveStream"
 import { useToast } from "primevue/usetoast"
+import { liveStationPreferences } from "~/composables/globals"
 const { getStationBySlugAndPlayIt } = useLiveStream()
 const props = defineProps({
   show: {
@@ -178,6 +179,22 @@ const togglePlayMostRecentEpisode = () => {
     }
   }
 }
+// handle the listen live button. grabs the station from the liveStationPreferences array and plays it. If the show is not in the array, it does nothing.
+const listenLiveNow = () => {
+  const station = liveStationPreferences.find(
+    (station) => station.label === props.show?.title
+  )
+  if (station) {
+    getStationBySlugAndPlayIt(station?.slug, true)
+  } else {
+    toast.add({
+      severity: "info",
+      summary: "No live stream available",
+      detail: "We couldn't find a live stream for this show right now.",
+      life: 3000,
+    })
+  }
+}
 
 // add item to favorites
 const handleAddToFavorites = () => {
@@ -198,12 +215,20 @@ const isThisShowPlaying = computed(() => {
     (isLoadedEpisode.value || isLoadedLiveStream.value)
   )
 })
+const isThisShowStreaming = computed(() => {
+  return (
+    isEpisodePlaying.value &&
+    isLiveStream.value &&
+    (currentEpisodeHolder.value?.title.includes(props.show?.title) ||
+      currentEpisode.value?.title.includes(props.show?.title) ||
+      currentEpisode.value?.title === props.show?.title)
+  )
+})
 </script>
 
 <template>
   <div
-    class="show-header-holder py-3"
-    :class="!isApp ? 'style-mode-dark' : isDarkMode ? 'style-mode-dark' : ''"
+    class="show-header-holder py-3 style-mode-dark"
     :style="topperBackground"
   >
     <section class="grid grid-nogutter m-auto">
@@ -226,17 +251,17 @@ const isThisShowPlaying = computed(() => {
             class="flex-none show-image w-7rem md:w-13rem h-7rem md:h-13rem"
             borderRadius="0px"
           />
-          <div>
+          <div v-if="!isApp">
             <div
               v-if="show"
               class="flex flex-column justify-content-start gap-2"
             >
-              <transition name="zoom">
+              <!-- <transition name="zoom">
                 <LiveBadge
                   v-if="isCurrentlyLive"
                   class="mb-1 align-self-start"
                 />
-              </transition>
+              </transition> -->
               <h2 class="line-height-1 text-2xl md:text-6xl">
                 {{ topperTitle }}
               </h2>
@@ -249,8 +274,11 @@ const isThisShowPlaying = computed(() => {
               >
                 {{ topperDescription }}
               </p>
+              <WavePulse class="mobile hidden" />
               <!-- desktop buttons -->
-              <div class="hidden md:flex align-items-center gap-3">
+              <div
+                class="hidden md:flex align-items-center gap-3 flex-wrap desktop-buttons"
+              >
                 <Button
                   rounded
                   tabindex="0"
@@ -271,8 +299,24 @@ const isThisShowPlaying = computed(() => {
                   <slot v-else name="pause"><PauseIcon /></slot>
                 </Button>
                 <Button
+                  class="hidden play-live-stream-btn flex-none"
+                  severity="secondary"
+                  rounded
+                  aria-label="listen live toggle"
+                  tabindex="0"
+                  label="Listen Live"
+                  @click="listenLiveNow"
+                >
+                  <template #icon>
+                    <PauseIcon v-if="isThisShowStreaming" />
+                    <PlayIcon v-else />
+                  </template>
+                </Button>
+
+                <Button
                   rounded
                   severity="secondary"
+                  class="follow-btn"
                   :aria-label="isFavorited ? 'Unfollow' : 'Follow'"
                   :label="isFavorited ? 'Unfollow' : 'Follow'"
                   @click="handleAddToFavorites"
@@ -300,7 +344,7 @@ const isThisShowPlaying = computed(() => {
                   severity="secondary"
                   rounded
                   aria-label="Listen in the app"
-                  class=""
+                  class="listen-in-the-app-btn"
                   @click="
                     navigateTo(appDownloadLink, {
                       external: appDownloadLink.startsWith('http')
@@ -313,6 +357,7 @@ const isThisShowPlaying = computed(() => {
                     <DevicesIcon style="height: 20px; width: 20px" />
                   </template>
                 </Button>
+                <WavePulse class="desktop hidden" />
               </div>
             </div>
             <div v-else class="hidden md:flex flex-column gap-3 w-full">
@@ -346,7 +391,7 @@ const isThisShowPlaying = computed(() => {
         <!-- mobile buttons -->
         <div
           v-if="show"
-          class="flex md:hidden justify-content-center align-items-center gap-2 mt-3"
+          class="mobile-buttons flex md:hidden justify-content-center align-items-center gap-2 mt-3"
         >
           <Button
             rounded
@@ -374,6 +419,21 @@ const isThisShowPlaying = computed(() => {
             </template>
           </Button>
 
+          <Button
+            class="hidden play-live-stream-btn flex-none"
+            severity="secondary"
+            rounded
+            aria-label="listen live toggle"
+            tabindex="0"
+            label="Listen Live"
+            @click="listenLiveNow"
+          >
+            <template #icon>
+              <PauseIcon v-if="isThisShowStreaming" />
+              <PlayIcon v-else />
+            </template>
+          </Button>
+
           <SleepTimerButton
             v-if="isApp"
             @emit-click="handleSleepTimer"
@@ -388,7 +448,7 @@ const isThisShowPlaying = computed(() => {
             rounded
             text
             plain
-            class=""
+            class="listen-in-the-app-btn"
             aria-label="Listen in the app"
             @click="
               navigateTo(appDownloadLink, {
@@ -416,6 +476,36 @@ const isThisShowPlaying = computed(() => {
 </template>
 
 <style lang="scss" scoped>
+@mixin glass {
+  position: relative;
+  overflow: hidden;
+  color: #ffffff;
+  background: linear-gradient(
+    -200deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 100%
+  );
+  border: 1px solid rgb(255, 255, 255) !important;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      -200deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.15) 100%
+    );
+    opacity: 0;
+    transition: opacity var(--p-transition-duration);
+    pointer-events: none;
+  }
+
+  &:hover::after {
+    opacity: 1;
+  }
+}
+
 .show-header-holder {
   .show-header {
     .play-btn {
@@ -436,6 +526,50 @@ const isThisShowPlaying = computed(() => {
         height: 18.11px;
         width: 13.53px;
         margin-left: 2px;
+      }
+    }
+  }
+  // New Sounds specific styles
+  &.new-sounds {
+    .desktop-buttons {
+      gap: 1.5rem !important;
+      .play-btn,
+      .listen-in-the-app-btn {
+        display: none;
+      }
+      .play-live-stream-btn {
+        display: inline-flex !important;
+        @include glass;
+      }
+      .follow-btn {
+        @include glass;
+      }
+    }
+    .mobile-buttons {
+      padding-top: 1rem;
+      gap: 1.5rem !important;
+      .play-btn {
+        display: none;
+      }
+      .play-live-stream-btn {
+        display: inline-flex !important;
+        @include glass;
+      }
+    }
+    .wave-pulse {
+      transform-origin: left;
+
+      &.desktop {
+        display: inline-flex !important;
+        transform: scaleX(1.2);
+      }
+      &.mobile {
+        @include media("<md") {
+          display: inline-flex !important;
+        }
+        transform: scaleX(0.8);
+        width: 100%;
+        margin-top: 1rem;
       }
     }
   }

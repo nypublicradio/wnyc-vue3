@@ -12,7 +12,6 @@ import {
 import {
   togglePlayEpisode,
   initializeStationList,
-  getOrg,
 } from "~/utilities/helpers"
 import useLiveStream, {
   updateLiveStream,
@@ -96,13 +95,13 @@ const onUpdateStation = (station) => {
             >
               <LiveBadge />
               <div class="schedule-text flex gap-1">
-                <p class="font-bold" v-if="currentEpisodeHolder?.cmsSource">
-                  {{ getOrg(currentEpisodeHolder) }}
+                <p class="font-bold" v-if="currentEpisodeHolder?.station">
+                  {{ currentEpisodeHolder.station }}
                 </p>
                 <p
                   class="font-bold"
                   v-if="
-                    currentEpisodeHolder?.cmsSource &&
+                    currentEpisodeHolder?.station &&
                     currentEpisodeHolder.timeStart &&
                     currentEpisodeHolder.timeEnd
                   "

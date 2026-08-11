@@ -7,7 +7,7 @@ import { estimateMp3Duration } from '~/server/utils/duration'
 // handleDuration is a helper function that checks if the estimated duration is available and if not, it estimates it using the audio URL in the estimateMp3Duration function.
 const handleDuration = async (estimatedDuration: number, audioURL: string) => {
 	if (!estimatedDuration || typeof estimatedDuration !== 'number' || estimatedDuration === 0) {
-		return await estimateMp3Duration(audioURL)
+		return await estimateMp3Duration(audioURL) ?? estimatedDuration
 	} else {
 		return estimatedDuration
 	}

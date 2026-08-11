@@ -134,17 +134,17 @@ onMounted(async () => {
     scrollToActiveStation("instant")
   }
 
-  // set mounted state for the performScroll watcher
-  nextTick(() => {
-    isPageMounted.value = true
-  })
-
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
     page_title: "Listen Live",
     page_type: "live_tab",
     content_group: "app_tab",
+  })
+
+  // set mounted state for the performScroll watcher
+  nextTick(() => {
+    isPageMounted.value = true
   })
 })
 
