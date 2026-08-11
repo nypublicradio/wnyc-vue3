@@ -278,7 +278,6 @@ useHead({
     </div>
     <!-- <pre class="overflow-hidden">{{ allCurrentStations }}</pre> -->
     <!-- <pre>{{ liveScheduleData }}</pre> -->
-    <!-- <pre>{{ allLiveScheduleData }}</pre> -->
     <!-- <pre>{{ currentEpisode }}</pre> -->
     <!-- <pre class="overflow-hidden">{{ currentEpisodeHolder }}</pre> -->
     <section class="schedule-holder">
