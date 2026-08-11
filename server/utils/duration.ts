@@ -18,7 +18,7 @@ async function parseDurationFullFetch (audioTrackUrl: string): Promise<number | 
 		mimeType: response.headers.get('Content-Type') ?? 'audio/mpeg',
 		size,
 	}, { duration: true })
-	return metadata.format.duration ? Math.ceil(metadata.format.duration) : null
+	return metadata.format.duration ? Math.round(metadata.format.duration) : null
 }
 
 /**
@@ -39,9 +39,10 @@ export const estimateMp3Duration = memoize(async (audioTrackUrl: string): Promis
 				console.error(`Duration metadata unavailable for ${audioTrackUrl}`)
 				return null
 			}
-			return Math.ceil(duration)
+			return Math.round(duration)
 		} catch (e) {
 			// Fall back to full fetch when server doesn't support Range requests
+			console.error('Failed to estimate duration using Range requests, falling back to full fetch', e)
 			try {
 				const duration = await parseDurationFullFetch(audioTrackUrl)
 				if (duration) return duration
