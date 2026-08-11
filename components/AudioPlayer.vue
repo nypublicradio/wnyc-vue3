@@ -60,6 +60,7 @@ const showPlayer = ref(false)
 const playerRef = ref(null)
 const isBuffering = ref(false)
 const suppressTransitionErrorsUntil = ref(0)
+let durationAbortController = null
 
 const route = useRoute()
 
@@ -166,7 +167,9 @@ const switchEpisode = async (val) => {
   const wasPlayingBeforeSwitch = isEpisodePlaying.value
   isNewEpisode.value = true
   showPlayer.value = false
-  suppressTransitionErrorsUntil.value = wasPlayingBeforeSwitch ? Date.now() + 5000 : 0
+  suppressTransitionErrorsUntil.value = wasPlayingBeforeSwitch
+    ? Date.now() + 5000
+    : 0
 
   await releasePlayer()
 
@@ -189,6 +192,29 @@ const switchEpisode = async (val) => {
     showPlayer.value = true
     delay = 250
   }, delay)
+
+  // get the ACTUAL duration of the audio file and update the currentEpisodeDuration.value
+  if (!isLiveStream.value) {
+    // Abort any in-flight duration fetch from a previous episode
+    if (durationAbortController) {
+      durationAbortController.abort()
+    }
+    durationAbortController = new AbortController()
+    const { signal } = durationAbortController
+
+    try {
+      const { duration: actualDuration } = await $fetch("/api/duration", {
+        params: { url: getConfiguredAudioUrl.value },
+        signal,
+      })
+      currentEpisodeDuration.value = actualDuration
+      currentEpisode.value.duration = actualDuration
+    } catch (error) {
+      if (error.name !== "AbortError") {
+        console.warn("Failed to get actual duration:", error)
+      }
+    }
+  }
 }
 
 // function that handles the skip to time with the plugin
