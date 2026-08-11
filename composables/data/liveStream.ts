@@ -398,8 +398,10 @@ export default function useLiveStream () {
         isToday: isToday.value,
       })
 
-      // Only show toast for non-500 errors to avoid spam on server issues
-      if (error.status !== 500) {
+      // Only show toast for unexpected errors (not 400s which can happen
+      // when a station has no schedule data for the requested date, and
+      // not 500s to avoid spam on server issues)
+      if (error.status !== 500 && error.status !== 400) {
         globalToast.value = {
           severity: "error",
           summary: "Sorry. We are having trouble With the live stream. Please try again later.",
