@@ -11,6 +11,12 @@ const props = defineProps({
     default: () => [],
   },
 })
+
+// if the service is "homepage", return "link", otherwise just return the service name in lowercase
+const getServiceIcon = (service) => {
+  if (service.toLowerCase() === "homepage") return "globe"
+  return service.toLowerCase()
+}
 </script>
 <template>
   <div class="social-buttons flex gap-3 align-items-center flex-wrap">
@@ -33,7 +39,7 @@ const props = defineProps({
       "
     >
       <Button
-        :icon="`pi pi-${item.value?.service.toLowerCase()}`"
+        :icon="`pi pi-${getServiceIcon(item.value?.service)}`"
         severity="secondary"
         size="large"
         rounded
