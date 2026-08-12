@@ -42,7 +42,7 @@ export const estimateMp3Duration = memoize(async (audioTrackUrl: string): Promis
 			return Math.round(duration)
 		} catch (e) {
 			// Fall back to full fetch when server doesn't support Range requests
-			console.error('Failed to estimate duration using Range requests, falling back to full fetch', e)
+			console.warn('Failed to estimate duration using Range requests, falling back to full fetch', e)
 			try {
 				const duration = await parseDurationFullFetch(audioTrackUrl)
 				if (duration) return duration

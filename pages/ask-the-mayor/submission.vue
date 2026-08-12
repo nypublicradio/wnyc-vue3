@@ -2,8 +2,13 @@
 <script setup>
 import { useToast } from "primevue/usetoast"
 import { useIsActive, useIsNativeApp } from "~/composables/states"
-import OneSignal from "onesignal-cordova-plugin"
 import { formatDate, trackClickEvent } from "~/utilities/helpers"
+// only load OneSignal on client side
+let OneSignal = null
+if (import.meta.client) {
+  const mod = await import("onesignal-cordova-plugin")
+  OneSignal = mod.default
+}
 useHead({
   bodyAttrs: {
     class: "no-bottom-padding hide-bottom-menu",
