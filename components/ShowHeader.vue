@@ -20,7 +20,6 @@ import {
   useCurrentEpisodeHolder,
   useCurrentEpisode,
   useIsLiveStream,
-  useIsDarkMode,
   useIsStreamLoading,
 } from "~/composables/states"
 //import { mediaTypeRoutes, mediaTypes } from "~/composables/globals"
@@ -42,7 +41,6 @@ const toast = useToast()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const currentEpisode = useCurrentEpisode()
 const isStreamLoading = useIsStreamLoading()
-const isDarkMode = useIsDarkMode()
 const isApp = useIsApp()
 
 // Computed properties derived from the show data
