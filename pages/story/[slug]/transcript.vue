@@ -7,7 +7,12 @@ import {
 } from "~/utilities/helpers"
 import { useIsApp } from "~/composables/states"
 import { mediaTypeRoutes } from "~/composables/globals"
-import { getPublisherStoryTitle, getPublisherStoryDescription, getPublisherStoryImage, getPublisherSocialImage } from "~/utilities/metadataHelpers"
+import {
+  getPublisherStoryTitle,
+  getPublisherStoryDescription,
+  getPublisherStoryImage,
+  getPublisherSocialImage,
+} from "~/utilities/metadataHelpers"
 const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
@@ -18,7 +23,11 @@ definePageMeta({
   pageTransition: false,
 })
 const cmsSource = computed(() => route.params.cmsSource || "publisher")
-const { data: episode, status, error } = await useFetchWrapper(
+const {
+  data: episode,
+  status,
+  error,
+} = await useFetchWrapper(
   () =>
     `${config.public.BFF_URL}/api/v2/show/episode/${cmsSource.value}/${route.params.slug}`,
   {
@@ -42,7 +51,9 @@ onMounted(() => {
     page_title: episode.value.title,
     page_type: "episode_page",
     content_group: "on_demand_episode_transcript",
-    article_authors: episode.value?.authors?.map((author) => author.name).join(","),
+    article_authors: episode.value?.authors
+      ?.map((author) => author.name)
+      .join(","),
     article_publish_date: episode.value.publicationDate,
     article_updated_date: episode.value.updatedDate
       ? episode.value.updatedDate
@@ -62,7 +73,9 @@ onMounted(() => {
 //   () =>
 //     episode.value?.showSlug || episode.value?.show || episode.value?.headers?.brand?.slug
 // )
-const backToEpisodePath = computed(() => `${mediaTypeRoutes.story}${route.params.slug}`)
+const backToEpisodePath = computed(
+  () => `${mediaTypeRoutes.story}${route.params.slug}`
+)
 // handle returning / routing to the full episode page
 const handleReturnToEpisode = () => {
   trackClickEvent(
@@ -75,8 +88,15 @@ const handleReturnToEpisode = () => {
 
 // handle transcript link click
 const handleTranscriptLinkClick = () => {
-  trackClickEvent("Click Tracking - Transcript Link", "Episode slug", route.fullPath)
-  copyToClipBoard(`${window.location.href}`, "Transcript link copied to clipboard")
+  trackClickEvent(
+    "Click Tracking - Transcript Link",
+    "Episode slug",
+    route.fullPath
+  )
+  copyToClipBoard(
+    `${window.location.href}`,
+    "Transcript link copied to clipboard"
+  )
 }
 
 // get the image for the episode. if the episode image is the same as the show image, use the fallback image
@@ -143,10 +163,10 @@ onUnmounted(() => {
   clearTimeout(scrollTimeout)
 })
 
-const title = getPublisherStoryTitle(storyData)
-const description = getPublisherStoryDescription(storyData)
-const image = getPublisherStoryImage(storyData)
-const socialImage = getPublisherSocialImage(storyData)
+const title = getPublisherStoryTitle(episode.value)
+const description = getPublisherStoryDescription(episode.value)
+const image = getPublisherStoryImage(episode.value)
+const socialImage = getPublisherSocialImage(episode.value)
 useHead(() => ({
   title,
 }))
@@ -212,7 +232,10 @@ if (socialImage || image) {
               </div>
             </div>
           </div>
-          <div v-else class="flex flex-column align-items-start gap-4 mt-0 lg:mt-6">
+          <div
+            v-else
+            class="flex flex-column align-items-start gap-4 mt-0 lg:mt-6"
+          >
             <Skeleton height="36px" width="168px" borderRadius="18px" />
             <div
               class="flex gap-2 align-items-start w-full"
@@ -230,7 +253,11 @@ if (socialImage || image) {
                 :class="isMinimized ? 'mt-0' : 'mt-3'"
               >
                 <Skeleton height="13px" class="w-9" borderRadius="9px" />
-                <Skeleton height="13px" class="md:hidden w-8" borderRadius="9px" />
+                <Skeleton
+                  height="13px"
+                  class="md:hidden w-8"
+                  borderRadius="9px"
+                />
               </div>
             </div>
           </div>
@@ -265,7 +292,7 @@ if (socialImage || image) {
           </div>
         </div>
         <div class="col-fixed hidden lg:block w-20rem">
-          <ShowSummary v-if="showStatus === 'pending' || show" :show="show" />
+          <!-- <ShowSummary v-if="showStatus === 'pending' || show" :show="show" /> -->
         </div>
       </div>
     </section>
@@ -290,7 +317,8 @@ if (socialImage || image) {
       }
     }
     .episode-page-image {
-      transition: width var(--p-transition-duration), height var(--p-transition-duration);
+      transition: width var(--p-transition-duration),
+        height var(--p-transition-duration);
       -webkit-transition: width var(--p-transition-duration),
         height var(--p-transition-duration);
       &.minimize {
