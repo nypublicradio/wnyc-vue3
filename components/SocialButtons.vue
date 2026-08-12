@@ -38,7 +38,7 @@ const getServiceIcon = (service) => {
           )
         }"
     >
-      <span :class="`pi pi-${getServiceIcon(item.value?.service)}`" aria-hidden="true""></span>
+      <span :class="`pi pi-${getServiceIcon(item.value?.service)}`" aria-hidden="true"></span>
     </a>
   </div>
 </template>
