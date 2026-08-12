@@ -70,9 +70,11 @@ const getSession = async () => {
 const onFormSubmit = async () => {
   try {
     // scroll the user to the top
-    setTimeout(() => {
-      window?.scrollTo(0, 0)
-    }, 250)
+    if (import.meta.client) {
+      setTimeout(() => {
+        window.scrollTo(0, 0)
+      }, 250)
+    }
 
     await UploadMediaREF.value?.uploadFiles()
 
