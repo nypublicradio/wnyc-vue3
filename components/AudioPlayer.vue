@@ -60,7 +60,6 @@ const showPlayer = ref(false)
 const playerRef = ref(null)
 const isBuffering = ref(false)
 const suppressTransitionErrorsUntil = ref(0)
-let durationAbortController = null
 
 const route = useRoute()
 
