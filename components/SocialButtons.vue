@@ -25,7 +25,7 @@ const getServiceIcon = (service) => {
       v-for="(item, index) in props.data"
       :key="index"
       :href="item.value?.profile_url"
-      :aria-label="`WNYC on ${item.value?.service}
+      :aria-label="`WNYC on ${item.value?.service}`"
       target="_blank"
       rel="noopener noreferrer"
       class="p-button p-button-secondary p-button-icon-only p-button-rounded p-button-lg"
