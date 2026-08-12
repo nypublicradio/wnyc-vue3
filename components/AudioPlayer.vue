@@ -192,31 +192,6 @@ const switchEpisode = async (val) => {
     showPlayer.value = true
     delay = 250
   }, delay)
-
-  // get the ACTUAL duration of the audio file and update the currentEpisodeDuration.value
-  if (!isLiveStream.value) {
-    // Abort any in-flight duration fetch from a previous episode
-    if (durationAbortController) {
-      durationAbortController.abort()
-    }
-    durationAbortController = new AbortController()
-    const { signal } = durationAbortController
-
-    try {
-      const { duration: actualDuration } = await $fetch("/api/duration", {
-        params: { url: getConfiguredAudioUrl.value },
-        signal,
-      })
-      if (actualDuration != null) {
-        currentEpisodeDuration.value = actualDuration
-        currentEpisode.value.duration = actualDuration
-      }
-    } catch (error) {
-      if (error.name !== "AbortError") {
-        console.warn("Failed to get actual duration:", error)
-      }
-    }
-  }
 }
 
 // function that handles the skip to time with the plugin
