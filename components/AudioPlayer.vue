@@ -186,6 +186,14 @@ const switchEpisode = async (val) => {
     enableCommandCenterSeek: !isLiveStream.value,
   })
 
+  // get actual duration from the Remote Streamer audio player
+  const playerAudioState = await RemoteStreamer.getCurrentState()
+  const playerAudioStateDuration =
+    playerAudioState.duration || currentEpisode.value?.duration || 0
+
+  currentEpisodeDuration.value = playerAudioStateDuration
+  currentEpisode.value.duration = playerAudioStateDuration
+
   // initializes the media session in ~/utilities/media-session.js
   initMediaSession(currentEpisode.value)
   setTimeout(() => {
@@ -397,8 +405,6 @@ onMounted(async () => {
       )
       isNewEpisode.value = false
     }
-
-    currentEpisodeDuration.value = currentEpisode.value.duration
   })
 
   await RemoteStreamer.addListener("pause", () => {
