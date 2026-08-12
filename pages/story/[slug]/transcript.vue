@@ -172,7 +172,7 @@ useHead(() => ({
 }))
 useSeoMeta({
   title,
-  description: description,
+  description,
   ogDescription: description,
   ogTitle: title,
 })
