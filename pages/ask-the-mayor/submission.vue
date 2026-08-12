@@ -11,7 +11,7 @@ if (import.meta.client) {
 }
 useHead({
   bodyAttrs: {
-    class: "no-bottom-padding hide-bottom-menu",
+    class: "hide-bottom-menu",
   },
 })
 const toast = useToast()
