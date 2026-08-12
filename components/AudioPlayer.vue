@@ -207,8 +207,10 @@ const switchEpisode = async (val) => {
         params: { url: getConfiguredAudioUrl.value },
         signal,
       })
-      currentEpisodeDuration.value = actualDuration
-      currentEpisode.value.duration = actualDuration
+      if (actualDuration != null) {
+        currentEpisodeDuration.value = actualDuration
+        currentEpisode.value.duration = actualDuration
+      }
     } catch (error) {
       if (error.name !== "AbortError") {
         console.warn("Failed to get actual duration:", error)
