@@ -152,6 +152,7 @@ watch(
 <style lang="scss" scoped>
 .small-play {
   .p-button {
+    min-height: 33px;
     &.active {
       //border: var(--bw-toggle) 1px solid;
     }
