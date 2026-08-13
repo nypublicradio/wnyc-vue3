@@ -387,12 +387,12 @@ onMounted(async () => {
     console.log("######## RemoteStreamer ready event data:", data)
     currentEpisodeDuration.value = data.duration
     currentEpisode.value.duration = data.duration
-    isEpisodePlaying.value = true
+
     isStreamLoading.value = false
   })
   await RemoteStreamer.addListener("play", () => {
-    // isEpisodePlaying.value = true
-    // isStreamLoading.value = false
+    isEpisodePlaying.value = true
+
     suppressTransitionErrorsUntil.value = 0
 
     if (isNewEpisode.value) {
