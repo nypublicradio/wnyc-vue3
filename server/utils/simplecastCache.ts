@@ -16,7 +16,7 @@ export class TtlCache<T> {
     constructor(
         private ttlMs: number,
         private shouldCache: (data: T) => boolean = () => true
-    ) { }
+    ) { /* parameter properties above handle field assignment */ }
 
     /**
      * Returns a cached value if fresh, otherwise fetches it, coalescing concurrent

@@ -36,7 +36,7 @@ describe('TtlCache', () => {
 
     it('coalesces concurrent requests for the same key into a single fetch', async () => {
         const cache = new TtlCache<string>(1000)
-        let resolveFetch: (value: string) => void = () => { }
+        let resolveFetch: (value: string) => void = () => { /* replaced once the Promise executor below runs */ }
         const fetchFn = vi.fn(() => new Promise<string>((resolve) => { resolveFetch = resolve }))
 
         const first = cache.getOrFetch('key', fetchFn)
