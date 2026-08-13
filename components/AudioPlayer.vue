@@ -61,7 +61,6 @@ const playerRef = ref(null)
 const isBuffering = ref(false)
 const suppressTransitionErrorsUntil = ref(0)
 const playbackFromAuto = ref(false)
-let durationAbortController = null
 
 const route = useRoute()
 
@@ -194,6 +193,7 @@ const switchEpisode = async (val) => {
     })
   }
 
+  currentEpisodeDuration.value = currentEpisode.value?.duration || 0
   // Skip media session update when Auto initiated — it already has correct metadata
   if (!fromAuto) {
     initMediaSession(currentEpisode.value)
@@ -202,29 +202,6 @@ const switchEpisode = async (val) => {
     showPlayer.value = true
     delay = 250
   }, delay)
-
-  // get the ACTUAL duration of the audio file and update the currentEpisodeDuration.value
-  if (!isLiveStream.value) {
-    // Abort any in-flight duration fetch from a previous episode
-    if (durationAbortController) {
-      durationAbortController.abort()
-    }
-    durationAbortController = new AbortController()
-    const { signal } = durationAbortController
-
-    try {
-      const { duration: actualDuration } = await $fetch("/api/duration", {
-        params: { url: getConfiguredAudioUrl.value },
-        signal,
-      })
-      currentEpisodeDuration.value = actualDuration
-      currentEpisode.value.duration = actualDuration
-    } catch (error) {
-      if (error.name !== "AbortError") {
-        console.warn("Failed to get actual duration:", error)
-      }
-    }
-  }
 }
 
 // function that handles the skip to time with the plugin
@@ -401,9 +378,15 @@ onMounted(async () => {
   await RemoteStreamer.addListener("timeUpdate", (data) => {
     currentEpisodeProgress.value = data.currentTime
   })
+  RemoteStreamer.addListener("ready", (data) => {
+    currentEpisodeDuration.value = data.duration
+    currentEpisode.value.duration = data.duration
+
+    isStreamLoading.value = false
+  })
   await RemoteStreamer.addListener("play", () => {
     isEpisodePlaying.value = true
-    isStreamLoading.value = false
+
     suppressTransitionErrorsUntil.value = 0
 
     if (isNewEpisode.value) {
@@ -415,8 +398,6 @@ onMounted(async () => {
       )
       isNewEpisode.value = false
     }
-
-    currentEpisodeDuration.value = currentEpisode.value.duration
   })
 
   await RemoteStreamer.addListener("pause", () => {
