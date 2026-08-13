@@ -179,21 +179,14 @@ const switchEpisode = async (val) => {
   isStreamLoading.value = true
   await nextTick()
 
-  await RemoteStreamer.play({
+  RemoteStreamer.play({
     url: getConfiguredAudioUrl.value,
     enableCommandCenter: true,
     enableCommandCenterSeek: !isLiveStream.value,
   })
 
-  // get actual duration from the Remote Streamer audio player
-  const playerAudioState = await RemoteStreamer.getCurrentState()
-  const playerAudioStateDuration =
-    playerAudioState.duration || currentEpisode.value?.duration || 0
+  currentEpisodeDuration.value = currentEpisode.value?.duration || 0
 
-  currentEpisodeDuration.value = playerAudioStateDuration
-  currentEpisode.value.duration = playerAudioStateDuration
-
-  // initializes the media session in ~/utilities/media-session.js
   initMediaSession(currentEpisode.value)
   setTimeout(() => {
     showPlayer.value = true
@@ -390,9 +383,16 @@ onMounted(async () => {
   await RemoteStreamer.addListener("timeUpdate", (data) => {
     currentEpisodeProgress.value = data.currentTime
   })
-  await RemoteStreamer.addListener("play", () => {
+  RemoteStreamer.addListener("ready", (data) => {
+    console.log("######## RemoteStreamer ready event data:", data)
+    currentEpisodeDuration.value = data.duration
+    currentEpisode.value.duration = data.duration
     isEpisodePlaying.value = true
     isStreamLoading.value = false
+  })
+  await RemoteStreamer.addListener("play", () => {
+    // isEpisodePlaying.value = true
+    // isStreamLoading.value = false
     suppressTransitionErrorsUntil.value = 0
 
     if (isNewEpisode.value) {
