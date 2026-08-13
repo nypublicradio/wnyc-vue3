@@ -8,6 +8,7 @@ interface CacheEntry<T> {
 
 const MAX_CACHE_ENTRIES = 200
 
+// TTL cache with request coalescing so concurrent lookups for the same key share one fetch.
 export class TtlCache<T> {
     private cache = new Map<string, CacheEntry<T>>()
     private inFlight = new Map<string, Promise<T>>()

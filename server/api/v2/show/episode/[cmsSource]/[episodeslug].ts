@@ -11,11 +11,7 @@ const config = useRuntimeConfig()
 // Cache individual episodes for 10 minutes; skip caching failures so they can retry sooner.
 const episodeCache = new TtlCache<any>(10 * 60 * 1000, (result) => result !== null)
 
-// Get Simplecast episode data directly by UUID, cached to reduce API load.
-const getSimplecastEpisode = async (episodeId: string) => {
-    return episodeCache.getOrFetch(episodeId, () => fetchSimplecastEpisode(episodeId))
-}
-
+// Fetches a single Simplecast episode by UUID
 const fetchSimplecastEpisode = async (episodeId: string) => {
     try {
         // Simplecast API only accepts UUIDs
@@ -67,7 +63,10 @@ const fetchSimplecastEpisode = async (episodeId: string) => {
     }
 }
 
-
+// Get Simplecast episode data directly by UUID, cached to reduce API load.
+const getSimplecastEpisode = (episodeId: string) => {
+    return episodeCache.getOrFetch(episodeId, () => fetchSimplecastEpisode(episodeId))
+}
 
 // Get NPR episode data
 const getNPREpisode = async (slug: string) => {

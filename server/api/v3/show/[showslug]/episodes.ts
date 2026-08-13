@@ -14,17 +14,12 @@ const __getConfig = () => {
 const episodesCache = new TtlCache<any>(5 * 60 * 1000, (result) => !result?.meta?.error)
 
 /**
- * Fetch episodes from Simplecast API for a specific podcast, cached to reduce API load.
+ * Fetch episodes from the Simplecast API for a specific podcast.
  * @param podcastId - The Simplecast podcast UUID
  * @param offset - Starting position for pagination (default: 0)
  * @param limit - Number of episodes to return (default: 10)
  * @returns Promise containing episodes array and pagination metadata
  */
-const getSimplecastEpisodes = async (podcastId: string, offset = 0, limit = 10) => {
-    const cacheKey = `${podcastId}-${offset}-${limit}`
-    return episodesCache.getOrFetch(cacheKey, () => fetchSimplecastEpisodes(podcastId, offset, limit))
-}
-
 const fetchSimplecastEpisodes = async (podcastId: string, offset = 0, limit = 10) => {
     const config = __getConfig()
 
@@ -159,6 +154,18 @@ const fetchSimplecastEpisodes = async (podcastId: string, offset = 0, limit = 10
             }
         }
     }
+}
+
+/**
+ * Fetch episodes from Simplecast API for a specific podcast, cached to reduce API load.
+ * @param podcastId - The Simplecast podcast UUID
+ * @param offset - Starting position for pagination (default: 0)
+ * @param limit - Number of episodes to return (default: 10)
+ * @returns Promise containing episodes array and pagination metadata
+ */
+const getSimplecastEpisodes = (podcastId: string, offset = 0, limit = 10) => {
+    const cacheKey = `${podcastId}-${offset}-${limit}`
+    return episodesCache.getOrFetch(cacheKey, () => fetchSimplecastEpisodes(podcastId, offset, limit))
 }
 
 /**
