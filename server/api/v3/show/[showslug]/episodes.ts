@@ -38,6 +38,10 @@ const fetchSimplecastEpisodes = async (podcastId: string, offset = 0, limit = 10
                         limit,
                         count: 0,
                         total: 0
+                    },
+                    error: {
+                        message: 'Invalid podcast ID format (must be UUID)',
+                        status: 400
                     }
                 }
             }
@@ -57,6 +61,10 @@ const fetchSimplecastEpisodes = async (podcastId: string, offset = 0, limit = 10
                         limit,
                         count: 0,
                         total: 0
+                    },
+                    error: {
+                        message: 'Simplecast API key is not configured',
+                        status: 500
                     }
                 }
             }
@@ -185,6 +193,8 @@ export default defineEventHandler(async (event) => {
     const showslug: string | undefined = event?.context?.params?.showslug
     // Validate showslug parameter
     if (!showslug) {
+        res.statusCode = 400
+        res.setHeader('Cache-Control', 'no-store')
         return {
             data: [],
             meta: {
@@ -214,6 +224,13 @@ export default defineEventHandler(async (event) => {
 
     // Fetch episodes from Simplecast
     const episodes = await getSimplecastEpisodes(showslug, offset, limit)
+
+    // Avoid caching upstream failures at the edge (CDN) so they can retry sooner
+    if (episodes.meta?.error) {
+        res.statusCode = episodes.meta.error.status || 502
+        res.setHeader('Cache-Control', 'no-store')
+        return episodes
+    }
 
     // Set cache header for better performance
     res.setHeader('Cache-Control', 'max-age=300, stale-while-revalidate=600')

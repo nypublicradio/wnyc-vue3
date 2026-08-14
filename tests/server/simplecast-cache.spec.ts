@@ -59,5 +59,20 @@ describe('TtlCache', () => {
 
         expect(fetchFn).toHaveBeenCalledTimes(2)
     })
+
+    it('rejects and clears inFlight when fetch exceeds the timeout', async () => {
+        const cache = new TtlCache<string>(1000, () => true, 5000)
+        const fetchFn = vi.fn(() => new Promise<string>(() => { /* never resolves */ }))
+
+        const promise = cache.getOrFetch('key', fetchFn)
+        vi.advanceTimersByTime(5000)
+
+        await expect(promise).rejects.toThrow('TtlCache fetch timed out for key: key')
+        // inFlight is cleared, so the next call triggers a new fetch
+        expect(fetchFn).toHaveBeenCalledTimes(1)
+        const retryFn = vi.fn().mockResolvedValue('recovered')
+        const result = await cache.getOrFetch('key', retryFn)
+        expect(result).toBe('recovered')
+    })
 })
 

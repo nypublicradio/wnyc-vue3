@@ -227,6 +227,9 @@ export default defineEventHandler(async (event) => {
         const show = await getShow(slug, isSlugOnly)
 
         if (!show) {
+            // Avoid caching a failed/missing show lookup at the edge
+            res.statusCode = 404
+            res.setHeader('Cache-Control', 'no-store')
             return null
         }
         if (show.cmsSource === cmsSources.SIMPLECAST) {

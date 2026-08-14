@@ -7,6 +7,7 @@ interface CacheEntry<T> {
 }
 
 const MAX_CACHE_ENTRIES = 200
+const DEFAULT_FETCH_TIMEOUT_MS = 10_000
 
 // TTL cache with request coalescing so concurrent lookups for the same key share one fetch.
 export class TtlCache<T> {
@@ -15,7 +16,8 @@ export class TtlCache<T> {
 
     constructor(
         private ttlMs: number,
-        private shouldCache: (data: T) => boolean = () => true
+        private shouldCache: (data: T) => boolean = () => true,
+        private fetchTimeoutMs: number = DEFAULT_FETCH_TIMEOUT_MS
     ) { /* parameter properties above handle field assignment */ }
 
     /**
@@ -33,7 +35,7 @@ export class TtlCache<T> {
             return pending
         }
 
-        const promise = fetchFn().finally(() => this.inFlight.delete(key))
+        const promise = this.withTimeout(fetchFn(), key).finally(() => this.inFlight.delete(key))
         this.inFlight.set(key, promise)
 
         const data = await promise
@@ -41,6 +43,16 @@ export class TtlCache<T> {
             this.set(key, data)
         }
         return data
+    }
+
+    private withTimeout(promise: Promise<T>, key: string): Promise<T> {
+        return new Promise<T>((resolve, reject) => {
+            const timer = setTimeout(
+                () => reject(new Error(`TtlCache fetch timed out for key: ${key}`)),
+                this.fetchTimeoutMs
+            )
+            promise.then(resolve, reject).finally(() => clearTimeout(timer))
+        })
     }
 
     private set(key: string, data: T) {
