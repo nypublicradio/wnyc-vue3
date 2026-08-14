@@ -93,5 +93,8 @@
     "ufo": "^1.5.4",
     "vue": "3.4.31",
     "worker-timers": "^8.0.4"
+  },
+  "overrides": {
+    "hls.js": "1.6.13"
   }
 }
