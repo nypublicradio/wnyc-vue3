@@ -200,7 +200,6 @@ export default defineNuxtConfig({
   },
 
   plugins: [
-    "~/plugins/debug-errors.client.js",
     "~/plugins/router-guards.client.js",
     "~/plugins/firebase.client.js",
   ],
