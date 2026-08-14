@@ -378,6 +378,7 @@ onMounted(async () => {
   await RemoteStreamer.addListener("timeUpdate", (data) => {
     currentEpisodeProgress.value = data.currentTime
   })
+  console.log("hello")
   RemoteStreamer.addListener("ready", (data) => {
     currentEpisodeDuration.value = data.duration
     currentEpisode.value.duration = data.duration
