@@ -114,6 +114,10 @@ export default defineNuxtConfig({
 
   app: {
     head: {
+      script: [
+        // TEMPORARY: catch errors before Nuxt loads
+        { innerHTML: 'window.__BOOT_ERRORS=[];window.onerror=function(m,s,l,c,e){window.__BOOT_ERRORS.push(m+" at "+s+":"+l);var d=document.getElementById("boot-debug");if(!d){d=document.createElement("div");d.id="boot-debug";d.style.cssText="position:fixed;top:0;left:0;right:0;background:orange;color:black;font:12px monospace;padding:8px;z-index:999999;white-space:pre-wrap;max-height:30vh;overflow:auto;";document.body.appendChild(d);}d.textContent="BOOT ERROR: "+window.__BOOT_ERRORS.join("\\n")};', tagPosition: 'head' },
+      ],
       link: [
         // APIs & Backend
         { rel: 'preconnect', href: 'https://vuycervrdrtycpjzhqxg.supabase.co' },
@@ -200,6 +204,7 @@ export default defineNuxtConfig({
   },
 
   plugins: [
+    "~/plugins/debug-errors.client.js",
     "~/plugins/router-guards.client.js",
     "~/plugins/firebase.client.js",
   ],
