@@ -85,7 +85,15 @@ export default defineNuxtConfig({
   ssr: isSsrEnabled,
 
   nitro: {
+    // Ensure generate output always goes to dist/ for Capacitor (webDir: 'dist')
+    ...(!isSsrEnabled ? {
+      output: {
+        publicDir: 'dist',
+      },
+    } : {}),
     prerender: {
+      // When building for the app (SPA), don't crawl — just generate the shell
+      ...(!isSsrEnabled ? { crawlLinks: false, routes: ['/'] } : {}),
       // Don't crawl into show pages during generate — they are client-rendered
       // and transient CMS 500s should not block the entire build
       ignore: ['/browse/shows/**'],
