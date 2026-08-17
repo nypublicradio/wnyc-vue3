@@ -6,6 +6,7 @@ import {
   useIsNativeApp,
   useCurrentEpisode,
   useIsEpisodePlaying,
+  useIsPlayerMinimized,
 } from "~/composables/states"
 import { formatDate, trackClickEvent } from "~/utilities/helpers"
 import { RemoteStreamer } from "@nypublicradio/capacitor-remote-streamer"
@@ -40,6 +41,8 @@ const isActiveGlobal = useIsActive()
 const isNativeApp = useIsNativeApp()
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
+const isPlayerMinimized = useIsPlayerMinimized()
+const wasPlaying = ref(isEpisodePlaying.value)
 const miscData = ref({
   instagramHandle: "",
 })
@@ -162,6 +165,7 @@ onMounted(async () => {
     })
 
     // hide the player
+    isPlayerMinimized.value = true
   }
   if (isNativeApp.value) {
     // tell OneSignal to pause in-app notifications
@@ -182,6 +186,14 @@ onUnmounted(async () => {
   if (isNativeApp.value) {
     // tell OneSignal to resume in-app notifications
     await OneSignal.InAppMessages.setPaused(false)
+  }
+  // restore the player
+  if (currentEpisode.value) {
+    isPlayerMinimized.value = false
+  }
+  // resume the player if it was playing before the user entered the submission page
+  if (wasPlaying.value) {
+    await RemoteStreamer.resume()
   }
 })
 

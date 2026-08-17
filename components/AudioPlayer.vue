@@ -361,6 +361,13 @@ watch(skipBackTrigger, () => {
   handleSkipTo(currentEpisodeProgress.value - PLAYER_SKIP_TIME)
 })
 
+// if the global isPlayerMinimized state changes, sync it to the player component
+watch(isPlayerMinimized, (val) => {
+  if (playerRef.value) {
+    playerRef.value.toggleMinimize(val)
+  }
+})
+
 // if the route changes, and the expanded player is expanded, close the expanded player
 watch(
   () => route.name,
