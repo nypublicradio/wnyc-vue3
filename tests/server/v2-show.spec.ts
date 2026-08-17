@@ -10,7 +10,7 @@ vi.mock('~/composables/globals', () => ({
 }))
 
 vi.mock('~/composables/data/articlePages', () => ({
-    normalizeArticleListItem: async (item: any) => item,
+    normalizeArticleListItem: (item: any) => Promise.resolve(item),
 }))
 
 vi.mock('~/composables/useVImage', () => ({
@@ -28,7 +28,7 @@ vi.mock('~/server/utils/supabaseClient', () => ({
 }))
 
 vi.mock('~/server/utils/npr', () => ({
-    NPR: class { },
+    NPR: function () { },
 }))
 
 // @ts-expect-error test-only global

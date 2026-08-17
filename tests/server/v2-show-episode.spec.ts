@@ -9,11 +9,11 @@ vi.mock('~/composables/globals', () => ({
 }))
 
 vi.mock('~/composables/data/articlePages', () => ({
-    normalizeArticlePage: async (item: any) => item,
+    normalizeArticlePage: (item: any) => Promise.resolve(item),
 }))
 
 vi.mock('~/server/utils/nyprdb', () => ({
-    NyprDb: class { },
+    NyprDb: function () { },
 }))
 
 vi.mock('~/server/utils/supabaseClient', () => ({
@@ -21,7 +21,7 @@ vi.mock('~/server/utils/supabaseClient', () => ({
 }))
 
 vi.mock('~/server/utils/npr', () => ({
-    NPR: class { },
+    NPR: function () { },
 }))
 
 // @ts-expect-error test-only global

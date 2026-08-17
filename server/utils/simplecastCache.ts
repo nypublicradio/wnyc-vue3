@@ -48,10 +48,13 @@ export class TtlCache<T> {
     private withTimeout(promise: Promise<T>, key: string): Promise<T> {
         return new Promise<T>((resolve, reject) => {
             const timer = setTimeout(
-                () => reject(new Error(`TtlCache fetch timed out for key: ${key}`)),
+                () => { reject(new Error(`TtlCache fetch timed out for key: ${key}`)); },
                 this.fetchTimeoutMs
             )
-            promise.then(resolve, reject).finally(() => clearTimeout(timer))
+            promise.then(
+                (value) => { resolve(value); },
+                (error) => { reject(error); }
+            ).finally(() => { clearTimeout(timer); })
         })
     }
 
