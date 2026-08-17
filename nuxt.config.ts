@@ -1,6 +1,8 @@
 import { sentryVitePlugin } from "@sentry/vite-plugin"
 import MyPreset from "./assets/wnyc-theme.js"
 
+const isSsrEnabled = process.env.NUXT_SSR === "true"
+
 export default defineNuxtConfig({
   //devtools: { enabled: true },
 
@@ -11,7 +13,7 @@ export default defineNuxtConfig({
 
   modules: [
     "@nuxtjs/supabase",
-    ...(process.env.NUXT_SSR === "true" ? [] : ["@nuxtjs/ionic"]),
+    ...(isSsrEnabled ? [] : ["@nuxtjs/ionic"]),
     "@nuxtjs/device",
     "@nuxt/image",
     "@hypernym/nuxt-gsap",
@@ -36,7 +38,7 @@ export default defineNuxtConfig({
     url: process.env.SUPABASE_URL,
     key: process.env.SUPABASE_KEY,
     redirect: false,
-    useSsrCookies: process.env.NUXT_SSR === "true",
+    useSsrCookies: isSsrEnabled,
     // Allow insecure cookies on localhost:
     cookieOptions: {
       secure: process.env.NODE_ENV === 'production',
@@ -70,10 +72,16 @@ export default defineNuxtConfig({
     },
   },
 
-  ssr: process.env.NUXT_SSR === 'true',
+  ssr: isSsrEnabled,
 
   nitro: {
-    routeRules: process.env.NODE_ENV === 'production' ? {
+    // Ensure generate output always goes to dist/ for Capacitor (webDir: 'dist')
+    ...(!isSsrEnabled ? {
+      output: {
+        publicDir: 'dist',
+      },
+    } : {}),
+    routeRules: isSsrEnabled && process.env.NODE_ENV === 'production' ? {
       '/home': { swr: 60 },
       // Cache ALL shows and any nested episode pages under a show for 15 minutes
       '/browse/shows/**': { swr: 900 },

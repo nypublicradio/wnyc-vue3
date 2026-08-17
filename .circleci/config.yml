@@ -212,6 +212,11 @@ jobs:
       - run:
           name: Capacitor Setup
           command: |
+            # Force NUXT_SSR=false for mobile builds (rename_env_vars.sh may override from context)
+            export NUXT_SSR=false
+            # Downgrade Xcode project objectVersion for CocoaPods compatibility
+            # (Xcode 26 uses objectVersion 70 which xcodeproj gem doesn't support yet)
+            sed -i '' 's/objectVersion = 70/objectVersion = 60/' ios/App/App.xcodeproj/project.pbxproj
             npm run generate-splash
             npm run generate
             npx cap sync ios
@@ -268,6 +273,8 @@ jobs:
       - run:
           name: Capacitor Setup
           command: |
+            # Force NUXT_SSR=false for mobile builds (rename_env_vars.sh may override from context)
+            export NUXT_SSR=false
             patch node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/CapacitorWebView.java -i kludge/BackgroundPlay.diff
             npm run generate-splash
             npm run generate
