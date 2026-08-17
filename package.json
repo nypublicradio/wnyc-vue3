@@ -10,7 +10,8 @@
     "generate-local": "NUXT_SSR=false BFF_URL='https://demo.native-app.wnyc.org' nuxt generate",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
+    "//postinstall-note": "TODO: Remove patch-package from postinstall and devDependencies when upgrading to Capacitor v7+ / video-recorder v7+",
+    "postinstall": "patch-package && nuxt prepare",
     "generate-splash": "node assets/copyToAssets.js && npx capacitor-assets generate",
     "build-theme": "node assets/build-theme.js",
     "jwt": "node scripts/jwt-utils.js"
@@ -25,6 +26,7 @@
     "date-fns": "^2.30.0",
     "ipx": "^3.1.1",
     "nuxt": "^3.12.3",
+    "patch-package": "^8.0.1",
     "sass": "1.69.7",
     "vitest": "0.32.4"
   },

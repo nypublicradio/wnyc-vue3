@@ -122,6 +122,11 @@ body {
       display: none !important;
     }
   }
+  &.hide-bottom-menu {
+    .bottom-menu {
+      display: none !important;
+    }
+  }
   &.app {
     .page {
       transition: padding-top var(--p-transition-duration) ease;
