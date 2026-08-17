@@ -1,8 +1,14 @@
 
 <script setup>
 import { useToast } from "primevue/usetoast"
-import { useIsActive, useIsNativeApp } from "~/composables/states"
+import {
+  useIsActive,
+  useIsNativeApp,
+  useCurrentEpisode,
+  useIsEpisodePlaying,
+} from "~/composables/states"
 import { formatDate, trackClickEvent } from "~/utilities/helpers"
+import { RemoteStreamer } from "@nypublicradio/capacitor-remote-streamer"
 // only load OneSignal on client side
 let OneSignal = null
 if (import.meta.client) {
@@ -32,6 +38,8 @@ const questionLimitDays = ref(1) // only submit a question once per day
 const isSignupForm = ref(true)
 const isActiveGlobal = useIsActive()
 const isNativeApp = useIsNativeApp()
+const currentEpisode = useCurrentEpisode()
+const isEpisodePlaying = useIsEpisodePlaying()
 const miscData = ref({
   instagramHandle: "",
 })
@@ -140,6 +148,21 @@ const onSignupClick = () => {
 }
 
 onMounted(async () => {
+  // pause the player if audio is playing & hide the player
+  if (isEpisodePlaying.value) {
+    await RemoteStreamer.pause()
+  }
+  // alert the user that audio is disabled
+  if (currentEpisode.value) {
+    toast.add({
+      severity: "info",
+      summary: "Your audio has been disabled during the submission process",
+      life: 6000,
+      closable: true,
+    })
+
+    // hide the player
+  }
   if (isNativeApp.value) {
     // tell OneSignal to pause in-app notifications
     await OneSignal.InAppMessages.setPaused(true)

@@ -853,7 +853,7 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     bottom: calc(
       calc(var(--persistent-player-height) * -1) -
         var(--persistent-player-height-buffer)
-    );
+    ) !important;
   }
 
   &.expanded {
