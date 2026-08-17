@@ -388,7 +388,6 @@ onMounted(async () => {
   RemoteStreamer.addListener("ready", (data) => {
     currentEpisodeDuration.value = data.duration
     currentEpisode.value.duration = data.duration
-
     isStreamLoading.value = false
   })
   await RemoteStreamer.addListener("play", () => {

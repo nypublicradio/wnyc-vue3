@@ -2,6 +2,7 @@ import axios from 'axios'
 import humps from 'humps'
 import { normalizeSimplecastListItem } from '~/composables/data/articlePages'
 import { cmsSources } from '~/composables/globals'
+import { TtlCache } from '~/server/utils/simplecastCache'
 
 // Helper to obtain runtime config, with test override support.
 const __getConfig = () => {
@@ -9,14 +10,17 @@ const __getConfig = () => {
     return testCfg ?? useRuntimeConfig()
 }
 
+// Cache episode pages for 5 minutes; skip caching error responses so failures can retry sooner.
+const episodesCache = new TtlCache<any>(5 * 60 * 1000, (result) => !result?.meta?.error)
+
 /**
- * Fetch episodes from Simplecast API for a specific podcast
+ * Fetch episodes from the Simplecast API for a specific podcast.
  * @param podcastId - The Simplecast podcast UUID
  * @param offset - Starting position for pagination (default: 0)
  * @param limit - Number of episodes to return (default: 10)
  * @returns Promise containing episodes array and pagination metadata
  */
-const getSimplecastEpisodes = async (podcastId: string, offset = 0, limit = 10) => {
+const fetchSimplecastEpisodes = async (podcastId: string, offset = 0, limit = 10) => {
     const config = __getConfig()
 
     try {
@@ -34,6 +38,10 @@ const getSimplecastEpisodes = async (podcastId: string, offset = 0, limit = 10) 
                         limit,
                         count: 0,
                         total: 0
+                    },
+                    error: {
+                        message: 'Invalid podcast ID format (must be UUID)',
+                        status: 400
                     }
                 }
             }
@@ -53,6 +61,10 @@ const getSimplecastEpisodes = async (podcastId: string, offset = 0, limit = 10) 
                         limit,
                         count: 0,
                         total: 0
+                    },
+                    error: {
+                        message: 'Simplecast API key is not configured',
+                        status: 500
                     }
                 }
             }
@@ -153,6 +165,18 @@ const getSimplecastEpisodes = async (podcastId: string, offset = 0, limit = 10) 
 }
 
 /**
+ * Fetch episodes from Simplecast API for a specific podcast, cached to reduce API load.
+ * @param podcastId - The Simplecast podcast UUID
+ * @param offset - Starting position for pagination (default: 0)
+ * @param limit - Number of episodes to return (default: 10)
+ * @returns Promise containing episodes array and pagination metadata
+ */
+const getSimplecastEpisodes = (podcastId: string, offset = 0, limit = 10) => {
+    const cacheKey = `${podcastId}-${offset}-${limit}`
+    return episodesCache.getOrFetch(cacheKey, () => fetchSimplecastEpisodes(podcastId, offset, limit))
+}
+
+/**
  * V3 Episodes endpoint handler
  * 
  * Query Parameters:
@@ -169,6 +193,8 @@ export default defineEventHandler(async (event) => {
     const showslug: string | undefined = event?.context?.params?.showslug
     // Validate showslug parameter
     if (!showslug) {
+        res.statusCode = 400
+        res.setHeader('Cache-Control', 'no-store')
         return {
             data: [],
             meta: {
@@ -198,6 +224,16 @@ export default defineEventHandler(async (event) => {
 
     // Fetch episodes from Simplecast
     const episodes = await getSimplecastEpisodes(showslug, offset, limit)
+
+    // Avoid caching upstream failures at the edge (CDN) so they can retry sooner
+    if (episodes.meta?.error) {
+        res.statusCode = episodes.meta.error.status || 502
+        res.setHeader('Cache-Control', 'no-store')
+        return episodes
+    }
+
+    // Set cache header for better performance
+    res.setHeader('Cache-Control', 'max-age=300, stale-while-revalidate=600')
 
     return episodes
 })

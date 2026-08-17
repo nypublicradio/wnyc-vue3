@@ -6,6 +6,7 @@ import { NyprDb } from '~/server/utils/nyprdb'
 import { supabaseClient } from '~/server/utils/supabaseClient'
 import { NPR } from '~/server/utils/npr'
 import { useVImage } from "~/composables/useVImage"
+import { TtlCache } from '~/server/utils/simplecastCache'
 
 const { templatizeImageUrl } = useVImage()
 
@@ -13,6 +14,9 @@ const config = useRuntimeConfig()
 const supabase = supabaseClient()
 const nyprDb = new NyprDb(supabase)
 const npr = new NPR()
+
+// Cache Simplecast show metadata for 1 hour; skip caching failures so they can retry sooner.
+const simplecastShowCache = new TtlCache<any>(60 * 60 * 1000, (result) => result !== null)
 
 // Get NPR episodes data
 const getNPREpisodes = async (slug: string, type: string, showTitle: string) => {
@@ -93,6 +97,48 @@ const getEpisodes = async (slug: string, showImage: string, type?: string, pageS
     }
 }
 
+// Fetches Simplecast show metadata by UUID
+const fetchSimplecastShow = async (slug: string, isSlugOnly?: boolean) => {
+    try {
+        // Use config or fallback to process.env
+        const apiKey = config.simplecastApiKey || process.env.SIMPLECAST_API_KEY
+
+        if (!apiKey) {
+            console.error('[Simplecast Show] SIMPLECAST_API_KEY is not configured')
+            return null
+        }
+
+        const option = {
+            method: 'GET',
+            url: `${config.simplecastUrl}/podcasts/${slug}`,
+            headers: {
+                'Authorization': apiKey
+            }
+        }
+        const res = await axios(option)
+        const showData = humps.camelizeKeys(res.data)
+        return {
+            title: showData.title,
+            slug: showData.site.subdomain || showData.slug || slug,
+            cmsSource: cmsSources.SIMPLECAST,
+            ...(!isSlugOnly
+                ? [
+                    {
+                        id: showData.id,
+                        description: showData.description,
+                        tease: showData.description,
+                        image: showData.imageUrl ? { url: showData.imageUrl, template: templatizeImageUrl(showData.imageUrl) } : undefined,
+                        type: mediaTypes.SHOW,
+                        url: showData.href || showData.websiteUrl,
+                    }
+                ] : []),
+        }
+    } catch (e: any) {
+        console.error('[Simplecast Show] Error fetching show:', e?.response?.status, e?.response?.statusText, e?.message)
+        return null
+    }
+}
+
 // gets the publisher show data
 const getShow = async (slug: string, isSlugOnly?: boolean) => {
     // Check if this is a Simplecast UUID
@@ -100,44 +146,7 @@ const getShow = async (slug: string, isSlugOnly?: boolean) => {
 
     if (isUUID) {
         // This is a Simplecast show UUID
-        try {
-            // Use config or fallback to process.env
-            const apiKey = config.simplecastApiKey || process.env.SIMPLECAST_API_KEY
-
-            if (!apiKey) {
-                console.error('[Simplecast Show] SIMPLECAST_API_KEY is not configured')
-                return null
-            }
-
-            const option = {
-                method: 'GET',
-                url: `${config.simplecastUrl}/podcasts/${slug}`,
-                headers: {
-                    'Authorization': apiKey
-                }
-            }
-            const res = await axios(option)
-            const showData = humps.camelizeKeys(res.data)
-            return {
-                title: showData.title,
-                slug: showData.site.subdomain || showData.slug || slug,
-                cmsSource: cmsSources.SIMPLECAST,
-                ...(!isSlugOnly
-                    ? [
-                        {
-                            id: showData.id,
-                            description: showData.description,
-                            tease: showData.description,
-                            image: showData.imageUrl ? { url: showData.imageUrl, template: templatizeImageUrl(showData.imageUrl) } : undefined,
-                            type: mediaTypes.SHOW,
-                            url: showData.href || showData.websiteUrl,
-                        }
-                    ] : []),
-            }
-        } catch (e: any) {
-            console.error('[Simplecast Show] Error fetching show:', e?.response?.status, e?.response?.statusText, e?.message)
-            return null
-        }
+        return simplecastShowCache.getOrFetch(`${slug}-${isSlugOnly}`, () => fetchSimplecastShow(slug, isSlugOnly))
     }
 
     // Check for NPR shows
@@ -218,6 +227,9 @@ export default defineEventHandler(async (event) => {
         const show = await getShow(slug, isSlugOnly)
 
         if (!show) {
+            // Avoid caching a failed/missing show lookup at the edge
+            res.statusCode = 404
+            res.setHeader('Cache-Control', 'no-store')
             return null
         }
         if (show.cmsSource === cmsSources.SIMPLECAST) {
