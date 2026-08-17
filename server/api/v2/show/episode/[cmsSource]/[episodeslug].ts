@@ -5,10 +5,14 @@ import { cmsSources, FALLBACKIMAGE } from '~/composables/globals'
 import { NyprDb } from '~/server/utils/nyprdb'
 import { supabaseClient } from '~/server/utils/supabaseClient'
 import { NPR } from '~/server/utils/npr'
+import { TtlCache } from '~/server/utils/simplecastCache'
 const config = useRuntimeConfig()
 
-// Get Simplecast episode data directly by UUID
-const getSimplecastEpisode = async (episodeId: string) => {
+// Cache individual episodes for 10 minutes; skip caching failures so they can retry sooner.
+const episodeCache = new TtlCache<any>(10 * 60 * 1000, (result) => result !== null)
+
+// Fetches a single Simplecast episode by UUID
+const fetchSimplecastEpisode = async (episodeId: string) => {
     try {
         // Simplecast API only accepts UUIDs
         const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(episodeId)
@@ -59,7 +63,10 @@ const getSimplecastEpisode = async (episodeId: string) => {
     }
 }
 
-
+// Get Simplecast episode data directly by UUID, cached to reduce API load.
+const getSimplecastEpisode = (episodeId: string) => {
+    return episodeCache.getOrFetch(episodeId, () => fetchSimplecastEpisode(episodeId))
+}
 
 // Get NPR episode data
 const getNPREpisode = async (slug: string) => {
@@ -140,6 +147,7 @@ const getEpisode = async (slug: string) => {
 }
 
 export default defineEventHandler(async (event) => {
+    const res = event?.node?.res
     //Fetching slug and type from the path params
     const slug: string | undefined = event?.context?.params?.episodeslug
     const cmsSource: string | undefined = event?.context?.params?.cmsSource
@@ -153,6 +161,12 @@ export default defineEventHandler(async (event) => {
         } else if (cmsSource === cmsSources.SIMPLECAST || cmsSource === 'simplecast') {
             // Get Simplecast episode
             episode = await getSimplecastEpisode(slug)
+            if (!episode) {
+                // Avoid caching an upstream Simplecast failure at the edge
+                res.statusCode = 502
+                res.setHeader('Cache-Control', 'no-store')
+                return null
+            }
         } else {
             // Get show details
             episode = await getEpisode(slug)
