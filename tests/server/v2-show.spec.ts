@@ -27,7 +27,7 @@ vi.mock('~/server/utils/supabaseClient', () => ({
     supabaseClient: () => ({}),
 }))
 
-function NPR() { }
+function NPR() { /* empty because test never calls its methods */ }
 vi.mock('~/server/utils/npr', () => ({
     NPR,
 }))

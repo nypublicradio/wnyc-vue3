@@ -12,7 +12,7 @@ vi.mock('~/composables/data/articlePages', () => ({
     normalizeArticlePage: (item: any) => Promise.resolve(item),
 }))
 
-function NyprDb() { }
+function NyprDb() { /* empty because test never calls its methods */ }
 vi.mock('~/server/utils/nyprdb', () => ({
     NyprDb,
 }))
@@ -21,7 +21,7 @@ vi.mock('~/server/utils/supabaseClient', () => ({
     supabaseClient: () => ({}),
 }))
 
-function NPR() { }
+function NPR() { /* empty because test never calls its methods */ }
 vi.mock('~/server/utils/npr', () => ({
     NPR,
 }))
