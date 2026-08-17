@@ -12,16 +12,18 @@ vi.mock('~/composables/data/articlePages', () => ({
     normalizeArticlePage: (item: any) => Promise.resolve(item),
 }))
 
+function NyprDb() { }
 vi.mock('~/server/utils/nyprdb', () => ({
-    NyprDb: function () { },
+    NyprDb,
 }))
 
 vi.mock('~/server/utils/supabaseClient', () => ({
     supabaseClient: () => ({}),
 }))
 
+function NPR() { }
 vi.mock('~/server/utils/npr', () => ({
-    NPR: function () { },
+    NPR,
 }))
 
 // @ts-expect-error test-only global

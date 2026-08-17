@@ -45,6 +45,7 @@ export class TtlCache<T> {
         return data
     }
 
+    /** Rejects with a timeout error if the given promise doesn't settle within fetchTimeoutMs. */
     private withTimeout(promise: Promise<T>, key: string): Promise<T> {
         return new Promise<T>((resolve, reject) => {
             const timer = setTimeout(
