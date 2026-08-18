@@ -16,9 +16,11 @@ if (import.meta.client) {
   const mod = await import("onesignal-cordova-plugin")
   OneSignal = mod.default
 }
+const showBottomMenu = ref(true)
+
 useHead({
   bodyAttrs: {
-    class: "hide-bottom-menu",
+    class: computed(() => (showBottomMenu.value ? "" : "hide-bottom-menu")),
   },
 })
 const toast = useToast()
@@ -65,8 +67,37 @@ const { execute: executeLimitData, refresh: refreshLimitData } = await useFetch(
     }),
     baseURL: config.public.BFF_URL,
     immediate: false,
-    onResponse: (res) => {
+    onResponse: async (res) => {
       questionLimitReached.value = res.response._data.questionLimitReached
+
+      // if the user has not reached the question limit, pause the player and hide it
+      if (!questionLimitReached.value) {
+        // pause the player if audio is playing & hide the player
+        if (isEpisodePlaying.value) {
+          await RemoteStreamer.pause()
+        }
+        // alert the user that audio is disabled
+        if (currentEpisode.value) {
+          toast.add({
+            severity: "info",
+            summary:
+              "Your audio has been disabled during the submission process",
+            life: 6000,
+            closable: true,
+          })
+
+          // hide the player
+          isPlayerMinimized.value = true
+        }
+        if (isNativeApp.value) {
+          // tell OneSignal to pause in-app notifications during the submission process
+          await OneSignal.InAppMessages.setPaused(true)
+
+          // hide the menu hide-bottom-menu
+          showBottomMenu.value = false
+        }
+      }
+
       isLoading.value = false
     },
   }
@@ -151,28 +182,9 @@ const onSignupClick = () => {
 }
 
 onMounted(async () => {
-  // pause the player if audio is playing & hide the player
-  if (isEpisodePlaying.value) {
-    await RemoteStreamer.pause()
-  }
-  // alert the user that audio is disabled
-  if (currentEpisode.value) {
-    toast.add({
-      severity: "info",
-      summary: "Your audio has been disabled during the submission process",
-      life: 6000,
-      closable: true,
-    })
-
-    // hide the player
-    isPlayerMinimized.value = true
-  }
-  if (isNativeApp.value) {
-    // tell OneSignal to pause in-app notifications
-    await OneSignal.InAppMessages.setPaused(true)
-  }
   // get the session that will trigger the useFetch to run
   await getSession()
+
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
@@ -186,6 +198,8 @@ onUnmounted(async () => {
   if (isNativeApp.value) {
     // tell OneSignal to resume in-app notifications
     await OneSignal.InAppMessages.setPaused(false)
+    // show the menu hide-bottom-menu
+    showBottomMenu.value = true
   }
   // restore the player
   if (currentEpisode.value) {
