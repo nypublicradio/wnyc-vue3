@@ -87,14 +87,21 @@ const getLayoutComponent = (layout: string) => {
 }
 
 const getCuratedListLayout = (block: StreamfieldBlock) => {
-  return props.curatedListLayoutOverride || block?.value?.layout || defaultLayout
+  return (
+    props.curatedListLayoutOverride || block?.value?.layout || defaultLayout
+  )
 }
 
 const enableLoadMoreForBlock = (block: StreamfieldBlock) => {
-  return props.enableCuratedListLoadMore && getCuratedListLayout(block) === "river"
+  return (
+    props.enableCuratedListLoadMore && getCuratedListLayout(block) === "river"
+  )
 }
 
-const getCuratedListComponentProps = (block: StreamfieldBlock, index: number) => {
+const getCuratedListComponentProps = (
+  block: StreamfieldBlock,
+  index: number
+) => {
   const layout = getCuratedListLayout(block)
   const componentProps: Record<string, unknown> = {
     list: block?.value?.list,
@@ -160,7 +167,10 @@ onMounted(() => {
         /> -->
         <div
           :key="`${block.id}-curated-list-${index}`"
-          v-if="block.type === 'curated_list' && block?.value?.list?.listItems?.length"
+          v-if="
+            block.type === 'curated_list' &&
+            block?.value?.list?.listItems?.length
+          "
           :class="verticalSpacingClasses"
           :id="slugify(block?.value?.label)"
         >
@@ -173,7 +183,10 @@ onMounted(() => {
             v-if="block?.value?.seeMoreLink"
             class="flex justify-content-center mt-4 w-full"
           >
-            <VFlexibleLink :to="getRouteOrLink(block?.value?.seeMoreLink.url)" raw>
+            <VFlexibleLink
+              :to="getRouteOrLink(block?.value?.seeMoreLink.url)"
+              raw
+            >
               <Button
                 severity="secondary"
                 class="px-5"
@@ -273,6 +286,37 @@ onMounted(() => {
     <div v-else v-for="(block, index) in streamfield" :key="`block-${index}`">
       <!-- image -->
       <div v-if="block.type === 'image'" class="streamfield-image mt-4 mx-auto">
+        <!-- <VImage
+          :src="block.value.image"
+          :ratio="[3, 2]"
+          :alt="block.value.image.alt"
+          :size="{ xs: [392, 261], md: [662, 441] }"
+        > -->
+        <!-- <VImage
+          :src="block.value.image"
+          :ratio="[block.value.image.width ?? 3, block.value.image.height ?? 2]"
+          :alt="block.value.image.alt"
+          :maxWidth="block.value.image.width"
+          :maxHeight="block.value.image.height"
+          sizes="xs:390px md:768px"
+        > -->
+        <!-- <VImage
+          :src="block.value.image"
+          :alt="block.value.image.alt"
+          :ratio="[3, 2]"
+          :size="{ xs: [261, 261], md: [441, 441] }"
+        > -->
+
+        <!--        :ratio="
+            block.value.image.width > block.value.image.height
+              ? [block.value.image.width, block.value.image.height]
+              : [3, 2]
+          " -->
+        <!--          :sizes="
+            block.value.image.width > block.value.image.height
+              ? 'xs:390px md:768px'
+              : undefined
+          " -->
         <VImage
           :src="block.value.image"
           :ratio="[block.value.image.width ?? 3, block.value.image.height ?? 2]"
@@ -280,6 +324,11 @@ onMounted(() => {
           :maxWidth="block.value.image.width"
           :maxHeight="block.value.image.height"
           sizes="xs:390px md:768px"
+          :forceMaxHeight="
+            block.value.image.width > block.value.image.height
+              ? undefined
+              : '441px'
+          "
         >
           <!--           <template #caption>
             <VImageCaption
@@ -311,7 +360,10 @@ onMounted(() => {
         <!-- image -->
 
         <!-- block-quote -->
-        <div v-else-if="block.type === 'block_quote'" class="streamfield-block-quote">
+        <div
+          v-else-if="block.type === 'block_quote'"
+          class="streamfield-block-quote"
+        >
           <blockquote>
             <HtmlConvert
               v-if="block.value.blockQuote"
@@ -357,7 +409,9 @@ onMounted(() => {
       </div>
       <!-- 1/2 way through the streamfield, insert the donation block -->
       <streamfield-donation
-        v-if="props.showDonation && index === Math.floor(streamfield.length / 2)"
+        v-if="
+          props.showDonation && index === Math.floor(streamfield.length / 2)
+        "
         @onClick="
           trackClickEvent(
             `story page id ${props.article.id}`,

@@ -41,6 +41,7 @@ const props = defineProps({
   ratio: { default: null, type: Array },
   blindLoaderRatio: { default: [3, 2], type: Array },
   sizes: { default: undefined, type: String },
+  forceMaxHeight: { default: undefined, type: String },
   srcset: { default: undefined, type: Array },
   to: { default: null, type: String },
   width: { default: null, type: Number },
@@ -160,7 +161,8 @@ const childProps = computed(() => {
   // Pass-through props (only if defined/non-default, to let child defaults work)
   if (props.alt) p.alt = props.alt
   if (props.allowPreview) p.allowPreview = props.allowPreview
-  if (props.allowVerticalEffect) p.allowVerticalEffect = props.allowVerticalEffect
+  if (props.allowVerticalEffect)
+    p.allowVerticalEffect = props.allowVerticalEffect
   if (props.density !== undefined) p.density = props.density
   if (props.format !== undefined) p.format = props.format
   if (props.isDecorative) p.isDecorative = props.isDecorative
@@ -170,6 +172,7 @@ const childProps = computed(() => {
   if (props.modifiers) p.modifiers = props.modifiers
   if (props.quality !== undefined) p.quality = props.quality
   if (props.sizes !== undefined) p.sizes = props.sizes
+  if (props.forceMaxHeight) p.forceMaxHeight = props.forceMaxHeight
   if (props.srcset !== undefined) p.srcset = props.srcset
   if (props.to) p.to = props.to
 
@@ -201,7 +204,11 @@ const childProps = computed(() => {
 
     <!-- Loader container that holds space -->
 
-    <div v-if="shouldShowLoader" class="image-loader-container" :style="loaderDimensions">
+    <div
+      v-if="shouldShowLoader"
+      class="image-loader-container"
+      :style="loaderDimensions"
+    >
       <ClientOnly>
         <WnycLoader class="image-loader-anim" size="1rem" bg spinner />
       </ClientOnly>

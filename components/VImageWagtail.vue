@@ -116,6 +116,13 @@ const props = defineProps({
     type: String,
   },
   /**
+   * force max height for the image (used in streamfield images to force the image to be a certain height)
+   */
+  forceMaxHeight: {
+    default: "",
+    type: String,
+  },
+  /**
    * wagtail image id
    */
   src: {
@@ -151,7 +158,7 @@ const emit = defineEmits([
   "image-error",
   "enlarge-image-load",
 ])
-
+const forceMaxHeightRef = ref(props.forceMaxHeight)
 const isVertical = ref(
   props.allowVerticalEffect &&
     props.maxHeight >= props.maxWidth &&
@@ -257,7 +264,9 @@ const handleProvider = computed(() => {
     >
       <div
         class="v-image-holder"
-        :style="`${props.sizes ? `` : `aspect-ratio:${ratio[0]} / ${ratio[1]}`}`"
+        :style="`${
+          props.sizes ? `` : `aspect-ratio:${ratio[0]} / ${ratio[1]}`
+        }`"
       >
         <div v-if="isVertical" class="bg">
           <nuxt-img
@@ -271,15 +280,21 @@ const handleProvider = computed(() => {
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
             :modifiers="props.modifiers"
             :loading="props.loading"
-            :preload="{ fetchPriority: props.loading === 'eager' ? 'high' : 'low' }"
+            :preload="{
+              fetchPriority: props.loading === 'eager' ? 'high' : 'low',
+            }"
           />
         </div>
+        <!-- :class="isVertical ? 'is-vertical' : ''" -->
         <nuxt-img
           ref="imageRef"
           :format="props.format"
           :provider="handleProvider"
           class="image native-image"
-          :class="isVertical ? 'is-vertical' : ''"
+          :class="{
+            'is-vertical': isVertical,
+            forceMaxHeight: props.forceMaxHeight,
+          }"
           :src="computedSrc"
           :width="computedWidth"
           :height="computedHeight"
@@ -293,7 +308,9 @@ const handleProvider = computed(() => {
           :alt="props.isDecorative ? '' : props.alt"
           :quality="String(props.quality)"
           :loading="props.loading"
-          :preload="{ fetchPriority: props.loading === 'eager' ? 'high' : 'low' }"
+          :preload="{
+            fetchPriority: props.loading === 'eager' ? 'high' : 'low',
+          }"
           :modifiers="props.modifiers"
           @load="handleImageLoad"
           @error="emit('image-error')"
@@ -387,6 +404,10 @@ const handleProvider = computed(() => {
       height: 100%;
       top: 0;
       object-fit: cover;
+      &.forceMaxHeight {
+        max-height: v-bind(forceMaxHeightRef);
+        object-fit: contain;
+      }
       &.is-vertical {
         margin: auto;
         display: block;
