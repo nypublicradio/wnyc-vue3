@@ -232,7 +232,10 @@ const isThisShowStreaming = computed(() => {
     <section class="grid grid-nogutter m-auto">
       <div class="col-fixed hidden xxl:block w-20rem"></div>
       <div class="col">
-        <div class="show-header flex justify-content-start gap-3 md:gap-5">
+        <div
+          class="show-header flex gap-3 md:gap-5"
+          :class="isApp ? 'justify-content-center' : 'justify-content-start'"
+        >
           <!-- <pre class="text-white">{{ showSlug }}</pre> -->
           <VImage
             v-if="show"
