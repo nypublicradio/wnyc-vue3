@@ -19,7 +19,6 @@ export const useContinuousPlay = () => {
 
   // Function to initialize continuous play feature. 
   const initContinuousPlay = () => {
-    console.log(' continous play slug: ', currentEpisodeHolder.value.slug)
 
     // if the user has continuous play enabled, then we want to play the next episode
     if (!isLiveStream.value && currentUser.value?.continuous_play) {
