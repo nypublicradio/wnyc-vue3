@@ -92,7 +92,7 @@ const updateProfile = async (newProfile) => {
         // pronouns: pronouns.value,
         // continuous_play: continuousPlay.value,
         default_live_stream: newProfile.default_live_stream,
-        continuous_play: currentUserProfile.value.continuous_play,
+        continuous_play: newProfile.continuous_play,
         dark_mode: newProfile.dark_mode,
         receive_general_notifications: newProfile.receive_general_notifications,
         one_signal_notification_channels:
@@ -410,71 +410,77 @@ watch(
       <!-- </SBoxEmpty> -->
     </section>
 
-    <section v-if="currentUser" class="listening-preferences p-0">
+    <section class="listening-preferences p-0">
       <div class="flex s-title-holder">
         <div class="s-title">Listening Preferences</div>
       </div>
-      <SBox
-        v-if="
-          currentUserProfile?.default_live_stream &&
-          allCurrentStations?.length > 0
-        "
-        label="Default stream"
-        class="md:hidden cursor-pointer"
-        @click="(e) => clickThisMenu(defaultStreamRef, e)"
-      >
-        <DropupMenu
-          ref="defaultStreamRef"
-          v-model="currentUserProfile.default_live_stream"
-          :options="initializeStationList(allCurrentStations)"
+      <div v-if="currentUser">
+        <SBox
+          v-if="
+            currentUserProfile?.default_live_stream &&
+            allCurrentStations?.length > 0
+          "
           label="Default stream"
-          @change="onUpdateStation"
-          blockClick
-          checkMark
-        />
-      </SBox>
-      <div
-        v-if="currentUserProfile?.default_live_stream"
-        class="hidden md:flex account-info mb-6 grid grid-lggutter"
-      >
-        <div class="col-12 md:col-6">
-          <div class="card">
-            <div class="flex justify-content-between flex-wrap align-items-end">
-              <div>
-                <p class="font-bold">Default Stream</p>
-                <p>{{ customDefaultStationLabel }}</p>
-              </div>
-
-              <DropupMenu
-                v-model="currentUserProfile.default_live_stream"
-                :options="initializeStationList(allCurrentStations)"
-                label="Default stream"
-                @change="onUpdateStation"
-                checkMark
+          class="md:hidden cursor-pointer"
+          @click="(e) => clickThisMenu(defaultStreamRef, e)"
+        >
+          <DropupMenu
+            ref="defaultStreamRef"
+            v-model="currentUserProfile.default_live_stream"
+            :options="initializeStationList(allCurrentStations)"
+            label="Default stream"
+            @change="onUpdateStation"
+            blockClick
+            checkMark
+          />
+        </SBox>
+        <div
+          v-if="currentUserProfile?.default_live_stream"
+          class="hidden md:flex account-info mb-6 grid grid-lggutter"
+        >
+          <div class="col-12 md:col-6">
+            <div class="card">
+              <div
+                class="flex justify-content-between flex-wrap align-items-end"
               >
-                <template #customButton>
-                  <Button
-                    v-if="!isDisabled"
-                    severity="secondary"
-                    variant="link"
-                    class="link -mb-1 -ml-2"
-                    label="Update"
-                    size="small"
-                  />
-                </template>
-              </DropupMenu>
+                <div>
+                  <p class="font-bold">Default Stream</p>
+                  <p>{{ customDefaultStationLabel }}</p>
+                </div>
+
+                <DropupMenu
+                  v-model="currentUserProfile.default_live_stream"
+                  :options="initializeStationList(allCurrentStations)"
+                  label="Default stream"
+                  @change="onUpdateStation"
+                  checkMark
+                >
+                  <template #customButton>
+                    <Button
+                      v-if="!isDisabled"
+                      severity="secondary"
+                      variant="link"
+                      class="link -mb-1 -ml-2"
+                      label="Update"
+                      size="small"
+                    />
+                  </template>
+                </DropupMenu>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <SBox label="Continuous play" :ripple="false">
-        <VToggleSwitch
-          yes="ON"
-          no="OFF"
-          v-model:data.sync="currentUserProfile.continuous_play"
-          @change="onUpdateContinuousPlay"
-        />
-      </SBox>
+      <div class="md:col-6">
+        <SBox label="Continuous play" :ripple="false" class="">
+          <VToggleSwitch
+            yes="ON"
+            no="OFF"
+            v-model:data.sync="currentUserProfile.continuous_play"
+            @change="onUpdateContinuousPlay"
+          />
+        </SBox>
+      </div>
     </section>
     <section v-if="isApp" class="notifications p-0">
       <div class="flex s-title-holder">

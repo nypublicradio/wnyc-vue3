@@ -619,6 +619,7 @@ export const getAndSetUserProfile = async () => {
         data.initial = false
         data.autodownload = ls.autodownload
         data.default_live_stream = ls.default_live_stream
+        data.continuous_play = ls.continuous_play
         data.receive_general_notifications = ls.receive_general_notifications
         data.one_signal_notification_channels = defaultNotificationChannels
         data.dark_mode = ls.dark_mode
@@ -632,6 +633,7 @@ export const getAndSetUserProfile = async () => {
             initial: data.initial,
             autodownload: data.autodownload,
             default_live_stream: data.default_live_stream,
+            continuous_play: data.continuous_play,
             receive_general_notifications: data.receive_general_notifications,
             one_signal_notification_channels: data.one_signal_notification_channels,
             dark_mode: data.dark_mode,
@@ -794,6 +796,14 @@ export const getAndSetUserProfile = async () => {
         } else {
 
           const localUserProfile = JSON.parse(isLocalUserProfile.value)
+
+          // check if any new keys have been added to localUserProfileDefault object in globals and merge them into local storage
+          const defaults = localUserProfileDefault.value
+          for (const key of Object.keys(defaults)) {
+            if (!(key in localUserProfile)) {
+              localUserProfile[key] = defaults[key]
+            }
+          }
 
           // check if supabase master notification channels changed and sync them with the local storage and supabase and OneSignal
           localUserProfile.one_signal_notification_channels = await syncMasterNotificationChannels(localUserProfile, masterNotificationChannelsArray)

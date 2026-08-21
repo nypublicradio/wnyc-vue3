@@ -2,15 +2,15 @@
 export const useMasterNotificationChannelsArray = () => useState<any[]>('masterNotificationChannelsArray', () => null)
 
 export const getMasterNotificationChannels = async () => {
-  const masterNotificationChannelsArray = useMasterNotificationChannelsArray()
-  // get notification topics
-  const client = useSupabaseClient()
-  const { data } = await client
-    .from("notification_topics")
-    .select("*")
+    const masterNotificationChannelsArray = useMasterNotificationChannelsArray()
+    // get notification topics
+    const client = useSupabaseClient()
+    const { data } = await client
+        .from("notification_topics")
+        .select("*")
 
-  masterNotificationChannelsArray.value = data
-  return data
+    masterNotificationChannelsArray.value = data
+    return data
 }
 
 // Homepage data
@@ -23,6 +23,7 @@ export const getMasterNotificationChannels = async () => {
 const localUserProfileDefault: object = {
     autodownload: false,
     default_live_stream: "WNYC 93.9 FM",
+    continuous_play: true,
     receive_general_notifications: false,
     one_signal_notification_channels: null, // Will be populated from useMasterNotificationChannelsArray
     text_size: "Normal",
