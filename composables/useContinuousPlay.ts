@@ -2,6 +2,7 @@ import {
   useIsLiveStream,
   useCurrentUserProfile,
   useCurrentEpisodeHolder,
+  useCurrentEpisode,
 } from "~/composables/states"
 
 import {
@@ -14,6 +15,7 @@ import { mediaTypes } from "~/composables/globals"
 export const useContinuousPlay = () => {
 
   const currentEpisodeHolder = useCurrentEpisodeHolder()
+  const currentEpisode = useCurrentEpisode()
   const isLiveStream = useIsLiveStream()
   const currentUser = useCurrentUserProfile()
 
@@ -27,10 +29,25 @@ export const useContinuousPlay = () => {
       // slight delay to allow the player to close before the live stream starts
       setTimeout(() => {
         // play the live stream audio bumper based on what is currently selected/last played, then when the bumper is done, play the live stream
-        playLocalMp3(
+        let checkInterval: ReturnType<typeof setInterval> | null = null
+        const bumper = playLocalMp3(
           `/live-stream-audio-bumpers/${currentEpisodeHolder.value.slug}.mp3`,
-          () => togglePlayEpisode(currentEpisodeHolder.value, mediaTypes.LIVE)
+          () => {
+            if (checkInterval) clearInterval(checkInterval)
+            checkInterval = null
+            togglePlayEpisode(currentEpisodeHolder.value, mediaTypes.LIVE)
+          }
         )
+        // detect if an episode is changed while the bumper is playing, and if so, pause the bumper
+        const currentEP = currentEpisode.value
+        checkInterval = setInterval(() => {
+          if (currentEpisode.value !== currentEP) {
+            bumper?.stopBumper()
+            if (checkInterval) clearInterval(checkInterval)
+            checkInterval = null
+          }
+        }, 250)
+
       }, 500)
     }
   }

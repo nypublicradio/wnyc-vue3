@@ -1620,7 +1620,7 @@ export const getTrueSlug = async (slug: string, isolateReturn = true) => {
 
 
 // quick simple way to play local mp3 files and detect when it is complete
-export function playLocalMp3 (url, callback) {
+export function playLocalMp3 (url: string, callback: () => void) {
   const audio = new Audio()
 
   // Add event listener for audio completion
@@ -1637,4 +1637,14 @@ export function playLocalMp3 (url, callback) {
   audio.play().catch((error) => {
     console.error('Error playing audio:', error)
   })
+
+  const stopBumper = () => {
+    audio.removeEventListener('ended', callback)
+    audio.pause()
+    audio.currentTime = 0
+  }
+
+  return {
+    stopBumper
+  }
 }
