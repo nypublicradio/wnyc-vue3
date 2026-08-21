@@ -5,7 +5,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
     try {
         if (!cachedRedirects) {
-            cachedRedirects = await $fetch('/api/show-slug-redirects')
+            const result = await $fetch('/api/show-slug-redirects')
+            cachedRedirects = Array.isArray(result) ? result : null
         }
 
         const redirect = cachedRedirects?.find((r) => r.from === url)
@@ -28,6 +29,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
     } catch (e) {
         console.error('Failed to process show slug redirect in middleware:', e)
     }
-    
+
     return undefined
 })

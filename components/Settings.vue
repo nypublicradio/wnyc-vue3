@@ -92,6 +92,7 @@ const updateProfile = async (newProfile) => {
         // pronouns: pronouns.value,
         // continuous_play: continuousPlay.value,
         default_live_stream: newProfile.default_live_stream,
+        continuous_play: currentUserProfile.value.continuous_play,
         dark_mode: newProfile.dark_mode,
         receive_general_notifications: newProfile.receive_general_notifications,
         one_signal_notification_channels:
@@ -229,6 +230,15 @@ const onDeleteAccountClick = () => {
     "Delete Account Sidebar - user section"
   )
   accountDeleteSideBar.value = true
+}
+
+// handles the continuous play switch change event
+const onUpdateContinuousPlay = () => {
+  trackClickEvent(
+    "Click Tracking - Continuous play",
+    "Settings Sidebar - Listening Preferences",
+    currentUserProfile.value.continuous_play
+  )
 }
 
 // show the notification types section if the user has notifications enabled, is an app, and the topics are available
@@ -457,6 +467,14 @@ watch(
           </div>
         </div>
       </div>
+      <SBox label="Continuous play" :ripple="false">
+        <VToggleSwitch
+          yes="ON"
+          no="OFF"
+          v-model:data.sync="currentUserProfile.continuous_play"
+          @change="onUpdateContinuousPlay"
+        />
+      </SBox>
     </section>
     <section v-if="isApp" class="notifications p-0">
       <div class="flex s-title-holder">

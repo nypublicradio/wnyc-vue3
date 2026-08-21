@@ -38,13 +38,16 @@ watch(
 
         if (sessionData.session) {
           // Convert Supabase session to JWT
-          const jwtResponse = await $fetch(`${config.public.BFF_URL}/api/auth/session-to-jwt`, {
-            method: "POST",
-            body: {
-              access_token: sessionData.session.access_token,
-              refresh_token: sessionData.session.refresh_token,
-            },
-          })
+          const jwtResponse = await $fetch(
+            `${config.public.BFF_URL}/api/auth/session-to-jwt`,
+            {
+              method: "POST",
+              body: {
+                access_token: sessionData.session.access_token,
+                refresh_token: sessionData.session.refresh_token,
+              },
+            }
+          )
 
           if (jwtResponse.success && jwtResponse.token) {
             // Set the JWT token in our auth system with refresh token
@@ -56,13 +59,24 @@ watch(
           }
         }
         await nextTick()
-        await getAndSetUserProfile()
+        try {
+          await getAndSetUserProfile()
+        } catch (profileError) {
+          console.error("Failed to set user profile:", profileError)
+        }
         navigateTo("/home")
       } catch (error) {
         console.error("JWT generation failed:", error)
         // Fall back to normal flow
-        await nextTick()
-        await getAndSetUserProfile()
+        try {
+          await nextTick()
+          await getAndSetUserProfile()
+        } catch (profileError) {
+          console.error(
+            "Failed to set user profile during fallback:",
+            profileError
+          )
+        }
         navigateTo("/home")
       }
     }

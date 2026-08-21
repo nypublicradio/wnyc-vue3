@@ -53,16 +53,16 @@ import { initMediaSession } from "~/utilities/media-session.js"
 import useOneSignal from "~/composables/useOneSignal"
 import { capacitorIosNotificationSettings } from '@nypublicradio/capacitor-ios-notification-settings'
 
-// Dynamic import for FirebaseAnalytics to avoid SSR errors
-const loadFirebaseAnalytics = async () => {
+// Callback-based FirebaseAnalytics loader to avoid returning Capacitor plugin
+// objects from async functions (their .then() proxy causes Promise hangs on Android)
+const withFirebaseAnalytics = async (fn: (fa: any) => Promise<void> | void) => {
   const isApp = useIsApp()
-  if (typeof window === 'undefined' || !isApp.value) return null
+  if (typeof window === 'undefined' || !isApp.value) return
   try {
-    const module = await import('@capacitor-firebase/analytics')
-    return module.FirebaseAnalytics
+    const { FirebaseAnalytics } = await import('@capacitor-firebase/analytics')
+    await fn(FirebaseAnalytics)
   } catch (error) {
-    console.error('Failed to load FirebaseAnalytics:', error)
-    return null
+    console.warn('FirebaseAnalytics operation failed:', error)
   }
 }
 
@@ -748,12 +748,9 @@ export const getAndSetUserProfile = async () => {
 
       // Set Firebase Analytics user ID on client side only
       if (import.meta.client && currentUser.value) {
-        const FirebaseAnalytics = await loadFirebaseAnalytics()
-        if (FirebaseAnalytics) {
-          await FirebaseAnalytics.setUserId({
-            userId: currentUser.value.id,
-          })
-        }
+        await withFirebaseAnalytics(async (fa) => {
+          await fa.setUserId({ userId: currentUser.value.id })
+        })
       }
     }
 
@@ -825,12 +822,9 @@ export const getAndSetUserProfile = async () => {
 
         //init Firebase Analytics
         if (import.meta.client && currentUser.value) {
-          const FirebaseAnalytics = await loadFirebaseAnalytics()
-          if (FirebaseAnalytics) {
-            await FirebaseAnalytics.setUserId({
-              userId: currentUser.value.id,
-            })
-          }
+          await withFirebaseAnalytics(async (fa) => {
+            await fa.setUserId({ userId: currentUser.value.id })
+          })
         }
 
         // get the device id if it's an app and not a browser
@@ -1622,4 +1616,25 @@ export const getTrueSlug = async (slug: string, isolateReturn = true) => {
     console.error(`Error getting true slug from id: ${error}`)
     return newSlug
   }
+}
+
+
+// quick simple way to play local mp3 files and detect when it is complete
+export function playLocalMp3 (url, callback) {
+  const audio = new Audio()
+
+  // Add event listener for audio completion
+  audio.addEventListener('ended', () => {
+    // execute the callback function
+    if (callback) {
+      callback()
+    }
+  })
+  // Set the source URL
+  audio.src = url
+
+  // Play the audio
+  audio.play().catch((error) => {
+    console.error('Error playing audio:', error)
+  })
 }

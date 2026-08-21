@@ -5,15 +5,15 @@ import {
 import { Preferences } from '@capacitor/preferences'
 import { localUserProfileKey } from "~/composables/globals"
 
-// Dynamic import for FirebaseAnalytics to avoid SSR errors
-const loadFirebaseAnalytics = async () => {
-  if (typeof window === 'undefined') return null
+// Callback-based FirebaseAnalytics loader to avoid returning Capacitor plugin
+// objects from async functions (their .then() proxy causes Promise hangs on Android)
+const withFirebaseAnalytics = async (fn) => {
+  if (typeof window === 'undefined') return
   try {
-    const module = await import('@capacitor-firebase/analytics')
-    return module.FirebaseAnalytics
+    const { FirebaseAnalytics } = await import('@capacitor-firebase/analytics')
+    await fn(FirebaseAnalytics)
   } catch (error) {
-    console.error('Failed to load FirebaseAnalytics:', error)
-    return null
+    console.warn('FirebaseAnalytics operation failed:', error)
   }
 }
 
@@ -36,12 +36,9 @@ export default defineNuxtRouteMiddleware(async () => {
         .match({ id: user.data.session.user.id })
     }
     if (currentUser.value) {
-      const FirebaseAnalytics = await loadFirebaseAnalytics()
-      if (FirebaseAnalytics) {
-        await FirebaseAnalytics.setUserId({
-          userId: currentUser.value.id,
-        })
-      }
+      await withFirebaseAnalytics(async (fa) => {
+        await fa.setUserId({ userId: currentUser.value.id })
+      })
     }
   }
 
