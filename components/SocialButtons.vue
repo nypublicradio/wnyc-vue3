@@ -28,6 +28,7 @@ const getServiceIcon = (service) => {
       :key="index"
       radius="50px"
       :title="item.value?.service"
+      :aria-label="`${item.label} social Button`"
       @flexible-link-click="
         () => {
           trackClickEvent(
@@ -44,6 +45,8 @@ const getServiceIcon = (service) => {
         size="large"
         rounded
         tabindex="-1"
+        :aria-label="item.label"
+        aria-hidden="true"
       />
     </VFlexibleLink>
   </div>

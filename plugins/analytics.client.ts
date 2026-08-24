@@ -1,4 +1,4 @@
-import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
+import { FirebaseAnalytics } from '@capacitor-firebase/analytics'
 import { useCurrentUser } from '~/composables/states'
 import { buildPageViewEventParams } from '~/utilities/analytics'
 
@@ -16,10 +16,20 @@ export const createAnalyticsApi = ({
    * Forwards arbitrary analytics events to Firebase.
    */
   const sendEvent = async (eventName, eventParams) => {
-    await logEvent({
-      name: eventName,
-      params: eventParams,
-    })
+    // The native Firebase Analytics plugin cannot handle null/undefined param values —
+    // they cause a ClassCastException on Android. Strip them out before sending.
+    const sanitizedParams = eventParams
+      ? Object.fromEntries(Object.entries(eventParams).filter(([, v]) => v != null))
+      : undefined
+    try {
+      await logEvent({
+        name: eventName,
+        params: sanitizedParams,
+      })
+    } catch (error) {
+      // Analytics should never break product flows (login/navigation/etc).
+      console.warn('[analytics] sendEvent failed:', error)
+    }
   }
 
   /**
@@ -48,7 +58,8 @@ export default defineNuxtPlugin(() => {
     getDeviceId: () => deviceId.value,
     getLocationHref: () => document.location.href,
     getDocumentTitle: () => document.title,
-    logEvent: FirebaseAnalytics.logEvent,
+    // Keep method invocation bound to the plugin object on native platforms.
+    logEvent: (payload) => FirebaseAnalytics.logEvent(payload),
   })
 
   return {

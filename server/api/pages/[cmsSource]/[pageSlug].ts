@@ -39,6 +39,22 @@ const routeLegacyShowLocation = (location: string) => {
     }
 }
 
+const parseBooleanQuery = (value: unknown): boolean => {
+    if (Array.isArray(value)) {
+        return parseBooleanQuery(value[0])
+    }
+
+    if (typeof value === 'boolean') {
+        return value
+    }
+
+    if (typeof value === 'string') {
+        return value.toLowerCase() === 'true'
+    }
+
+    return false
+}
+
 // getting flat page data from the publisher api
 const getPublisherPageData = async (pageSlug: string) => {
     const config = __getConfig()
@@ -52,6 +68,7 @@ const getWagtailPageData = async (
     pageSlug: string,
     isShowOnly?: boolean,
     isDownloadRulesOnly?: boolean,
+    isApp?: boolean,
     preview?: PreviewCredentials,
 ) => {
     // if the pageSlug is a url (www.example.com or example.com), just return null
@@ -96,7 +113,7 @@ const getWagtailPageData = async (
         if (resData.body && Array.isArray(resData.body)) {
             // if isShowOnly is true, just return null and ignore the body
             // Pass the pageSlug so NPR content can include it
-            const transformedCuratedContent = isShowOnly ? null : await transformCuratedContent(resData.body, 'default', pageSlug, resData)
+            let transformedCuratedContent = isShowOnly ? null : await transformCuratedContent(resData.body, 'default', pageSlug, resData)
 
             // if isShowOnly is true, we don't want to return the inPageNavigation
 
@@ -104,12 +121,19 @@ const getWagtailPageData = async (
                 delete resData.inPageNavigation
             }
 
+            // In app mode, prefer curated_list blocks, but do not blank the page if none exist.
+            if (isApp && Array.isArray(transformedCuratedContent)) {
+                const curatedListOnly = transformedCuratedContent.filter((item: any) => item?.type === 'curated_list')
+                if (curatedListOnly.length > 0) {
+                    transformedCuratedContent = curatedListOnly
+                }
+            }
+
             return {
                 ...await normalizeArticlePage(resData),
                 body: transformedCuratedContent
             }
         }
-
         return await normalizeArticlePage(resData)
     } catch (error: any) {
         if (preview) {
@@ -153,11 +177,12 @@ const getPageData = async (
     cmsSource: string,
     isShowOnly?: boolean,
     isDownloadRulesOnly?: boolean,
+    isApp?: boolean,
     preview?: PreviewCredentials,
 ) => {
     switch (cmsSource) {
         case cmsSources.WAGTAIL:
-            return await getWagtailPageData(pageSlug, isShowOnly, isDownloadRulesOnly, preview)
+            return await getWagtailPageData(pageSlug, isShowOnly, isDownloadRulesOnly, isApp, preview)
         case cmsSources.PUBLISHER:
             return await getPublisherPageData(pageSlug)
         default:
@@ -167,6 +192,9 @@ const getPageData = async (
 
 // get page data from CMS
 export default defineEventHandler(async (event) => {
+    // HTTP-level caching: clients/CDN cache for 60s, serve stale while revalidating
+    setResponseHeader(event, 'Cache-Control', 'max-age=60, stale-while-revalidate=120')
+
     const pageSlug: string | undefined = event?.context?.params?.pageSlug
     const cmsSource: string | undefined = event?.context?.params?.cmsSource
 
@@ -174,8 +202,9 @@ export default defineEventHandler(async (event) => {
     const query = getQuery(event)
     const showOnly: string | undefined = query.showOnly as string | undefined
 
-    const isShowOnly = showOnly === 'true'
-    const isDownloadRulesOnly = query.downloadRulesOnly === 'true'
+    const isShowOnly = parseBooleanQuery(showOnly)
+    const isDownloadRulesOnly = parseBooleanQuery(query.downloadRulesOnly)
+    const isApp = parseBooleanQuery(query.isApp)
     const isPreview = query.preview === 'true'
     const identifier = Array.isArray(query.identifier) ? query.identifier[0] : query.identifier
     const token = Array.isArray(query.token) ? query.token[0] : query.token
@@ -190,7 +219,7 @@ export default defineEventHandler(async (event) => {
     } : undefined
 
     if (pageSlug && cmsSource) {
-        const PageData = await getPageData(pageSlug, cmsSource, isShowOnly, isDownloadRulesOnly, preview)
+        const PageData = await getPageData(pageSlug, cmsSource, isShowOnly, isDownloadRulesOnly, isApp, preview)
 
         if (isPreview) {
             event?.node?.res?.setHeader?.('Cache-Control', 'no-store')

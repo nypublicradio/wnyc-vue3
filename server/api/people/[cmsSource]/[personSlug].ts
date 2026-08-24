@@ -38,6 +38,7 @@ const getPersonData = async (personSlug: string, cmsSource: string) => {
 // Get story data from CMS
 
 export default defineEventHandler(async (event) => {
+    setResponseHeader(event, 'Cache-Control', 'max-age=60, stale-while-revalidate=120')
     const personSlug: string | undefined = event?.context?.params?.personSlug;
     const cmsSource: string | undefined = event?.context?.params?.cmsSource;
 

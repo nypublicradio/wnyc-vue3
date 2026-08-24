@@ -125,11 +125,7 @@ export const getFeaturedShows = async (allShows: ReturnType<typeof normalizeWagt
 }
 
 export default defineEventHandler(async (event) => {
-    const res = event?.node?.res
-
-    // Set cache header to match v2 endpoint
-    res.setHeader('Cache-Control', 'max-age=3600, stale-while-revalidate')
-
+    setResponseHeader(event, 'Cache-Control', 'max-age=3600, stale-while-revalidate=7200')
     const allShows = await getShows()
     const featuredShows = await getFeaturedShows(allShows)
 

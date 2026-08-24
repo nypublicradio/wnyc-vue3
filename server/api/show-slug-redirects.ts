@@ -95,7 +95,6 @@ const redirects = [
 ]
 
 export default defineEventHandler((event) => {
-    // Cache for 24 hours (86400 seconds) in the client's browser/app
-    setResponseHeader(event, 'Cache-Control', 'public, max-age=86400, stale-while-revalidate=3600')
+    setResponseHeader(event, 'Cache-Control', 'max-age=3600, stale-while-revalidate=7200')
     return redirects
 })

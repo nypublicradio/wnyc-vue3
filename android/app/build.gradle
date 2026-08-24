@@ -6,8 +6,8 @@ def keyStoreProperties = new Properties()
 keyStoreProperties.load(new FileInputStream(keyStorePropertiesFile))
 
 ext.versionMajor = System.getenv("APP_VERSION_MAJOR") ?: 4
-ext.versionMinor = System.getenv("APP_VERSION_MINOR") ?: 0
-ext.versionPatch = System.getenv("APP_VERSION_PATCH") ?: 2
+ext.versionMinor = System.getenv("APP_VERSION_MINOR") ?: 4
+ext.versionPatch = System.getenv("APP_VERSION_PATCH") ?: 0
 ext.versionClassifier = null
 ext.isSnapShot = false
 ext.circleCiBuildNumber = System.getenv("CIRCLE_BUILD_NUM") ?: "0"

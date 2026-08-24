@@ -24,8 +24,6 @@ export const getLegacyDiscoverShows = async (query: LegacyDiscoverQuery) => {
 }
 
 export default defineEventHandler(async (event) => {
-  const res = event?.node?.res
-  res?.setHeader('Cache-Control', 'max-age=3600, stale-while-revalidate')
-
+    setResponseHeader(event, 'Cache-Control', 'max-age=60, stale-while-revalidate=120')
   return getLegacyDiscoverShows(getQuery(event))
 })

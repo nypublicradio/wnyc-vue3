@@ -258,7 +258,8 @@ const showNotificationTypes = computed(() => {
   return (
     isApp &&
     currentUserProfile.value?.receive_general_notifications &&
-    masterNotificationChannelsArray.value?.length > 0
+    masterNotificationChannelsArray.value?.length > 0 &&
+    Array.isArray(currentUserProfile.value?.one_signal_notification_channels)
   )
 })
 
@@ -315,14 +316,14 @@ watch(
       </div>
       <div class="block md:hidden">
         <SBox
-          v-if="currentUserProfile?.name"
+          v-if="currentUserProfile"
           label="Name"
           @click="editField('name')"
           :clickable="!isDisabled"
           :ripple="!isDisabled"
         >
           <p :class="[{ disabled: isDisabled }]">
-            {{ currentUserProfile?.name }}
+            {{ currentUserProfile?.name || "User" }}
           </p>
         </SBox>
         <SBox
@@ -354,7 +355,7 @@ watch(
             <div class="flex justify-content-between flex-wrap align-items-end">
               <div>
                 <p class="font-bold">Name</p>
-                <p>{{ currentUserProfile?.name }}</p>
+                <p>{{ currentUserProfile?.name || "User" }}</p>
               </div>
               <Button
                 v-if="!isDisabled"
@@ -418,7 +419,7 @@ watch(
       </div>
 
       <!--  <SBoxEmpty :clickable="false" :ripple="false" class="py-2"> -->
-      <MemberCenter class="px-2 md:px-0" />
+      <MemberCenter class="px-3 md:px-0 m-0 grid-nogutter mx-0" />
       <!-- </SBoxEmpty> -->
     </section>
 
@@ -492,7 +493,7 @@ watch(
         <VToggleSwitch
           yes="ON"
           no="OFF"
-          v-model="currentUserProfile.receive_general_notifications"
+          v-model:data="currentUserProfile.receive_general_notifications"
           @change="handleNotificationChange"
         />
       </SBox>
@@ -512,7 +513,7 @@ watch(
         <VToggleSwitch
           yes="ON"
           no="OFF"
-          v-model="
+          v-model:data="
             currentUserProfile.one_signal_notification_channels.find(
               (c) => c.key === channel.key
             ).value
@@ -565,7 +566,7 @@ watch(
         <VToggleSwitch
           yes="ON"
           no="OFF"
-          v-model="currentUserProfile.dark_mode"
+          v-model:data="currentUserProfile.dark_mode"
           @change="
             () => {
               setDarkMode(currentUserProfile.dark_mode)
@@ -578,6 +579,7 @@ watch(
           "
         />
       </SBox>
+      <!-- <p><pre>{{ currentUserProfile }}</pre></p> -->
     </section>
     <section v-if="isApp" class="wnyc p-0">
       <div class="flex s-title-holder">

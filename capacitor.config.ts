@@ -1,4 +1,4 @@
-import type { CapacitorConfig } from '@capacitor/cli';
+import type { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
   appId: 'org.wnyc.android',
@@ -16,6 +16,7 @@ const config: CapacitorConfig = {
     overrideUserAgent: `${process.env.USER_AGENT}`,
     appendUserAgent: 'iOS-WNYC-App',
     handleApplicationNotifications: false,
+    allowsInlineMediaPlayback: true,
   },
   plugins: {
     BackgroundMode: {
@@ -61,7 +62,11 @@ const config: CapacitorConfig = {
       iconColor: "#de1e3d",
       sound: "notification.wav"
     },
+    RemoteStreamer: {
+      carExperienceEnabled: false,
+      bffBaseUrl: `${process.env.BFF_URL}`,
+    }
   }
-};
+}
 
-export default config;
+export default config

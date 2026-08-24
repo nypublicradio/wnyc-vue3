@@ -5,7 +5,6 @@ export default defineEventHandler(async (event) => {
     let user = await serverSupabaseUser(event)
     const client = await serverSupabaseClient(event)
     const slug = getRouterParam(event, 'slug')
-
     // Fallback: Check Authorization header
     if (!user) {
         const authHeader = getHeader(event, 'Authorization')
@@ -51,10 +50,11 @@ export default defineEventHandler(async (event) => {
     })
 
     // Verify admin status
+    const userId = user.id ?? user.sub
     const { data: profile, error: profileError } = await serviceRole
         .from('profiles')
         .select('is_admin')
-        .eq('id', user.id)
+        .eq('id', userId)
         .single()
 
     if (profileError || !profile?.is_admin) {

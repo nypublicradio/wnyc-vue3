@@ -314,15 +314,16 @@ useSeoMeta({
         "divider"
         "rail";
       justify-content: stretch;
+      display: block;
     }
 
     .events-divider {
       display: block;
-      margin: 32px 0 20px;
+      padding: 32px 0;
     }
 
     .events-rail {
-      max-width: 340px;
+      //max-width: 340px;
     }
   }
 

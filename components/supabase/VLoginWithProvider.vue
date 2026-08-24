@@ -2,6 +2,9 @@
 import Button from "primevue/button"
 import Message from "primevue/message"
 import { ref } from "vue"
+import { useAuth } from "~/composables/useAuth"
+
+defineOptions({ inheritAttrs: false })
 
 const errorMessage = ref("")
 
@@ -30,6 +33,7 @@ const props = defineProps({
 })
 const innerClient = ref(props.client)
 const innerConfig = ref(props.config)
+const { getOAuthRedirectUrl } = useAuth()
 
 // fallback incase the parent component doesn't pass in the client and config
 if (!props.client && !props.config) {
@@ -43,12 +47,7 @@ const emit = defineEmits(["submit-click", "submit-error", "submit-success"])
 const login = async () => {
   emit("submit-click")
 
-  // Use the runtime config value if no redirectUrl prop is provided
-  const configRedirectTo = innerConfig.value.public?.supabaseAuthSignInRedirectTo
-  const redirectTo =
-    props.redirectUrl !== "http://localhost:3000"
-      ? props.redirectUrl
-      : configRedirectTo || props.redirectUrl
+  const redirectTo = getOAuthRedirectUrl()
 
   const res = await innerClient.value.auth.signInWithOAuth({
     options: {

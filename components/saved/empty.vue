@@ -52,7 +52,7 @@ const icon = computed(() => iconComponentMap[props.icon])
 
 <style>
 .empty {
-  background: #ffffff;
+  background-color: var(--s-box-background-color);
   border-radius: var(--p-border-radius-xl);
 }
 </style>

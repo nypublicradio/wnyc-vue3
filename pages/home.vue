@@ -1,8 +1,8 @@
 <script setup>
-import { useCurrentEpisode, useIsApp } from "~/composables/states"
+import { useIsApp } from "~/composables/states"
 import { useFetchWrapper } from "~/composables/useFetchWrapper"
 import { brandCards } from "~/composables/globals.ts"
-
+import useAppSettings from "~/composables/useAppSettings"
 useHead({
   bodyAttrs: {
     class: "no-bottom-padding",
@@ -10,8 +10,10 @@ useHead({
 })
 
 const config = useRuntimeConfig()
-const currentEpisode = useCurrentEpisode()
 const isApp = useIsApp()
+// get app settings
+const { getAppSettings, settings: appSettings } = useAppSettings()
+await getAppSettings()
 
 const newsFetchArgs = [
   `${config.public.BFF_URL}/api/homepagelatestnewsupdates`,
@@ -76,6 +78,9 @@ onMounted(() => {
       <!-- <VImage src="/fallback-ep.png" /> -->
     </section>
     <!-- <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" /> -->
+    <section v-if="appSettings?.ask_the_mayor" class="mb-4 thinContent">
+      <atm-cta />
+    </section>
     <section v-if="status === 'success'">
       <VStreamfield
         :streamfieldBlocks="pagedata?.new_home_template?.curatedContent"
@@ -85,7 +90,7 @@ onMounted(() => {
       <layouts-horizontal-feature-ad-skeleton />
     </section>
 
-    <section>
+    <section v-if="!isApp">
       <div class="grid grid-lggutter mobile-lggutter">
         <div
           v-for="brand in brandCards"
@@ -98,11 +103,7 @@ onMounted(() => {
     </section>
 
     <LazyDonateBanner v-if="!isApp" class="mt-6" />
-
-    <LazySponsorBanner
-      v-if="isApp"
-      :style="`margin-bottom:${currentEpisode ? '-20px' : '0'}`"
-    />
+    <LazySponsorBanner v-if="isApp" class="mt-6" />
   </div>
 </template>
 

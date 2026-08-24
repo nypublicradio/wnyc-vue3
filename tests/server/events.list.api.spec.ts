@@ -11,6 +11,7 @@ let currentQuery: Record<string, any> = {}
 
 vi.mock('#imports', () => ({
   defineEventHandler: (handler: unknown) => handler,
+  defineCachedEventHandler: (handler: unknown) => handler,
   useRuntimeConfig: () => ({
     cmsSite: 'demo.wnyc.org:443',
     public: { AVIARY_BASE_API: 'https://example.test/api/v2/' },
@@ -20,6 +21,9 @@ vi.mock('#imports', () => ({
 
 // @ts-expect-error test-only global
 globalThis.defineEventHandler = (handler: unknown) => handler
+globalThis.setResponseHeader = () => {}
+// @ts-expect-error test-only global
+globalThis.defineCachedEventHandler = (handler: unknown) => handler
 // @ts-expect-error test-only global
 globalThis.useRuntimeConfig = () => ({
   cmsSite: 'demo.wnyc.org:443',

@@ -147,8 +147,12 @@ useSocialMetaOverrides(eventData)
             <div class="event-hero__layout">
               <div class="event-hero__header">
                 <div class="event-hero__datebox" v-if="eventDayNumber">
-                  <span class="event-hero__datebox-day">{{ eventDayNumber }}</span>
-                  <span class="event-hero__datebox-month">{{ eventDateShort }}</span>
+                  <span class="event-hero__datebox-day">{{
+                    eventDayNumber
+                  }}</span>
+                  <span class="event-hero__datebox-month">{{
+                    eventDateShort
+                  }}</span>
                 </div>
                 <div class="event-hero__titlegroup">
                   <h1
@@ -187,10 +191,30 @@ useSocialMetaOverrides(eventData)
             </div>
           </template>
           <template v-else>
-            <Skeleton class="mb-2" height="18px" width="120px" borderRadius="8px" />
-            <Skeleton class="mb-3" height="48px" width="85%" borderRadius="16px" />
-            <Skeleton class="mb-2" height="16px" width="70%" borderRadius="8px" />
-            <Skeleton class="mb-2" height="16px" width="60%" borderRadius="8px" />
+            <Skeleton
+              class="mb-2"
+              height="18px"
+              width="120px"
+              borderRadius="8px"
+            />
+            <Skeleton
+              class="mb-3"
+              height="48px"
+              width="85%"
+              borderRadius="16px"
+            />
+            <Skeleton
+              class="mb-2"
+              height="16px"
+              width="70%"
+              borderRadius="8px"
+            />
+            <Skeleton
+              class="mb-2"
+              height="16px"
+              width="60%"
+              borderRadius="8px"
+            />
           </template>
         </div>
       </section>
@@ -356,7 +380,7 @@ useSocialMetaOverrides(eventData)
     grid-row: 1;
     width: 48px;
     height: 48px;
-    background: var(--p-text-color);
+    background: var(--background4);
     color: var(--p-surface-0);
     display: flex;
     flex-direction: column;

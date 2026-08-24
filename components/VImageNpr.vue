@@ -148,7 +148,10 @@ const theSrc = computed(() => {
 const theSrcFull = computed(() => {
   if (!props.src) return ""
   return props.src
-    .replace("s={width}", props.maxWidth !== Infinity ? `s=${props.maxWidth}` : "")
+    .replace(
+      "s={width}",
+      props.maxWidth !== Infinity ? `s=${props.maxWidth}` : ""
+    )
     .replace("{quality}", props.quality)
     .replace("{format}", props.format)
 })
@@ -256,6 +259,7 @@ const srcset = computed(() => {
 
 onMounted(async () => {
   await nextTick()
+  if (!refThisImg.value) return
   thisWidth.value =
     refThisImg.value.offsetWidth !== 0
       ? refThisImg.value.offsetWidth
@@ -277,11 +281,16 @@ onMounted(async () => {
       raw
       :to="props.to"
       :aria-hidden="props.isDecorative ? true : false"
-      :tabindex="props.isDecorative || !props.to ? -1 : 0"
+      :tabindex="props.isDecorative ? undefined : 0"
+      :inert="props.isDecorative ? true : undefined"
       class="v-image-link"
+      :class="{ 'is-decorative': props.isDecorative }"
       @click="props.to ? emit('image-click', props.to) : null"
     >
-      <div class="v-image-holder" :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`">
+      <div
+        class="v-image-holder"
+        :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`"
+      >
         <div v-if="isVertical" class="bg">
           <nuxt-img
             :format="props.format"
@@ -292,7 +301,9 @@ onMounted(async () => {
             :height="props.height"
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
             :loading="props.loading"
-            :preload="{ fetchPriority: props.loading === 'eager' ? 'high' : 'low' }"
+            :preload="{
+              fetchPriority: props.loading === 'eager' ? 'high' : 'low',
+            }"
           />
         </div>
         <img
@@ -387,6 +398,9 @@ onMounted(async () => {
   .v-image-link {
     width: auto;
     height: inherit;
+  }
+  .v-image-link.is-decorative {
+    pointer-events: none;
   }
   .v-image-holder {
     position: relative;

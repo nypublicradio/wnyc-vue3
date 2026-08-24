@@ -7,12 +7,13 @@ import {
     useCurrentUserProfile,
 } from "~/composables/states"
 
+let inFlightProfileRequest: Promise<any> | null = null
+
 /**
  * Hook providing profile API methods and state.
  * @returns {object} Contains profile, loading, error state and helper functions.
  */
 export const useProfileApi = () => {
-    const config = useRuntimeConfig()
     const { authenticatedFetch } = useAuth()
     const profile = ref(null)
     const loading = ref(false)
@@ -27,17 +28,21 @@ export const useProfileApi = () => {
      * @returns {Promise<any>} Resolves to profile data.
      */
     const fetchProfile = async (salesforceIdOrEmail: string) => {
+        if (inFlightProfileRequest) {
+            return await inFlightProfileRequest
+        }
+
         loading.value = true
         error.value = null
         profile.value = null
 
-        try {
+        const request = (async () => {
             // Try with Salesforce ID first, then email
             const isEmail = salesforceIdOrEmail.includes('@')
             const requestBody = isEmail
                 ? { email: salesforceIdOrEmail }
                 : { salesforceID: salesforceIdOrEmail }
-
+            const config = useRuntimeConfig()
             const data = await authenticatedFetch(`${config.public.BFF_URL}/api/profile`, {
                 method: 'POST',
                 body: requestBody,
@@ -58,55 +63,43 @@ export const useProfileApi = () => {
             }
 
             return data
+        })()
+
+        inFlightProfileRequest = request
+
+        try {
+            return await request
         } catch (err: any) {
             error.value = err
-            console.error('Failed to fetch profile:', err)
+            // 503 from the BFF typically means the user has no membership/Salesforce profile — not a real error
+            if (err?.statusCode === 503 || err?.status === 503) {
+                console.warn('No membership profile found for this user (503 from BFF)')
+            } else {
+                console.error('Failed to fetch profile:', err)
+            }
             loading.value = false
             profile.value = {}
             return {}
         } finally {
+            inFlightProfileRequest = null
             loading.value = false
         }
     }
 
-
+    // Fetches membership info for the current user, ensuring authentication and profile data are available.
     const getMembershipInfo = async () => {
-        // Check if we have an auth token, if not try to initialize it
         const authComposable = useAuth()
         await nextTick()
 
         if (!authComposable.isAuthenticated.value) {
-            // No JWT token found
-            try {
-                const supabase = useSupabaseClient()
-                const { data: sessionData } = await supabase.auth.getSession()
-                if (sessionData.session) {
-                    // Convert Supabase session to JWT
-                    const jwtResponse = await $fetch("/api/auth/session-to-jwt", {
-                        method: "POST",
-                        body: {
-                            access_token: sessionData.session.access_token,
-                            refresh_token: sessionData.session.refresh_token,
-                        },
-                    })
-                    if (jwtResponse.success && jwtResponse.token) {
-                        authComposable.setAuthState(
-                            jwtResponse.token,
-                            jwtResponse.user,
-                            sessionData.session.refresh_token
-                        )
-                    } else {
-                        console.error("No success setAuthState", JSON.stringify(jwtResponse))
-                    }
-                } else {
-                    console.error("No supabase session")
-                    // no supabase session, route to login
-                    //navigateTo("/login")
-                }
-            } catch (error) {
-                console.error("🐛 Dashboard Debug - Failed to initialize JWT from session:", error)
+            // Try to initialize JWT from existing Supabase session
+            const initialized = await authComposable.initializeFromSupabaseSession()
+            if (!initialized) {
+                console.warn("getMembershipInfo: No valid auth session available")
+                return
             }
         }
+
         // Wait for currentUserProfile to be populated with salesforce_id
         // This ensures getAndSetUserProfile() has completed its initialization
         try {
@@ -115,7 +108,7 @@ export const useProfileApi = () => {
                 { timeout: 10000 }
             )
         } catch (error) {
-            console.warn("Timeout waiting for currentUserProfile.salesforce_id to be populated")
+            console.warn("Timeout waiting for currentUserProfile.salesforce_id to be populated", error)
             // Continue anyway - will fall back to email if available
         }
 

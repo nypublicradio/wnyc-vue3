@@ -1,7 +1,8 @@
 import humps from 'humps'
 import { transformCuratedContent } from '~/utilities/curatedContent'
 
-export default defineCachedEventHandler(async (event) => {
+export default defineEventHandler(async (event) => {
+    setResponseHeader(event, 'Cache-Control', 'max-age=60, stale-while-revalidate=120')
     const config = useRuntimeConfig()
     const id = getRouterParam(event, 'id')
 
@@ -36,8 +37,4 @@ export default defineCachedEventHandler(async (event) => {
             statusMessage: `Failed to fetch curated list ${id}`
         })
     }
-}, {
-    swr: true,
-    maxAge: 300,
-    name: 'curated-lists'
 })

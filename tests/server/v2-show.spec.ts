@@ -37,6 +37,8 @@ globalThis.defineEventHandler = (handler: unknown) => handler
 // @ts-expect-error test-only global
 globalThis.getQuery = (event: any) => event?.query || {}
 // @ts-expect-error test-only global
+globalThis.setResponseHeader = (event: any, name: string, value: string) => event?.node?.res?.setHeader?.(name, value)
+// @ts-expect-error test-only global
 globalThis.__testRuntimeConfig = {
     simplecastApiKey: 'test-key', // pragma: allowlist secret
     simplecastUrl: 'https://api.simplecast.test',
@@ -79,6 +81,6 @@ describe('server/api/v2/show/[showslug]', () => {
 
         expect(result.show.title).toBe('Test Show')
         expect(res.statusCode).toBe(200)
-        expect(setHeader).toHaveBeenCalledWith('Cache-Control', 'max-age=3600, stale-while-revalidate')
+        expect(setHeader).toHaveBeenCalledWith('Cache-Control', 'max-age=60, stale-while-revalidate=120')
     })
 })

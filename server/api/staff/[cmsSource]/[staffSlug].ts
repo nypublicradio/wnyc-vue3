@@ -59,6 +59,7 @@ const getStaffData = async (staffSlug: string, cmsSource: string, offset: number
 // Get story data from CMS
 
 export default defineEventHandler(async (event) => {
+    setResponseHeader(event, 'Cache-Control', 'max-age=60, stale-while-revalidate=120')
     const staffSlug: string | undefined = event?.context?.params?.staffSlug;
     const cmsSource: string | undefined = event?.context?.params?.cmsSource;
     // query params

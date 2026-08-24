@@ -159,19 +159,11 @@ const uploadFiles = async () => {
           path: data.path,
         }
 
-    // Transcribe
-    let transcription = null
-    try {
-      transcription = await transcribeMedia(file)
-    } catch (error) {
-      console.error("Transcription failed:", error)
-      transcription = "transcribe failed"
-    }
-
     emit("upload-progress", "Data processing...")
 
-    // Insert into submission table
-    const { error: submissionError } = await supabase
+    // Insert into submission table BEFORE transcription to prevent data loss
+    // if transcription crashes the WebView (e.g. memory pressure on older iOS devices)
+    const { data: submissionData, error: submissionError } = await supabase
       .from(props.submissionTable)
       .insert([
         {
@@ -179,7 +171,7 @@ const uploadFiles = async () => {
           video_filename: fileName,
           metadata: finalMetadata,
           subfolder_date: timeStampToDate(timestamp),
-          transcript: transcription,
+          transcript: null,
           retakes: numOfRetakes.value,
           instagram_handle: props.miscData?.instagramHandle,
         },
@@ -204,6 +196,30 @@ const uploadFiles = async () => {
 
     const result = { path: data.path, metadata: finalMetadata }
     emit("upload-complete", result)
+
+    // Transcribe after DB insert and upload-complete emission.
+    // This runs after the UI has already transitioned to the "Thank You" view.
+    // If this crashes (memory pressure on older iOS devices), the submission is already saved.
+    let transcription = null
+    try {
+      transcription = await transcribeMedia(file)
+    } catch (error) {
+      console.error("Transcription failed:", error)
+      transcription = "transcribe failed"
+    }
+
+    // Update the submission record with transcription result
+    if (transcription && submissionData?.[0]?.id) {
+      try {
+        await supabase
+          .from(props.submissionTable)
+          .update({ transcript: transcription })
+          .eq("id", submissionData[0].id)
+      } catch (updateErr) {
+        console.error("Transcript update failed:", updateErr)
+      }
+    }
+
     return result
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : "Upload failed"

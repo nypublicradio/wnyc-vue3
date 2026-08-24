@@ -86,7 +86,9 @@ onMounted(() => {
   watchEffect(async () => {
     if (!user.value) return
     // hide share if it is a segment, which is only set in NPR direct show episodes
-    currentEpisode.value?.isSegment ? (showShare.value = false) : (showShare.value = true)
+    currentEpisode.value?.isSegment
+      ? (showShare.value = false)
+      : (showShare.value = true)
     isFavorited.value = await checkIsFavorited(
       currentEpisode.value?.meta?.slug || currentEpisode.value?.slug
     )
@@ -174,7 +176,9 @@ const handleDownload = async () => {
     "Expanded Audio Player",
     currentEpisode.value.title
   )
-  progress.value[currentEpisode.value.id] = await fetchAndStoreMp3(currentEpisode.value)
+  progress.value[currentEpisode.value.id] = await fetchAndStoreMp3(
+    currentEpisode.value
+  )
 }
 
 // handle share button
@@ -261,7 +265,9 @@ const getDotMenuItems = () => {
             ? [
                 {
                   label: `${
-                    isFavorited.value ? "Unfavorite Episode" : "Favorite Episode"
+                    isFavorited.value
+                      ? "Unfavorite Episode"
+                      : "Favorite Episode"
                   }`,
                   customIcon: StarIcon,
                   active: isFavorited.value,
@@ -378,7 +384,10 @@ const moreFromClick = async () => {
     <!-- <pre class="text-xs">{{ currentEpisode }}</pre> -->
     <div class="tools flex justify-content-between">
       <div v-if="isLive && isApp" class="flex gap-3">
-        <SleepTimerButton @emit-click="handleSleepTimer" :isActive="sleepTimerRunning" />
+        <SleepTimerButton
+          @emit-click="handleSleepTimer"
+          :isActive="sleepTimerRunning"
+        />
       </div>
       <div v-else class="flex gap-3">
         <Button
@@ -411,7 +420,9 @@ const moreFromClick = async () => {
           </template>
         </Button>
         <DownloadProgress
-          v-if="progress[currentEpisode.id] || isAlreadyDownloaded(currentEpisode)"
+          v-if="
+            progress[currentEpisode.id] || isAlreadyDownloaded(currentEpisode)
+          "
           class="flex align-items-center"
           :isDownloaded="isAlreadyDownloaded(currentEpisode)"
           :progress="progress[currentEpisode.id]"
@@ -473,7 +484,7 @@ const moreFromClick = async () => {
     </div>
     <VImage
       v-if="
-        Boolean(currentEpisode?.onTodaysShowImageTemplate)
+        Boolean(currentEpisode?.image || currentEpisode?.image?.template)
           ? currentEpisode?.player_image !== currentEpisode?.image
           : false
       "
@@ -495,7 +506,12 @@ const moreFromClick = async () => {
       :key="`details-${currentEpisode.id || 'default'}`"
     />
     <VImage
-      v-if="currentEpisode.onTodaysShowImageTemplate"
+      v-if="
+        Boolean(currentEpisode?.onTodaysShowImageTemplate)
+          ? currentEpisode?.player_image !==
+            currentEpisode?.onTodaysShowImageTemplate
+          : false
+      "
       :src="{ template: currentEpisode.onTodaysShowImageTemplate }"
       :alt="`${currentEpisode.title} featured image`"
       sizes="xs:327, sm:528, md:672"
@@ -547,7 +563,9 @@ const moreFromClick = async () => {
       ref="expandedFooterRef"
       v-if="
         !isLiveStream &&
-        (currentEpisode.showSlug || currentEpisode.meta?.showSlug || currentEpisode.show)
+        (currentEpisode.showSlug ||
+          currentEpisode.meta?.showSlug ||
+          currentEpisode.show)
       "
       class="expanded-footer"
     >
@@ -556,7 +574,9 @@ const moreFromClick = async () => {
         <Button
           text
           severity="secondary"
-          :label="`More from ${currentEpisode.showTitle || currentEpisode.title}`"
+          :label="`More from ${
+            currentEpisode.showTitle || currentEpisode.title
+          }`"
           :aria-label="`More from ${
             currentEpisode.showTitle || currentEpisode.title
           } button`"
@@ -578,7 +598,8 @@ const moreFromClick = async () => {
     .expanded-player {
       max-width: $thinContentWidth;
       padding-bottom: calc(
-        $bottomMenuHeight + $expandedFooterHeight + env(safe-area-inset-bottom) + 2rem
+        $bottomMenuHeight + $expandedFooterHeight + env(safe-area-inset-bottom) +
+          2rem
       );
       .expanded-footer {
         background: var(--persistent-player-bg);
