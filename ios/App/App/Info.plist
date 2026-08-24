@@ -32,7 +32,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>wnyc</string>
-				<string>wnycalpha</string>
+				<!-- <string>wnycalpha</string> -->
 			</array>
 		</dict>
 	</array>
