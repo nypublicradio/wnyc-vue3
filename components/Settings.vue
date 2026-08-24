@@ -476,7 +476,7 @@ watch(
           <VToggleSwitch
             yes="ON"
             no="OFF"
-            v-model:data.sync="currentUserProfile.continuous_play"
+            v-model="currentUserProfile.continuous_play"
             @change="onUpdateContinuousPlay"
           />
         </SBox>

@@ -1648,6 +1648,7 @@ export function playLocalMp3 (url: string, callback: () => void) {
     console.error('Error playing audio:', error)
   })
 
+  // Return a function to stop the audio and remove the event listener
   const stopBumper = () => {
     audio.removeEventListener('ended', callback)
     audio.pause()
