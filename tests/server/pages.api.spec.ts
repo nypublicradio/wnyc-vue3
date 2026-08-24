@@ -32,6 +32,9 @@ vi.mock('~/composables/globals', () => ({
 // Mock Nuxt's defineEventHandler to work in test environment
 // @ts-expect-error - globalThis augmentation for test environment
 globalThis.defineEventHandler = (handler: unknown) => handler
+globalThis.setResponseHeader = () => {}
+// @ts-expect-error - globalThis augmentation for test environment
+globalThis.defineCachedEventHandler = (handler: unknown) => handler
 
 // @ts-expect-error - mock getQuery for test environment
 globalThis.getQuery = (event: any) => event?.query || {}

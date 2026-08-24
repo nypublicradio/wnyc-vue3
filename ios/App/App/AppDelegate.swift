@@ -2,6 +2,8 @@ import UIKit
 import Capacitor
 import Firebase
 import FirebaseCore
+import CarPlay
+import NypublicradioCapacitorRemoteStreamer
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -15,6 +17,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
+
+        // Initialize CarPlayMediaManager early so it is ready to receive
+        // CarPlay connections before the Capacitor WebView / plugin loads.
+        // Without this, CarPlay shows a blank screen until the phone app is opened.
+        if #available(iOS 14.0, *) {
+            _ = CarPlayMediaManager.shared
+        }
+
         return true
     }
     
@@ -77,6 +87,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
 
+    }
+
+    // MARK: - UIScene Configuration (required for CarPlay on iOS 26+)
+
+    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        if connectingSceneSession.role == .carTemplateApplication {
+            let config = UISceneConfiguration(name: "CarPlay", sessionRole: connectingSceneSession.role)
+            config.delegateClass = CarPlaySceneDelegate.self
+            return config
+        }
+        // Default window scene — bridges back to Capacitor's Main.storyboard setup
+        let config = UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+        config.delegateClass = MainSceneDelegate.self
+        return config
     }
 
 }

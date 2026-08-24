@@ -29,7 +29,8 @@ const showSlug = computed(() => show.value?.meta?.slug || show.value?.slug)
 const aboutContent = computed(() => {
   const showData = show.value
   if (!showData) return []
-  if (showData.aboutModule && showData.aboutModule.length > 0) return showData.aboutModule
+  if (showData.aboutModule && showData.aboutModule.length > 0)
+    return showData.aboutModule
   // if (showData.description) return [{ id: "desc", value: showData.description }]
   // if (showData.tease) return [{ id: "tease", value: showData.tease }]
   return []
@@ -58,7 +59,9 @@ const handleShowClick = () => {
     <VStreamfield
       :streamfieldBlocks="aboutContent"
       :article="
-        aboutContent.length > 0 ? null : { body: show?.tease || show?.description }
+        aboutContent.length > 0
+          ? null
+          : { body: show?.tease || show?.description }
       "
     />
     <story-htlAd
@@ -100,6 +103,11 @@ const handleShowClick = () => {
     </div>
 
     <!-- Ad skeleton -->
-    <Skeleton height="250px" width="300px" borderRadius="8px" class="hidden lg:block" />
+    <Skeleton
+      height="250px"
+      width="300px"
+      borderRadius="8px"
+      class="hidden lg:block"
+    />
   </div>
 </template>

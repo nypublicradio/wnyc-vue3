@@ -209,6 +209,7 @@ const getShow = async (slug: string, isSlugOnly?: boolean) => {
 
 export default defineEventHandler(async (event) => {
     const res = event?.node?.res
+    setResponseHeader(event, 'Cache-Control', 'max-age=60, stale-while-revalidate=120')
     //Fetching slug and type from the path params
     const slug: string | undefined = event?.context?.params?.showslug
 
@@ -241,7 +242,6 @@ export default defineEventHandler(async (event) => {
         } else {
             episodes = await getEpisodes(slug, show?.image?.template, show?.type, pageSize, page)
         }
-        res.setHeader('Cache-Control', 'max-age=3600, stale-while-revalidate')
         return {
             show,
             episodes,

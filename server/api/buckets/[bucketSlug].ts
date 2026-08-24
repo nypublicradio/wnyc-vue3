@@ -13,6 +13,7 @@ const getPublisherBucketData = async (bucketSlug: string) => {
 
 // get bucket data from CMS
 export default defineEventHandler(async (event) => {
+    setResponseHeader(event, 'Cache-Control', 'max-age=60, stale-while-revalidate=120')
     const bucketSlug: string | undefined = event?.context?.params?.bucketSlug;
     if (bucketSlug) {
         const BucketData = await getPublisherBucketData(bucketSlug);

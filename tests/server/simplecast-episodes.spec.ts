@@ -15,6 +15,8 @@ vi.mock('~/composables/globals', () => ({
 globalThis.defineEventHandler = (handler: unknown) => handler
 // @ts-expect-error test-only global
 globalThis.getQuery = (event: any) => event?.query || {}
+// @ts-expect-error test-only global
+globalThis.setResponseHeader = (event: any, name: string, value: string) => event?.node?.res?.setHeader?.(name, value)
 
 globalThis.__testRuntimeConfig = {
     simplecastApiKey: 'test-key', // pragma: allowlist secret

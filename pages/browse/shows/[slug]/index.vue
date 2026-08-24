@@ -48,13 +48,7 @@ const showFetchArgs = [
   },
 ]
 
-const {
-  data: show,
-  status,
-  error,
-} = isApp.value
-  ? useFetchWrapper(...showFetchArgs)
-  : await useFetchWrapper(...showFetchArgs)
+const { data: show, status, error } = await useFetchWrapper(...showFetchArgs)
 
 // redirect if the show has a redirect property.
 const redirectIfNeeded = (page) => {
@@ -163,12 +157,12 @@ useSocialMetaOverrides(show)
     <template v-if="!error">
       <ShowHeader :show="show" :class="route.params.slug" />
       <!-- JUMP LINKS -->
-      <section class="hidden md:block">
+      <section v-if="!isApp" class="hidden md:block">
         <div class="grid">
           <div class="col-fixed hidden xxl:block w-20rem"></div>
           <div class="col pr-2 lg:pr-4">
             <div
-              class="flex flex-wrap justify-content-start align-items-center gap-3 my-5"
+              class="flex flex-wrap justify-content-start align-items-center gap-3 my-4"
             >
               <template v-if="sectionAnchorData.length">
                 <Button
@@ -180,7 +174,7 @@ useSocialMetaOverrides(show)
                   @click="scrollToSection(i.id)"
                 />
               </template>
-              <template v-else-if="isApp">
+              <template v-else>
                 <Skeleton
                   v-for="i in 3"
                   :key="`jump-link-${i}`"
@@ -194,8 +188,8 @@ useSocialMetaOverrides(show)
           </div>
         </div>
       </section>
-
-      <section class="pb-4">
+      <!-- <pre>{{ show }}</pre> -->
+      <section class="py-4">
         <div class="grid">
           <div class="col-fixed hidden xxl:block w-20rem"></div>
           <div class="col pr-2 lg:pr-4">

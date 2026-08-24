@@ -29,7 +29,6 @@ export const useCanDownloadEpisodes = (slug: string): Promise<boolean> => {
 
     try {
       // Use native $fetch for better performance
-      //console.log("useCanDownloadEpisodes", trueSlug)
       const res = await $fetch(`${config.public.BFF_URL}/api/pages/wagtail/${trueSlug}?downloadRulesOnly=true`)
       //console.log("###### useCanDownloadEpisodes", res)
       return res?.canDownloadEpisodes ?? false

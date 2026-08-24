@@ -6,7 +6,7 @@ import {
     useCurrentEpisode,
     useGlobalToast,
     useTogglePlayTrigger,
-    useIsApp,
+    useIsNativeApp,
     useCurrentUser,
     useIsLiveStream
 } from "~/composables/states"
@@ -67,9 +67,10 @@ export const fileNameFromURL = async (url: string) => {
 
 // check if a file is already downloaded
 export const isAlreadyDownloaded = (file) => {
-    const isApp = useIsApp()
+    const isNativeApp = useIsNativeApp()
     const user = useCurrentUser()
-    if (isApp.value && user.value) {
+    // NOTE: verify download check behavior in real app environment
+    if (isNativeApp.value && user.value) {
         const fileSystemLS = useFileSystemLS()
         const check = fileSystemLS.value.find((entry) => entry.id === file.id || entry.originalId === file.id)
         const alreadyDownloaded = check === undefined ? false : true
@@ -175,7 +176,7 @@ export const updateFileSystem = async () => {
 // handle downloading a file to the desktop
 const downloadFileToDesktop = async (url: string, filename: string) => {
     if (!import.meta.client) return
-    
+
     const globalToast = useGlobalToast()
     globalToast.value = {
         severity: "info",
@@ -184,6 +185,7 @@ const downloadFileToDesktop = async (url: string, filename: string) => {
     }
     try {
         // Use server-side proxy to avoid CORS issues
+        console.log(`Requesting download proxy for URL: ${url}`)
         const proxyUrl = `/api/download-proxy?url=${encodeURIComponent(url)}`
 
         // Fetch the file data through the proxy
@@ -232,7 +234,7 @@ const downloadFileToDesktop = async (url: string, filename: string) => {
 // download and store the mp3 file and image file 
 //# skipcq: JS-0045
 export const handleFetchAndStoreMp3 = async (file, index = null) => {
-    const isApp = useIsApp()
+    const isNativeApp = useIsNativeApp()
     const globalToast = useGlobalToast()
     const isSegments = Array.isArray(file.audio) && Array.isArray(file.segments) ? true : false
     const slug = isSegments ? file.segments[index].slug : file.meta?.slug
@@ -243,14 +245,15 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
     const uniqueDirId = isSegments ? `${file.originalId}-${file.segments[index].segmentNumber}` : file.id
     file.id = uniqueDirId
 
-    if (!isApp.value) {
+    // NOTE: verify download behavior in real app environment after this gate change
+    if (!isNativeApp.value) {
         // is running in the browser
         //desktop download
         const audioFile = index !== null ? file.audio[index] : file.audio
         downloadFileToDesktop(audioFile, `WNYC-download-${file.id}-${slug}`)
         return null
     } else {
-        // is running as an app
+        // is running as a native app
         // check if user is logged in
         const user = useCurrentUser()
         if (!user.value) {
@@ -278,7 +281,7 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                     summary: "Download started!",
                     life: 3000,
                 }
-                const fileImage = file.image?.template ?? file.image?.url ?? file.image ?? FALLBACKIMAGEEP
+                const fileImage = file.image?.template ?? file.image?.file ?? file.image?.url ?? file.image ?? FALLBACKIMAGEEP
 
                 // create the directory
                 await Filesystem.mkdir({

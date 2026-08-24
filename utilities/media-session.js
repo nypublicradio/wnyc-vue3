@@ -41,7 +41,7 @@ const generateMediaSessionArtworkArray = async (image) => {
 export const initMediaSession = async (episode/* , skipTime = PLAYER_SKIP_TIME */) => {
     if (!import.meta.client) return
     if (!episode) return
-    
+
     const isNetworkConnected = useIsNetworkConnected()
     const isLiveStream = useIsLiveStream()
     const isApp = useIsApp()
@@ -50,7 +50,7 @@ export const initMediaSession = async (episode/* , skipTime = PLAYER_SKIP_TIME *
     // if this episode has a directory image, that means it has been downloaded, so to use the downloaded im age in the media session, otherwise use the image from the API response as normal
     // the "player_image" is generated from the prepForPlayer helper function
     const artworkImageArray = currentEpisode?.directoryImage?.uri && !isNetworkConnected.value ? [{ src: currentEpisode.directoryImage.uri }] : await generateMediaSessionArtworkArray(currentEpisode.player_image?.template || currentEpisode.player_image || currentEpisode.image?.template || currentEpisode.image || FALLBACKIMAGE)
-
+    const artistSlot = currentEpisode.showTitle !== currentEpisode.title ? currentEpisode.showTitle : null || getDate(currentEpisode) || 'LIVE'
     if (isApp.value) {
 
         let artworkImageUrl = FALLBACKIMAGE // Set your fallback image URL here
@@ -65,12 +65,11 @@ export const initMediaSession = async (episode/* , skipTime = PLAYER_SKIP_TIME *
         } else if (artworkImageArray[2]?.src) {
             artworkImageUrl = artworkImageArray[2].src
         }
-
         await RemoteStreamer.setNowPlayingInfo({
             title: currentEpisode.title,
-            artist: getDate(currentEpisode),
+            artist: artistSlot,
             album: currentEpisode.showTitle,
-            duration: !isLiveStream.value ? String(currentEpisode.duration) : null,
+            duration: !isLiveStream.value ? String(currentEpisode.duration) : 'LIVE',
             imageUrl: artworkImageUrl,
             isLiveStream: isLiveStream.value,
         })
@@ -78,7 +77,7 @@ export const initMediaSession = async (episode/* , skipTime = PLAYER_SKIP_TIME *
         if ("mediaSession" in navigator) {
             navigator.mediaSession.metadata = new MediaMetadata({
                 title: currentEpisode.title,
-                artist: getDate(currentEpisode),
+                artist: artistSlot,
                 album: currentEpisode.showTitle,
                 artwork: artworkImageArray
             })

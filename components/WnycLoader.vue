@@ -44,6 +44,7 @@ const svgWidth = 75
   <div
     class="wnyc-loader"
     :class="[{ bg: props.bg, spinner: props.spinner, pause: props.paused }]"
+    role="status"
     aria-label="loading and audio indicator"
   >
     <div class="svg-holder flex">
@@ -51,7 +52,7 @@ const svgWidth = 75
         v-if="props.spinner"
         class="pi pi-spin pi-spinner"
         :style="`font-size: ${props.size}; color: ${props.color};`"
-        aria-label="spinning loader"
+        aria-hidden="true"
       ></i>
       <svg
         v-else

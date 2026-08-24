@@ -2,7 +2,7 @@
 import { trackClickEvent, slugify, getRouteOrLink } from "~/utilities/helpers"
 import { cmsSources } from "~/composables/globals"
 import type { StreamfieldBlock } from "../composables/types/StreamfieldBlock"
-
+import { useIsApp } from "~/composables/states"
 // Static imports for all layout components to avoid defineAsyncComponent hydration mismatches
 import LayoutRiverThin from "~/components/layouts/river-thin.vue"
 import LayoutRiver from "~/components/layouts/river.vue"
@@ -75,6 +75,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(["curated-list-load-more"])
+const isApp = useIsApp()
 const streamfield = props.article?.body
 
 const defaultLayout = "river-thin"
@@ -83,18 +84,29 @@ const verticalSpacingClasses = "mb-6 md:mb-8"
 
 // Helper function to get the appropriate layout component based on the block's layout value
 const getLayoutComponent = (layout: string) => {
+  // if isApp is true and it is the personalities-banner layout, return null
+  if (isApp.value && layout === "personalities-banner") {
+    return null
+  }
   return layoutComponentMap[layout] || layoutComponentMap[defaultLayout]
 }
-
+// Helper function to determine the layout for a curated list block, taking into account any override specified in the props
 const getCuratedListLayout = (block: StreamfieldBlock) => {
-  return props.curatedListLayoutOverride || block?.value?.layout || defaultLayout
+  return (
+    props.curatedListLayoutOverride || block?.value?.layout || defaultLayout
+  )
 }
-
+// Helper function to determine if the "Load More" functionality should be enabled for a given curated list block
 const enableLoadMoreForBlock = (block: StreamfieldBlock) => {
-  return props.enableCuratedListLoadMore && getCuratedListLayout(block) === "river"
+  return (
+    props.enableCuratedListLoadMore && getCuratedListLayout(block) === "river"
+  )
 }
-
-const getCuratedListComponentProps = (block: StreamfieldBlock, index: number) => {
+// Helper function to get the props for a curated list component, including handling the "Load More" functionality and any card class overrides
+const getCuratedListComponentProps = (
+  block: StreamfieldBlock,
+  index: number
+) => {
   const layout = getCuratedListLayout(block)
   const componentProps: Record<string, unknown> = {
     list: block?.value?.list,
@@ -160,7 +172,10 @@ onMounted(() => {
         /> -->
         <div
           :key="`${block.id}-curated-list-${index}`"
-          v-if="block.type === 'curated_list' && block?.value?.list?.listItems?.length"
+          v-if="
+            block.type === 'curated_list' &&
+            block?.value?.list?.listItems?.length
+          "
           :class="verticalSpacingClasses"
           :id="slugify(block?.value?.label)"
         >
@@ -173,10 +188,11 @@ onMounted(() => {
             v-if="block?.value?.seeMoreLink"
             class="flex justify-content-center mt-4 w-full"
           >
-            <VFlexibleLink :to="getRouteOrLink(block?.value?.seeMoreLink.url)" raw>
+            <VFlexibleLink :to="getRouteOrLink(block?.value?.seeMoreLink.url)">
               <Button
                 severity="secondary"
-                class="px-5"
+                variant="link"
+                class="link px-5 text-sm md:text-base no-underline"
                 :label="block?.value?.seeMoreLink.label"
                 tabindex="-1"
               />
@@ -311,7 +327,10 @@ onMounted(() => {
         <!-- image -->
 
         <!-- block-quote -->
-        <div v-else-if="block.type === 'block_quote'" class="streamfield-block-quote">
+        <div
+          v-else-if="block.type === 'block_quote'"
+          class="streamfield-block-quote"
+        >
           <blockquote>
             <HtmlConvert
               v-if="block.value.blockQuote"
@@ -357,7 +376,9 @@ onMounted(() => {
       </div>
       <!-- 1/2 way through the streamfield, insert the donation block -->
       <streamfield-donation
-        v-if="props.showDonation && index === Math.floor(streamfield.length / 2)"
+        v-if="
+          props.showDonation && index === Math.floor(streamfield.length / 2)
+        "
         @onClick="
           trackClickEvent(
             `story page id ${props.article.id}`,

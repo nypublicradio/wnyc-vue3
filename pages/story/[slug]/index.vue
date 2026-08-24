@@ -1,8 +1,13 @@
 <script setup>
 import { cmsSources } from "~/composables/globals"
 import { useTopStories } from "~/composables/useTopStories"
-import { getPublisherStoryTitle, getPublisherStoryDescription, getPublisherStoryImage, getPublisherSocialImage } from "~/utilities/metadataHelpers"
-const { getFilteredTopStories, topStories } = useTopStories()
+import {
+  getPublisherStoryTitle,
+  getPublisherStoryDescription,
+  getPublisherStoryImage,
+  getPublisherSocialImage,
+} from "~/utilities/metadataHelpers"
+const { getFilteredTopStories } = useTopStories()
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -11,22 +16,32 @@ const storySource = "WNYC"
 
 const breadcrumbs = computed(() => [{ label: "Home", route: "/home" }])
 
-const { data: storyData, status, error } = await useFetchWrapper(
-  () => `${config.public.BFF_URL}/api/story/${cmsSources.PUBLISHER}/${route.params.slug}`,
-  {
-    key: `story-${cmsSources.PUBLISHER}-${route.params.slug}`,
-    onResponseError() {
-      globalToast.value = {
-        severity: "error",
-        summary: "We are having a problem loading this story. Please try again later.",
-        life: 6000,
-        closable: true,
-      }
-    },
-  }
-)
+const storyUrl = `${config.public.BFF_URL}/api/story/${
+  route?.query?.src || cmsSources.PUBLISHER
+}/${route.params.slug}`
 
-const filteredTopStories = computed(() => getFilteredTopStories(storyData.value))
+const {
+  data: storyData,
+  status,
+  error,
+} = await useFetchWrapper(() => storyUrl, {
+  key: `story-${route?.query?.src || cmsSources.PUBLISHER}-${
+    route.params.slug
+  }`,
+  onResponseError() {
+    globalToast.value = {
+      severity: "error",
+      summary:
+        "We are having a problem loading this story. Please try again later.",
+      life: 6000,
+      closable: true,
+    }
+  },
+})
+
+const filteredTopStories = computed(() =>
+  getFilteredTopStories(storyData.value)
+)
 
 if (storyData.value?.redirect) {
   await navigateTo(storyData.value.location, {
@@ -42,7 +57,9 @@ onMounted(() => {
     page_title: storyData.value?.title,
     page_type: "article",
     content_group: `${storySource}_article`,
-    article_authors: storyData.value?.authors?.map((author) => author.name).join(","),
+    article_authors: storyData.value?.authors
+      ?.map((author) => author.name)
+      .join(","),
     article_publish_date: storyData.value?.publicationDate,
     article_updated_date: storyData.value?.updatedDate
       ? storyData.value?.updatedDate
@@ -60,7 +77,7 @@ useHead(() => ({
 }))
 useSeoMeta({
   title,
-  description: description,
+  description,
   ogDescription: description,
   ogTitle: title,
 })

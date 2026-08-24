@@ -30,6 +30,7 @@ const getTeamData = async (showSlug: string, cmsSource: string) => {
 
 // Get team data from CMS
 export default defineEventHandler(async (event) => {
+    setResponseHeader(event, 'Cache-Control', 'max-age=60, stale-while-revalidate=120')
     const showSlug: string | undefined = event?.context?.params?.showSlug;
     const cmsSource: string | undefined = event?.context?.params?.cmsSource;
     if (showSlug && cmsSource) {

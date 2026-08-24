@@ -72,14 +72,17 @@ const togglePlay = () => {
 }
 
 const getProgress = computed(() => {
-  return Math.ceil((currentEpisodeProgress.value / currentEpisodeDuration.value) * 100)
+  return Math.ceil(
+    (currentEpisodeProgress.value / currentEpisodeDuration.value) * 100
+  )
 })
 
 const isPlaying = ref(false)
 watch(
-  isEpisodePlaying,
+  [isEpisodePlaying, currentEpisode],
   () => {
-    isPlaying.value = String(currentEpisode.value?.id) === String(props.data?.id)
+    isPlaying.value =
+      String(currentEpisode.value?.id) === String(props.data?.id)
   },
   {
     immediate: true,
@@ -109,13 +112,17 @@ watch(
             <CircularProgressBar :progress="getProgress" />
             <PlayIcon v-if="!isEpisodePlaying && !isStreamLoading" />
             <PauseIcon v-if="isEpisodePlaying && !isStreamLoading" />
-            <i v-if="isStreamLoading" class="pi pi-spin pi-spinner"></i>
+            <i
+              v-if="isStreamLoading"
+              class="pi pi-spin pi-spinner"
+              aria-hidden="true"
+            ></i>
           </div>
           <div
             v-else-if="isPlaying && isStreamLoading"
             class="flex align-items-center icon relative"
           >
-            <i class="pi pi-spin pi-spinner"></i>
+            <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
           </div>
           <div v-else class="flex align-items-center icon">
             <PlayIcon />
@@ -126,7 +133,9 @@ watch(
         <div
           class="content flex white-space-nowrap align-items-center justify-content-center w-full"
         >
-          <span class="center" :class="props.labelClass">{{ props.label }}</span>
+          <span class="center" :class="props.labelClass">{{
+            props.label
+          }}</span>
           <LiveBadge
             v-if="props.liveBadge"
             font-size="14px"
@@ -143,6 +152,7 @@ watch(
 <style lang="scss" scoped>
 .small-play {
   .p-button {
+    min-height: 33px;
     &.active {
       //border: var(--bw-toggle) 1px solid;
     }
@@ -176,11 +186,8 @@ watch(
   .content {
     font-size: 0.875rem;
     font-weight: var(--font-weight-700);
-    //line-height: normal;
+    line-height: 0;
     align-items: center;
-    * {
-      //line-height: 1;
-    }
   }
   &.circle {
     height: 40px;
