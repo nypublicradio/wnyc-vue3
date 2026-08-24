@@ -64,6 +64,7 @@ const config: CapacitorConfig = {
     },
     RemoteStreamer: {
       carExperienceEnabled: false,
+      bffBaseUrl: `${process.env.BFF_URL}`,
     }
   }
 }
