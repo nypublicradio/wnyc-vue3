@@ -32,7 +32,8 @@ import {
 } from "~/utilities/helpers"
 import useManageScrollPosition from "~/composables/useManageScrollPosition"
 import { initMediaSession } from "~/utilities/media-session.js"
-
+import { useContinuousPlay } from "~/composables/useContinuousPlay"
+const { initContinuousPlay } = useContinuousPlay()
 // Initialize device platform on client-side only to avoid SSR errors
 const devicePlatform = ref("web")
 if (process.client) {
@@ -309,6 +310,9 @@ const episodeEnded = async () => {
   }
   await releasePlayer()
   trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
+
+  // if the user has continuous play enabled, then we want to play the live stream after the episode has ended
+  initContinuousPlay()
 }
 
 // resume the player if the network is connected where they left off
