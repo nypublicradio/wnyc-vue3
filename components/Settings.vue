@@ -235,7 +235,7 @@ const onUpdateContinuousPlay = () => {
   trackClickEvent(
     "Click Tracking - Continuous play",
     "Settings Sidebar - Listening Preferences",
-    currentUserProfile.value.continuous_play
+    currentUserProfile.value?.continuous_play
   )
 }
 
@@ -470,12 +470,12 @@ watch(
           </div>
         </div>
       </div>
-      <div class="md:col-6">
+      <div v-if="currentUserProfile" class="md:col-6">
         <SBox label="Continuous play" :ripple="false" class="">
           <VToggleSwitch
             yes="ON"
             no="OFF"
-            v-model="currentUserProfile.continuous_play"
+            v-model:data="currentUserProfile.continuous_play"
             @change="onUpdateContinuousPlay"
           />
         </SBox>
