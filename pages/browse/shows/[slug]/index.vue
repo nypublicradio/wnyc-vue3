@@ -24,7 +24,9 @@ const isPreview = computed(
 )
 
 const showEndpoint = computed(() => {
-  const baseUrl = `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`
+  const baseUrl = `${config.public.BFF_URL}/api/pages/wagtail/${
+    route.params.slug
+  }?isApp=${String(isApp.value)}`
 
   if (!isPreview.value) return baseUrl
 
