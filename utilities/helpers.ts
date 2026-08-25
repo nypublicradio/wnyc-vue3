@@ -858,6 +858,13 @@ export const getAndSetUserProfile = async () => {
         } else {
 
           const localUserProfile = JSON.parse(isLocalUserProfile.value)
+          // check the state localUserProfileDefault and update the local storage if there are any new settings added to the default state
+          const lupd = localUserProfileDefault.value
+          for (const key of Object.keys(lupd)) {
+            if (!(key in localUserProfile)) {
+              localUserProfile[key] = lupd[key]
+            }
+          }
 
           // check if supabase master notification channels changed and sync them with the local storage and supabase and OneSignal
           localUserProfile.one_signal_notification_channels = await syncMasterNotificationChannels(localUserProfile, masterNotificationChannelsArray)
