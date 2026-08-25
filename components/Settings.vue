@@ -79,28 +79,6 @@ const showMessage = (
   }
 }
 
-<<<<<<< HEAD
-// formats the station list for the dropdown
-const initializeStationList = (val) => {
-  const tempMenuData = []
-
-  val.forEach((station) => {
-    tempMenuData.push({
-      id: station.station,
-      label: station.station,
-      name: station.title,
-      station: station.station,
-      code: station.title,
-      slug: station.slug,
-      image: station.image,
-      times: `${station.timeStart} - ${station.timeEnd}`,
-    })
-  })
-
-  stationsMenuData.value = tempMenuData
-}
-=======
->>>>>>> 37dc4beb (added default dropup to the account page)
 // handles updating the profile settings in supabase and local storage
 const updateProfile = async (newProfile) => {
   // update supabase and local storage
