@@ -83,6 +83,7 @@ if (import.meta.client) {
 useHead({
   htmlAttrs: {
     lang: "en",
+    class: isApp.value ? "app" : "browser",
   },
   script: [...gtmHeadConfig.script],
   noscript: [...gtmHeadConfig.noscript],

@@ -60,7 +60,7 @@ export const closeSidebars = () => {
 }
 
 // base OneSignal composable
-export default function useOneSignal () {
+export default function useOneSignal() {
 
   let oneSignalSubscriptionId: string = null
   let oneSignalId: string = null
@@ -85,6 +85,7 @@ export default function useOneSignal () {
     closeSidebars()
     if (url) {
       if (!url.includes("https://")) {
+
 
         // deep link
         const route = getPathAndQuery(url)
@@ -202,7 +203,6 @@ export default function useOneSignal () {
       }, 1000)
     }
   }
-
 
   // function to set the salesforce_id in OneSignal as a user tag
   const setSalesForceId = async () => {
@@ -389,7 +389,7 @@ export default function useOneSignal () {
   }
 
   // function to initialize OneSignal
-  async function initOneSignal () {
+  async function initOneSignal() {
     const OneSignal = await loadOneSignal()
     if (!OneSignal) return
     const config = useRuntimeConfig()
@@ -424,7 +424,7 @@ export default function useOneSignal () {
   }
 
   // function to trigger the OS permission request
-  async function requestNotificationPermission () {
+  async function requestNotificationPermission() {
     const OneSignal = await loadOneSignal()
     if (!OneSignal) return
     await OneSignal.Notifications.canRequestPermission().then(async (canRequest) => {
@@ -440,7 +440,7 @@ export default function useOneSignal () {
   }
 
   // syncMasterNotificationChannels with the user's profile, supabase and oneSignal
-  function syncMasterNotificationChannels (local, master) {
+  function syncMasterNotificationChannels(local, master) {
     const safeMaster = Array.isArray(master) ? master : []
 
     if (!Array.isArray(local.one_signal_notification_channels)) {
@@ -476,7 +476,7 @@ export default function useOneSignal () {
   }
 
   // function to log in and manage the user in OneSignal with supabase data
-  async function OneSignalLogin () {
+  async function OneSignalLogin() {
     if (!isNativeApp.value) return
     const OneSignal = await loadOneSignal()
     if (!OneSignal) return
@@ -518,7 +518,7 @@ export default function useOneSignal () {
   }
 
   // function to log out the user in OneSignal
-  async function logout () {
+  async function logout() {
     if (!isNativeApp.value) return
     const OneSignal = await loadOneSignal()
     if (!OneSignal) return

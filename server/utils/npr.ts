@@ -1,19 +1,19 @@
-import axios from 'axios';
-import { cmsSources, FALLBACKIMAGEEP } from '~/composables/globals';
+import axios from 'axios'
+import { cmsSources, FALLBACKIMAGEEP } from '~/composables/globals'
 import { deduplicateArray, howLongAgo } from '~/utilities/helpers'
 // Class to normailze NPR data
 export class NPR {
     // Fetch the document from the NPR API
     getFromNPR(path: string, options: Record<string, unknown> = {}, baseURL: string = '/v1/'): Promise<void> {
         if (typeof options.headers !== 'object' || options.headers === null) {
-            options.headers = {};
+            options.headers = {}
         }
         options.headers['Authorization'] = `Bearer ${process.env.NPR_CDS_API_KEY}`
         if (!options.timeout) {
             options.timeout = 10000
         }
         const url = `${process.env.NPR_CDS_API}${baseURL}${path}`
-        return axios.get(url, options).catch(e => { console.error('NPR CDS error', e) });
+        return axios.get(url, options).catch(e => { console.error('NPR CDS error', e) })
     }
 
     async multiDocumentRequest(ids, maxDocumentsPerRequest = 20) {
@@ -36,7 +36,7 @@ export class NPR {
     // Fetch the image of the show
     findImageUrl(item) {
         try {
-            let imageUrl = null;
+            let imageUrl = null
             for (const asset of Object.values(item.resources[0].assets)) {
                 if (asset.profiles?.some(profile => profile.href === '/v1/profiles/image')) {
                     const imageEnclosure = asset.enclosures.find(enclosure => enclosure.rels.includes('image-square'));
@@ -46,10 +46,10 @@ export class NPR {
                     }
                 }
             }
-            return imageUrl;
+            return imageUrl
         } catch (e) {
-            console.error('findImageUrl error = ', e);
-            return null;
+            console.error('findImageUrl error = ', e)
+            return null
         }
     }
     // Fetch the image of the episode
@@ -58,10 +58,10 @@ export class NPR {
             if (item?.assets) {
                 for (const asset of Object.values(item?.assets)) {
                     if (asset.cardStyle === 'ProgramSegment') {
-                        const res = await this.getDocument(asset?.documentLink?.href);
+                        const res = await this.getDocument(asset?.documentLink?.href)
                         for (const asset of Object.values(res.resources[0].assets)) {
                             if (asset.enclosures) {
-                                const imageEnclosure = asset.enclosures.find(enclosure => enclosure.rels.includes(imageRatio));
+                                const imageEnclosure = asset.enclosures.find(enclosure => enclosure.rels.includes(imageRatio))
                                 if (imageEnclosure) {
                                     return {
                                         image: imageEnclosure.href,
@@ -74,12 +74,12 @@ export class NPR {
                     }
                 }
             } else {
-                return null;
+                return null
             }
         } catch (e) {
-            console.error('findDocumentLink error = ', e);
+            console.error('findDocumentLink error = ', e)
         }
-        return null;
+        return null
     }
     // Check if the item has audio
     async hasAudio(id) {
@@ -89,22 +89,22 @@ export class NPR {
                 for (const asset of Object.values(item?.assets)) {
                     if (asset?.enclosures && asset?.isAvailable && asset?.isDownloadable) {
                         if (asset.enclosures.length > 0) {
-                            return true;
+                            return true
                         }
                     }
                 }
             }
-            return false;
+            return false
         } catch (e) {
-            console.error('has NPR Audio error = ', e);
-            return null;
+            console.error('has NPR Audio error = ', e)
+            return null
         }
     }
 
     // Fetch all segments for a episode and return audio array
     async findAudio(id, show, image = FALLBACKIMAGEEP) {
         const showTitle = show.resources[0].title
-        const audio = [];
+        const audio = []
         try {
             const res = await this.getFromNPR(`documents?collectionIds=${id}`)
             for (const item of res.data.resources) {
@@ -137,15 +137,15 @@ export class NPR {
                             },
                             cmsSource: cmsSources.NPR,
                             isSegment: true,
-                        });
+                        })
                     }
                 }
             }
             const audioWithMetadata = await this.addMetadata(audio, res.data.resources)
-            return audioWithMetadata;
+            return audioWithMetadata
         } catch (e) {
-            console.error('findAudio error = ', e);
-            return null;
+            console.error('findAudio error = ', e)
+            return null
         }
     }
     // Add metadata to the audio array
@@ -159,7 +159,7 @@ export class NPR {
         // map ids to category names
         const categoryMap = Object.fromEntries(
             categoryDocs.map(item => [item.id, item.title])
-        );
+        )
 
         // map ids to author names
         const bylineMap = {}
@@ -184,7 +184,7 @@ export class NPR {
                 category,
                 byline,
             }
-        });
+        })
         return audioWithMetadata
     }
     // parses item for document ids of bylines
@@ -204,12 +204,12 @@ export class NPR {
         // Get the category id from the first collection that has a topic or program relationship
         const categoryId = item.collections?.find(
             (collection) => collection.rels.includes('topic') || collection.rels.includes('program') || collection.rels.includes('series')
-        )?.href?.split('/')[3];
-        return categoryId;
+        )?.href?.split('/')[3]
+        return categoryId
     }
     // Fetch the document from the NPR API
     async getDocument(url: string): Promise<unknown> {
         const response = await this.getFromNPR(url, {}, '')
-        return response?.data;
+        return response?.data
     }
 }

@@ -85,7 +85,7 @@ const updateDonationWithSpringboard = async (donationId: number, newAmount: numb
             springboard_id: donationId,
             salesforce_id: salesforceId ?? null,
             type: 'donation_update',
-            status: 'pending',
+            status: 'Pending',
             new_amount: newAmount,
         });
 

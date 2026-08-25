@@ -24,6 +24,7 @@ interface Transaction {
     readonly springboard_id?: number | null;
     readonly type?: string | null;
     readonly status?: string | null;
+    readonly new_amount?: number | null;
     readonly created_at?: string;
     readonly updated_at?: string | null;
 }
@@ -94,6 +95,24 @@ export class NyprDb {
             return null
         }
         return data?.slug ?? null
+    }
+
+    /**
+     * Get transactions by salesforce_id 
+     */
+    async getTransactionsBySalesforceId(salesforce_id: string): Promise<Transaction[] | null> {
+        const { data, error } = await this.supabase
+            .from('transactions')
+            .select('*')
+            .eq('salesforce_id', salesforce_id)
+            .eq('status', 'Pending');
+
+        if (error) {
+            console.error('Error fetching transaction by salesforce_id:', error);
+            return null;
+        }
+
+        return data;
     }
 
     /**

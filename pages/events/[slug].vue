@@ -34,6 +34,8 @@ const [
   )
 ])
 
+const filteredTopStories = computed(() => getFilteredTopStories(event?.value))
+
 onMounted(() => {
   if (!event.value) return
   const { $analytics } = useNuxtApp()
@@ -321,17 +323,17 @@ useSocialMetaOverrides(eventData)
             imgCol="w-7rem md:w-12rem"
             titleClasses="text-sm md:text-lg"
             pipeClasses="text-xs md:text-base"
+            :allowVerticalEffect="false"
             :data="eventItem"
-            :size="{ xs: [112, 112], md: [176, 176] }"
+            :size="{ xs: [112, 112], md: [192, 192] }"
           />
         </div>
       </div>
     </section>
 
-    <section v-if="getFilteredTopStories" class="thinContent">
+    <section v-if="filteredTopStories" class="thinContent">
       <Divider class="mt-2 mb-5" />
-      <h2 class="mb-3">Top Stories From Gothamist</h2>
-      <TopStories :articles="getFilteredTopStories()" />
+      <TopStories :articles="filteredTopStories" />
     </section>
 
     <BackToTopButton />
