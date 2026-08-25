@@ -16,10 +16,26 @@ import {
     useCurrentEpisode,
 } from "~/composables/states"
 import { Preferences } from "@capacitor/preferences"
-import { clearInterval, setInterval } from 'worker-timers';
+
+// worker-timers requires Web Workers (browser-only).
+// Fall back to global setInterval/clearInterval on the server to avoid SSR crashes.
+let workerSetInterval: typeof globalThis.setInterval = globalThis.setInterval
+let workerClearInterval: typeof globalThis.clearInterval = globalThis.clearInterval
+let workerTimersReady: Promise<void> = Promise.resolve()
+
+if (import.meta.client) {
+    workerTimersReady = import('worker-timers')
+        .then((mod) => {
+            workerSetInterval = mod.setInterval as any
+            workerClearInterval = mod.clearInterval as any
+        })
+        .catch((error) => {
+            console.error('Failed to load worker-timers, using native timers:', error)
+        })
+}
 
 // composable to handle the sleep timer
-export default function useSleepTimer() {
+export default function useSleepTimer () {
     const currentEpisode = useCurrentEpisode()
     const isEpisodePlaying = useIsEpisodePlaying()
     const togglePlayTrigger = useTogglePlayTrigger()
@@ -45,15 +61,18 @@ export default function useSleepTimer() {
     })
 
     // Clear the interval
-    function clearTheInterval() {
-        clearInterval(sleepTimerInterval.value)
+    function clearTheInterval () {
+        workerClearInterval(sleepTimerInterval.value)
         sleepTimerInterval.value = null
         chunckedTime.value = 0
         //console.log("----------------------------Clear The Interval")
     }
 
     // Start the timer
-    function startTimer(repeat = false) {
+    async function startTimer (repeat = false) {
+        // Ensure worker timers are ready before creating the interval.
+        await workerTimersReady
+
         //console.log("----------------------------Start The Interval")
         sleepTimerRunning.value = true
         if (!sleepTimerPaused.value && !repeat) {
@@ -65,7 +84,7 @@ export default function useSleepTimer() {
             }
         }
         sleepTimerPaused.value = false
-        sleepTimerInterval.value = setInterval(() => {
+        sleepTimerInterval.value = workerSetInterval(() => {
             if (chunckedTime.value < chunck) {
                 chunckedTime.value++
                 if (sleepTimerCurrentTime.value > 0) {
@@ -77,19 +96,19 @@ export default function useSleepTimer() {
             } else {
                 // restart new interval
                 clearTheInterval()
-                startTimer(true)
+                startTimer(true).catch((error) => console.error('Sleep timer restart failed:', error))
             }
         }, 1000)
     }
 
     // Pause the timer
-    function pauseTimer() {
+    function pauseTimer () {
         sleepTimerPaused.value = true
         clearTheInterval()
     }
 
     // Reset the timer
-    function resetTimer() {
+    function resetTimer () {
         clearTheInterval()
         sleepTimerCurrentTime.value = sleepTimerSelectedTime.value.entry.value
         sleepTimerRunning.value = false
@@ -97,7 +116,7 @@ export default function useSleepTimer() {
     }
 
     // Function to call when time ends
-    function onTimeEnd() {
+    function onTimeEnd () {
 
         sleepTimerSideBar.value = false
         sleepTimerRunning.value = false
@@ -121,13 +140,13 @@ export default function useSleepTimer() {
             life: duration,
         }
 
-        const volumeInterval = setInterval(() => {
+        const volumeInterval = workerSetInterval(() => {
             currentVolume -= volumeStep
             if (currentVolume < 0) { currentVolume = 0 }
             RemoteStreamer.setVolume({ volume: currentVolume })
 
             if (currentVolume <= 0) {
-                clearInterval(volumeInterval)
+                workerClearInterval(volumeInterval)
 
                 // pause the audio
                 if (isEpisodePlaying.value) {
@@ -163,20 +182,20 @@ export default function useSleepTimer() {
     }
 
     // Update the duration, reset and start the timer
-    function onUpdateDuration(e) {
+    function onUpdateDuration (e) {
         sleepTimerSelectedTime.value = e
         resetTimer()
-        startTimer()
+        startTimer().catch((error) => console.error('Sleep timer start failed:', error))
         sleepTimerSideBar.value = false
         trackClickEvent(
             "Click Tracking - Sleep timer duration",
             "Sleep Timer Sidebar - Duration",
-            formattedTime
+            formattedTime.value
         )
     }
 
     // Update the user preferences
-    async function updateUserPreferences(customTime) {
+    async function updateUserPreferences (customTime) {
         currentUserProfile.value.sleep_timer = customTime
         const currentUserProfileSTRING = JSON.stringify(currentUserProfile.value)
         await Preferences.set({
@@ -186,7 +205,7 @@ export default function useSleepTimer() {
     }
 
     // Get the user preferences
-    async function getUserPreferenceSleepTime() {
+    async function getUserPreferenceSleepTime () {
         const userPreferences = await Preferences.get({ key: localUserProfileKey })
         if (userPreferences.value) {
             const userPreferencesObj = JSON.parse(userPreferences.value)
@@ -198,7 +217,7 @@ export default function useSleepTimer() {
     }
 
     // handle the sleep timer side bar toggle and tracking
-    function handleSleepTimer() {
+    function handleSleepTimer () {
         sleepTimerSideBar.value = !sleepTimerSideBar.value
         trackClickEvent(
             "Click Tracking - Sleep Timer",

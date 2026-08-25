@@ -1,3 +1,15 @@
+.popover-transition-enter-active {
+    transition: all 0.2s ease-out;
+}
+.popover-transition-leave-active {
+    transition: all 0.2s ease-in;
+}
+.popover-transition-enter-from,
+.popover-transition-leave-to {
+    opacity: 0;
+    transform: translateY(-10px);
+    transform: scaleY(0);
+}
 .login-enter-active {
     transition: all var(--p-transition-duration) ease-out var(--p-transition-duration);
 }

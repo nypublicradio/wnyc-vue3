@@ -1,0 +1,19 @@
+diff --git a/node_modules/@capacitor-community/video-recorder/android/src/main/java/com/capacitorcommunity/videorecorder/VideoRecorderPlugin.java b/node_modules/@capacitor-community/video-recorder/android/src/main/java/com/capacitorcommunity/videorecorder/VideoRecorderPlugin.java
+index 38ab977..ba58bd8 100644
+--- a/node_modules/@capacitor-community/video-recorder/android/src/main/java/com/capacitorcommunity/videorecorder/VideoRecorderPlugin.java
++++ b/node_modules/@capacitor-community/video-recorder/android/src/main/java/com/capacitorcommunity/videorecorder/VideoRecorderPlugin.java
+@@ -481,8 +481,12 @@ public class VideoRecorderPlugin extends Plugin {
+             fancyCamera.setX(getPixels((int) frameConfig.x));
+         }
+ 
+-        // Set the background color to black
+-        ((ViewGroup) fancyCamera.getParent()).setBackgroundColor(Color.BLACK);
++        // PATCH: null guard for getParent() race condition (NPE crash on Android)
++        // TODO: Remove this patch and the patches/ folder entry when upgrading to Capacitor v7+ / video-recorder v7+
++        // See: https://github.com/capacitor-community/video-recorder (fixed on main/v7.x branch)
++        if (fancyCamera.getParent() instanceof ViewGroup) {
++            ((ViewGroup) fancyCamera.getParent()).setBackgroundColor(Color.BLACK);
++        }
+ 
+         fancyCamera.setElevation(9);
+         bridge.getWebView().setElevation(9);

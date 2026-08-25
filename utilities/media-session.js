@@ -1,8 +1,10 @@
-import { getDate, imageSolver } from '~/utilities/helpers'
+import { getDate } from '~/utilities/helpers'
 import { useIsNetworkConnected, useIsApp, useIsLiveStream } from "~/composables/states"
 import { FALLBACKIMAGE/* , PLAYER_SKIP_TIME */ } from "~/composables/globals"
 import axios from 'axios'
 import { RemoteStreamer } from "@nypublicradio/capacitor-remote-streamer"
+import { useVImage } from "~/composables/useVImage"
+
 let currentEpisode = null
 
 const defaultMimeType = 'image/jpeg'
@@ -13,21 +15,22 @@ const fetchMimeType = async (imageUrl) => {
     try {
         const response = await axios(imageUrl, { method: 'HEAD' }) // Use 'HEAD' to avoid downloading the image
         return response.headers["content-type"] || defaultMimeType
-    } catch (error) {
+    } catch {
         return defaultMimeType
     }
 }
 
 // generate an array of artwork objects with different sizes and using an axios call to get the image type
 const generateMediaSessionArtworkArray = async (image) => {
+    const { imageSolver } = useVImage()
     const arr = []
 
     //have to get the format for publisher images
-    const format = await fetchMimeType(imageSolver(image, { w: 116, h: 116, q: 80, format: 'jpeg' }))
+    const format = await fetchMimeType(imageSolver(image, { w: 112, h: 112, q: 80, format: 'jpeg' }))
     imageSizes.forEach(size => {
         arr.push({
             src: imageSolver(image, { w: size, h: size, q: 80 }),
-            sizes: `${size}x${size}`,
+            sizes: `${ size }x${ size }`,
             type: format
         })
     })
@@ -36,18 +39,18 @@ const generateMediaSessionArtworkArray = async (image) => {
 
 // initialize the media session with the episode data
 export const initMediaSession = async (episode/* , skipTime = PLAYER_SKIP_TIME */) => {
+    if (!import.meta.client) return
     if (!episode) return
+
     const isNetworkConnected = useIsNetworkConnected()
     const isLiveStream = useIsLiveStream()
     const isApp = useIsApp()
-
     currentEpisode = episode
 
     // if this episode has a directory image, that means it has been downloaded, so to use the downloaded im age in the media session, otherwise use the image from the API response as normal
     // the "player_image" is generated from the prepForPlayer helper function
-    const artworkImageArray = currentEpisode?.directoryImage?.uri & !isNetworkConnected.value ? [{ src: currentEpisode.directoryImage.uri }] : await generateMediaSessionArtworkArray(currentEpisode.player_image ?? currentEpisode.image)
-
-
+    const artworkImageArray = currentEpisode?.directoryImage?.uri && !isNetworkConnected.value ? [{ src: currentEpisode.directoryImage.uri }] : await generateMediaSessionArtworkArray(currentEpisode.player_image?.template || currentEpisode.player_image || currentEpisode.image?.template || currentEpisode.image || FALLBACKIMAGE)
+    const artistSlot = currentEpisode.showTitle !== currentEpisode.title ? currentEpisode.showTitle : null || getDate(currentEpisode) || 'LIVE'
     if (isApp.value) {
 
         let artworkImageUrl = FALLBACKIMAGE // Set your fallback image URL here
@@ -62,12 +65,11 @@ export const initMediaSession = async (episode/* , skipTime = PLAYER_SKIP_TIME *
         } else if (artworkImageArray[2]?.src) {
             artworkImageUrl = artworkImageArray[2].src
         }
-
         await RemoteStreamer.setNowPlayingInfo({
             title: currentEpisode.title,
-            artist: getDate(currentEpisode),
+            artist: artistSlot,
             album: currentEpisode.showTitle,
-            duration: !isLiveStream.value ? String(currentEpisode.duration) : null,
+            duration: !isLiveStream.value ? String(currentEpisode.duration) : 'LIVE',
             imageUrl: artworkImageUrl,
             isLiveStream: isLiveStream.value,
         })
@@ -75,7 +77,7 @@ export const initMediaSession = async (episode/* , skipTime = PLAYER_SKIP_TIME *
         if ("mediaSession" in navigator) {
             navigator.mediaSession.metadata = new MediaMetadata({
                 title: currentEpisode.title,
-                artist: getDate(currentEpisode),
+                artist: artistSlot,
                 album: currentEpisode.showTitle,
                 artwork: artworkImageArray
             })

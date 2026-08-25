@@ -12,7 +12,7 @@ const MyPreset = definePreset(Aura, {
       sm: "4px",
       md: "6px",
       lg: "8px",
-      xl: "12px",
+      xl: "10px",
     },
     emerald: {
       50: "#ecfdf5",
@@ -58,7 +58,7 @@ const MyPreset = definePreset(Aura, {
       100: "#f7c9d0",
       200: "#f19eac",
       300: "#eb7487",
-      400: "#e44962",
+      400: "#e43a56",
       500: "#de1e3d",
       600: "#bd1a34",
       700: "#9b152b",
@@ -132,17 +132,17 @@ const MyPreset = definePreset(Aura, {
       950: "#083344",
     },
     sky: {
-      50: "#ECEFF9",
-      100: "#d2d9f1",
-      200: "#afbbe6",
-      300: "#8c9ddb",
-      400: "#687fd0",
-      500: "#4561c5",
-      600: "#3b52a7",
-      700: "#30448a",
-      800: "#26356c",
-      900: "#1c274f",
-      950: "#111831",
+      50: "#E8F1FF",
+      100: "#D1E4FF",
+      200: "#9DCAFE",
+      300: "#56B1FE",
+      400: "#1095E2",
+      500: "#0B7BBC",
+      600: "#076095",
+      700: "#044A74",
+      800: "#023352",
+      900: "#011D32",
+      950: "#001221"
     },
     blue: {
       50: "#f4f6f8",
@@ -330,10 +330,10 @@ const MyPreset = definePreset(Aura, {
   semantic: {
     transitionDuration: "0.25s",
     focusRing: {
-      width: "1px",
+      width: "2px",
       style: "solid",
-      color: "{primary.color}",
-      offset: "2px",
+      color: "#015fcc",
+      offset: "4px",
       shadow: "none",
     },
     disabledOpacity: "0.6",
@@ -494,7 +494,7 @@ const MyPreset = definePreset(Aura, {
           hoverMutedColor: "{surface.600}",
         },
         content: {
-          background: "{surface.0}",
+          background: "{surface.25}",
           hoverBackground: "{surface.100}",
           borderColor: "{surface.200}",
           color: "{text.color}",
@@ -502,17 +502,17 @@ const MyPreset = definePreset(Aura, {
         },
         overlay: {
           select: {
-            background: "{surface.0}",
+            background: "{surface.25}",
             borderColor: "{surface.200}",
             color: "{text.color}",
           },
           popover: {
-            background: "{surface.0}",
+            background: "{surface.25}",
             borderColor: "{surface.200}",
             color: "{text.color}",
           },
           modal: {
-            background: "{surface.0}",
+            background: "{surface.25}",
             borderColor: "{surface.200}",
             color: "{text.color}",
           },
@@ -574,10 +574,10 @@ const MyPreset = definePreset(Aura, {
           700: "#3f3f46",
           800: "#27272a",
           900: "#18181b",
-          950: "#09090b",
+          950: "#101012",
         },
         primary: {
-          color: "{primary.500}",
+          color: "{primary.400}",
           contrastColor: "{surface.900}",
           hoverColor: "{primary.300}",
           activeColor: "{primary.200}",
@@ -620,26 +620,26 @@ const MyPreset = definePreset(Aura, {
           hoverMutedColor: "{surface.300}",
         },
         content: {
-          background: "{surface.900}",
-          hoverBackground: "{surface.800}",
+          background: "#ffffff1A",
+          hoverBackground: "#ffffff4D",
           borderColor: "{surface.700}",
           color: "{text.color}",
           hoverColor: "{text.hover.color}",
         },
         overlay: {
           select: {
-            background: "{surface.900}",
-            borderColor: "{surface.700}",
+            background: "{surface.25}",
+            borderColor: "{surface.200}",
             color: "{text.color}",
           },
           popover: {
-            background: "{surface.900}",
-            borderColor: "{surface.700}",
+            background: "{surface.25}",
+            borderColor: "{surface.200}",
             color: "{text.color}",
           },
           modal: {
-            background: "{surface.900}",
-            borderColor: "{surface.700}",
+            background: "{surface.25}",
+            borderColor: "{surface.200}",
             color: "{text.color}",
           },
         },
@@ -689,6 +689,13 @@ const MyPreset = definePreset(Aura, {
     },
   },
   components: {
+    breadcrumb: {
+      root: {
+        padding: "0",
+        gap: "4px",
+        background: "none"
+      },
+    },
     skeleton: {
       colorScheme: {
         light: {
@@ -984,7 +991,7 @@ const MyPreset = definePreset(Aura, {
       track: {
         size: "6px",
         borderRadius: "6px",
-        background: "{surface.300}",
+        background: "{neutral.500}",
       },
       range: {
         background: "{primary.color}",
@@ -1011,10 +1018,10 @@ const MyPreset = definePreset(Aura, {
         },
         dark: {
           range: {
-            background: "{sky.500}",
+            background: "{surface.0}",
           },
           handle: {
-            background: "{sky.500}",
+            background: "transparent",
             hoverBackground: "{surface.0}",
             content: {
               background: "{surface.0}",
@@ -1032,19 +1039,42 @@ const MyPreset = definePreset(Aura, {
       },
       tab: {
         padding: "0.5rem 0rem",
-        activeColor: "{text.color}",
+        activeColor: "{primary.500}",
         borderColor: "transparent",
         hoverBorderColor: "transparent",
         activeBorderColor: "transparent",
       },
+      navButton: {
+        background: "{darkblue-500}",
+      },
       activeBar: {
         height: "2px",
         bottom: "-2px",
-        background: "{text.color}",
+        background: "{primary.500}",
       },
       tabpanel: {
         padding: "1.25rem 0rem 1.125rem 0rem",
         background: "transparent",
+      },
+      colorScheme: {
+        light: {
+          navButton: {
+            background: "{surface.0}",
+            shadow: '0px 0px 10px 50px rgba(255, 255, 255, 0.6)'
+          }
+        },
+        dark: {
+          tab: {
+            activeColor: "{text.color}",
+          },
+          navButton: {
+            background: "{darkblue-500}",
+            shadow: '0px 0px 10px 50px color-mix(in srgb, {darkblue-500}, transparent 50%)'
+          },
+          activeBar: {
+            background: "{text.color}",
+          },
+        }
       },
     },
     toggleswitch: {
@@ -1068,14 +1098,14 @@ const MyPreset = definePreset(Aura, {
         },
         dark: {
           root: {
-            background: "{surface.50}",
+            background: "{darkblue.500}",
             disabledBackground: "{form.field.disabled.background}",
-            hoverBackground: "{surface.100}",
+            hoverBackground: "{darkblue.800}",
           },
           handle: {
-            background: "{surface.300}",
+            background: "{surface.100}",
             disabledBackground: "{form.field.disabled.color}",
-            hoverBackground: "{surface.400}",
+            hoverBackground: "{surface.300}",
             checkedBackground: "{surface.0}",
             checkedHoverBackground: "{surface.0}",
           },
@@ -1103,9 +1133,13 @@ const MyPreset = definePreset(Aura, {
         paddingY: "0.38rem",
         paddingX: "0.75rem",
         label: {
-          fontWeight: "700",
+          fontWeight: "600",
         },
         gap: "0.5rem",
+        iconOnlyWidth: "2.0625rem",
+        sm: {
+          iconOnlyWidth: "2.0625rem",
+        },
       },
       colorScheme: {
         light: {
@@ -1120,6 +1154,10 @@ const MyPreset = definePreset(Aura, {
               borderColor: "{primary.500}",
               hoverBorderColor: "{primary.600}",
               activeBorderColor: "{primary.700}",
+              focusRing: {
+                color: "{focusRing.color}",
+                shadow: "none",
+              },
             },
             secondary: {
               background: "{surface.0}",
@@ -1132,9 +1170,34 @@ const MyPreset = definePreset(Aura, {
               hoverColor: "{surface-950}",
               activeColor: "{surface-950}",
               focusRing: {
-                color: "{surface.600}",
+                color: "{focusRing.color}",
                 shadow: "none",
               },
+            },
+            contrast: {
+              background: "#3F3F41",
+              hoverBackground: "#282829",
+              activeBackground: "{surface.200}",
+              borderColor: "#3F3F41",
+              hoverBorderColor: "#282829",
+              activeBorderColor: "{surface.300}",
+              color: "{surface-0}",
+              hoverColor: "{surface-0}",
+              activeColor: "{surface-0}",
+              focusRing: {
+                color: "{focusRing.color}",
+                shadow: "none",
+              },
+            },
+          },
+          link: {
+            color: '{text.color}',
+            hoverColor: '{link.500}',
+            activeColor: '{link.500}'
+          },
+          text: {
+            secondary: {
+              color: '{surface.950}'
             },
           },
         },
@@ -1150,6 +1213,10 @@ const MyPreset = definePreset(Aura, {
               borderColor: "{primary.500}",
               hoverBorderColor: "{primary.600}",
               activeBorderColor: "{primary.700}",
+              focusRing: {
+                color: "{focusRing.color}",
+                shadow: "none",
+              },
             },
             secondary: {
               background: "{surface.0}",
@@ -1162,7 +1229,22 @@ const MyPreset = definePreset(Aura, {
               hoverColor: "{surface-950}",
               activeColor: "{surface-950}",
               focusRing: {
-                color: "{surface.600}",
+                color: "{focusRing.color}",
+                shadow: "none",
+              },
+            },
+            contrast: {
+              background: "#3F3F41",
+              hoverBackground: "#282829",
+              activeBackground: "{surface.200}",
+              borderColor: "#3F3F41",
+              hoverBorderColor: "#282829",
+              activeBorderColor: "{surface.300}",
+              color: "{surface-0}",
+              hoverColor: "{surface-0}",
+              activeColor: "{surface-0}",
+              focusRing: {
+                color: "{focusRing.color}",
                 shadow: "none",
               },
             },
@@ -1172,7 +1254,74 @@ const MyPreset = definePreset(Aura, {
               color: "{surface.0}",
             },
           },
+          link: {
+            color: '{text.color}',
+            hoverColor: '{link.400}',
+            activeColor: '{link.400}'
+          },
         },
+      },
+    },
+    megamenu: {
+      root: {
+        background: "transparent",
+        borderColor: "transparent",
+        horizontalOrientation: {
+          padding: '0.5rem 0rem',
+        },
+      },
+      item: {
+        focusBackground: "transparent",
+        activeBackground: "transparent",
+      },
+    },
+    menu: {
+      root: {
+        borderColor: "transparent",
+        padding: '1.5rem 1.5rem',
+      },
+      list: {
+        padding: '0',
+        borderRadius: '0',
+      },
+      item: {
+        padding: '0',
+        borderRadius: '0',
+      },
+      submenuLabel: {
+        padding: '0',
+      }
+    },
+    popover: {
+      root: {
+        borderColor: "{surface.100}",
+        shadow: "0px 0px 4px rgba(0, 0, 0, 0.25)",
+        borderRadius: "20px",
+      },
+      content: {
+        padding: "1.25rem 1.75rem 1.25rem 1.25rem",
+      },
+    },
+    divider: {
+      content: {
+        background: "transparent"
+      },
+      colorScheme: {
+        light: {
+          root: {
+            borderColor: '{content.border.color}'
+          },
+        },
+        dark: {
+          root: {
+            borderColor: "#ffffffE6"
+          },
+        },
+      },
+    },
+    avatar: {
+      root: {
+        background: "transparent",
       },
     },
     stepper: {
@@ -1219,23 +1368,6 @@ const MyPreset = definePreset(Aura, {
           },
           stepNumber: {
             background: '{surface.25}',
-          },
-        },
-      },
-    },
-    divider: {
-      content: {
-        background: "transparent"
-      },
-      colorScheme: {
-        light: {
-          root: {
-            borderColor: '{content.border.color}'
-          },
-        },
-        dark: {
-          root: {
-            borderColor: "#ffffffE6"
           },
         },
       },

@@ -1,5 +1,5 @@
 <script setup>
-import { trackClickEvent } from "~/utilities/helpers"
+//import { trackClickEvent } from "~/utilities/helpers"
 import useLiveStream, { updateLiveStream } from "~/composables/data/liveStream"
 import {
   useCurrentEpisode,
@@ -7,19 +7,14 @@ import {
   useAllCurrentStations,
   useIsEpisodePlaying,
   useIsStreamLoading,
-  useIsApp,
 } from "~/composables/states"
 
-import { scheduleLocalNotification, getEntryTitle } from "~/utilities/local-notifications"
 const {
   getStationBySlugAndPlayIt,
   switchStation,
   scrollToActiveStation,
   fetchSchedule,
   clearAllTimeout,
-  getTheTime,
-  togglePlayHere,
-  liveScheduleData,
 } = useLiveStream()
 
 const allCurrentStations = useAllCurrentStations()
@@ -28,23 +23,50 @@ const currentEpisodeHolder = useCurrentEpisodeHolder()
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isStreamLoading = useIsStreamLoading()
-const isApp = useIsApp()
+const scheduleHolderRef = ref(null)
+const isPageMounted = ref(false)
 
 const route = useRoute()
 const router = useRouter()
 const routeSlug = ref(route.query.slug)
 
-// schedule a local notification and track it
-const handleScheduleLocalNotification = async (entry) => {
-  trackClickEvent(
-    "Click Tracking - Schedule Notify Button",
-    "Live Page",
-    `Notify me about ${entry.station} - ${getEntryTitle(entry)} at ${
-      entry.attributes.start
-    }`
-  )
-  entry.station = currentEpisodeHolder.value.station
-  await scheduleLocalNotification(entry)
+// state used for triggering same-page navigation scroll to Top/Schedule
+const samePageNavTrigger = useState("useSamePageNavTrigger", () => 0)
+
+// centralize the scrolling logic for the page
+const performScroll = (newQuery) => {
+  if (import.meta.client) {
+    // the actual scrolling code
+    const doScroll = () => {
+      if (newQuery.schedule && scheduleHolderRef?.value) {
+        window.scrollTo({
+          top: scheduleHolderRef?.value?.offsetTop + 15,
+          behavior: "smooth",
+        })
+      } else {
+        if (window.scrollY !== 0) {
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+          })
+        }
+      }
+    }
+
+    if (!isPageMounted.value) {
+      const unwatch = watch(isPageMounted, (mounted) => {
+        if (mounted) {
+          // Delay an extra moment on initial mount to let layout settle
+          setTimeout(() => {
+            doScroll()
+          }, 150)
+          unwatch()
+        }
+      })
+    } else {
+      doScroll()
+    }
+  }
 }
 
 // updates the stream to the current station when the page loads ONCE with this watcher
@@ -56,7 +78,7 @@ watch(
   { once: true }
 )
 // fetches the schedule currentEpisodeHolder changes
-watch(currentEpisodeHolder, async (oldData, newData) => {
+watch(currentEpisodeHolder, async (newData) => {
   if (newData) {
     await fetchSchedule()
     scrollToActiveStation()
@@ -64,17 +86,30 @@ watch(currentEpisodeHolder, async (oldData, newData) => {
 })
 
 // watcher for triggering a play of the live stream from a route variable
+
 watch(
   () => router.currentRoute.value.query,
   (newQuery) => {
+    // Prevent the watcher from firing when navigating away from the page
+    if (router.currentRoute.value.name !== "live") return
+
     // checking if the slug is in the query
     if (newQuery.slug) {
       routeSlug.value = newQuery.slug
-      getStationBySlugAndPlayIt(newQuery.slug)
+      getStationBySlugAndPlayIt(newQuery.slug, newQuery.autoplay)
     }
+    // page scrolling
+    performScroll(newQuery)
   },
   { immediate: true }
 )
+
+// watcher for same-page navigation clicks (e.g., clicking menu link while already on that page)
+watch(samePageNavTrigger, () => {
+  if (router.currentRoute.value.name === "live") {
+    performScroll(router.currentRoute.value.query)
+  }
+})
 
 onMounted(async () => {
   // check if there is a route slug
@@ -106,149 +141,154 @@ onMounted(async () => {
     page_type: "live_tab",
     content_group: "app_tab",
   })
+
+  // set mounted state for the performScroll watcher
+  nextTick(() => {
+    isPageMounted.value = true
+  })
 })
 
 onUnmounted(() => {
   clearAllTimeout()
 })
+
+useHead({
+  title:
+    "Listen Live | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+  meta: [
+    {
+      name: "og:title",
+      content:
+        "Listen Live | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+    },
+    {
+      name: "twitter:title",
+      content:
+        "Listen Live | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
+    },
+  ],
+})
 </script>
 <template>
-  <div class="live-page">
-    <Html lang="en">
-      <Head>
-        <Title
-          >Listen Live | WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
-          News</Title
-        >
-        <Meta
-          name="og:title"
-          content="Listen Live | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-        <Meta
-          name="twitter:title"
-          content="Listen Live | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-      </Head>
-    </Html>
+  <div class="page live-page">
     <div class="top flex flex-column gap-3 style-mode-dark mb-3">
-      <HorizontalScrollFeature :data="allCurrentStations" class="live-stations-holder">
-        <div class="live-stations flex pb-2 w-full">
+      <HorizontalScrollFeature
+        :data="allCurrentStations"
+        class="live-stations-holder"
+      >
+        <template #default>
           <div
-            v-for="(station, index) in allCurrentStations"
-            class="station-holder item"
-            :class="{
-              activestation:
-                currentEpisodeHolder?.station === station.station ||
-                currentEpisode?.station === station.station,
-            }"
-            :key="`${station.station}-${index}`"
+            class="live-stations flex pb-2 md:w-full md:justify-content-center"
           >
-            <div class="relative">
-              <Button
-                class="station-btn text-sm white-space-nowrap btn"
-                :severity="
+            <div
+              v-for="(station, index) in allCurrentStations"
+              class="station-holder"
+              :class="{
+                activestation:
                   currentEpisodeHolder?.station === station.station ||
-                  currentEpisode?.station === station.station
-                    ? 'primary'
-                    : 'secondary'
-                "
-                :label="station.station"
-                :aria-label="`${station.station} button`"
-                :aria-disabled="isStreamLoading"
-                @click="switchStation(station)"
-              >
-                <template #icon>
-                  <div v-if="currentEpisode?.station === station.station">
-                    <i v-if="isStreamLoading" class="pi pi-spin pi-spinner mr-2"></i>
-                    <WnycLoader
-                      v-else
-                      class="pr-2"
-                      :svgYscale="1.25"
-                      :svgXscale="0.5"
-                      :bars="3"
-                      :paused="!isEpisodePlaying"
-                      size="16px"
-                    />
-                  </div>
-                </template>
-              </Button>
+                  currentEpisode?.station === station.station,
+              }"
+              :key="`${station.station}-${index}`"
+            >
+              <div class="relative btn-holder">
+                <Button
+                  class="station-btn text-sm ml-3 max-w-15rem md:px-4"
+                  :severity="
+                    currentEpisodeHolder?.station === station.station ||
+                    currentEpisode?.station === station.station
+                      ? 'primary'
+                      : 'secondary '
+                  "
+                  :label="station.station"
+                  :aria-label="`${station.station} button`"
+                  :aria-disabled="isStreamLoading"
+                  @click="switchStation(station)"
+                >
+                  <template #default>
+                    <div
+                      class="flex gap-1 align-items-center overflow-hidden w-full"
+                    >
+                      <div
+                        v-if="currentEpisode?.station === station.station"
+                        class="flex-shrink-0"
+                      >
+                        <i
+                          v-if="isStreamLoading"
+                          class="pi pi-spin pi-spinner mr-2"
+                          aria-hidden="true"
+                        ></i>
+                        <WnycLoader
+                          v-else
+                          class="pr-2"
+                          :svgYscale="1.25"
+                          :svgXscale="0.5"
+                          :bars="3"
+                          :paused="!isEpisodePlaying"
+                          size="16px"
+                        />
+                      </div>
+                      <div
+                        class="flex flex-column align-items-start overflow-hidden flex-1 min-w-0"
+                      >
+                        <span
+                          class="station-name font-bold white-space-nowrap text-left"
+                          >{{ station.station }}</span
+                        >
+                        <span
+                          class="show-title truncate text-left"
+                          style="width: 100%; min-width: 0"
+                          >{{ station.showTitle || station.episodeTitle }}</span
+                        >
+                      </div>
+                    </div>
+                  </template>
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      </HorizontalScrollFeature>
-      <section class="current-station-info">
-        <LiveItem :data="currentEpisodeHolder" :size="100" />
-      </section>
-      <PlayAndSkipButtons
-        :hideSkip="true"
-        :liveOnly="true"
-        @beforeTogglePlay="togglePlayHere"
-      />
-    </div>
-    <section class="schedule">
-      <h2>Schedule</h2>
-      <div v-if="liveScheduleData">
-        <div
-          v-for="(entry, index) in liveScheduleData"
-          :key="`${entry.id}-${index}`"
-          class="schedule-entry flex justify-content-between align-items-center gap-3 mt-4"
-          :class="[{ selected: index === 0 }]"
-        >
-          <div class="flex align-items-stretch">
-            <div class="left my-1" />
-            <div>
-              <p class="time">
-                {{ getTheTime(entry.attributes.start, entry.attributes.end, index) }}
-              </p>
-              <h2 class="title">
-                {{ getEntryTitle(entry) }}
-              </h2>
-            </div>
-          </div>
-          <Button
-            v-if="isApp && index > 0"
-            severity="secondary"
-            text
-            plain
-            rounded
-            class="flex-none"
-            aria-label="set notification"
-            @click="handleScheduleLocalNotification(entry)"
+        </template>
+        <template #skeleton>
+          <div
+            class="flex w-full justify-content-start md:justify-content-center pb-2 lg:-ml-4"
           >
-            <template #icon>
-              <NotificationIcon :entry="entry" />
-            </template>
-          </Button>
-        </div>
-      </div>
-      <div v-else class="skeleton mt-5">
-        <div
-          v-for="i in 10"
-          :key="`schedule-skeleton-${i}`"
-          class="flex align-items-center justify-content-between pr-2 mb-5"
-        >
-          <div class="flex gap-3">
-            <Skeleton
-              height="30px"
-              width="4px"
-              borderRadius="2px"
-              :class="[{ 'opacity-0': i > 0 }]"
-            />
-            <div class="flex flex-column gap-1">
+            <div v-for="i in 4" class="item" :key="`${i}-skeleton`">
               <Skeleton
-                class="opacity-50"
-                height="12px"
-                width="64px"
-                borderRadius="4px"
+                class="hidden md:flex flex-none ml-4"
+                height="52.16px"
+                width="180px"
+                borderRadius="30px"
               />
-              <Skeleton height="14px" width="174px" borderRadius="4px" />
+              <Skeleton
+                class="flex md:hidden flex-none ml-4"
+                height="33.16px"
+                width="120px"
+                borderRadius="30px"
+              />
             </div>
           </div>
-          <Skeleton
-            :class="[{ 'opacity-0': i < 1 }]"
-            height="26px"
-            width="26px"
-            borderRadius="15px"
+        </template>
+      </HorizontalScrollFeature>
+
+      <section class="current-station-info grid grid-nogutter m-auto">
+        <div class="col-fixed hidden xl:block xxl:w-15rem xl:w-7rem"></div>
+        <div class="col pr-2 lg:pr-4">
+          <LiveItem :data="currentEpisodeHolder" />
+        </div>
+        <div class="col-fixed hidden xl:block xxl:w-15rem xl:w-7rem"></div>
+      </section>
+    </div>
+    <section class="schedule-holder">
+      <div class="grid grid-nogutter m-auto">
+        <div class="col w-full md:pr-2 lg:pr-4" ref="scheduleHolderRef">
+          <Schedule />
+        </div>
+        <div
+          class="col-fixed hidden xl:block xl:w-19rem justify-content-center"
+        >
+          <story-htlAd
+            layout="rectangle"
+            slotClass="htlad-wnyc_livepage_rectangle"
+            fineprint="WNYC is funded by sponsors and member donations"
           />
         </div>
       </div>
@@ -263,18 +303,6 @@ html {
       .top {
         background-color: transparent;
       }
-      .schedule {
-        .schedule-entry {
-          &.selected {
-            background-color: #ffffff1a;
-            padding: 0.75rem 0.5rem 0.75rem 0;
-            border-radius: 8px;
-            .left {
-              border: none;
-            }
-          }
-        }
-      }
     }
   }
 }
@@ -282,13 +310,13 @@ html {
 <style lang="scss" scoped>
 .live-page {
   .top {
-    padding: 1.5rem 0;
+    padding: 2.5rem 0;
     background-color: var(--p-surface-950);
     .station-holder {
       position: relative;
       &:after {
-        transition: bottom 0.5s;
-        -webkit-transition: bottom 0.5s;
+        transition: bottom 0.5s, border-top 0.5s;
+        -webkit-transition: bottom 0.5s, border-top 0.5s;
         content: "";
         position: absolute;
         bottom: 2px;
@@ -306,37 +334,23 @@ html {
         &:after {
           bottom: -8px;
         }
+        &:hover {
+          &:after {
+            border-top: 10px solid var(--p-primary-600);
+          }
+        }
       }
       .station-btn {
-        &:hover,
-        &:focus,
-        &:active {
-          // nothing looks best
+        .show-title {
+          @include media("<md") {
+            display: none;
+          }
         }
-        // margin-left: 1rem;
-        // &:first-child {
-        //   margin-left: 1.25rem;
-        // }
       }
     }
   }
-  .schedule {
-    .schedule-entry {
-      .left {
-        border: 2px solid transparent;
-        border-radius: 8px;
-        margin-right: 1rem;
-      }
-      &.selected {
-        .left {
-          border-color: var(--p-primary-500);
-        }
-      }
-      .follow-icon {
-        width: 28px;
-        height: 28px;
-      }
-    }
-  }
+  // .schedule-holder {
+  //   background: var(--header-background);
+  // }
 }
 </style>

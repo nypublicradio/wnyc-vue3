@@ -2,6 +2,9 @@
 import Button from "primevue/button"
 import Message from "primevue/message"
 import { ref } from "vue"
+import { useAuth } from "~/composables/useAuth"
+
+defineOptions({ inheritAttrs: false })
 
 const errorMessage = ref("")
 
@@ -30,6 +33,7 @@ const props = defineProps({
 })
 const innerClient = ref(props.client)
 const innerConfig = ref(props.config)
+const { getOAuthRedirectUrl } = useAuth()
 
 // fallback incase the parent component doesn't pass in the client and config
 if (!props.client && !props.config) {
@@ -38,12 +42,16 @@ if (!props.client && !props.config) {
 }
 
 const emit = defineEmits(["submit-click", "submit-error", "submit-success"])
+
 // method triggered by the form submit to handle supabase login logic
 const login = async () => {
   emit("submit-click")
+
+  const redirectTo = getOAuthRedirectUrl()
+
   const res = await innerClient.value.auth.signInWithOAuth({
     options: {
-      redirectTo: props.redirectUrl,
+      redirectTo,
     },
     provider: props.provider,
   })
@@ -52,8 +60,6 @@ const login = async () => {
     errorMessage.value = res.error
   } else {
     emit("submit-success")
-    // after apple or google auth returns the user back to the site, the App.addListener("appUrlOpen") listener in the App.vue file. That will trigger the handleAppUrlOpen(event) method in the useOneSignal composable
-    // that will check if there is a return route and if so, navigate to it, and clear the authReturnRoute preference/local storage
   }
 }
 // capitalise the first letter of a string

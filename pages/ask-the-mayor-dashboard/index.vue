@@ -132,7 +132,7 @@ onMounted(async () => {
   }
 })
 
-// check if th euser is an admin
+// check if the user is an admin
 // check if the user is an admin by fetching submissions
 watch(
   () => user.value,
@@ -166,7 +166,6 @@ watch(
         />
       </Head>
     </Html>
-
     <section class="full-width">
       <SHeader
         class="pb-4"

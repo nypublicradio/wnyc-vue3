@@ -32,6 +32,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>wnyc</string>
+				<!-- <string>wnycalpha</string> -->
 			</array>
 		</dict>
 	</array>
@@ -53,6 +54,8 @@
 	<true/>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Your location will be used to personalize and improve your experience.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Your location will be used to personalize and improve your experience.</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>Your data will be used to personalize your experience.</string>
 	<key>UIApplicationSceneManifest</key>
@@ -60,7 +63,19 @@
 		<key>UIApplicationSupportsMultipleScenes</key>
 		<false/>
 		<key>UISceneConfigurations</key>
-		<dict/>
+		<dict>
+			<key>CPTemplateApplicationSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneClassName</key>
+					<string>CPTemplateApplicationScene</string>
+					<key>UISceneDelegateClassName</key>
+					<string>CarPlaySceneDelegate</string>
+					<key>UISceneConfigurationName</key>
+					<string>CarPlay</string>
+				</dict>
+			</array>
+		</dict>
 	</dict>
 	<key>UIBackgroundModes</key>
 	<array>

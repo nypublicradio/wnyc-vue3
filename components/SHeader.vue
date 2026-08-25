@@ -4,6 +4,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  showButton: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 const emit = defineEmits(["close-sidebar"])
@@ -14,7 +18,8 @@ const emit = defineEmits(["close-sidebar"])
     <div class="flex justify-content-between align-items-center">
       <div class="flex align-items-center">
         <Button
-          class="-ml-3"
+          v-if="props.showButton"
+          class="-ml-3 mr-1"
           icon="pi pi-chevron-left"
           rounded
           text

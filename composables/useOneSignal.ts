@@ -1,17 +1,40 @@
-import OneSignal from "onesignal-cordova-plugin"
+// Dynamic import for OneSignal - only loads on client side to avoid SSR errors
+let OneSignal: any = null
+// init OneSignal
+const loadOneSignal = async () => {
+  if (typeof window === 'undefined') return null // Server-side guard
+  if (OneSignal) return OneSignal // Already loaded
+  try {
+    const module = await import('onesignal-cordova-plugin')
+    OneSignal = module.default
+    return OneSignal
+  } catch (error) {
+    console.error('Failed to load OneSignal:', error)
+    return null
+  }
+}
+
 import {
   useCurrentUserProfile,
   useCurrentUser,
-  useSettingSideBar,
-  useIsApp,
+  useIsNativeApp,
   useGlobalToast,
-  useIsNetworkConnected
+  useIsNetworkConnected,
+  useMasterNotificationChannelsArray,
+  getMasterNotificationChannels,
+  useSettingSideBar,
+  useLoginSideBar,
+  useSignupSideBar,
+  useForgotPasswordSideBar,
+  useSettingsSideBarBrowser
 } from "~/composables/states"
 import {
   trackClickEvent,
   getPathAndQuery,
+  getAndSetUserProfile,
   toSystemSettings,
 } from "~/utilities/helpers"
+import { useAuth } from "~/composables/useAuth"
 import { cancelAllPendingLocalNotifications, setPendingLocalNotifications, usePendingLocalNotifications } from "~/utilities/local-notifications"
 import { ref } from "vue"
 import { doActionId, doTrigger } from "~/server/utils/oneSignalNotificationCustomActions"
@@ -22,44 +45,47 @@ import { useAuthReturnRoute } from "./useAuthReturnRoute"
 // shared state for in-app notification
 export const isInAppNotificationActive = ref(false)
 
-// notification channels array from the BFF server
-export const masterNotificationChannelsArray = ref(null)
-
-export const getMasterNotificationChannels = async () => {
-  // get notification topics
-  const client = useSupabaseClient()
-  const { data } = await client
-    .from("notification_topics")
-    .select("*")
-
-  masterNotificationChannelsArray.value = data
-  return data
+// close the sidebars
+export const closeSidebars = () => {
+  const settingSideBar = useSettingSideBar()
+  const loginSideBar = useLoginSideBar()
+  const signupSideBar = useSignupSideBar()
+  const forgotPasswordSideBar = useForgotPasswordSideBar()
+  const settingsSideBarBrowser = useSettingsSideBarBrowser()
+  if (settingSideBar.value) settingSideBar.value = false
+  if (loginSideBar.value) loginSideBar.value = false
+  if (signupSideBar.value) signupSideBar.value = false
+  if (forgotPasswordSideBar.value) forgotPasswordSideBar.value = false
+  if (settingsSideBarBrowser.value) settingsSideBarBrowser.value = false
 }
 
 // base OneSignal composable
-export default function useOneSignal () {
+export default function useOneSignal() {
 
   let oneSignalSubscriptionId: string = null
   let oneSignalId: string = null
 
-  const isApp = useIsApp()
+  const isNativeApp = useIsNativeApp()
+  const masterNotificationChannelsArray = useMasterNotificationChannelsArray()
   const router = useRouter()
 
   // toggle users notifications channel tags
   const toggleOneSignalUserTag = async (channelKey: string, value: boolean) => {
-    if (!isApp.value) return
+    if (!isNativeApp.value) return
+    const OneSignal = await loadOneSignal()
+    if (!OneSignal) return
     await OneSignal.User.addTag(channelKey, String(value))
   }
 
   // function to handle the click actions of the notifications
-  const handleAppNotificationUrlOpen = async (event) => {
+  const handleAppNotificationUrlOpen = (event) => {
     const url = event.result?.url
     const action = event.result?.actionId
-    const settingSideBar = useSettingSideBar()
-    // if settingSideBar is open, close it
-    if (settingSideBar.value) settingSideBar.value = false
+    // if SideBars are open, close them
+    closeSidebars()
     if (url) {
       if (!url.includes("https://")) {
+
 
         // deep link
         const route = getPathAndQuery(url)
@@ -98,42 +124,42 @@ export default function useOneSignal () {
   }
 
   const handleAppUrlOpen = async (event) => {
-    // if settingSideBar is open, close it
-    const settingSideBar = useSettingSideBar()
-    if (settingSideBar.value) settingSideBar.value = false
+    // if SideBars are open, close them
+    closeSidebars()
 
     const urlObj = new URL(event.url)
+    const globalToast = useGlobalToast()
+    const { getAuthReturnRoute, clearAuthReturnRoute } = useAuthReturnRoute()
+    const theReturnRoute = await getAuthReturnRoute()
 
-    //if the url has a query var "code" then we need to exchange it for a session
-    const sessionCode = urlObj.searchParams.get("code")
-    if (sessionCode) {
-      //when redirected to the app from a apple or google auth, we need to exchange the url param code for a session
-      const code = event.url.split("=")[1]
-      // for some reason, sometimes, the code has a '#' at the end of it, so we need to remove it
-      const cleanCode = code.replace("#", "")
+    // Check if this URL contains OAuth callback params (code or access_token)
+    const hasAuthCode = urlObj.searchParams.get("code")
+    const hashParams = new URLSearchParams(urlObj.hash.substring(1))
+    const hasAccessToken = hashParams.get("access_token")
 
-      const client = useSupabaseClient()
-      const globalToast = useGlobalToast()
-      const { getAuthReturnRoute, clearAuthReturnRoute } = useAuthReturnRoute()
-      const theReturnRoute = await getAuthReturnRoute()
+    if (hasAuthCode || hasAccessToken) {
+      // Delegate all OAuth handling to useAuth
+      const { handleOAuthCallback } = useAuth()
+
       try {
-        await client.auth.exchangeCodeForSession(cleanCode)
-
-        await router.push(theReturnRoute || "/")
-        clearAuthReturnRoute()
-        setTimeout(() => {
-          window.location.reload()
-        }, 200)
-        return
-      } catch (error) {
-        console.error(error)
-        globalToast.value = {
-          severity: "error",
-          summary: "Authentication failed",
-          life: 6000,
+        const success = await handleOAuthCallback(event.url)
+        if (success) {
+          await getAndSetUserProfile()
+          await router.push(theReturnRoute || "/home")
+          clearAuthReturnRoute()
+          return
         }
-        return
+      } catch (error) {
+        console.error("OAuth callback handling failed:", error)
       }
+
+      // Auth failed
+      globalToast.value = {
+        severity: "error",
+        summary: "Authentication failed",
+        life: 6000,
+      }
+      return
     }
 
     // check if the url has the query actionid to support actionId's from any links in the appUrlProtocolsArr global array
@@ -180,6 +206,8 @@ export default function useOneSignal () {
 
   // function to set the salesforce_id in OneSignal as a user tag
   const setSalesForceId = async () => {
+    const OneSignal = await loadOneSignal()
+    if (!OneSignal) return
     const tags = await OneSignal.User.getTags()
 
     // if the salesforce_id is already set as a user tag, then return
@@ -203,6 +231,8 @@ export default function useOneSignal () {
 
   // function to set the OneSignal ID in Supabase profile
   const setOneSignalId = async () => {
+    const OneSignal = await loadOneSignal()
+    if (!OneSignal) return
     const currentUser = useCurrentUser()
     oneSignalId = await OneSignal.User.getOnesignalId()
 
@@ -217,6 +247,8 @@ export default function useOneSignal () {
 
   // function to set the OneSignal subscriptions in Supabase profile
   const setSubscriptions = async () => {
+    const OneSignal = await loadOneSignal()
+    if (!OneSignal) return
     const currentUser = useCurrentUser()
     // update Supabase profile with oneSignalSubscriptionId (push to array)
     const client = useSupabaseClient()
@@ -264,7 +296,9 @@ export default function useOneSignal () {
 
   // function to check the permissions for notifications
   const checkPermissions = async () => {
-    if (isApp.value) {
+    if (isNativeApp.value) {
+      const OneSignal = await loadOneSignal()
+      if (!OneSignal) return false
       return await OneSignal.Notifications.getPermissionAsync()
     } else {
       return false
@@ -280,7 +314,7 @@ export default function useOneSignal () {
   }
 
   // triggered when the listener for permissionChange is called
-  const notificationPermissionSync = async (accepted) => {
+  const notificationPermissionSync = async (accepted?: boolean) => {
     const isNetworkConnected = useIsNetworkConnected()
     if (!isNetworkConnected.value) return
     await nextTick()
@@ -355,7 +389,9 @@ export default function useOneSignal () {
   }
 
   // function to initialize OneSignal
-  async function initOneSignal () {
+  async function initOneSignal() {
+    const OneSignal = await loadOneSignal()
+    if (!OneSignal) return
     const config = useRuntimeConfig()
     //await OneSignal.Debug.setLogLevel(6);
     await OneSignal.setConsentRequired(false)
@@ -388,52 +424,49 @@ export default function useOneSignal () {
   }
 
   // function to trigger the OS permission request
-  async function requestNotificationPermission () {
+  async function requestNotificationPermission() {
+    const OneSignal = await loadOneSignal()
+    if (!OneSignal) return
     await OneSignal.Notifications.canRequestPermission().then(async (canRequest) => {
       // if the user can request permission, request it, otherwise send them to the system settings to change it manually
-      canRequest ? await OneSignal.Notifications.requestPermission(true).then(async (accepted: boolean) => {
+      canRequest ? await OneSignal.Notifications.requestPermission(false).then(async (accepted: boolean) => {
         if (!accepted) {
           // they deny after being asked for permission
           // resync the setting tabs
-          await notificationPermissionSync(undefined)
+          await notificationPermissionSync()
         }
       }) : toSystemSettings()
     })
   }
 
   // syncMasterNotificationChannels with the user's profile, supabase and oneSignal
-  function syncMasterNotificationChannels (local, master) {
+  function syncMasterNotificationChannels(local, master) {
+    const safeMaster = Array.isArray(master) ? master : []
+
+    if (!Array.isArray(local.one_signal_notification_channels)) {
+      local.one_signal_notification_channels = []
+    }
+
+    // Keep the user's current channel values by key, then rehydrate from master.
+    // This preserves user preferences while allowing master labels/metadata to update.
+    const localValueByKey = local.one_signal_notification_channels.reduce((acc, channel) => {
+      acc[channel.key] = channel.value
+      return acc
+    }, {})
 
     // Update data.one_signal_notification_channels based on masterNotificationChannelsArray. This is to ensure that the user's notification channels are always in sync on Supabase & oneSignal user tags with the masterNotificationChannelsArray if they are updated/changed
 
-    // Remove any channels from data.one_signal_notification_channels that are not in masterNotificationChannelsArray
-    local.one_signal_notification_channels = local.one_signal_notification_channels?.filter(existingChannel =>
-      master.some(newChannel => newChannel.key === existingChannel.key)
-    )
-
-    // Add any new channels from masterNotificationChannelsArray & update any labels tha tmay have changed
-    master.forEach(newChannel => {
-      const existingChannel = local.one_signal_notification_channels?.find(
-        channel => channel.key === newChannel.key
-      )
-
-      //add new channel
-      if (!existingChannel) {
-        local.one_signal_notification_channels?.push(newChannel)
-      }
-
-      // update label
-      if (existingChannel && existingChannel.label !== newChannel.label) {
-        existingChannel.label = newChannel.label
-      }
-
-    })
+    // Rebuild from master so only valid channels remain, but preserve local user value when available.
+    local.one_signal_notification_channels = safeMaster.map((masterChannel) => ({
+      ...masterChannel,
+      value: localValueByKey[masterChannel.key] ?? masterChannel.value ?? true,
+    }))
 
     //update the user tags to OneSignal profile, when user is logged in only
-    if (isApp.value) {
+    if (isNativeApp.value) {
       const currentUser = useCurrentUser()
       if (currentUser.value) {
-        local.one_signal_notification_channels?.forEach((channel) => {
+        local.one_signal_notification_channels.forEach((channel) => {
           toggleOneSignalUserTag(channel.key, channel.value)
         })
       }
@@ -443,8 +476,10 @@ export default function useOneSignal () {
   }
 
   // function to log in and manage the user in OneSignal with supabase data
-  async function OneSignalLogin () {
-    if (!isApp.value) return
+  async function OneSignalLogin() {
+    if (!isNativeApp.value) return
+    const OneSignal = await loadOneSignal()
+    if (!OneSignal) return
     const currentUser = useCurrentUser()
     const currentUserProfile = useCurrentUserProfile()
 
@@ -471,6 +506,8 @@ export default function useOneSignal () {
 
   // get current tags
   const getUserTags = async () => {
+    const OneSignal = await loadOneSignal()
+    if (!OneSignal) return null
     const currentUser = useCurrentUser()
     if (currentUser.value) {
       const tags = await OneSignal.User.getTags()
@@ -481,8 +518,10 @@ export default function useOneSignal () {
   }
 
   // function to log out the user in OneSignal
-  async function logout () {
-    if (!isApp.value) return
+  async function logout() {
+    if (!isNativeApp.value) return
+    const OneSignal = await loadOneSignal()
+    if (!OneSignal) return
     await OneSignal.logout()
   }
 

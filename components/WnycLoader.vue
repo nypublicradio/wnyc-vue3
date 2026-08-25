@@ -44,6 +44,7 @@ const svgWidth = 75
   <div
     class="wnyc-loader"
     :class="[{ bg: props.bg, spinner: props.spinner, pause: props.paused }]"
+    role="status"
     aria-label="loading and audio indicator"
   >
     <div class="svg-holder flex">
@@ -51,7 +52,7 @@ const svgWidth = 75
         v-if="props.spinner"
         class="pi pi-spin pi-spinner"
         :style="`font-size: ${props.size}; color: ${props.color};`"
-        aria-label="spinning loader"
+        aria-hidden="true"
       ></i>
       <svg
         v-else
@@ -85,6 +86,8 @@ const svgWidth = 75
   display: flex;
   justify-content: center;
   &.bg {
+    width: 100%;
+    height: 100%;
     background: -moz-radial-gradient(
       center,
       ellipse cover,
@@ -135,6 +138,7 @@ const svgWidth = 75
       margin: auto;
       width: v-bind(size);
       height: v-bind(size);
+      color: v-bind(color);
     }
   }
 
@@ -169,21 +173,23 @@ const svgWidth = 75
 <style lang="scss">
 .style-mode-dark .wnyc-loader {
   &.bg {
+    width: 100%;
+    height: 100%;
     background: -moz-radial-gradient(
       center,
       ellipse cover,
-      rgba(rgb(255, 255, 255), 0.3) 0%,
+      rgba(rgb(255, 255, 255), 0.15) 0%,
       rgba(rgb(255, 255, 255), 0) 100%
     );
     background: -webkit-radial-gradient(
       center,
       ellipse cover,
-      rgba(rgb(255, 255, 255), 0.3) 0%,
+      rgba(rgb(255, 255, 255), 0.15) 0%,
       rgba(rgb(255, 255, 255), 0) 100%
     );
     background: radial-gradient(
       ellipse at center,
-      rgba(rgb(255, 255, 255), 0.3) 0%,
+      rgba(rgb(255, 255, 255), 0.15) 0%,
       rgba(rgb(255, 255, 255), 0) 100%
     );
   }

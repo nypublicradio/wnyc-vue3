@@ -1,38 +1,97 @@
 import axios from 'axios'
 import humps from 'humps'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
-import { cmsSources, FALLBACKIMAGELOCAL } from '~/composables/globals';
+import { cmsSources, FALLBACKIMAGE } from '~/composables/globals'
 import { NyprDb } from '~/server/utils/nyprdb'
-import { supabaseClient } from '~/server/utils/supabaseClient';
-import { NPR } from '~/server/utils/npr';
+import { supabaseClient } from '~/server/utils/supabaseClient'
+import { NPR } from '~/server/utils/npr'
+import { TtlCache } from '~/server/utils/simplecastCache'
 const config = useRuntimeConfig()
 
+// Cache individual episodes for 10 minutes; skip caching failures so they can retry sooner.
+const episodeCache = new TtlCache<any>(10 * 60 * 1000, (result) => result !== null)
 
+// Fetches a single Simplecast episode by UUID
+const fetchSimplecastEpisode = async (episodeId: string) => {
+    try {
+        // Simplecast API only accepts UUIDs
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(episodeId)
+
+        if (!isUUID) {
+            console.error('[Simplecast] Invalid episode ID format (must be UUID):', episodeId)
+            return null
+        }
+
+        // Use config or fallback to process.env
+        const apiKey = config.simplecastApiKey || process.env.SIMPLECAST_API_KEY
+
+        if (!apiKey) {
+            console.error('[Simplecast] SIMPLECAST_API_KEY is not configured')
+            return null
+        }
+
+        const option = {
+            method: 'GET',
+            url: `${config.simplecastUrl}/episodes/${episodeId}`,
+            headers: {
+                'Authorization': apiKey
+            }
+        }
+        const res = await axios(option)
+        let resData = humps.camelizeKeys(res.data)
+
+        // Add cmsSource to identify this as Simplecast data
+        resData.cmsSource = cmsSources.SIMPLECAST
+
+        // Extract show/podcast ID from the response
+        if (resData.podcast?.id) {
+            resData.showId = resData.podcast.id
+            resData.showTitle = resData.podcast.title
+            resData.showImageUrl = resData.podcast.imageUrl
+        } else if (resData.podcastId) {
+            resData.showId = resData.podcastId
+        }
+        // Normalize the Simplecast response to match our ArticlePage structure
+        resData = await normalizeArticlePage(resData)
+
+        return {
+            data: resData,
+        }
+    } catch (e: any) {
+        console.error('[Simplecast] Error fetching episode:', e?.response?.status, e?.response?.statusText, e?.message)
+        return null
+    }
+}
+
+// Get Simplecast episode data directly by UUID, cached to reduce API load.
+const getSimplecastEpisode = (episodeId: string) => {
+    return episodeCache.getOrFetch(episodeId, () => fetchSimplecastEpisode(episodeId))
+}
 
 // Get NPR episode data
 const getNPREpisode = async (slug: string) => {
-    const npr = new NPR();
+    const npr = new NPR()
     // Fetching the episode details from the NPR API
 
-    const res = await npr.getFromNPR(`documents/${slug}`);
-    const resData = res.data;
-    const episodeImage = await npr.findEpisodeImage(resData.resources[0]);
+    const res = await npr.getFromNPR(`documents/${slug}`)
+    const resData = res.data
+    const episodeImage = await npr.findEpisodeImage(resData.resources[0])
     // From the response find the show details that are in the collections array 
     const showUrl = resData.resources[0].collections
         .filter((collection: { rels: string[]; href: string }) => collection.rels.includes('program'))
-        .map((collection: { rels: string[]; href: string }) => collection.href)[0] || '';
+        .map((collection: { rels: string[]; href: string }) => collection.href)[0] || ''
     // Fetching the show details to get the show image
-    const show = await npr.getDocument(showUrl);
-    const showImage = npr.findImageUrl(show);
-    const id = String(resData.resources[0].id);
+    const show = await npr.getDocument(showUrl)
+    const showImage = npr.findImageUrl(show)
+    const id = String(resData.resources[0].id)
     const showTitle = show.resources[0].title
     // Fetching the audio from the NPR API
-    const audio = await npr.findAudio(id, show, showImage?.template);
+    const audio = await npr.findAudio(id, show, showImage?.template)
     // Fallback image to show image when no image is available
 
     // Fetching the slug of the show from the supabase
-    const supabase = supabaseClient();
-    const nyprDb = new NyprDb(supabase);
+    const supabase = supabaseClient()
+    const nyprDb = new NyprDb(supabase)
 
     return {
         data: {
@@ -62,9 +121,9 @@ const getNPREpisode = async (slug: string) => {
             showTitle,
             url: resData.resources[0].webPages[0]?.href,
         },
-    };
+    }
 
-};
+}
 
 // Get episode data
 const getEpisode = async (slug: string) => {
@@ -72,37 +131,47 @@ const getEpisode = async (slug: string) => {
     const option = {
         method: 'GET',
         url: `${config.public.PUBLISHER_BASE_API}v3/story/${slug}`
-    };
-    const res = await axios(option);
-    let resData = humps.camelizeKeys(res.data).data;
+    }
+    const res = await axios(option)
+    let resData = humps.camelizeKeys(res.data).data
     // fallback image to show image when no image is available
-    resData.attributes.imageMain = resData.attributes.imageMain ? resData.attributes.imageMain : resData.attributes.headers.brand.logoImage ? resData.attributes.headers.brand.logoImage : { template: FALLBACKIMAGELOCAL };
+    resData.attributes.imageMain = resData.attributes.imageMain ? resData.attributes.imageMain : resData.attributes.headers.brand.logoImage ? resData.attributes.headers.brand.logoImage : { template: FALLBACKIMAGE }
     resData.cmsSource = cmsSources.PUBLISHER
     resData = normalizeArticlePage(resData)
 
     //Passing meta and data separately to the client. Meta is to used for pagination
     return {
         data: resData,
-    };
+    }
 
 }
 
 export default defineEventHandler(async (event) => {
+    const res = event?.node?.res
     //Fetching slug and type from the path params
-    const slug: string | undefined = event?.context?.params?.episodeslug;
-    const cmsSource: string | undefined = event?.context?.params?.cmsSource;
+    const slug: string | undefined = event?.context?.params?.episodeslug
+    const cmsSource: string | undefined = event?.context?.params?.cmsSource
 
     //Fetching query params
     if (slug && cmsSource) {
-        let episode;
-        if (cmsSource === 'npr') {
+        let episode
+        if (cmsSource === cmsSources.NPR) {
             // Get show details
-            episode = await getNPREpisode(slug);
+            episode = await getNPREpisode(slug)
+        } else if (cmsSource === cmsSources.SIMPLECAST || cmsSource === 'simplecast') {
+            // Get Simplecast episode
+            episode = await getSimplecastEpisode(slug)
+            if (!episode) {
+                // Avoid caching an upstream Simplecast failure at the edge
+                res.statusCode = 502
+                res.setHeader('Cache-Control', 'no-store')
+                return null
+            }
         } else {
             // Get show details
-            episode = await getEpisode(slug);
+            episode = await getEpisode(slug)
         }
-        return episode.data;
+        return episode?.data
     }
-    return null;
-});
+    return null
+})

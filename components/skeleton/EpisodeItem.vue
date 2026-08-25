@@ -1,6 +1,6 @@
 <template>
   <div class="skeleton-holder episode-item flex gap-3">
-    <Skeleton class="flex-none v-image" height="116px" width="116px" borderRadius="0px" />
+    <Skeleton class="flex-none v-image" height="112px" width="112px" borderRadius="0px" />
     <div class="flex w-full flex-column pt-1 justify-content-between">
       <div>
         <div>

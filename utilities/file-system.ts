@@ -6,15 +6,19 @@ import {
     useCurrentEpisode,
     useGlobalToast,
     useTogglePlayTrigger,
-    useIsApp,
+    useIsNativeApp,
     useCurrentUser,
     useIsLiveStream
 } from "~/composables/states"
-import { Capacitor } from '@capacitor/core';
-import { prepForPlayer, getEpisodeFallBackImage, imageSolver } from "~/utilities/helpers"
+import { Capacitor } from '@capacitor/core'
+import { prepForPlayer } from "~/utilities/helpers"
+import { FALLBACKIMAGEEP } from "~/composables/globals"
 import { Preferences } from "@capacitor/preferences"
 import axios from 'axios'
 import { initMediaSession } from "~/utilities/media-session.js"
+import { useVImage } from "~/composables/useVImage"
+
+const { imageSolver } = useVImage()
 
 // directory to save to in the CapacitorJS FileSystem
 export const localStorageKey = "fileSystemLS"
@@ -24,19 +28,19 @@ const appDirectory = "wnyc-downloads"
 
 // check if a file has an extension
 const hasExtension = (filename) => {
-    const lastDotIndex = filename.lastIndexOf('.');
-    return lastDotIndex !== -1 && lastDotIndex < filename.length - 1;
-};
+    const lastDotIndex = filename.lastIndexOf('.')
+    return lastDotIndex !== -1 && lastDotIndex < filename.length - 1
+}
 
 // fetch the image mime type
 const fetchImageMimeType = async (imageUrl) => {
     try {
-        const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
-        return response.headers['content-type'];
-    } catch (error) {
-        return 'image/jpeg';
+        const response = await axios.get(imageUrl, { responseType: 'arraybuffer' })
+        return response.headers['content-type']
+    } catch {
+        return 'image/jpeg'
     }
-};
+}
 
 // get the file name from a URL
 export const fileNameFromURL = async (url: string) => {
@@ -63,9 +67,10 @@ export const fileNameFromURL = async (url: string) => {
 
 // check if a file is already downloaded
 export const isAlreadyDownloaded = (file) => {
-    const isApp = useIsApp()
+    const isNativeApp = useIsNativeApp()
     const user = useCurrentUser()
-    if (isApp.value && user.value) {
+    // NOTE: verify download check behavior in real app environment
+    if (isNativeApp.value && user.value) {
         const fileSystemLS = useFileSystemLS()
         const check = fileSystemLS.value.find((entry) => entry.id === file.id || entry.originalId === file.id)
         const alreadyDownloaded = check === undefined ? false : true
@@ -134,7 +139,7 @@ const createAppDirectory = async () => {
     }
 }
 
-// initial pull of the preferencce plugin files data
+// initial pull of the preference plugin files data
 export const initReadOfPreferences = async () => {
     let val = []
     try {
@@ -169,7 +174,9 @@ export const updateFileSystem = async () => {
 }
 
 // handle downloading a file to the desktop
-const downloadFileToDesktop = async (url, filename) => {
+const downloadFileToDesktop = async (url: string, filename: string) => {
+    if (!import.meta.client) return
+
     const globalToast = useGlobalToast()
     globalToast.value = {
         severity: "info",
@@ -177,30 +184,34 @@ const downloadFileToDesktop = async (url, filename) => {
         life: 3000,
     }
     try {
-        // Fetch the file data
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        // Use server-side proxy to avoid CORS issues
+        console.log(`Requesting download proxy for URL: ${url}`)
+        const proxyUrl = `/api/download-proxy?url=${encodeURIComponent(url)}`
+
+        // Fetch the file data through the proxy
+        const response = await fetch(proxyUrl)
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
 
         // Get the Blob from the response
-        const blob = await response.blob();
+        const blob = await response.blob()
 
         // Create a Blob URL
-        const blobUrl = URL.createObjectURL(blob);
+        const blobUrl = URL.createObjectURL(blob)
 
         // Create an anchor element and set its attributes
-        const aElm = document.createElement('a');
-        aElm.href = blobUrl;
-        aElm.download = filename;
+        const aElm = document.createElement('a')
+        aElm.href = blobUrl
+        aElm.download = filename
 
         // Append the anchor element to the body
-        document.body.appendChild(aElm);
+        document.body.appendChild(aElm)
 
         // Trigger a click event on the anchor element to start the download
-        aElm.click();
+        aElm.click()
 
         // Cleanup: remove the anchor element and revoke the Blob URL
-        document.body.removeChild(aElm);
-        URL.revokeObjectURL(blobUrl);
+        document.body.removeChild(aElm)
+        URL.revokeObjectURL(blobUrl)
 
         // alert the user
         globalToast.value = {
@@ -210,7 +221,7 @@ const downloadFileToDesktop = async (url, filename) => {
         }
 
     } catch (error) {
-        console.error('Error downloading file:', error);
+        console.error('Error downloading file:', error)
         // alert the user
         globalToast.value = {
             severity: "error",
@@ -223,25 +234,26 @@ const downloadFileToDesktop = async (url, filename) => {
 // download and store the mp3 file and image file 
 //# skipcq: JS-0045
 export const handleFetchAndStoreMp3 = async (file, index = null) => {
-    const isApp = useIsApp()
+    const isNativeApp = useIsNativeApp()
     const globalToast = useGlobalToast()
     const isSegments = Array.isArray(file.audio) && Array.isArray(file.segments) ? true : false
     const slug = isSegments ? file.segments[index].slug : file.meta?.slug
 
     //const uid = Number(file.id)
-    // set the originalId initally only to keep track of the original id
-    file.originalId = file.originalId || file.id;
+    // set the originalId initially only to keep track of the original id
+    file.originalId = file.originalId || file.id
     const uniqueDirId = isSegments ? `${file.originalId}-${file.segments[index].segmentNumber}` : file.id
     file.id = uniqueDirId
 
-    if (!isApp.value) {
-        // is runnning in the browser
+    // NOTE: verify download behavior in real app environment after this gate change
+    if (!isNativeApp.value) {
+        // is running in the browser
         //desktop download
         const audioFile = index !== null ? file.audio[index] : file.audio
         downloadFileToDesktop(audioFile, `WNYC-download-${file.id}-${slug}`)
         return null
     } else {
-        // is running as an app
+        // is running as a native app
         // check if user is logged in
         const user = useCurrentUser()
         if (!user.value) {
@@ -269,7 +281,7 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                     summary: "Download started!",
                     life: 3000,
                 }
-                const fileImage = file.image?.template ?? file.image?.url ?? file.image ?? getEpisodeFallBackImage()
+                const fileImage = file.image?.template ?? file.image?.file ?? file.image?.url ?? file.image ?? FALLBACKIMAGEEP
 
                 // create the directory
                 await Filesystem.mkdir({
@@ -288,7 +300,7 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                 } else {
                     imgNameFromUrl = await fileNameFromURL(imgUrl)
                 }
-                // downlaod image
+                // download image
                 await Filesystem.downloadFile({
                     url: imgUrl,
                     path: `${appDirectory}/${file.id}/${imgNameFromUrl}`,
@@ -305,15 +317,15 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                 const audioNameFromUrl = isSegments ? `${slug}.mp3` : await fileNameFromURL(file.audio)
 
                 // Add progress listener
-                const progress = ref({ loadedBytes: 0, totalBytes: 0, percentage: 0 });
+                const progress = ref({ loadedBytes: 0, totalBytes: 0, percentage: 0 })
                 const progressListener = await Filesystem.addListener('progress', (event) => {
                     progress.value = {
                         loadedBytes: event.bytes,
                         totalBytes: event.contentLength,
                         percentage: (event.bytes / event.contentLength) * 100,
-                    };
+                    }
                     //console.log('progress = ', progress.value.percentage)
-                });
+                })
 
                 Filesystem.downloadFile({
                     url: isSegments ? file.audio[index] : file.audio,
@@ -323,7 +335,7 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                 })
                     .then(async (fileURI) => {
                         // remove the progress listener once the file is downloaded
-                        progressListener.remove();
+                        progressListener.remove()
                         await updateFileSystem().then(() => {
 
                             setTimeout(async () => {
@@ -348,7 +360,7 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
                                     return subStrings.some((substring) => mainString.includes(substring))
                                 })
 
-                                //append directory,image and aduio to the file object
+                                //append directory,image and audio to the file object
                                 const newFile = {
                                     ...file,
                                     directory: thisFileSystemEntry,
@@ -391,12 +403,12 @@ export const handleFetchAndStoreMp3 = async (file, index = null) => {
 export const fetchAndStoreMp3 = async (file) => {
     // if multiple audio and multiple segments, download all
     if (Array.isArray(file.audio) && Array.isArray(file.segments)) {
-        const progressResults = [];
+        const progressResults = []
         for (let i = 0; i < file.audio.length; i++) {
-            const progress = await handleFetchAndStoreMp3(file, i);
-            progressResults.push(progress);
+            const progress = await handleFetchAndStoreMp3(file, i)
+            progressResults.push(progress)
         }
-        return progressResults;
+        return progressResults
     } else {
         return handleFetchAndStoreMp3(file)
     }
@@ -418,14 +430,14 @@ export const playStoredMp3 = async (file) => {
             })
             await nextTick()
             //const savedAudioSrc = Capacitor.convertFileSrc(audio.uri);
-            const savedAudioSrc = audio.uri;
+            const savedAudioSrc = audio.uri
             // get image file
             const image = await Filesystem.getUri({
                 path: `${appDirectory}/${file.id}/${file?.directoryImage?.name}`,
                 directory: directoryToSaveTo,
             })
             await nextTick()
-            const savedImageSrc = Capacitor.convertFileSrc(image.uri);
+            const savedImageSrc = Capacitor.convertFileSrc(image.uri)
 
             // set the currentEpisode to the file with updated stored URIs for the image adn audio
             currentEpisode.value = {
@@ -461,7 +473,7 @@ export const getDownloadedImageUri = async (file) => {
 
     } catch (e) {
         console.error("Unable to read file", e)
-        return getEpisodeFallBackImage()
+        return FALLBACKIMAGEEP
     }
 }
 
@@ -533,5 +545,4 @@ export const formatFileSize = (bytes: number, decimals = 2) => {
 
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
 }
-
 

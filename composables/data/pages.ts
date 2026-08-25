@@ -3,22 +3,31 @@ import { WAGTAIL_PAGE_TYPES, normalizePage } from './basePages'
 import { normalizeArticlePage } from './articlePages'
 import { normalizeGalleryPage } from './galleryPages'
 import { normalizeTagPage } from './tagPages'
+import { transformResponseData } from '~/composables/useAviary'
 
-export async function findPage(htmlPath: string) {
-  const params = { html_path: htmlPath }
-  return await useAviary('/pages/find/', { params })
+// Get a page by it's html path, and optionally cms site
+export async function findPage (htmlPath: string, cmsSite?: string) {
+  const config = useRuntimeConfig()
+  const params = cmsSite ? { html_path: htmlPath, cms_site: cmsSite } : { html_path: htmlPath }
+
+  try {
+    const data = await $fetch(`${config.public.BFF_URL}/api/pages/wagtail/find`, { params })
+    return { data: transformResponseData(data as Record<string, any>), error: null }
+  } catch (error) {
+    return { data: null, error }
+  }
 }
 
 // Get a page by it's cms id
-export async function usePageById(pageId: number) {
+export async function usePageById (pageId: number) {
   return await useAviary(`/pages/${pageId}/`)
 }
-
-export function normalizeInformationPage(page: Record<string, any>): InformationPage {
+// normalize the response and include the body field for information pages
+export function normalizeInformationPage (page: Record<string, any>): InformationPage {
   return Object.assign({}, normalizePage(page), { body: page.body })
 }
-
-export function normalizeFindPageResponse(pageResponse: Record<string, any>): Page | ArticlePage | TagPage | InformationPage {
+// Normalize the response based on the page type, defaulting to a generic page if the type is unrecognized or missing
+export function normalizeFindPageResponse (pageResponse: Record<string, any>): Page | ArticlePage | TagPage | InformationPage {
   const pageType = pageResponse.value?.meta?.type
   switch (WAGTAIL_PAGE_TYPES[pageType]) {
     case 'article_page':

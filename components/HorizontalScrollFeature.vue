@@ -4,21 +4,37 @@ const props = defineProps({
     type: Object,
     default: null,
   },
-  buffer: {
+  gap: {
     type: String,
-    default: "40px",
+    default: "3",
+  },
+  edgeNegativeMargin: {
+    type: String,
+    default: "0",
+  },
+  itemSize: {
+    type: String,
+    default: "",
   },
 })
 const { isMobile } = useDevice()
+const reactiveData = toRef(props, "data")
+const hideScrollBar = ref(false)
+onMounted(() => {
+  hideScrollBar.value = isMobile
+})
 </script>
 
 <template>
-  <div class="horizontal-scroll-feature">
+  <div
+    class="horizontal-scroll-feature"
+    :class="`-mx-${props.edgeNegativeMargin}`"
+  >
     <div
-      class="scroll flex gap-2 align-items-stretch"
-      :class="[{ hideScrollBar: isMobile }]"
+      class="scroll flex align-items-stretch"
+      :class="[{ hideScrollBar: hideScrollBar }, `gap-${props.gap}`]"
     >
-      <slot name="default" v-if="props.data" />
+      <slot name="default" v-if="reactiveData" />
       <slot v-else name="skeleton">
         <div class="flex w-full">
           <div v-for="i in 5" class="item" :key="`${i}-skeleton`">
@@ -40,7 +56,7 @@ const { isMobile } = useDevice()
   background: transparent;
   position: relative;
   .scroll {
-    padding: 0 $padding 16px 0;
+    padding: 6px $padding 16px 0;
     overflow-y: hidden;
     overflow-x: auto;
     scroll-behavior: smooth;
@@ -72,20 +88,27 @@ const { isMobile } = useDevice()
   .scroll {
     .item {
       &:first-child {
-        @include media(">=md") {
-          margin-left: calc(((100% - 768px) / 2) + v-bind(buffer));
+        margin-left: 3rem;
+        @include media("<md") {
+          margin-left: 1.5rem;
         }
       }
       &:not(.large-card):last-child {
-        padding-right: 3rem;
+        @include media("<md") {
+          margin-right: 1.5rem;
+        }
       }
       &.large-card:last-child {
-        margin-right: 3rem;
+        @include media("<md") {
+          margin-right: 1.5rem;
+        }
       }
-      &.btn,
+      &.btn:first-child,
       .btn {
-        margin-left: 1.5rem;
+        //margin-left: 1.5rem;
       }
+      min-width: v-bind(itemSize);
+      max-width: v-bind(itemSize);
     }
   }
 }

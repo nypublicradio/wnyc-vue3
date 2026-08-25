@@ -1,27 +1,32 @@
 <script setup>
-import { ref, watch } from "vue"
-import { useBottomMenuState } from "~/composables/states"
-import HomeIcon from "./icons/HomeIcon.vue"
-import LiveIcon from "./icons/LiveIcon.vue"
-import BrowseIcon from "./icons/BrowseIcon.vue"
-import StarIcon from "./icons/StarIcon.vue"
+import { useBottomMenuState, useIsNetworkConnected } from "~/composables/states"
 import { trackClickEvent, capitalizeFirstLetter } from "~/utilities/helpers"
+import { appMenuOptions as options } from "~/composables/globals"
+import HomeIcon from "~/components/icons/HomeIcon.vue"
+import LiveIcon from "~/components/icons/LiveIcon.vue"
+import BrowseIcon from "~/components/icons/BrowseIcon.vue"
+import StarIcon from "~/components/icons/StarIcon.vue"
+
+const iconComponentMap = {
+  HomeIcon,
+  LiveIcon,
+  BrowseIcon,
+  StarIcon,
+}
+// get the bottom icon component based on the name
+const getIconComponent = (iconName) => iconComponentMap[iconName]
+
 const route = useRoute()
 
 const bottomMenuState = useBottomMenuState()
-const options = ref([
-  { icon: markRaw(HomeIcon), value: "home", slug: "/home" },
-  { icon: markRaw(LiveIcon), value: "live", slug: "/live" },
-  { icon: markRaw(BrowseIcon), value: "browse", slug: "/browse" },
-  { icon: markRaw(StarIcon), value: "saved", slug: "/saved" },
-])
+const isNetworkConnected = useIsNetworkConnected()
 
 // if another trigger changes the route, update the bottom menu state
 watch(
   () => route.path,
   (e) => {
     bottomMenuState.value = { value: null }
-    options.value.forEach((item) => {
+    options.forEach((item) => {
       if (e.includes(item.value)) bottomMenuState.value = { value: item.value }
     })
   },
@@ -38,14 +43,25 @@ const menuClick = (item) => {
   <div class="bottom-menu">
     <div class="buttons-holder">
       <template v-for="item in options" :key="item.slug">
-        <NuxtLink :to="item.slug" class="link w-full" prefetch>
+        <NuxtLink
+          :to="`${item.slug}${
+            !isNetworkConnected && item.slug === '/saved'
+              ? '?slug=Downloads'
+              : ''
+          }`"
+          class="link w-full"
+          prefetch
+        >
           <Button
             @click="menuClick(item)"
             class="w-full"
             :aria-label="`${item.value} menu button`"
           >
             <div class="item">
-              <component :is="item.icon" :active="bottomMenuState.value == item.value">
+              <component
+                :is="getIconComponent(item.icon)"
+                :active="bottomMenuState.value === item.value"
+              >
               </component>
               {{ capitalizeFirstLetter(item.value) }}
             </div>
@@ -60,7 +76,9 @@ const menuClick = (item) => {
 @keyframes liftBottomMenu {
   0%,
   66% {
-    transform: translateY(calc(var(--bottom-menu-height) + env(safe-area-inset-bottom)));
+    transform: translateY(
+      calc(var(--bottom-menu-height) + env(safe-area-inset-bottom))
+    );
   }
   100% {
     transform: translateY(0);
@@ -72,7 +90,7 @@ const menuClick = (item) => {
   bottom: 0;
   left: 0;
   z-index: 1001;
-  width: 100vw;
+  width: 100%;
   padding-bottom: env(safe-area-inset-bottom);
   animation: liftBottomMenu 1.5s ease-out;
   .buttons-holder {

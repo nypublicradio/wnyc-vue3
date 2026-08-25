@@ -3,13 +3,31 @@ import {
   useTogglePlayTrigger,
   useCurrentEpisode,
   useCurrentEpisodeHolder,
+  useIsApp,
+  useIsEpisodePlaying,
+  useIsLiveStream,
+  useAppDownloadLink,
+  useAllCurrentStations,
 } from "~/composables/states"
-import { templatizePublisherImageUrl, togglePlayEpisode } from "~/utilities/helpers"
-import { updateLiveStream, updateAllLiveStreams } from "~/composables/data/liveStream"
-
+import {
+  togglePlayEpisode,
+  initializeStationList,
+} from "~/utilities/helpers"
+import useLiveStream, {
+  updateLiveStream,
+  updateAllLiveStreams,
+} from "~/composables/data/liveStream"
+const { getStationBySlugAndPlayIt, formatAndRoundTime } = useLiveStream()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
+const isApp = useIsApp()
 const togglePlayTrigger = useTogglePlayTrigger()
 const currentEpisode = useCurrentEpisode()
+const isEpisodePlaying = useIsEpisodePlaying()
+const isLiveStream = useIsLiveStream()
+const appDownloadLink = useAppDownloadLink()
+const allCurrentStations = useAllCurrentStations()
+const defaultButtonLabel = "Listen Live"
+const listeningButtonLabel = "Listening Live"
 
 // handles play button click that updates the currentEpisode and isEpisodePlaying states
 const togglePlayHere = async () => {
@@ -28,131 +46,352 @@ const togglePlayHere = async () => {
     await updateAllLiveStreams()
   }
 }
+// when selecting the options in the All Streams drop down button
+const onUpdateStation = (station) => {
+  getStationBySlugAndPlayIt(station.slug, isEpisodePlaying.value)
+}
 </script>
 
 <template>
-  <div class="live-feature p-ripple" v-ripple>
-    <div class="holder">
-      <VFlexibleLink raw to="/live" class="flex align-items-center">
-        <div class="image-holder">
-          <transition name="fade" mode="out-in">
+  <div class="live-feature">
+    <div class="holder overflow-hidden">
+      <VFlexibleLink
+        raw
+        to="/live"
+        v-ripple
+        class="card-click w-full h-full absolute top-0 left-0 z-1 p-ripple"
+        tabindex="0"
+        role="button"
+        aria-label="View live page with all current streams"
+      ></VFlexibleLink>
+      <div class="flex align-items-center z-2">
+        <div class="image-holder relative">
+          <Transition name="fade" mode="out-in">
             <VImage
               v-if="currentEpisodeHolder?.image"
-              :src="
-                currentEpisodeHolder?.image.template ??
-                templatizePublisherImageUrl(currentEpisodeHolder?.image)
-              "
-              :width="138"
-              :height="138"
-              :ratio="[1, 1]"
+              :size="{ xs: [138, 138], sm: [172, 172], xl: [280, 280] }"
+              :src="currentEpisodeHolder?.image"
               alt="show poster image"
               class="image"
               :key="currentEpisodeHolder?.id"
+              loading="eager"
             />
-            <WnycLoader v-else class="image-loader-anim" size="2rem" bg spinner />
-          </transition>
+            <WnycLoader
+              v-else
+              class="image-loader-anim"
+              size="1rem"
+              bg
+              spinner
+            />
+          </Transition>
         </div>
         <div class="content w-full relative">
-          <transition name="fade">
+          <div
+            v-if="currentEpisodeHolder"
+            class="flex flex-column gap-1 xl:gap-3 justify-content-center px-3"
+          >
             <div
-              v-if="currentEpisodeHolder"
-              class="flex flex-column gap-2 justify-content-center p-3"
+              class="indicator-schedule flex align-items-center gap-1 md:gap-2 flex-wrap"
             >
-              <h2>{{ currentEpisodeHolder?.title }}</h2>
-              <div
-                class="blurb truncate t2lines html-formating"
-                v-html="
-                  currentEpisodeHolder?.onTodaysShowHeadline ??
-                  currentEpisodeHolder?.details
-                "
-              ></div>
-              <div class="flex align-items-center justify-content-between">
+              <LiveBadge />
+              <div class="schedule-text flex gap-1">
+                <p class="font-bold" v-if="currentEpisodeHolder?.station">
+                  {{ currentEpisodeHolder.station }}
+                </p>
+                <p
+                  class="font-bold"
+                  v-if="
+                    currentEpisodeHolder?.station &&
+                    currentEpisodeHolder.timeStart &&
+                    currentEpisodeHolder.timeEnd
+                  "
+                >
+                  |
+                </p>
+                <p
+                  v-if="
+                    currentEpisodeHolder.timeStart &&
+                    currentEpisodeHolder.timeEnd
+                  "
+                  class="font-bold"
+                >
+                  {{ formatAndRoundTime(currentEpisodeHolder.timeStart) }} -
+                  {{ formatAndRoundTime(currentEpisodeHolder.timeEnd) }}
+                </p>
+              </div>
+            </div>
+            <h2
+              class="md:text-xl lg:text-2xl xl:text-4xl line-height-2 truncate t2lines"
+            >
+              {{ currentEpisodeHolder?.title }}
+            </h2>
+            <div
+              v-if="
+                currentEpisodeHolder?.onTodaysShowHeadline ||
+                currentEpisodeHolder?.details
+              "
+              class="blurb truncate html-formatting"
+              v-html="
+                currentEpisodeHolder?.onTodaysShowHeadline ??
+                currentEpisodeHolder?.details
+              "
+            ></div>
+            <div
+              class="flex align-items-start justify-content-start mt-1 gap-0 md:gap-2"
+            >
+              <div class="flex flex-row gap-3 flex-wrap md:flex-column">
                 <PlayButton
-                  :label="currentEpisodeHolder?.station"
-                  live
+                  :label="
+                    isEpisodePlaying && isLiveStream
+                      ? listeningButtonLabel
+                      : defaultButtonLabel
+                  "
                   :data="currentEpisodeHolder"
                   @onClick="togglePlayHere"
+                  severity="primary"
+                  buttonClass="w-9rem md:w-21rem h-2rem justify-content-start pr-3"
+                  labelClass="md:-ml-3"
+                  live
+                  class="z-2"
                 />
-                <BarsPlaying class="mx-2" :data="currentEpisodeHolder" />
+                <div
+                  v-if="!isApp"
+                  class="hidden md:flex flex-row gap-3 flex-wrap"
+                >
+                  <Button
+                    label="Get the App"
+                    severity="secondary"
+                    class="p-button-sm flex w-10rem justify-content-start h-2rem p-button-center-label-with-icon z-2"
+                    @click.prevent="
+                      navigateTo(appDownloadLink, {
+                        external: appDownloadLink.startsWith('http')
+                          ? true
+                          : false,
+                      })
+                    "
+                  >
+                    <template #icon>
+                      <DevicesIcon />
+                    </template>
+                  </Button>
+                  <!-- :menuItems="
+                      getDotMenuItems(headerNavigationData[0].items[0])
+                    " -->
+                  <DotMenu
+                    :menuItems="initializeStationList(allCurrentStations)"
+                    label=""
+                    class="z-2"
+                    showTitle
+                    checkMark
+                    :initSelectedData="currentEpisodeHolder?.station"
+                    contentClassPopover="max-w-17rem"
+                    @change-emit="onUpdateStation"
+                  >
+                    <template #myCustomButton>
+                      <Button
+                        label="All Streams"
+                        severity="secondary"
+                        class="p-button-sm flex w-10rem justify-content-start h-2rem p-button-center-label-with-icon"
+                        @click.prevent=""
+                      >
+                        <template #icon>
+                          <i
+                            class="pi pi-ellipsis-v"
+                            style="
+                              font-size: 0.85rem;
+                              padding-left: 0.25rem;
+                              padding-right: 0.25rem;
+                            "
+                          ></i>
+                        </template>
+                      </Button>
+                    </template>
+                  </DotMenu>
+                </div>
               </div>
+              <BarsPlaying class="mx-2 mt-2" :data="currentEpisodeHolder" />
             </div>
-            <div
-              class="skeleton-holder flex flex-column justify-content-center w-full absolute p-3"
-              v-else
-            >
+          </div>
+          <div
+            v-else
+            class="skeleton-holder flex flex-column justify-content-center gap-2 lg:gap-3 w-full px-3"
+          >
+            <Skeleton
+              class="hidden md:block mb-2 mt-1"
+              height="1.25rem"
+              width="45%"
+              borderRadius="4px"
+            />
+            <Skeleton
+              class="hidden lg:block mb-2"
+              height="2rem"
+              width="60%"
+              borderRadius="16px"
+            />
+            <Skeleton
+              class="hidden md:block lg:hidden"
+              height="1.2rem"
+              width="40%"
+              borderRadius="16px"
+            />
+            <Skeleton
+              class="md:hidden"
+              height="1rem"
+              width="40%"
+              borderRadius="16px"
+              style="min-width: 120px !important"
+            />
+            <div class="w-full desc flex-column gap-2 hidden xs:flex md:mb-2">
+              <Skeleton height="1rem" width="85%" borderRadius="16px" />
+              <Skeleton height="1rem" width="90%" borderRadius="16px" />
               <Skeleton
-                height="20px"
-                width="6rem"
+                class="hidden xl:block"
+                height="1rem"
+                width="90%"
                 borderRadius="16px"
-                style="margin-bottom: 6px"
               />
-              <div class="w-full desc">
-                <Skeleton
-                  height="13px"
-                  width="85%"
-                  borderRadius="16px"
-                  style="margin-bottom: 6px"
-                />
-                <Skeleton height="13px" width="90%" borderRadius="16px" />
-              </div>
-              <Skeleton height="28px" width="9rem" borderRadius="16px" />
             </div>
-          </transition>
+            <Skeleton
+              class="w-9rem md:w-21rem"
+              height="28px"
+              borderRadius="16px"
+            />
+            <div class="hidden md:flex flex-row gap-3 mt-1 lg:-mt-1">
+              <Skeleton
+                class="w-10rem"
+                height="28px"
+                width="9rem"
+                borderRadius="16px"
+              />
+              <Skeleton
+                class="w-10rem"
+                height="28px"
+                width="9rem"
+                borderRadius="16px"
+              />
+            </div>
+          </div>
         </div>
-      </VFlexibleLink>
+      </div>
+      <!-- </VFlexibleLink> -->
     </div>
   </div>
 </template>
 
-<style lang="scss">
-// removes extra tags from the blurb
-.live-feature .content {
-  .blurb {
-    font-size: 13px;
-    *:not(:first-child) {
-      display: none;
+<!-- <style lang="scss">
+.live-feature {
+  .content {
+    .blurb {
+      * {
+        line-height: 1.25rem !important;
+        margin-block-start: 0em;
+        margin-block-end: 0em;
+      }
+      // removes extra tags from the blurb
+      *:not(:first-child) {
+        display: none;
+      }
     }
   }
 }
-</style>
+</style> -->
 
 <style lang="scss" scoped>
-$container-breakpoint-xs: useBreakpointOrFallback("xs", 375px);
-$container-breakpoint-md: useBreakpointOrFallback("md", 768px);
+// $container-breakpoint-xs: useBreakpointOrFallback("xs", 375px);
+// $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
+// $container-breakpoint-lg: useBreakpointOrFallback("lg", 992px);
 .live-feature {
   container-type: inline-size;
   position: relative;
-  background-color: var(--live-feature-background);
+  @include media("<md") {
+    background-color: var(--live-feature-background);
+  }
   .image-holder {
     position: relative;
     flex: none;
-    width: 138px;
-    height: 138px;
+    width: 280px;
+    height: 280px;
+    @include media("<xl") {
+      width: 172px;
+      height: 172px;
+    }
+    @include media("<md") {
+      width: 138px;
+      height: 138px;
+    }
     background-color: #ffffff99;
     .image,
     .image-loader-anim {
-      width: 138px;
-      height: 138px;
+      width: 280px;
+      height: 280px;
+      @include media("<xl") {
+        width: 172px;
+        height: 172px;
+      }
+      @include media("<md") {
+        width: 138px;
+        height: 138px;
+      }
       display: flex;
       align-items: center;
       justify-content: center;
     }
   }
   .content {
-    min-height: 138px;
+    .indicator-schedule {
+      .live-badge {
+        font-size: 0.9rem;
+        @include media("<xl") {
+          font-size: 0.8rem;
+        }
+        @include media("<lg") {
+          font-size: 0.7rem;
+        }
+        @include media("<md") {
+          margin-left: -4px;
+          padding: 1px 4px 1px 4px !important;
+          font-size: 0.65rem;
+        }
+      }
+      .schedule-text * {
+        @include media("<xl") {
+          font-size: 0.9rem;
+        }
+        @include media("<lg") {
+          font-size: 0.8rem;
+        }
+        @include media("<md") {
+          font-size: 0.7rem;
+        }
+      }
+    }
     .skeleton-holder {
       gap: 0.5rem;
     }
+    .blurb {
+      @include t3lines();
+      @include media("<xl") {
+        @include t2lines();
+      }
+      @include media("<md") {
+        @include t2lines();
+      }
+      @include media("<lg") {
+        font-size: 0.875rem;
+      }
+    }
   }
 }
-@container (min-width: #{$container-breakpoint-md}) {
-  .live-feature .holder {
-    max-width: 668px !important;
-    margin: 0 auto;
+@include media("<md") {
+  .live-feature {
+    .holder {
+      max-width: $contentWidth !important;
+      margin: 0 auto;
+    }
   }
 }
 
-@container (max-width: #{$container-breakpoint-xs}) {
+@include media("<xs") {
   .live-feature {
     .image-holder {
       flex: none;
@@ -165,7 +404,6 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
       }
     }
     .content {
-      min-height: 90px;
       .blurb {
         display: none;
       }

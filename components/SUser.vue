@@ -7,10 +7,12 @@ import {
   useSignupSideBar,
   useCurrentUser,
   useCurrentUserProfile,
+  useIsApp,
 } from "~/composables/states.ts"
 import { trackClickEvent, logOutUser } from "~/utilities/helpers"
 import { useToast } from "primevue/usetoast"
 const toast = useToast()
+const isApp = useIsApp()
 
 const props = defineProps({
   disabled: {
@@ -20,6 +22,14 @@ const props = defineProps({
   isEmail: {
     type: Boolean,
     default: false,
+  },
+  size: {
+    type: String,
+    default: "large",
+  },
+  textSize: {
+    type: String,
+    default: "",
   },
 })
 
@@ -34,10 +44,13 @@ const client = useSupabaseClient()
 const config = useRuntimeConfig()
 const imageUploadModal = shallowRef(false)
 
-const user = await client.auth.getSession()
 // actions to be taken with the log in button is clicked
 const onLogIn = () => {
-  loginSideBar.value = true
+  if (isApp.value) {
+    loginSideBar.value = true
+  } else {
+    navigateTo("/login")
+  }
   trackClickEvent(
     "Click Tracking - login button",
     "Settings Sidebar - user section",
@@ -66,7 +79,12 @@ const onLogOut = async () => {
 }
 // actions to be taken with the sign up link is clicked
 const onSignUp = () => {
-  signupSideBar.value = true
+  if (isApp.value) {
+    signupSideBar.value = true
+  } else {
+    navigateTo("/signup")
+  }
+
   trackClickEvent(
     "Click Tracking - sign up link",
     "Settings Sidebar - user section",
@@ -89,7 +107,6 @@ const handleModal = () => {
 
 const avatarUrl = computed(() => {
   return (
-    user.value?.data?.user?.user_metadata?.avatar_url ||
     currentUser.value?.user_metadata?.avatar_url ||
     currentUserProfile.value?.avatar_image_url ||
     null
@@ -101,7 +118,7 @@ const avatarUrl = computed(() => {
   <div class="s-user flex gap-3">
     <Avatar
       :image="avatarUrl"
-      size="large"
+      :size="props.size"
       :style="`
         cursor: ${props.disabled ? 'default' : 'pointer'};
       `"
@@ -146,16 +163,26 @@ const avatarUrl = computed(() => {
       />
     </Dialog>
     <div v-if="currentUser" class="info flex flex-column gap-2 mt-2">
-      <h2>Hi, {{ currentUserProfile?.name }}</h2>
-      <VFlexibleLink to="/home" class="p1" @click="onLogOut">Log out</VFlexibleLink>
+      <h2 :class="props.textSize">Hi, {{ currentUserProfile?.name || 'User' }}</h2>
+      <VFlexibleLink to="/home" class="p1" @click="onLogOut"
+        >Log out</VFlexibleLink
+      >
     </div>
     <div v-else class="info flex flex-column gap-3 mt-2">
       <h2>You are logged out.</h2>
-      <Button label="Log in" rounded @click="onLogIn" class="w-9rem" aria-label="login" />
+      <Button
+        label="Log in"
+        rounded
+        @click="onLogIn"
+        class="w-9rem"
+        aria-label="login"
+      />
 
       <p>
         Don't have an account yet?
-        <VFlexibleLink to="#" @click="onSignUp"> Sign up </VFlexibleLink>
+        <VFlexibleLink to="#" @click.prevent="onSignUp">
+          Sign up
+        </VFlexibleLink>
       </p>
     </div>
   </div>
@@ -164,20 +191,17 @@ const avatarUrl = computed(() => {
 <style lang="scss" scoped>
 .s-user {
   .p-avatar {
-    width: 40px;
-    height: 40px;
     position: relative;
     flex: none;
     background-color: #ffffff;
     color: var(--p-surface-950);
-    border-radius: 50%;
     .pi-plus {
       font-size: 0.5rem;
       position: absolute;
       background-color: var(--p-primary-500);
       padding: 3px;
       line-height: normal;
-      border-radius: 10px;
+      border-radius: var(--p-border-radius-xl);
       left: -3px;
       bottom: -3px;
       font-weight: var(--font-weight-900);
@@ -192,6 +216,8 @@ const avatarUrl = computed(() => {
 .s-user {
   .p-avatar {
     img {
+      width: 100%;
+      height: 100%;
       object-fit: cover;
     }
   }

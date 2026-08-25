@@ -1,9 +1,12 @@
 <script setup>
-import VFlexibleLink from "./VFlexibleLink.vue"
 import Button from "primevue/button"
 import Dialog from "primevue/dialog"
 import ProgressSpinner from "primevue/progressspinner"
-import { computed, ref } from "vue"
+import { useFallbackImages } from "~/composables/useFallbackImages"
+
+defineOptions({ inheritAttrs: false })
+
+const { getEpisodeFallBackImage } = useFallbackImages()
 
 const props = defineProps({
   /**
@@ -117,7 +120,7 @@ const props = defineProps({
    */
   src: {
     default: null,
-    type: [String, Number],
+    type: [String, Number, Object],
   },
   /**
    * address to navigate to when the image is clicked
@@ -127,23 +130,10 @@ const props = defineProps({
     type: String,
   },
   /**
-   *  ammount of blur for the blured background image */
-  verticalBgBlur: {
-    default: "3px",
-    type: String,
-  },
-  /**
-   * tint the grey blured background image
-   * */
-  verticalBgColor: {
-    default: "#f1f1f1",
-    type: String,
-  },
-  /**
-   *  the opacity of the tint of the grey blured background image
+   *  the grayscale of the background image
    */
-  verticalBgColorOpacity: {
-    default: "0.6",
+  verticalBgGrayscale: {
+    default: "100",
     type: String,
   },
   /**
@@ -158,31 +148,63 @@ const emit = defineEmits([
   "image-click",
   "image-enlarge-click",
   "image-load",
+  "image-error",
   "enlarge-image-load",
 ])
 
-const isVertical = ref(props.allowVerticalEffect && props.maxHeight > props.maxWidth)
+const isVertical = ref(
+  props.allowVerticalEffect &&
+    props.maxHeight >= props.maxWidth &&
+    props.maxHeight !== Infinity &&
+    props.maxWidth !== Infinity
+)
 const loadingEnlargedImage = ref(false)
 const loadedEnlargedImage = ref(true)
+const imageRef = ref(null)
 
 const computedWidth = computed(() => {
   return isVertical.value
     ? Math.round(props.maxWidth / (props.maxHeight / props.height))
     : props.width
 })
+const computedHeight = computed(() => {
+  return props.sizes ? null : props.height
+})
 const computedEnlargeWidth = computed(() => {
+  if (import.meta.server) return props.maxWidth
   const modalFramePaddingOffset = 84
   return window.innerWidth * window.devicePixelRatio > props.maxWidth
     ? props.maxWidth
     : (window.innerWidth - modalFramePaddingOffset) * window.devicePixelRatio
 })
 const computedEnlargeHeight = computed(() => {
+  if (import.meta.server) return props.maxHeight
   const originalWidth = props.maxWidth
   const originalHeight = props.maxHeight
   const newWidth = computedEnlargeWidth.value / window.devicePixelRatio
   const originalRatio = originalWidth / originalHeight
 
   return Math.round((newWidth / originalRatio) * window.devicePixelRatio)
+})
+
+const computedSrc = computed(() => {
+  if (!props.src || props.src === "undefined" || props.src === "null") {
+    return getEpisodeFallBackImage()
+  }
+
+  if (typeof props.src === "object") {
+    return (
+      (props.src.id != null ? String(props.src.id) : null) ||
+      props.src.imageTemplate ||
+      props.src.url ||
+      props.src.src ||
+      props.src.image ||
+      props.src.file ||
+      props.src.template ||
+      getEpisodeFallBackImage()
+    )
+  }
+  return String(props.src)
 })
 // method to handle the click on the enlarge button and its loading states
 const enlarge = () => {
@@ -196,6 +218,28 @@ const enlargeLoad = (target) => {
   loadedEnlargedImage.value = true
 }
 
+// Handle image load with better reliability for cached images
+const handleImageLoad = () => {
+  emit("image-load")
+}
+
+// Check if image is already loaded on mount (for cached images)
+onMounted(async () => {
+  await nextTick()
+
+  if (!imageRef.value) {
+    return
+  }
+
+  // The nuxt-img component renders directly as an <img> element
+  const img = imageRef.value.$el
+
+  if (img && img.tagName === "IMG" && img.complete && img.naturalHeight !== 0) {
+    // Image is already loaded (cached)
+    emit("image-load")
+  }
+})
+
 const handleProvider = computed(() => {
   return isNaN(props.src) ? null : props.provider
 })
@@ -207,33 +251,44 @@ const handleProvider = computed(() => {
       raw
       :to="props.to"
       :aria-hidden="props.isDecorative ? true : false"
-      :tabindex="props.isDecorative ? -1 : 0"
-      style="width: auto"
+      :tabindex="props.isDecorative ? undefined : 0"
+      :inert="props.isDecorative ? true : undefined"
+      class="v-image-link"
+      :class="{ 'is-decorative': props.isDecorative }"
       @click="props.to ? emit('image-click', props.to) : null"
     >
-      <div class="v-image-holder" :style="`aspect-ratio:${ratio[0]} / ${ratio[1]}`">
+      <div
+        class="v-image-holder"
+        :style="`${
+          props.sizes ? `` : `aspect-ratio:${ratio[0]} / ${ratio[1]}`
+        }`"
+      >
         <div v-if="isVertical" class="bg">
           <nuxt-img
             :format="props.format"
             :provider="handleProvider"
             class="blurred-bg-image"
-            :src="String(props.src)"
-            :width="props.width"
-            :height="props.height"
-            quality="15"
+            :src="computedSrc"
+            :width="computedWidth"
+            :height="computedHeight"
+            :quality="String(props.quality)"
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
             :modifiers="props.modifiers"
             :loading="props.loading"
+            :preload="{
+              fetchPriority: props.loading === 'eager' ? 'high' : 'low',
+            }"
           />
         </div>
         <nuxt-img
+          ref="imageRef"
           :format="props.format"
           :provider="handleProvider"
           class="image native-image"
           :class="isVertical ? 'is-vertical' : ''"
-          :src="String(props.src)"
+          :src="computedSrc"
           :width="computedWidth"
-          :height="props.height"
+          :height="computedHeight"
           :sizes="props.sizes"
           :densities="props.density"
           :style="[
@@ -243,9 +298,13 @@ const handleProvider = computed(() => {
           ]"
           :alt="props.isDecorative ? '' : props.alt"
           :quality="String(props.quality)"
-          :loading="loading"
+          :loading="props.loading"
+          :preload="{
+            fetchPriority: props.loading === 'eager' ? 'high' : 'low',
+          }"
           :modifiers="props.modifiers"
-          @load="emit('image-load', $event.target)"
+          @load="handleImageLoad"
+          @error="emit('image-error')"
         />
         <slot class="slot caption" name="caption"></slot>
         <slot class="slot gallery" name="gallery"></slot>
@@ -264,47 +323,50 @@ const handleProvider = computed(() => {
               ></Button>
             </slot>
           </div>
-          <Dialog
-            v-model:visible="loadingEnlargedImage"
-            modal
-            dismissable-mask
-            :draggable="false"
-            header=" "
-            :style="{ width: '95vw' }"
-          >
-            <nuxt-img
-              :format="props.format"
-              :provider="handleProvider"
-              class="enlarged-image"
-              :src="String(props.src)"
-              style="width: 100%; height: auto"
-              :alt="props.isDecorative ? '' : props.alt"
-              loading="eager"
-              :quality="70"
-              :width="computedEnlargeWidth"
-              :height="computedEnlargeHeight"
-              :modifiers="props.modifiers"
-              @load="enlargeLoad($event.target)"
-            />
-            <template #closeicon
-              ><slot class="slot close-icon" name="closeicon"></slot
-            ></template>
-          </Dialog>
-          <Teleport to="body">
-            <ProgressSpinner
-              v-if="loadingEnlargedImage && !loadedEnlargedImage"
-              style="
-                z-index: 1102;
-                position: fixed;
-                top: 0;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                margin: auto;
-              "
-              stroke-width="6"
-            />
-          </Teleport>
+          <ClientOnly>
+            <Dialog
+              v-model:visible="loadingEnlargedImage"
+              modal
+              dismissable-mask
+              :draggable="false"
+              header=" "
+              :style="{ width: '95vw' }"
+            >
+              <nuxt-img
+                :format="props.format"
+                :provider="handleProvider"
+                class="enlarged-image"
+                :src="computedSrc"
+                style="width: 100%; height: auto"
+                :alt="props.isDecorative ? '' : props.alt"
+                loading="eager"
+                :preload="{ fetchPriority: 'high' }"
+                :quality="70"
+                :width="computedEnlargeWidth"
+                :height="computedEnlargeHeight"
+                :modifiers="props.modifiers"
+                @load="enlargeLoad($event.target)"
+              />
+              <template #closeicon
+                ><slot class="slot close-icon" name="closeicon"></slot
+              ></template>
+            </Dialog>
+            <Teleport to="body">
+              <ProgressSpinner
+                v-if="loadingEnlargedImage && !loadedEnlargedImage"
+                style="
+                  z-index: 1102;
+                  position: fixed;
+                  top: 0;
+                  bottom: 0;
+                  left: 0;
+                  right: 0;
+                  margin: auto;
+                "
+                stroke-width="6"
+              />
+            </Teleport>
+          </ClientOnly>
         </template>
       </div>
     </VFlexibleLink>
@@ -313,13 +375,23 @@ const handleProvider = computed(() => {
 </template>
 
 <style lang="scss" scoped>
+.v-image-link {
+  width: auto;
+  height: inherit;
+}
+.v-image-link.is-decorative {
+  pointer-events: none;
+}
 .v-image {
   line-height: 0;
   position: relative;
+  height: inherit;
 
   .v-image-holder {
     position: relative;
     overflow: hidden;
+    height: inherit;
+    //width: -webkit-fill-available;
     .image {
       position: relative;
       width: 100%;
@@ -351,19 +423,9 @@ const handleProvider = computed(() => {
       top: 0;
       left: 0;
       overflow: hidden;
-      &:after {
-        content: "";
-        background-color: v-bind(verticalBgColor);
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-        opacity: v-bind(verticalBgColorOpacity);
-      }
       img {
         width: 100%;
-        filter: blur(v-bind(verticalBgBlur)) grayscale(100%);
+        @include v-image-bg-blur();
         object-fit: cover;
         height: inherit;
       }

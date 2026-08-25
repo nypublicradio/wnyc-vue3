@@ -1,0 +1,706 @@
+{
+    "episodes": [
+        {
+            "id": "019bc309-9476-7d61-8baf-6281cb95b27b_20260406",
+            "longDescription": "Daily showcase of weird and wonderful music from artists, composers and traditional musicians \u2014 all gleefully oblivious of their genres.",
+            "description": "",
+            "name": "New Sounds",
+            "showId": "019bc304-586e-7d89-82d2-abc6af77dabc",
+            "startTime": "2026-04-06T04:00:00Z",
+            "endTime": "2026-04-06T05:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/9e053afe4b1729cb434cba6e94d5f3b3.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc30f-3e8b-7add-900d-126679444db2_20260406",
+            "longDescription": "Daily showcase of weird and wonderful music from artists, composers and traditional musicians \u2014 all gleefully oblivious of their genres.",
+            "description": "",
+            "name": "New Sounds",
+            "showId": "019bc304-586e-7d89-82d2-abc6af77dabc",
+            "startTime": "2026-04-06T13:00:00Z",
+            "endTime": "2026-04-06T14:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/9e053afe4b1729cb434cba6e94d5f3b3.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc30f-dfd7-7b49-b7e3-7828605c20ae_20260406",
+            "longDescription": "Daily showcase of weird and wonderful music from artists, composers and traditional musicians \u2014 all gleefully oblivious of their genres.",
+            "description": "",
+            "name": "New Sounds",
+            "showId": "019bc304-586e-7d89-82d2-abc6af77dabc",
+            "startTime": "2026-04-06T22:00:00Z",
+            "endTime": "2026-04-06T23:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/9e053afe4b1729cb434cba6e94d5f3b3.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc309-9476-7d61-8baf-6281cb95b27b_20260407",
+            "longDescription": "Daily showcase of weird and wonderful music from artists, composers and traditional musicians \u2014 all gleefully oblivious of their genres.",
+            "description": "",
+            "name": "New Sounds",
+            "showId": "019bc304-586e-7d89-82d2-abc6af77dabc",
+            "startTime": "2026-04-07T04:00:00Z",
+            "endTime": "2026-04-07T05:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/9e053afe4b1729cb434cba6e94d5f3b3.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc30f-3e8b-7add-900d-126679444db2_20260407",
+            "longDescription": "Daily showcase of weird and wonderful music from artists, composers and traditional musicians \u2014 all gleefully oblivious of their genres.",
+            "description": "",
+            "name": "New Sounds",
+            "showId": "019bc304-586e-7d89-82d2-abc6af77dabc",
+            "startTime": "2026-04-07T13:00:00Z",
+            "endTime": "2026-04-07T14:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/9e053afe4b1729cb434cba6e94d5f3b3.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc30f-dfd7-7b49-b7e3-7828605c20ae_20260407",
+            "longDescription": "Daily showcase of weird and wonderful music from artists, composers and traditional musicians \u2014 all gleefully oblivious of their genres.",
+            "description": "",
+            "name": "New Sounds",
+            "showId": "019bc304-586e-7d89-82d2-abc6af77dabc",
+            "startTime": "2026-04-07T22:00:00Z",
+            "endTime": "2026-04-07T23:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/9e053afe4b1729cb434cba6e94d5f3b3.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc309-9476-7d61-8baf-6281cb95b27b_20260408",
+            "longDescription": "Daily showcase of weird and wonderful music from artists, composers and traditional musicians \u2014 all gleefully oblivious of their genres.",
+            "description": "",
+            "name": "New Sounds",
+            "showId": "019bc304-586e-7d89-82d2-abc6af77dabc",
+            "startTime": "2026-04-08T04:00:00Z",
+            "endTime": "2026-04-08T05:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/9e053afe4b1729cb434cba6e94d5f3b3.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc30f-3e8b-7add-900d-126679444db2_20260408",
+            "longDescription": "Daily showcase of weird and wonderful music from artists, composers and traditional musicians \u2014 all gleefully oblivious of their genres.",
+            "description": "",
+            "name": "New Sounds",
+            "showId": "019bc304-586e-7d89-82d2-abc6af77dabc",
+            "startTime": "2026-04-08T13:00:00Z",
+            "endTime": "2026-04-08T14:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/9e053afe4b1729cb434cba6e94d5f3b3.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc30f-dfd7-7b49-b7e3-7828605c20ae_20260408",
+            "longDescription": "Daily showcase of weird and wonderful music from artists, composers and traditional musicians \u2014 all gleefully oblivious of their genres.",
+            "description": "",
+            "name": "New Sounds",
+            "showId": "019bc304-586e-7d89-82d2-abc6af77dabc",
+            "startTime": "2026-04-08T22:00:00Z",
+            "endTime": "2026-04-08T23:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/9e053afe4b1729cb434cba6e94d5f3b3.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc309-9476-7d61-8baf-6281cb95b27b_20260409",
+            "longDescription": "Daily showcase of weird and wonderful music from artists, composers and traditional musicians \u2014 all gleefully oblivious of their genres.",
+            "description": "",
+            "name": "New Sounds",
+            "showId": "019bc304-586e-7d89-82d2-abc6af77dabc",
+            "startTime": "2026-04-09T04:00:00Z",
+            "endTime": "2026-04-09T05:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/9e053afe4b1729cb434cba6e94d5f3b3.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc30f-3e8b-7add-900d-126679444db2_20260409",
+            "longDescription": "Daily showcase of weird and wonderful music from artists, composers and traditional musicians \u2014 all gleefully oblivious of their genres.",
+            "description": "",
+            "name": "New Sounds",
+            "showId": "019bc304-586e-7d89-82d2-abc6af77dabc",
+            "startTime": "2026-04-09T13:00:00Z",
+            "endTime": "2026-04-09T14:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/9e053afe4b1729cb434cba6e94d5f3b3.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc30f-dfd7-7b49-b7e3-7828605c20ae_20260409",
+            "longDescription": "Daily showcase of weird and wonderful music from artists, composers and traditional musicians \u2014 all gleefully oblivious of their genres.",
+            "description": "",
+            "name": "New Sounds",
+            "showId": "019bc304-586e-7d89-82d2-abc6af77dabc",
+            "startTime": "2026-04-09T22:00:00Z",
+            "endTime": "2026-04-09T23:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/9e053afe4b1729cb434cba6e94d5f3b3.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc309-9476-7d61-8baf-6281cb95b27b_20260410",
+            "longDescription": "Daily showcase of weird and wonderful music from artists, composers and traditional musicians \u2014 all gleefully oblivious of their genres.",
+            "description": "",
+            "name": "New Sounds",
+            "showId": "019bc304-586e-7d89-82d2-abc6af77dabc",
+            "startTime": "2026-04-10T04:00:00Z",
+            "endTime": "2026-04-10T05:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/9e053afe4b1729cb434cba6e94d5f3b3.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc30f-3e8b-7add-900d-126679444db2_20260410",
+            "longDescription": "Daily showcase of weird and wonderful music from artists, composers and traditional musicians \u2014 all gleefully oblivious of their genres.",
+            "description": "",
+            "name": "New Sounds",
+            "showId": "019bc304-586e-7d89-82d2-abc6af77dabc",
+            "startTime": "2026-04-10T13:00:00Z",
+            "endTime": "2026-04-10T14:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/9e053afe4b1729cb434cba6e94d5f3b3.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc30f-dfd7-7b49-b7e3-7828605c20ae_20260410",
+            "longDescription": "Daily showcase of weird and wonderful music from artists, composers and traditional musicians \u2014 all gleefully oblivious of their genres.",
+            "description": "",
+            "name": "New Sounds",
+            "showId": "019bc304-586e-7d89-82d2-abc6af77dabc",
+            "startTime": "2026-04-10T22:00:00Z",
+            "endTime": "2026-04-10T23:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/9e053afe4b1729cb434cba6e94d5f3b3.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc309-9476-7d61-8baf-6281cb95b27b_20260411",
+            "longDescription": "Daily showcase of weird and wonderful music from artists, composers and traditional musicians \u2014 all gleefully oblivious of their genres.",
+            "description": "",
+            "name": "New Sounds",
+            "showId": "019bc304-586e-7d89-82d2-abc6af77dabc",
+            "startTime": "2026-04-11T04:00:00Z",
+            "endTime": "2026-04-11T05:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/9e053afe4b1729cb434cba6e94d5f3b3.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc30f-3e8b-7add-900d-126679444db2_20260411",
+            "longDescription": "Daily showcase of weird and wonderful music from artists, composers and traditional musicians \u2014 all gleefully oblivious of their genres.",
+            "description": "",
+            "name": "New Sounds",
+            "showId": "019bc304-586e-7d89-82d2-abc6af77dabc",
+            "startTime": "2026-04-11T13:00:00Z",
+            "endTime": "2026-04-11T14:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/9e053afe4b1729cb434cba6e94d5f3b3.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc30f-dfd7-7b49-b7e3-7828605c20ae_20260411",
+            "longDescription": "Daily showcase of weird and wonderful music from artists, composers and traditional musicians \u2014 all gleefully oblivious of their genres.",
+            "description": "",
+            "name": "New Sounds",
+            "showId": "019bc304-586e-7d89-82d2-abc6af77dabc",
+            "startTime": "2026-04-11T22:00:00Z",
+            "endTime": "2026-04-11T23:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/9e053afe4b1729cb434cba6e94d5f3b3.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc309-9476-7d61-8baf-6281cb95b27b_20260412",
+            "longDescription": "Daily showcase of weird and wonderful music from artists, composers and traditional musicians \u2014 all gleefully oblivious of their genres.",
+            "description": "",
+            "name": "New Sounds",
+            "showId": "019bc304-586e-7d89-82d2-abc6af77dabc",
+            "startTime": "2026-04-12T04:00:00Z",
+            "endTime": "2026-04-12T05:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/9e053afe4b1729cb434cba6e94d5f3b3.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc30f-3e8b-7add-900d-126679444db2_20260412",
+            "longDescription": "Daily showcase of weird and wonderful music from artists, composers and traditional musicians \u2014 all gleefully oblivious of their genres.",
+            "description": "",
+            "name": "New Sounds",
+            "showId": "019bc304-586e-7d89-82d2-abc6af77dabc",
+            "startTime": "2026-04-12T13:00:00Z",
+            "endTime": "2026-04-12T14:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/9e053afe4b1729cb434cba6e94d5f3b3.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc30f-dfd7-7b49-b7e3-7828605c20ae_20260412",
+            "longDescription": "Daily showcase of weird and wonderful music from artists, composers and traditional musicians \u2014 all gleefully oblivious of their genres.",
+            "description": "",
+            "name": "New Sounds",
+            "showId": "019bc304-586e-7d89-82d2-abc6af77dabc",
+            "startTime": "2026-04-12T22:00:00Z",
+            "endTime": "2026-04-12T23:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/9e053afe4b1729cb434cba6e94d5f3b3.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        }
+    ],
+    "shows": [
+        {
+            "id": "019bc304-586e-7d89-82d2-abc6af77dabc",
+            "longDescription": "Daily showcase of weird and wonderful music from artists, composers and traditional musicians \u2014 all gleefully oblivious of their genres.",
+            "description": "",
+            "name": "New Sounds",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/af0c9417b3d61138e4cfe6d74ddf87c4.jpg",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1b92a67d7fa51b2b9b316b56d3/9e053afe4b1729cb434cba6e94d5f3b3.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": []
+        }
+    ],
+    "presenters": []
+}

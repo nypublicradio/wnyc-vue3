@@ -1,26 +1,26 @@
 <script setup>
-
-import {
-  trackClickEvent,
-  getUserFallBackImage,
-  getEpisodeFallBackImage,
-} from "~/utilities/helpers"
+import { trackClickEvent } from "~/utilities/helpers"
+import { useFallbackImages } from "~/composables/useFallbackImages"
 
 const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
+const { getEpisodeFallBackImage, getUserFallBackImage } = useFallbackImages()
 const personName = ref(null)
-const pageTitle = ref(null)
-const personSlug = route.params.slug
-//const newPageData = ref(null)
-const { data: pagedata, pending, error } = useFetch(
-  `${config.public.BFF_URL}/api/people/publisher/${personSlug}`
+const {
+  data: pagedata,
+  status,
+  error,
+} = await useFetchWrapper(
+  () => `${config.public.BFF_URL}/api/people/publisher/${route.params.slug}`,
+  {
+    key: `publisher-people-page-${route.params.slug}`,
+  }
 )
 
 watch(pagedata, (val) => {
   if (val) {
     personName.value = pagedata?.value.name
-    pageTitle.value = `Articles by ${personName.value} | Gothamist`
     // set fallback image based on dark or light mode
     if (pagedata.value && !pagedata.value.photoID) {
       pagedata.value.photoID = getUserFallBackImage()
@@ -43,12 +43,19 @@ watch(
   { once: true }
 )
 
-useHead({
-  title: pageTitle.value,
-})
-useServerHead({
-  meta: [{ property: "og:title", content: pageTitle.value }],
-})
+useHead(() => ({
+  title: `${personName.value} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`,
+  meta: [
+    {
+      name: "og:title",
+      content: `${personName.value} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`,
+    },
+    {
+      name: "twitter:title",
+      content: `${personName.value} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`,
+    },
+  ],
+}))
 
 // handle route back
 const routeBack = () => {
@@ -59,25 +66,9 @@ const routeBack = () => {
 
 <template>
   <section class="person-page">
-    <Html lang="en">
-      <Head>
-        <Title
-          >{{ personName }} | WNYC | New York Public Radio, Podcasts, Live Streaming
-          Radio, News</Title
-        >
-        <Meta
-          name="og:title"
-          :content="`${personName} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`"
-        />
-        <Meta
-          name="twitter:title"
-          :content="`${personName}}] | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`"
-        />
-      </Head>
-    </Html>
     <div>
       <Button
-        class="back-btn text-color -ml-4"
+        class="back-btn text-color -ml-3"
         icon="pi pi-chevron-left"
         rounded
         text
@@ -91,7 +82,7 @@ const routeBack = () => {
         v-if="error"
         msg="An error occured while loading this persons profile."
       />
-      <div v-if="!pending && pagedata !== null" class="content">
+      <div v-if="status === 'success' && pagedata !== null" class="content">
         <div class="grid mt-4">
           <div class="col-12">
             <VPerson
@@ -113,7 +104,7 @@ const routeBack = () => {
               >
                 <VImage
                   :src="
-                    show.featured?.headers.brand.logoImage.template ??
+                    show.featured?.headers.brand.logoImage ||
                     getEpisodeFallBackImage()
                   "
                   :alt="`${show.title} show image`"
@@ -129,6 +120,7 @@ const routeBack = () => {
               v-if="pagedata.biography"
               :htmlContent="pagedata.biography"
               class="mt-4"
+              :key="`biography-${pagedata.id || route.params.slug}`"
             />
           </div>
           <div class="col-fixed col-fixed-width-330 hidden xl:block"></div>

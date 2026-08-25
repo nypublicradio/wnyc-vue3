@@ -7,9 +7,11 @@ interface IShow {
 export default interface Person {
   id?: number
   url?: string
+  shareUrl?: string
   name?: string
   socialMediaProfile?: ISocial[]
   photoID?: any
+  image?: any
   jobTitle?: string
   biography?: string
   website?: string

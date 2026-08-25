@@ -1,5 +1,8 @@
 <script setup>
-import { trackClickEvent, goToStoryPage, getUserFallBackImage } from "~/utilities/helpers"
+import {
+  trackClickEvent
+} from "~/utilities/helpers"
+import { useFallbackImages } from "~/composables/useFallbackImages"
 import { useIntersectionObserver } from "@vueuse/core"
 import { useGlobalToast } from "~/composables/states"
 
@@ -7,17 +10,23 @@ const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
 const authorName = ref(null)
-const pageTitle = ref(null)
+const { getUserFallBackImage } = useFallbackImages()
 const staffSlug = route.params.slug
 const newPageData = ref(null)
-const { data: pagedata, pending, error } = useFetch(
-  `${config.public.BFF_URL}/api/staff/wagtail/${staffSlug}`
+const {
+  data: pagedata,
+  status,
+  error,
+} = await useFetchWrapper(
+  () => `${config.public.BFF_URL}/api/staff/wagtail/${route.params.slug}`,
+  {
+    key: `wagtail-people-page-${route.params.slug}`,
+  }
 )
 
 watch(pagedata, (val) => {
   if (val) {
     authorName.value = `${pagedata.value?.authorData[0]?.firstName} ${pagedata.value?.authorData[0]?.lastName}`
-    pageTitle.value = `Articles by ${authorName.value} | Gothamist`
     // set fallback image based on dark or light mode
     if (pagedata.value && !pagedata.value.authorData.photoID) {
       pagedata.value.authorData.photoID = getUserFallBackImage()
@@ -43,14 +52,17 @@ const pendingMore = ref(false)
 const loadMoreRefVisible = ref(false)
 const loadMoreRef = ref(null)
 const isInitialObserver = ref(true)
-const { stop } = useIntersectionObserver(loadMoreRef, ([{ isIntersecting }]) => {
-  // so it does not trigger on initial load and before we have data
-  if (!isInitialObserver.value && newPageData.value) {
-    loadMoreRefVisible.value = isIntersecting
-  } else {
-    isInitialObserver.value = false
+const { stop } = useIntersectionObserver(
+  loadMoreRef,
+  ([{ isIntersecting }]) => {
+    // so it does not trigger on initial load and before we have data
+    if (!isInitialObserver.value && newPageData.value) {
+      loadMoreRefVisible.value = isIntersecting
+    } else {
+      isInitialObserver.value = false
+    }
   }
-})
+)
 
 // clean up the useIntersectionObserver
 onUnmounted(() => {
@@ -64,14 +76,20 @@ const loadMore = async () => {
   pendingMore.value = true
   try {
     const additionalPageData = await $fetch(
-      `${config.public.BFF_URL}/api/staff/wagtail/${staffSlug}?offset=${(offset += 10)}`
+      `${
+        config.public.BFF_URL
+      }/api/staff/wagtail/${staffSlug}?offset=${(offset += 10)}`
     )
     pendingMore.value = false
     newPageData.value.articles = [
       ...newPageData.value.articles,
       ...additionalPageData.articles,
     ]
-    trackClickEvent("Event Tracking - load more articles", "Shows Page", staffSlug)
+    trackClickEvent(
+      "Event Tracking - load more articles",
+      "Shows Page",
+      staffSlug
+    )
   } catch (e) {
     const globalToast = useGlobalToast()
     globalToast.value = {
@@ -85,13 +103,20 @@ const loadMore = async () => {
   }
 }
 
-useHead({
-  title: pageTitle.value,
-})
-useServerHead({
-  meta: [{ property: "og:title", content: pageTitle.value }],
-})
-
+useHead(() => ({
+  title: `${authorName.value} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`,
+  meta: [
+    {
+      name: "og:title",
+      content: `${authorName.value} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`,
+    },
+    {
+      name: "twitter:title",
+      content: `${authorName.value} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`,
+    },
+  ],
+}))
+// route back functionality
 const routeBack = () => {
   trackClickEvent("Staff", "Staff page", "route back")
   window.history.state.back ? router.go(-1) : navigateTo("/home")
@@ -106,25 +131,9 @@ watch(loadMoreRefVisible, (val) => {
 
 <template>
   <section class="staff-page">
-    <Html lang="en">
-      <Head>
-        <Title
-          >{{ authorName }} | WNYC | New York Public Radio, Podcasts, Live Streaming
-          Radio, News</Title
-        >
-        <Meta
-          name="og:title"
-          :content="`${authorName} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`"
-        />
-        <Meta
-          name="twitter:title"
-          :content="`${authorName} | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News`"
-        />
-      </Head>
-    </Html>
     <div>
       <Button
-        class="back-btn text-color -ml-4"
+        class="back-btn text-color -ml-3"
         icon="pi pi-chevron-left"
         rounded
         text
@@ -137,7 +146,7 @@ watch(loadMoreRefVisible, (val) => {
         v-if="error"
         msg="An error occured while loading this persons profile."
       />
-      <div v-if="!pending" class="content">
+      <div v-if="status === 'success'" class="content">
         <div class="grid mt-4">
           <div class="col-12">
             <!-- <pre>{{ pagedata.authorData }}</pre> -->
@@ -157,12 +166,16 @@ watch(loadMoreRefVisible, (val) => {
             <div
               v-for="(article, index) in newPageData?.articles"
               :key="article?.uuid"
-              class="col-12 md:col-12 mb-3 md:px-8"
+              class="col-12 md:col-6 xl:col-4 mb-3"
             >
-              <StoryItem
+              <MediaCard
                 :data="article"
                 :index="index"
-                @on-click="goToStoryPage(article, { src: article.cmsSource })"
+                showPlayButton
+                is-horizontal
+                imgCol="w-7rem"
+                :showBg="false"
+                :showBgMobile="false"
               />
             </div>
           </div>
@@ -171,14 +184,36 @@ watch(loadMoreRefVisible, (val) => {
         </div>
       </div>
       <div v-else>
-        <skeleton-staff-page />
+        <skeleton-staff-page class="mt-5" />
         <hr class="my-4" />
-        <div>
-          <skeleton-episode-item v-for="i in 10" :key="`sk1-${i}`" class="mb-5" />
+        <div class="grid">
+          <!-- <skeleton-episode-item v-for="i in 10" :key="`sk1-${i}`" class="mb-5" /> -->
+          <skeleton-media-card
+            v-for="i in 9"
+            :key="`sk1-${i}`"
+            showPlayButton
+            is-horizontal
+            imgCol="w-7rem"
+            :size="[1, 1]"
+            :showBg="false"
+            :showBgMobile="false"
+            class="mb-5 col-12 md:col-6 xl:col-4"
+          />
         </div>
       </div>
-      <div v-if="pendingMore">
-        <skeleton-episode-item v-for="i in 10" :key="`sk1-${i}`" class="mb-5" />
+      <div v-if="pendingMore" class="grid">
+        <!-- <skeleton-episode-item v-for="i in 10" :key="`sk1-${i}`" class="mb-5" /> -->
+        <skeleton-media-card
+          v-for="i in 9"
+          :key="`sk2-${i}`"
+          showPlayButton
+          is-horizontal
+          imgCol="w-7rem"
+          :size="[1, 1]"
+          :showBg="false"
+          :showBgMobile="false"
+          class="mb-5 col-12 md:col-6 xl:col-4"
+        />
       </div>
       <WnycLoader
         ref="loadMoreRef"

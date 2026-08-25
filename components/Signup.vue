@@ -40,10 +40,6 @@ const onLoginClick = () => {
   if (!props.isRoute) {
     loginSideBar.value = true
     signUpSideBar.value = false
-  } else {
-    navigateTo({
-      path: "/login",
-    })
   }
   trackClickEvent(
     "Click Tracking - log in",
@@ -74,27 +70,30 @@ const closeAll = () => {
 
 <template>
   <div class="signup">
-    <div v-if="props.showHeader">
+    <section v-if="props.showHeader">
       <slot name="header">
         <SHeader
           class="pb-4"
           label="Sign up"
+          :showButton="!props.isRoute"
           @close-sidebar="
             props.isRoute ? navigateTo('/home') : (signUpSideBar = false)
           "
         />
-        <p>
+        <div>
           Already have an account?
           <VFlexibleLink
+            :to="props.isRoute ? '/login' : '#'"
             aria-label="log in"
             @flexible-link-click="onLoginClick"
           >
             Log in
           </VFlexibleLink>
-        </p>
+        </div>
       </slot>
-    </div>
-    <div class="pt-0">
+    </section>
+
+    <section class="px-0 md:px-6">
       <VLoginWithProvider
         :client="client"
         :config="config"
@@ -126,7 +125,7 @@ const closeAll = () => {
         label="Sign up"
         :returnRoute="props.returnRoute"
         @login-success="closeAll"
-        redirectUrl="https://demo.native-app.wnyc.org"
+        :redirectUrl="config.public.SUPABASE_AUTH_SIGN_IN_REDIRECT_TO"
       >
         <template #aboveSubmit>
           <p class="mb-3">
@@ -143,7 +142,7 @@ const closeAll = () => {
           />
         </template> -->
       </VSignupWithEmail>
-    </div>
+    </section>
   </div>
 </template>
 

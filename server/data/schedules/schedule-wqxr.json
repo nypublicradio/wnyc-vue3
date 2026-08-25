@@ -1,0 +1,2146 @@
+{
+    "episodes": [
+        {
+            "id": "019be164-0e59-7ea0-81f8-1a9909efa052_20260405",
+            "longDescription": "",
+            "description": "",
+            "name": "Weekend Evenings with Lauren Rico",
+            "showId": "019be160-a2d3-7f21-a9bc-9c9952a8def9",
+            "startTime": "2026-04-05T21:00:00Z",
+            "endTime": "2026-04-06T01:00:00Z",
+            "duration": "04:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019be164-5797-7c28-a358-1d655df6471a_20260405",
+            "longDescription": "",
+            "description": "",
+            "name": "Old School",
+            "showId": "019be15f-3ec6-741e-8152-6eea3e85e41d",
+            "startTime": "2026-04-06T01:00:00Z",
+            "endTime": "2026-04-06T02:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/055c0a64cf8a3e181f902119dc0f0c9d.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019be164-b6f9-76a9-adfb-6bb7f815ed91_20260405",
+            "longDescription": "",
+            "description": "",
+            "name": "Reflections from the Keyboard",
+            "showId": "019be164-a96b-736a-83b5-0b5b150b3c0f",
+            "startTime": "2026-04-06T02:00:00Z",
+            "endTime": "2026-04-06T03:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc7b8-fac1-7709-bc3b-0be24d9902ef_20260405",
+            "longDescription": "Experience the variety and wonder of the pipe organ. Hosted by Michael Barone, Pipedreams has been a classical music staple on public radio for more than 40 years, and boasts a strong and loyal following.\n\nPipedreams is available as a two-hour or one-hour show. Stations may carry the two-hour show or carry only the first hour as a stand-alone program.",
+            "description": "",
+            "name": "Pipedreams",
+            "showId": "852227f6-1f32-4a3f-8796-98fd18acee37",
+            "startTime": "2026-04-06T03:00:00Z",
+            "endTime": "2026-04-06T04:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/a695dafb2f2340c6df025be5459dea11.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc317-fe02-7579-8e95-455adc6405c0_20260406",
+            "longDescription": "",
+            "description": "",
+            "name": "New York At Night",
+            "showId": "019bc316-c9e9-7a6c-9bc3-c101512f3ead",
+            "startTime": "2026-04-06T04:00:00Z",
+            "endTime": "2026-04-06T09:30:00Z",
+            "duration": "05:30:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/505066316213a4bfa14f82c043d3e586.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc31a-5a6c-743b-9b8e-f3e4f5dd8362_20260406",
+            "longDescription": "",
+            "description": "",
+            "name": "Mornings with Jeff Spurgeon ",
+            "showId": "019bc319-c37d-75c8-9c70-6fb18ae5b650",
+            "startTime": "2026-04-06T09:30:00Z",
+            "endTime": "2026-04-06T15:00:00Z",
+            "duration": "05:30:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/39fb1ca797d581ea80cb8b633110e3fb.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc77c-92ec-7a54-b8de-1492988cb1c4_20260406",
+            "longDescription": "",
+            "description": "",
+            "name": "Middays with Elliott Forrest",
+            "showId": "019bc77c-0210-7ca4-8cad-821e5a5d258f",
+            "startTime": "2026-04-06T15:00:00Z",
+            "endTime": "2026-04-06T20:00:00Z",
+            "duration": "05:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/354ecb3d149a70318faa40ff416de49f.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc77d-0ea4-7774-8fb3-a4f98239053a_20260406",
+            "longDescription": "",
+            "description": "",
+            "name": "Afternoons and Evenings with Terrance McKnight",
+            "showId": "019bc77c-dcb2-76d9-95b2-dddf2fd5b138",
+            "startTime": "2026-04-06T20:00:00Z",
+            "endTime": "2026-04-07T01:00:00Z",
+            "duration": "05:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/0a3a6c139dc444d00f8946e4ee1b8445.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019be15c-3984-7637-8253-848da220db15_20260406",
+            "longDescription": "",
+            "description": "",
+            "name": "Chamber Music Society of Lincoln Center",
+            "showId": "019be15b-c0fb-73a1-a112-54e7ae3c9a83",
+            "startTime": "2026-04-07T01:00:00Z",
+            "endTime": "2026-04-07T02:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/71a5d74c4116667ef324e482e2898b0e.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019be15c-da97-7083-b1ea-653f82c551f0_20260406",
+            "longDescription": "",
+            "description": "",
+            "name": "Fiesta",
+            "showId": "019be15c-bedb-7b8f-85e2-64f5b09f7f8b",
+            "startTime": "2026-04-07T02:00:00Z",
+            "endTime": "2026-04-07T03:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/f781ebd3493de17992836b8e2f1afba4.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc77e-3994-7429-8d61-0c57886014a2_20260406",
+            "longDescription": "",
+            "description": "",
+            "name": "Exploring Music",
+            "showId": "019bc77d-ef53-7ad1-b385-69f0553c3246",
+            "startTime": "2026-04-07T03:00:00Z",
+            "endTime": "2026-04-07T04:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/9763e24d93943ae69c0e7fee96d40977.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc317-fe02-7579-8e95-455adc6405c0_20260407",
+            "longDescription": "",
+            "description": "",
+            "name": "New York At Night",
+            "showId": "019bc316-c9e9-7a6c-9bc3-c101512f3ead",
+            "startTime": "2026-04-07T04:00:00Z",
+            "endTime": "2026-04-07T09:30:00Z",
+            "duration": "05:30:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/505066316213a4bfa14f82c043d3e586.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc31a-5a6c-743b-9b8e-f3e4f5dd8362_20260407",
+            "longDescription": "",
+            "description": "",
+            "name": "Mornings with Jeff Spurgeon ",
+            "showId": "019bc319-c37d-75c8-9c70-6fb18ae5b650",
+            "startTime": "2026-04-07T09:30:00Z",
+            "endTime": "2026-04-07T15:00:00Z",
+            "duration": "05:30:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/39fb1ca797d581ea80cb8b633110e3fb.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc77c-92ec-7a54-b8de-1492988cb1c4_20260407",
+            "longDescription": "",
+            "description": "",
+            "name": "Middays with Elliott Forrest",
+            "showId": "019bc77c-0210-7ca4-8cad-821e5a5d258f",
+            "startTime": "2026-04-07T15:00:00Z",
+            "endTime": "2026-04-07T20:00:00Z",
+            "duration": "05:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/354ecb3d149a70318faa40ff416de49f.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc77d-0ea4-7774-8fb3-a4f98239053a_20260407",
+            "longDescription": "",
+            "description": "",
+            "name": "Afternoons and Evenings with Terrance McKnight",
+            "showId": "019bc77c-dcb2-76d9-95b2-dddf2fd5b138",
+            "startTime": "2026-04-07T20:00:00Z",
+            "endTime": "2026-04-08T01:00:00Z",
+            "duration": "05:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/0a3a6c139dc444d00f8946e4ee1b8445.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019be15e-397a-7ae9-b9bd-db5e0a2b330f_20260407",
+            "longDescription": "",
+            "description": "",
+            "name": "Chicago Symphony Orchestra",
+            "showId": "019be15d-4e56-79da-9cf2-790df05147d0",
+            "startTime": "2026-04-08T01:00:00Z",
+            "endTime": "2026-04-08T03:00:00Z",
+            "duration": "02:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/098b5d8fdcfacf8d6556bac03c363d4e.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc77e-3994-7429-8d61-0c57886014a2_20260407",
+            "longDescription": "",
+            "description": "",
+            "name": "Exploring Music",
+            "showId": "019bc77d-ef53-7ad1-b385-69f0553c3246",
+            "startTime": "2026-04-08T03:00:00Z",
+            "endTime": "2026-04-08T04:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/9763e24d93943ae69c0e7fee96d40977.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc317-fe02-7579-8e95-455adc6405c0_20260408",
+            "longDescription": "",
+            "description": "",
+            "name": "New York At Night",
+            "showId": "019bc316-c9e9-7a6c-9bc3-c101512f3ead",
+            "startTime": "2026-04-08T04:00:00Z",
+            "endTime": "2026-04-08T09:30:00Z",
+            "duration": "05:30:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/505066316213a4bfa14f82c043d3e586.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc31a-5a6c-743b-9b8e-f3e4f5dd8362_20260408",
+            "longDescription": "",
+            "description": "",
+            "name": "Mornings with Jeff Spurgeon ",
+            "showId": "019bc319-c37d-75c8-9c70-6fb18ae5b650",
+            "startTime": "2026-04-08T09:30:00Z",
+            "endTime": "2026-04-08T15:00:00Z",
+            "duration": "05:30:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/39fb1ca797d581ea80cb8b633110e3fb.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc77c-92ec-7a54-b8de-1492988cb1c4_20260408",
+            "longDescription": "",
+            "description": "",
+            "name": "Middays with Elliott Forrest",
+            "showId": "019bc77c-0210-7ca4-8cad-821e5a5d258f",
+            "startTime": "2026-04-08T15:00:00Z",
+            "endTime": "2026-04-08T20:00:00Z",
+            "duration": "05:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/354ecb3d149a70318faa40ff416de49f.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc77d-0ea4-7774-8fb3-a4f98239053a_20260408",
+            "longDescription": "",
+            "description": "",
+            "name": "Afternoons and Evenings with Terrance McKnight",
+            "showId": "019bc77c-dcb2-76d9-95b2-dddf2fd5b138",
+            "startTime": "2026-04-08T20:00:00Z",
+            "endTime": "2026-04-09T01:00:00Z",
+            "duration": "05:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/0a3a6c139dc444d00f8946e4ee1b8445.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019be15e-e230-7c59-8a53-456c1cdf895b_20260408",
+            "longDescription": "",
+            "description": "",
+            "name": "Young Artist Showcase",
+            "showId": "019be15e-b0d9-73bb-84e2-8d793ea2b3bd",
+            "startTime": "2026-04-09T01:00:00Z",
+            "endTime": "2026-04-09T02:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/8a2f8cd8e72a0ad1414f254ca44499ae.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019be15f-5900-7fe9-bbdb-4d9a8e8bd173_20260408",
+            "longDescription": "",
+            "description": "",
+            "name": "Old School",
+            "showId": "019be15f-3ec6-741e-8152-6eea3e85e41d",
+            "startTime": "2026-04-09T02:00:00Z",
+            "endTime": "2026-04-09T03:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/055c0a64cf8a3e181f902119dc0f0c9d.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc77e-3994-7429-8d61-0c57886014a2_20260408",
+            "longDescription": "",
+            "description": "",
+            "name": "Exploring Music",
+            "showId": "019bc77d-ef53-7ad1-b385-69f0553c3246",
+            "startTime": "2026-04-09T03:00:00Z",
+            "endTime": "2026-04-09T04:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/9763e24d93943ae69c0e7fee96d40977.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc317-fe02-7579-8e95-455adc6405c0_20260409",
+            "longDescription": "",
+            "description": "",
+            "name": "New York At Night",
+            "showId": "019bc316-c9e9-7a6c-9bc3-c101512f3ead",
+            "startTime": "2026-04-09T04:00:00Z",
+            "endTime": "2026-04-09T09:30:00Z",
+            "duration": "05:30:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/505066316213a4bfa14f82c043d3e586.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc31a-5a6c-743b-9b8e-f3e4f5dd8362_20260409",
+            "longDescription": "",
+            "description": "",
+            "name": "Mornings with Jeff Spurgeon ",
+            "showId": "019bc319-c37d-75c8-9c70-6fb18ae5b650",
+            "startTime": "2026-04-09T09:30:00Z",
+            "endTime": "2026-04-09T15:00:00Z",
+            "duration": "05:30:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/39fb1ca797d581ea80cb8b633110e3fb.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc77c-92ec-7a54-b8de-1492988cb1c4_20260409",
+            "longDescription": "",
+            "description": "",
+            "name": "Middays with Elliott Forrest",
+            "showId": "019bc77c-0210-7ca4-8cad-821e5a5d258f",
+            "startTime": "2026-04-09T15:00:00Z",
+            "endTime": "2026-04-09T20:00:00Z",
+            "duration": "05:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/354ecb3d149a70318faa40ff416de49f.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc77d-0ea4-7774-8fb3-a4f98239053a_20260409",
+            "longDescription": "",
+            "description": "",
+            "name": "Afternoons and Evenings with Terrance McKnight",
+            "showId": "019bc77c-dcb2-76d9-95b2-dddf2fd5b138",
+            "startTime": "2026-04-09T20:00:00Z",
+            "endTime": "2026-04-10T01:00:00Z",
+            "duration": "05:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/0a3a6c139dc444d00f8946e4ee1b8445.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019be15f-b840-7f64-8a16-1ac46a63b30f_20260409",
+            "longDescription": "",
+            "description": "",
+            "name": "The New York Philharmonic This Week",
+            "showId": "019be15f-9cc2-762c-824e-40191ceed6e0",
+            "startTime": "2026-04-10T01:00:00Z",
+            "endTime": "2026-04-10T03:00:00Z",
+            "duration": "02:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/804af11c736acf60dc598c2a5b21601c.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc77e-3994-7429-8d61-0c57886014a2_20260409",
+            "longDescription": "",
+            "description": "",
+            "name": "Exploring Music",
+            "showId": "019bc77d-ef53-7ad1-b385-69f0553c3246",
+            "startTime": "2026-04-10T03:00:00Z",
+            "endTime": "2026-04-10T04:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/9763e24d93943ae69c0e7fee96d40977.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc317-fe02-7579-8e95-455adc6405c0_20260410",
+            "longDescription": "",
+            "description": "",
+            "name": "New York At Night",
+            "showId": "019bc316-c9e9-7a6c-9bc3-c101512f3ead",
+            "startTime": "2026-04-10T04:00:00Z",
+            "endTime": "2026-04-10T09:30:00Z",
+            "duration": "05:30:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/505066316213a4bfa14f82c043d3e586.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc31a-5a6c-743b-9b8e-f3e4f5dd8362_20260410",
+            "longDescription": "",
+            "description": "",
+            "name": "Mornings with Jeff Spurgeon ",
+            "showId": "019bc319-c37d-75c8-9c70-6fb18ae5b650",
+            "startTime": "2026-04-10T09:30:00Z",
+            "endTime": "2026-04-10T15:00:00Z",
+            "duration": "05:30:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/39fb1ca797d581ea80cb8b633110e3fb.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc77c-92ec-7a54-b8de-1492988cb1c4_20260410",
+            "longDescription": "",
+            "description": "",
+            "name": "Middays with Elliott Forrest",
+            "showId": "019bc77c-0210-7ca4-8cad-821e5a5d258f",
+            "startTime": "2026-04-10T15:00:00Z",
+            "endTime": "2026-04-10T20:00:00Z",
+            "duration": "05:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/354ecb3d149a70318faa40ff416de49f.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc77d-0ea4-7774-8fb3-a4f98239053a_20260410",
+            "longDescription": "",
+            "description": "",
+            "name": "Afternoons and Evenings with Terrance McKnight",
+            "showId": "019bc77c-dcb2-76d9-95b2-dddf2fd5b138",
+            "startTime": "2026-04-10T20:00:00Z",
+            "endTime": "2026-04-11T01:00:00Z",
+            "duration": "05:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/0a3a6c139dc444d00f8946e4ee1b8445.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc77d-ab70-7e4a-ab62-af1d4fc42bbc_20260410",
+            "longDescription": "",
+            "description": "",
+            "name": "European Broadcast Union",
+            "showId": "019bc77d-75da-7f33-8a00-23ccbf9eed20",
+            "startTime": "2026-04-11T01:00:00Z",
+            "endTime": "2026-04-11T03:00:00Z",
+            "duration": "02:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/e2579161d4c607e5b14efb3845b3c63e.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc77e-3994-7429-8d61-0c57886014a2_20260410",
+            "longDescription": "",
+            "description": "",
+            "name": "Exploring Music",
+            "showId": "019bc77d-ef53-7ad1-b385-69f0553c3246",
+            "startTime": "2026-04-11T03:00:00Z",
+            "endTime": "2026-04-11T04:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/9763e24d93943ae69c0e7fee96d40977.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc318-deef-71d8-b2de-cf7bb5539ca9_20260411",
+            "longDescription": "",
+            "description": "",
+            "name": "New York At Night",
+            "showId": "019bc316-c9e9-7a6c-9bc3-c101512f3ead",
+            "startTime": "2026-04-11T04:00:00Z",
+            "endTime": "2026-04-11T10:00:00Z",
+            "duration": "06:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/505066316213a4bfa14f82c043d3e586.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc77f-1c70-7100-a144-39ee79eb56eb_20260411",
+            "longDescription": "",
+            "description": "",
+            "name": "From the Top",
+            "showId": "019bc77e-e837-777d-933b-4655bd67b1e7",
+            "startTime": "2026-04-11T10:00:00Z",
+            "endTime": "2026-04-11T11:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/e00d7936ad8a66aca2713709373de2d5.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019cb0b7-79e7-7ab3-88ac-44de1ef18fbf_20260411",
+            "longDescription": "Performance Today features the best live performance recordings from concerts halls around the world, as well as in-studio performances and interviews with an eclectic mix of guests. Hosted by Valerie Kahler, this daily, two-hour program is frequently on the road, with special broadcasts from festivals and public radio stations around the country. Performance Today is available as a weekday show (M-F) or weekend offering (Performance Today Weekend).",
+            "description": "",
+            "name": "Performance Today Weekend",
+            "showId": "af6eae90-651a-455d-8146-2287ad39166d",
+            "startTime": "2026-04-11T11:00:00Z",
+            "endTime": "2026-04-11T12:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/da315c976357446f84ed6528c45f2e58.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc781-5bb3-7cee-a70a-c120a9c4ea27_20260411",
+            "longDescription": "",
+            "description": "",
+            "name": "Weekend Mornings with Paul Cavalconte",
+            "showId": "019bc781-2ddc-7966-b475-f75ae35d18f2",
+            "startTime": "2026-04-11T12:00:00Z",
+            "endTime": "2026-04-11T17:00:00Z",
+            "duration": "05:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/3a583595253818d2ddc63ee87cde7d0b.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc782-ab9b-767a-9b73-35f083fc8f31_20260411",
+            "longDescription": "",
+            "description": "",
+            "name": "Metropolitan Opera",
+            "showId": "019bc782-63e5-7ad7-a44b-dd45457817b3",
+            "startTime": "2026-04-11T17:00:00Z",
+            "endTime": "2026-04-11T20:00:00Z",
+            "duration": "03:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/d11a9fc41aff5be3aba0f892c05ffac1.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc7b2-8ada-7055-aa4d-f1774252543a_20260411",
+            "longDescription": "",
+            "description": "",
+            "name": "Weekend Afternoons with Annie Bergen",
+            "showId": "019bc7ae-5ec2-7866-87d5-ddf635e5f664",
+            "startTime": "2026-04-11T20:00:00Z",
+            "endTime": "2026-04-12T00:00:00Z",
+            "duration": "04:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/6a5e6ace2c7b4b6524a04cc8cccb42cb.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019be160-e9f4-7dec-8143-764820c687ee_20260411",
+            "longDescription": "",
+            "description": "",
+            "name": "Weekend Evenings with Lauren Rico",
+            "showId": "019be160-a2d3-7f21-a9bc-9c9952a8def9",
+            "startTime": "2026-04-12T00:00:00Z",
+            "endTime": "2026-04-12T02:00:00Z",
+            "duration": "02:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019be161-22b5-7907-a1db-c49bcc066da7_20260411",
+            "longDescription": "",
+            "description": "",
+            "name": "Chamber Music Society of Lincoln Center",
+            "showId": "019be15b-c0fb-73a1-a112-54e7ae3c9a83",
+            "startTime": "2026-04-12T02:00:00Z",
+            "endTime": "2026-04-12T03:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/71a5d74c4116667ef324e482e2898b0e.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019be161-4a77-7d7f-b9e4-d18c988b0263_20260411",
+            "longDescription": "",
+            "description": "",
+            "name": "Young Artist Showcase",
+            "showId": "019be15e-b0d9-73bb-84e2-8d793ea2b3bd",
+            "startTime": "2026-04-12T03:00:00Z",
+            "endTime": "2026-04-12T04:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/8a2f8cd8e72a0ad1414f254ca44499ae.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc318-deef-71d8-b2de-cf7bb5539ca9_20260412",
+            "longDescription": "",
+            "description": "",
+            "name": "New York At Night",
+            "showId": "019bc316-c9e9-7a6c-9bc3-c101512f3ead",
+            "startTime": "2026-04-12T04:00:00Z",
+            "endTime": "2026-04-12T10:00:00Z",
+            "duration": "06:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/505066316213a4bfa14f82c043d3e586.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019be162-74d7-7024-aa61-92f6b6deaffc_20260412",
+            "longDescription": "",
+            "description": "",
+            "name": "NJ Capitol Report and Capitol Pressroom",
+            "showId": "019be162-2ded-7734-ac34-4924f0b25806",
+            "startTime": "2026-04-12T10:00:00Z",
+            "endTime": "2026-04-12T11:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019cb0b7-79e7-7ab3-88ac-44de1ef18fbf_20260412",
+            "longDescription": "Performance Today features the best live performance recordings from concerts halls around the world, as well as in-studio performances and interviews with an eclectic mix of guests. Hosted by Valerie Kahler, this daily, two-hour program is frequently on the road, with special broadcasts from festivals and public radio stations around the country. Performance Today is available as a weekday show (M-F) or weekend offering (Performance Today Weekend).",
+            "description": "",
+            "name": "Performance Today Weekend",
+            "showId": "af6eae90-651a-455d-8146-2287ad39166d",
+            "startTime": "2026-04-12T11:00:00Z",
+            "endTime": "2026-04-12T12:00:00Z",
+            "duration": "01:00:00",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/da315c976357446f84ed6528c45f2e58.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019bc781-d1fa-7a6b-8f18-3afb911785f8_20260412",
+            "longDescription": "",
+            "description": "",
+            "name": "Weekend Mornings with Paul Cavalconte",
+            "showId": "019bc781-2ddc-7966-b475-f75ae35d18f2",
+            "startTime": "2026-04-12T12:00:00Z",
+            "endTime": "2026-04-12T16:00:00Z",
+            "duration": "04:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/3a583595253818d2ddc63ee87cde7d0b.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019be163-9c6d-71e6-8950-6cef31828c48_20260412",
+            "longDescription": "",
+            "description": "",
+            "name": "Weekend Afternoons with Annie Bergen",
+            "showId": "019bc7ae-5ec2-7866-87d5-ddf635e5f664",
+            "startTime": "2026-04-12T16:00:00Z",
+            "endTime": "2026-04-12T21:00:00Z",
+            "duration": "05:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/6a5e6ace2c7b4b6524a04cc8cccb42cb.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        },
+        {
+            "id": "019be164-0e59-7ea0-81f8-1a9909efa052_20260412",
+            "longDescription": "",
+            "description": "",
+            "name": "Weekend Evenings with Lauren Rico",
+            "showId": "019be160-a2d3-7f21-a9bc-9c9952a8def9",
+            "startTime": "2026-04-12T21:00:00Z",
+            "endTime": "2026-04-13T01:00:00Z",
+            "duration": "04:00:00",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": [],
+            "temporaryChanges": false
+        }
+    ],
+    "shows": [
+        {
+            "id": "019bc77c-dcb2-76d9-95b2-dddf2fd5b138",
+            "longDescription": "",
+            "description": "",
+            "name": "Afternoons and Evenings with Terrance McKnight",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/0a3a6c139dc444d00f8946e4ee1b8445.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": []
+        },
+        {
+            "id": "019be15b-c0fb-73a1-a112-54e7ae3c9a83",
+            "longDescription": "",
+            "description": "",
+            "name": "Chamber Music Society of Lincoln Center",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/71a5d74c4116667ef324e482e2898b0e.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": []
+        },
+        {
+            "id": "019be15d-4e56-79da-9cf2-790df05147d0",
+            "longDescription": "",
+            "description": "",
+            "name": "Chicago Symphony Orchestra",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/098b5d8fdcfacf8d6556bac03c363d4e.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": []
+        },
+        {
+            "id": "019bc77d-75da-7f33-8a00-23ccbf9eed20",
+            "longDescription": "",
+            "description": "",
+            "name": "European Broadcast Union",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/e2579161d4c607e5b14efb3845b3c63e.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": []
+        },
+        {
+            "id": "019bc77d-ef53-7ad1-b385-69f0553c3246",
+            "longDescription": "",
+            "description": "",
+            "name": "Exploring Music",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/9763e24d93943ae69c0e7fee96d40977.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": []
+        },
+        {
+            "id": "019be15c-bedb-7b8f-85e2-64f5b09f7f8b",
+            "longDescription": "",
+            "description": "",
+            "name": "Fiesta",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/f781ebd3493de17992836b8e2f1afba4.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": []
+        },
+        {
+            "id": "019bc77e-e837-777d-933b-4655bd67b1e7",
+            "longDescription": "",
+            "description": "",
+            "name": "From the Top",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/e00d7936ad8a66aca2713709373de2d5.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": []
+        },
+        {
+            "id": "019bc782-63e5-7ad7-a44b-dd45457817b3",
+            "longDescription": "",
+            "description": "",
+            "name": "Metropolitan Opera",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/d11a9fc41aff5be3aba0f892c05ffac1.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": []
+        },
+        {
+            "id": "019bc77c-0210-7ca4-8cad-821e5a5d258f",
+            "longDescription": "",
+            "description": "",
+            "name": "Middays with Elliott Forrest",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/354ecb3d149a70318faa40ff416de49f.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": []
+        },
+        {
+            "id": "019bc319-c37d-75c8-9c70-6fb18ae5b650",
+            "longDescription": "",
+            "description": "",
+            "name": "Mornings with Jeff Spurgeon ",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/39fb1ca797d581ea80cb8b633110e3fb.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": []
+        },
+        {
+            "id": "019bc316-c9e9-7a6c-9bc3-c101512f3ead",
+            "longDescription": "",
+            "description": "",
+            "name": "New York At Night",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/505066316213a4bfa14f82c043d3e586.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": []
+        },
+        {
+            "id": "019be162-2ded-7734-ac34-4924f0b25806",
+            "longDescription": "",
+            "description": "",
+            "name": "NJ Capitol Report and Capitol Pressroom",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": []
+        },
+        {
+            "id": "019be15f-3ec6-741e-8152-6eea3e85e41d",
+            "longDescription": "",
+            "description": "",
+            "name": "Old School",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/055c0a64cf8a3e181f902119dc0f0c9d.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": []
+        },
+        {
+            "id": "af6eae90-651a-455d-8146-2287ad39166d",
+            "longDescription": "Performance Today features the best live performance recordings from concerts halls around the world, as well as in-studio performances and interviews with an eclectic mix of guests. Hosted by Valerie Kahler, this daily, two-hour program is frequently on the road, with special broadcasts from festivals and public radio stations around the country. Performance Today is available as a weekday show (M-F) or weekend offering (Performance Today Weekend).",
+            "description": "",
+            "name": "Performance Today Weekend",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/da315c976357446f84ed6528c45f2e58.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": []
+        },
+        {
+            "id": "852227f6-1f32-4a3f-8796-98fd18acee37",
+            "longDescription": "Experience the variety and wonder of the pipe organ. Hosted by Michael Barone, Pipedreams has been a classical music staple on public radio for more than 40 years, and boasts a strong and loyal following.\n\nPipedreams is available as a two-hour or one-hour show. Stations may carry the two-hour show or carry only the first hour as a stand-alone program.",
+            "description": "",
+            "name": "Pipedreams",
+            "images": [
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/a695dafb2f2340c6df025be5459dea11.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": []
+        },
+        {
+            "id": "019be164-a96b-736a-83b5-0b5b150b3c0f",
+            "longDescription": "",
+            "description": "",
+            "name": "Reflections from the Keyboard",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": []
+        },
+        {
+            "id": "019be15f-9cc2-762c-824e-40191ceed6e0",
+            "longDescription": "",
+            "description": "",
+            "name": "The New York Philharmonic This Week",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/804af11c736acf60dc598c2a5b21601c.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": []
+        },
+        {
+            "id": "019bc7ae-5ec2-7866-87d5-ddf635e5f664",
+            "longDescription": "",
+            "description": "",
+            "name": "Weekend Afternoons with Annie Bergen",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/6a5e6ace2c7b4b6524a04cc8cccb42cb.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": []
+        },
+        {
+            "id": "019be160-a2d3-7f21-a9bc-9c9952a8def9",
+            "longDescription": "",
+            "description": "",
+            "name": "Weekend Evenings with Lauren Rico",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": []
+        },
+        {
+            "id": "019bc781-2ddc-7966-b475-f75ae35d18f2",
+            "longDescription": "",
+            "description": "",
+            "name": "Weekend Mornings with Paul Cavalconte",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/3a583595253818d2ddc63ee87cde7d0b.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": []
+        },
+        {
+            "id": "019be15e-b0d9-73bb-84e2-8d793ea2b3bd",
+            "longDescription": "",
+            "description": "",
+            "name": "Young Artist Showcase",
+            "images": [
+                {
+                    "url": "",
+                    "type": "largesquareimage",
+                    "width": 1280,
+                    "height": 1280
+                },
+                {
+                    "url": "",
+                    "type": "largerectangleimage",
+                    "width": 1280,
+                    "height": 800
+                },
+                {
+                    "url": "https://s3.us-east-1.amazonaws.com/webstream-assets-prod/019c0a1818ae7c69b58ae3011cf38e43/8a2f8cd8e72a0ad1414f254ca44499ae.jpg",
+                    "type": "imagepath",
+                    "width": 600,
+                    "height": 600
+                }
+            ],
+            "presenterIds": []
+        }
+    ],
+    "presenters": []
+}

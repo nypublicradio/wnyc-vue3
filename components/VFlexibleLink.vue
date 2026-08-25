@@ -1,5 +1,7 @@
 <script setup>
-import { computed } from "vue";
+import { computed } from "vue"
+
+defineOptions({ inheritAttrs: false })
 
 const props = defineProps({
   /**
@@ -30,53 +32,74 @@ const props = defineProps({
     default: null,
     type: String,
   },
-});
+  /**
+   * url or slug or anchor to go to
+   */
+  tabIndexNumber: {
+    default: 0,
+    type: Number,
+  },
+  /**
+   * radius on the link
+   */
+  radius: {
+    default: "2px",
+    type: String,
+  },
+  /**
+   * radius on the link
+   */
+  wordBreak: {
+    default: "normal",
+    type: String,
+  },
+})
 
-const emit = defineEmits(["flexible-link-click"]);
+const emit = defineEmits(["flexible-link-click"])
+
+const radius = ref(props.radius)
 
 const isExternal = computed(() => {
-  const reg = /^https?:\/\/|mailto:|tel:/i;
-  return typeof props.to === "string" && reg.test(props.to);
-});
+  const route = props.to?.trim()
+  const reg = /^https?:\/\/|mailto:|tel:/i
+  return typeof route === "string" && reg.test(route)
+})
 const isAnchor = computed(() => {
-  return props.to.charAt(0) === "#";
-});
+  return props.to.charAt(0) === "#"
+})
 </script>
 
 <template>
-  <!-- <div v-if="!to" class="flexible-link null" v-bind="{ ...$attrs }">
-    <slot name="default"></slot>
-  </div> -->
-
   <div
     v-if="!props.to"
-    v-bind="{ ...$props, ...$attrs }"
-    class="flexible-link inline cursor-pointer underline"
-    :class="{ ['raw']: raw }"
+    class="flexible-link null inline"
+    v-bind="$attrs"
     @click="emit('flexible-link-click', props.to)"
   >
     <slot name="default"></slot>
   </div>
   <a
     v-else-if="isExternal"
-    v-bind="{ ...$props, ...$attrs }"
+    v-bind="$attrs"
     :href="props.to"
     :target="target"
     :rel="`noopener ${props.target === '_blank' ? 'noreferrer' : ''}`"
     class="flexible-link external"
     :class="{ ['raw']: raw }"
     @click="emit('flexible-link-click', props.to)"
+    :tabIndex="tabIndexNumber"
   >
     <slot name="default"></slot>
   </a>
   <a
     v-else-if="isAnchor"
-    v-bind="{ ...$props, ...$attrs }"
+    v-bind="$attrs"
     :href="props.to"
     target="_self"
     class="flexible-link anchor"
     :class="{ ['raw']: raw }"
     @click="emit('flexible-link-click', props.to)"
+    :tabIndex="tabIndexNumber"
   >
     <slot name="default"></slot>
   </a>
@@ -85,13 +108,18 @@ const isAnchor = computed(() => {
     class="flexible-link internal"
     :class="{ ['raw']: raw }"
     :to="props.to"
-    v-bind="{ ...$attrs }"
+    v-bind="$attrs"
     @click="emit('flexible-link-click', props.to)"
+    :tabIndex="tabIndexNumber"
   >
     <slot name="default"></slot>
   </nuxt-link>
 </template>
 <style lang="scss" scoped>
+.flexible-link {
+  border-radius: v-bind(radius);
+  word-break: v-bind(wordBreak);
+}
 .flexible-link:not(.raw):not(.null) {
   color: var(--link-button-color);
   transition: all var(--p-transition-duration);
@@ -99,17 +127,12 @@ const isAnchor = computed(() => {
     transition: all var(--p-transition-duration);
   }
   &:hover {
-    color: var(--link-button-hover-color);
+    color: var(--p-button-hyperlink-hover-color);
     text-decoration: var(--link-button-text-hover-decoration);
     * {
-      color: var(--link-button-hover-color);
+      color: var(--p-button-hyperlink-hover-color);
       text-decoration: var(--link-button-text-hover-decoration);
     }
-  }
-  &:focus {
-    outline: var(--focus-outline);
-    outline-offset: var(--focus-outline-offset);
-    box-shadow: var(--link-button-focus-shadow);
   }
 }
 .flexible-link.null {
@@ -122,6 +145,7 @@ const isAnchor = computed(() => {
 .flexible-link.raw {
   color: inherit;
   text-decoration: none;
+  line-height: 0;
   &:hover,
   *:hover {
     text-decoration: v-bind(rawHover);

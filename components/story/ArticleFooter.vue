@@ -1,5 +1,4 @@
 <script setup>
-import { getUserFallBackImage } from "~/utilities/helpers"
 import { cmsSources } from "~/composables/globals"
 import { ref } from "vue"
 
@@ -12,12 +11,19 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  showAd: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 //const tags = ref(props.article.tags)
 const isSponsored = ref(props.article?.sponsoredContent ?? false)
 const isDisableComments = ref(props.article?.disableComments ?? false)
-const profileData = isSponsored.value ? props.article?.sponsors : props.article?.authors
+const profileData = computed(() =>
+  isSponsored.value ? props.article?.sponsors : props.article?.authors
+)
+const { getUserFallBackImage } = useFallbackImages()
 
 // function attached to the emit of the article-tags when clicked
 // const onTagClick = (tag) => {
@@ -37,25 +43,31 @@ const profileData = isSponsored.value ? props.article?.sponsors : props.article?
       @tag-click="onTagClick"
     /> -->
     <!-- profile & comments-->
-    <hr class="black mb-4" />
     <div class="grid grid-nogutter">
       <div class="profile-col col-12">
         <!-- <pre>{{ profileData }}</pre> -->
-        <section>
-          <VPerson
-            v-for="profile in profileData"
-            :key="profile.id"
-            :profileData="profile"
-            :imageSize="60"
-            imageFlexBasis="60px"
-            class="mb-4 text-sm gap-4"
-            :imageFallbackPath="!profile.photoID ? getUserFallBackImage() : null"
-            :onStaffPage="!profile.url"
-            :truncate="5"
-          />
-        </section>
-        <hr class="black mb-6" />
-        <div class="mx-auto mb-6" style="width: 300px">
+        <div v-if="profileData?.length">
+          <hr class="black mb-4 mt-0" />
+          <div>
+            <VPerson
+              v-for="profile in profileData"
+              :key="profile.id"
+              :profileData="profile"
+              :imageSize="66"
+              imageFlexBasis="66px"
+              class="mb-4 text-sm gap-4"
+              :imageFallbackPath="!profile.photoID ? getUserFallBackImage() : null"
+              :onStaffPage="!profile.url"
+              :truncate="5"
+            />
+          </div>
+          <hr class="black mb-6" />
+        </div>
+        <div
+          v-if="props.showAd"
+          class="mx-auto mb-6"
+          style="max-width: 300px; width: 100%"
+        >
           <story-htlAd
             layout="rectangle"
             slotClass="htlad-wnyc_article_rectangle"
@@ -68,9 +80,9 @@ const profileData = isSponsored.value ? props.article?.sponsors : props.article?
           class="mb-4"
         >
           <hr class="black mb-4" />
-          <section v-if="props.article.cmsSource === cmsSources.WAGTAIL">
+          <div v-if="props.article.cmsSource === cmsSources.WAGTAIL">
             <story-comments-section :article="props.article" />
-          </section>
+          </div>
         </div>
       </div>
     </div>

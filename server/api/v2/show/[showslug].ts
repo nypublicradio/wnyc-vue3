@@ -3,19 +3,25 @@ import humps from 'humps'
 import { cmsSources, mediaTypes, FALLBACKIMAGE } from '~/composables/globals'
 import { normalizeArticleListItem } from '~/composables/data/articlePages'
 import { NyprDb } from '~/server/utils/nyprdb'
-import { supabaseClient } from '~/server/utils/supabaseClient';
-import { NPR } from '~/server/utils/npr';
+import { supabaseClient } from '~/server/utils/supabaseClient'
+import { NPR } from '~/server/utils/npr'
+import { useVImage } from "~/composables/useVImage"
+import { TtlCache } from '~/server/utils/simplecastCache'
 
+const { templatizeImageUrl } = useVImage()
 
-const config = useRuntimeConfig();
-const supabase = supabaseClient();
-const nyprDb = new NyprDb(supabase);
-const npr = new NPR();
+const config = useRuntimeConfig()
+const supabase = supabaseClient()
+const nyprDb = new NyprDb(supabase)
+const npr = new NPR()
+
+// Cache Simplecast show metadata for 1 hour; skip caching failures so they can retry sooner.
+const simplecastShowCache = new TtlCache<any>(60 * 60 * 1000, (result) => result !== null)
 
 // Get NPR episodes data
 const getNPREpisodes = async (slug: string, type: string, showTitle: string) => {
 
-    const show = await nyprDb.getNPRShowBySlug(slug);
+    const show = await nyprDb.getNPRShowBySlug(slug)
     // Fetching the episodes from the NPR API and normalizing the data
     const option = {
         params: {
@@ -24,13 +30,15 @@ const getNPREpisodes = async (slug: string, type: string, showTitle: string) => 
             sort: 'publishDateTime:desc',
         },
 
-    };
-    const res = await npr.getFromNPR('documents', option);
+    }
+    const res = await npr.getFromNPR('documents', option)
 
-    let episodes = [];
+    let episodes = []
     episodes = await Promise.all(res.data.resources.map(async (item) => {
-        const episodeImage = await npr.findEpisodeImage(item, 'image-square');
-        const hasAudio = await npr.hasAudio(item.id);
+        const episodeImage = await npr.findEpisodeImage(item, 'image-square')
+        const hasAudio = await npr.hasAudio(item.id)
+        const audio = await npr.findAudio(item.id, { resources: [{ title: item.title }] })
+        const hasSegments = audio.length > 0
         return {
             id: item.id,
             title: item.title,
@@ -49,19 +57,20 @@ const getNPREpisodes = async (slug: string, type: string, showTitle: string) => 
             image: episodeImage,
             url: item.webPages[0]?.href,
             hasAudio,
-        };
-    }));
+            hasSegments
+        }
+    }))
 
     return {
         data: episodes
-    };
-};
+    }
+}
 
 // Get Publisher episodes data
 const getEpisodes = async (slug: string, showImage: string, type?: string, pageSize?: string, page?: number) => {
     // If page is not defined, set it to 1
     if (!page) {
-        page = 1;
+        page = 1
     }
     const option = {
         method: 'GET',
@@ -74,23 +83,74 @@ const getEpisodes = async (slug: string, showImage: string, type?: string, pageS
             page_size: Number(pageSize),
             audio_only: true,
         }
-    };
-    const res = await axios(option);
+    }
+    const res = await axios(option)
     const resData = await Promise.all(res.data.data.map(async (item: Record<string, unknown>) => {
-        item.cmsSource = cmsSources.PUBLISHER;
-        item.showImage = showImage;
+        item.cmsSource = cmsSources.PUBLISHER
+        item.showImage = showImage
         return await normalizeArticleListItem(humps.camelizeKeys(item))
-    }));
+    }))
     //Passing meta and data separately to the client. Meta is to used for pagination
     return {
         data: resData,
         meta: humps.camelizeKeys(res.data).meta
-    };
+    }
+}
+
+// Fetches Simplecast show metadata by UUID
+const fetchSimplecastShow = async (slug: string, isSlugOnly?: boolean) => {
+    try {
+        // Use config or fallback to process.env
+        const apiKey = config.simplecastApiKey || process.env.SIMPLECAST_API_KEY
+
+        if (!apiKey) {
+            console.error('[Simplecast Show] SIMPLECAST_API_KEY is not configured')
+            return null
+        }
+
+        const option = {
+            method: 'GET',
+            url: `${config.simplecastUrl}/podcasts/${slug}`,
+            headers: {
+                'Authorization': apiKey
+            }
+        }
+        const res = await axios(option)
+        const showData = humps.camelizeKeys(res.data)
+        return {
+            title: showData.title,
+            slug: showData.site.subdomain || showData.slug || slug,
+            cmsSource: cmsSources.SIMPLECAST,
+            ...(!isSlugOnly
+                ? [
+                    {
+                        id: showData.id,
+                        description: showData.description,
+                        tease: showData.description,
+                        image: showData.imageUrl ? { url: showData.imageUrl, template: templatizeImageUrl(showData.imageUrl) } : undefined,
+                        type: mediaTypes.SHOW,
+                        url: showData.href || showData.websiteUrl,
+                    }
+                ] : []),
+        }
+    } catch (e: any) {
+        console.error('[Simplecast Show] Error fetching show:', e?.response?.status, e?.response?.statusText, e?.message)
+        return null
+    }
 }
 
 // gets the publisher show data
-const getShow = async (slug: string) => {
-    const nprShows = await nyprDb.getNPRShowBySlug(slug);
+const getShow = async (slug: string, isSlugOnly?: boolean) => {
+    // Check if this is a Simplecast UUID
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug)
+
+    if (isUUID) {
+        // This is a Simplecast show UUID
+        return simplecastShowCache.getOrFetch(`${slug}-${isSlugOnly}`, () => fetchSimplecastShow(slug, isSlugOnly))
+    }
+
+    // Check for NPR shows
+    const nprShows = await nyprDb.getNPRShowBySlug(slug)
     if (nprShows.length > 0) {
         const fetchedShows = await Promise.all(nprShows.map(async (show) => {
             const options = {
@@ -99,9 +159,10 @@ const getShow = async (slug: string) => {
                 headers: {
                     Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}`
                 }
-            };
-            const { data } = await axios(options);
-            const image = npr.findImageUrl(data);
+            }
+            const { data } = await axios(options)
+            //console.log('=======npr show data', data.resources[0].assets);
+            const image = npr.findImageUrl(data)
             return {
                 id: show.showId,
                 title: show.title,
@@ -113,51 +174,79 @@ const getShow = async (slug: string) => {
                 type: cmsSources.NPR,
                 url: data.resources[0]?.webPages[0]?.href,
             }
-        }));
-        return fetchedShows[0];
+        }))
+        return fetchedShows[0]
     } else {
         const option = {
             method: 'GET',
-            url: `${config.public.PUBLISHER_BASE_API}v1/list/shows-for-app/`,
-        };
-        const res = await axios(option);
-        const resData = humps.camelizeKeys(res.data).results;
+            url: `${config.public.PUBLISHER_BASE_API}v1/list/shows-for-app/`, // used to be v1/list/shows-for-app/'
+
+        }
+        const res = await axios(option)
+        const resData = humps.camelizeKeys(res.data).results
+        //console.log('=======resData', resData);
         // Find the show from the list of shows
         const show = resData.find((s) => {
             return s.slug === slug
-        });
-        show.image.template = show.image.url.replace('raw', '%s/%s/%s/%s');
+        })
+
+        if (!show) {
+            console.error('[Publisher Show] Show not found for slug:', slug)
+            return null
+        }
+
+        if (show.image) {
+            const imgTemplate = show.image.url.includes('raw') ? show.image.url.replace('/raw/', '/%s/%s/%s/%s/') : templatizeImageUrl(show.image.url)
+            show.image.template = imgTemplate
+        }
+
         show.cmsSource = cmsSources.PUBLISHER
         show.type = mediaTypes.SHOW
         show.url = show.url ?? `${config.public.WNYC_SHOW_SHARE_BASE_URL}${show.slug}`
-        return show;
+        return show
     }
 }
 
 export default defineEventHandler(async (event) => {
-    const res = event?.node?.res;
+    const res = event?.node?.res
+    setResponseHeader(event, 'Cache-Control', 'max-age=60, stale-while-revalidate=120')
     //Fetching slug and type from the path params
-    const slug: string | undefined = event?.context?.params?.showslug;
+    const slug: string | undefined = event?.context?.params?.showslug
 
     //Fetching query params
-    const query = getQuery(event);
-    const page: number | undefined = Array.isArray(query.page) ? query.page[0] : query.page;
-    const pageSize: string | undefined = query.pageSize?.toString() ?? '10';
+    const query = getQuery(event)
+    const page: number | undefined = Array.isArray(query.page) ? query.page[0] : query.page
+    const pageSize: string | undefined = query.pageSize?.toString() ?? '10'
+
+    const slugOnly: string | undefined = query.slugOnly as string | undefined
+
+    const isSlugOnly = slugOnly === 'true'
+
     if (slug) {
-        let episodes;
+        let episodes
         // Get show details
-        const show = await getShow(slug);
-        if (show?.type === cmsSources.NPR) {
-            episodes = await getNPREpisodes(slug, show.type, show?.title);
-        } else {
-            episodes = await getEpisodes(slug, show?.image?.template, show?.type, pageSize, page);
+        const show = await getShow(slug, isSlugOnly)
+
+        if (!show) {
+            // Avoid caching a failed/missing show lookup at the edge
+            res.statusCode = 404
+            res.setHeader('Cache-Control', 'no-store')
+            return null
         }
-        res.setHeader('Cache-Control', 'maxage=3600, stale-while-revalidate');
+        if (show.cmsSource === cmsSources.SIMPLECAST) {
+            // Simplecast episodes are typically displayed through curated content
+            // Return empty episodes array
+            episodes = { data: [], meta: {} }
+        } else if (show?.type === cmsSources.NPR) {
+            episodes = await getNPREpisodes(slug, show.type, show?.title)
+        } else {
+            episodes = await getEpisodes(slug, show?.image?.template, show?.type, pageSize, page)
+        }
         return {
             show,
             episodes,
         }
     } else {
-        return null;
+        return null
     }
 })

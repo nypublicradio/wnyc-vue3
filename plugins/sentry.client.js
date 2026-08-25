@@ -1,5 +1,4 @@
 import * as Sentry from '@sentry/vue'
-import { HttpClient } from '@sentry/integrations'
 
 export default defineNuxtPlugin((nuxtApp) => {
   const { vueApp } = nuxtApp
@@ -10,26 +9,28 @@ export default defineNuxtPlugin((nuxtApp) => {
     app: [vueApp],
     dsn: config.public.SENTRY_DSN,
     integrations: [
-      new Sentry.BrowserTracing({
-        routingInstrumentation: Sentry.vueRouterInstrumentation(nuxtApp.$router),
-        tracePropagationTargets: ['cms.demo.nypr.digital', 'api.demo.nypr.digital', 'cms.prod.nypr.digital', 'api.prod.nypr.digital', 'demo.native-app.wnyc.org', 'api.wnyc.org'],
-      }),
-      new HttpClient(),
-      new Sentry.Replay({
-        maskAllText: false,
-        blockAllMedia: false
+      Sentry.browserTracingIntegration({
+        router: nuxtApp.$router,
+        enableInp: true,
+        interactionsSampleRate: 0.5,
       }),
     ],
     tracesSampleRate: config.public.SENTRY_ENV.toUpperCase() === 'PROD' ? 0.1 : 1.0,
-    replaysSessionSampleRate: config.public.SENTRY_ENV.toUpperCase() === 'PROD' ? 0.0005 : 1.0,
-    replaysOnErrorSampleRate: config.public.SENTRY_ENV.toUpperCase() === 'PROD' ? 0.001 : 1.0,
     allowUrls: [
+      'https://wnyc.org',
+      'https://www.wnyc.org',
+      'https://prod.wnyc.org',
+      'https://demo.wnyc.org',
       'https://native-app.wnyc.org',
       'https://demo.native-app.wnyc.org',
-      'http://local.dev.nypr.digital:3000',
-      'capacitor://localhost',
     ],
-    tracePropagationTargets: ['cms.demo.nypr.digital', 'api.demo.nypr.digital', 'cms.prod.nypr.digital', 'api.prod.nypr.digital', 'api.wnyc.org', 'www.wnyc.org'],
+    ignoreErrors: [
+      'ResizeObserver loop limit exceeded',
+      'Failed to fetch',
+      'NetworkError when attempting to fetch resource.',
+      'Load failed',
+    ],
+    maxValueLength: 1000,
     trackComponents: true,
     timeout: 2000,
     hooks: ['activate', 'mount', 'update'],

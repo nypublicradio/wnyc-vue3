@@ -1,9 +1,11 @@
 <script setup>
-import VFlexibleLink from "./VFlexibleLink.vue"
 import Button from "primevue/button"
 import Image from "primevue/image"
 import ProgressSpinner from "primevue/progressspinner"
-import { computed, nextTick, onBeforeMount, onMounted, ref } from "vue"
+import { computed, nextTick, onMounted, ref } from "vue"
+import { useVImage } from "~/composables/useVImage"
+
+defineOptions({ inheritAttrs: false })
 
 /** * Responsive image component, generates a srcset with multiple image sizes for different display densities. */
 
@@ -38,7 +40,7 @@ const props = defineProps({
   /** * The desired height for the 1x sized image. * this will also be added as an attribute to the image tag
    */
   height: {
-    default: null,
+    default: 0,
     type: Number,
   },
   /** * Substring or regex within the url to be replaced with height values. */
@@ -109,31 +111,8 @@ const props = defineProps({
     default: null,
     type: String,
   },
-  /**
-   *  ammount of blur for the blured background image */
-  verticalBgBlur: {
-    default: "3px",
-    type: String,
-  },
-  /**
-   * tint the grey blured background image
-   * */
-  verticalBgColor: {
-    default: "#f1f1f1",
-    type: String,
-  },
-  /**
-   *  the opacity of the tint of the grey blured background image
-   */
-  verticalBgColorOpacity: {
-    default: "0.6",
-    type: String,
-  },
-  /** * The desired width for the 1x sized image.
-   * * this will also be added as an attribute to the image tag
-   */
   width: {
-    default: null,
+    default: 0,
     type: Number,
   },
   /** * Substring or regex within the urlto be replaced with width values. */
@@ -142,16 +121,16 @@ const props = defineProps({
     type: [String, RegExp],
   },
 })
-const emit = defineEmits(["image-click", "keypress", "image-enlarge-click"])
+const emit = defineEmits([
+  "image-click",
+  "keypress",
+  "image-load",
+  "image-error",
+  "image-enlarge-click",
+])
 
-// method to format the url to get the publisher image
-const formatPublisherImageUrl = (url) => {
-  return url.replace("%s/%s/%s/%s", "%width%/%height%/c/%quality%")
-}
-// method to format the url to get the raw image
-const formatRawPublisherImageUrl = (url) => {
-  return url.replace("%s/%s/%s/%s", "raw")
-}
+const { formatPublisherImageUrl, formatRawPublisherImageUrl } = useVImage()
+
 // method to calculate the quality of the image based on the size and if set to flat quality
 const calcQuality = (quality, size) => {
   if (props.flatQuality) {
@@ -162,12 +141,24 @@ const calcQuality = (quality, size) => {
   }
 }
 const refThisImg = ref(null)
-const thisWidth = ref(null)
-const srcFormatted = formatPublisherImageUrl(props.src)
-const srcRaw = formatRawPublisherImageUrl(props.src)
+// SSR-safe default: use props.width if available, otherwise a sensible default
+const thisWidth = ref(props.width || 600)
+const srcFormatted = computed(() =>
+  props.src ? formatPublisherImageUrl(props.src) : null
+)
+const srcRaw = computed(() =>
+  props.src ? formatRawPublisherImageUrl(props.src) : null
+)
 
-const isVertical = ref(false)
+// Initialize isVertical synchronously so server and client agree
+const isVertical = ref(
+  props.allowVerticalEffect &&
+    props.maxHeight >= props.maxWidth &&
+    props.maxHeight !== Infinity &&
+    props.maxWidth !== Infinity
+)
 const loadingEnlargedImage = ref(false)
+
 // a function that returns the dimensions of the image
 const getDimensions = () => {
   const hRatio = Number(props.ratio[0])
@@ -181,8 +172,7 @@ const getDimensions = () => {
         : props.width,
     }
   } else {
-    //console.log('thisWidth.value =  ', thisWidth.value)
-    let theWidth = thisWidth.value
+    let theWidth = thisWidth.value || props.width || 600
 
     if (props.maxWidth && props.maxWidth < theWidth) {
       theWidth = props.maxWidth
@@ -194,15 +184,9 @@ const getDimensions = () => {
   }
 }
 
-// const computedWidth = () => {
-//   return isVertical.value
-//     ? Math.round(props.maxWidth / (props.maxHeight / props.height))
-//     : props.width
-// }
-
 // a function that formats the url template
 const computedSrc = () => {
-  const template = srcFormatted
+  const template = srcFormatted.value
 
   return template
     ? template
@@ -211,24 +195,15 @@ const computedSrc = () => {
         .replace(props.qualityToken, props.quality)
     : undefined
 }
-// a function that formats the url template for the blurred background image with low quality
-const computedSrcBg = () => {
-  const template = srcFormatted
-  return template
-    ? template
-        .replace(props.widthToken, getDimensions().width)
-        .replace(props.heightToken, getDimensions().height)
-        .replace(props.qualityToken, 15)
-    : undefined
-}
 
 const srcset = computed(() => {
-  const template = srcFormatted
+  const template = srcFormatted.value
   if (template) {
     // If this is just a plain string with no tokens,
     // we don't need to generate a srcset
     if (
-      template === template.replace(props.widthToken, "").replace(props.heightToken, "")
+      template ===
+      template.replace(props.widthToken, "").replace(props.heightToken, "")
     ) {
       return ""
     }
@@ -264,15 +239,16 @@ const srcset = computed(() => {
   }
 })
 
-onBeforeMount(() => {
-  isVertical.value = props.allowVerticalEffect && props.maxHeight > props.maxWidth
-})
 // method to handle the click on the enlarge button and its loading states
 const enlarge = () => {
   loadingEnlargedImage.value = true
-  const img = document.getElementsByClassName("p-image-preview")
-  img[0].setAttribute("alt", props.alt)
-  img[0].setAttribute("src", srcRaw)
+  if (import.meta.client) {
+    const img = document.getElementsByClassName("p-image-preview")
+    if (img.length > 0) {
+      img[0].setAttribute("alt", props.alt)
+      img[0].setAttribute("src", srcRaw.value)
+    }
+  }
 }
 // method to close the enlarged image state
 const closeEnlarge = () => {
@@ -287,6 +263,12 @@ onMounted(async () => {
       : typeof window === "undefined"
       ? props.defaultWidth
       : window.innerWidth
+
+  // Check if the native <img> is already loaded (e.g. cached after SSR hydration)
+  const img = refThisImg.value?.querySelector?.("img.native-image")
+  if (img?.complete && img.naturalHeight !== 0) {
+    emit("image-load")
+  }
 })
 </script>
 
@@ -296,8 +278,10 @@ onMounted(async () => {
       raw
       :to="props.to"
       :aria-hidden="props.isDecorative ? true : false"
-      :tabindex="props.isDecorative ? -1 : 0"
-      style="width: auto"
+      :tabindex="props.isDecorative ? undefined : 0"
+      :inert="props.isDecorative ? true : undefined"
+      class="v-image-link"
+      :class="{ 'is-decorative': props.isDecorative }"
       @click="props.to ? emit('image-click', props.to) : null"
     >
       <div
@@ -306,11 +290,11 @@ onMounted(async () => {
       >
         <div v-if="isVertical" class="bg">
           <img
-            :src="computedSrcBg()"
+            :src="computedSrc()"
             :width="getDimensions().width"
             :height="getDimensions().height"
             :alt="props.isDecorative ? '' : props.alt + '-blurred-bg'"
-            :loading="loading"
+            :loading="props.loading"
           />
         </div>
         <template v-if="allowPreview">
@@ -326,38 +310,44 @@ onMounted(async () => {
             :style="[isVertical ? `width:${getDimensions().width}px;` : '']"
             :alt="props.isDecorative ? '' : props.alt"
             :preview="allowPreview"
-            :loading="loading"
+            :loading="props.loading"
             @show="enlarge"
             @hide="closeEnlarge"
             @keypress="emit('keypress', $event.target.value)"
+            @load="emit('image-load')"
+            @error="emit('image-error')"
           >
-            <template v-if="allowPreview" #indicatoricon>
+            <template v-if="allowPreview" #previewicon>
               <ClientOnly>
                 <Button
                   icon="pi pi-clone"
                   class="p-button-sm enlarge-button"
                   aria-label="Enlarge Image"
-                  @click.prevent="emit('image-enlarge-click', $event.target.value)"
+                  @click.prevent="
+                    emit('image-enlarge-click', $event.target.value)
+                  "
                 ></Button>
               </ClientOnly>
             </template>
           </Image>
           <div v-if="loadingEnlargedImage">
-            <Teleport to=".p-component-overlay">
-              <ProgressSpinner
-                v-if="loadingEnlargedImage"
-                style="
-                  z-index: -1;
-                  position: fixed;
-                  top: 0;
-                  bottom: 0;
-                  left: 0;
-                  right: 0;
-                  margin: auto;
-                "
-                stroke-width="6"
-              />
-            </Teleport>
+            <ClientOnly>
+              <Teleport to=".p-component-overlay">
+                <ProgressSpinner
+                  v-if="loadingEnlargedImage"
+                  style="
+                    z-index: -1;
+                    position: fixed;
+                    top: 0;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    margin: auto;
+                  "
+                  stroke-width="6"
+                />
+              </Teleport>
+            </ClientOnly>
           </div>
         </template>
         <img
@@ -370,8 +360,10 @@ onMounted(async () => {
           :height="getDimensions().height"
           :style="[isVertical ? `width:auto;` : '']"
           :alt="props.isDecorative ? '' : props.alt"
-          :loading="loading"
+          :loading="props.loading"
           @keypress="emit('keypress', $event.target.value)"
+          @load="emit('image-load')"
+          @error="emit('image-error')"
         />
         <slot class="slot caption" name="caption"></slot>
         <slot class="slot gallery" name="gallery"></slot>
@@ -381,12 +373,22 @@ onMounted(async () => {
   </div>
 </template>
 
-<style lang="scss" scroped>
+<style lang="scss" scoped>
+.v-image-link {
+  width: 100%;
+  height: inherit;
+}
+.v-image-link.is-decorative {
+  pointer-events: none;
+}
 .v-image-publisher {
+  height: inherit;
   .v-image-publisher-holder {
+    height: inherit;
     line-height: 0;
     position: relative;
     overflow: hidden;
+    //width: -webkit-fill-available;
     .p-image-preview-container > img {
       cursor: default !important;
     }
@@ -427,19 +429,9 @@ onMounted(async () => {
       top: 0;
       left: 0;
       overflow: hidden;
-      &:after {
-        content: "";
-        background-color: v-bind(verticalBgColor);
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-        opacity: v-bind(verticalBgColorOpacity);
-      }
       img {
         width: 100%;
-        filter: blur(v-bind(verticalBgBlur)) grayscale(100%);
+        @include v-image-bg-blur();
         object-fit: cover;
         height: inherit;
       }

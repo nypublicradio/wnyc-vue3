@@ -1,12 +1,26 @@
 
 <script setup>
 import { useToast } from "primevue/usetoast"
-import { useIsActive, useIsApp } from "~/composables/states"
-import OneSignal from "onesignal-cordova-plugin"
+import {
+  useIsActive,
+  useIsNativeApp,
+  useCurrentEpisode,
+  useIsEpisodePlaying,
+  useIsPlayerMinimized,
+} from "~/composables/states"
 import { formatDate, trackClickEvent } from "~/utilities/helpers"
+import { RemoteStreamer } from "@nypublicradio/capacitor-remote-streamer"
+// only load OneSignal on client side
+let OneSignal = null
+if (import.meta.client) {
+  const mod = await import("onesignal-cordova-plugin")
+  OneSignal = mod.default
+}
+const showBottomMenu = ref(true)
+
 useHead({
   bodyAttrs: {
-    class: "no-bottom-padding hide-bottom-menu",
+    class: computed(() => (showBottomMenu.value ? "" : "hide-bottom-menu")),
   },
 })
 const toast = useToast()
@@ -26,7 +40,11 @@ const questionLimitReached = ref(false)
 const questionLimitDays = ref(1) // only submit a question once per day
 const isSignupForm = ref(true)
 const isActiveGlobal = useIsActive()
-const isApp = useIsApp()
+const isNativeApp = useIsNativeApp()
+const currentEpisode = useCurrentEpisode()
+const isEpisodePlaying = useIsEpisodePlaying()
+const isPlayerMinimized = useIsPlayerMinimized()
+const wasPlaying = ref(isEpisodePlaying.value)
 const miscData = ref({
   instagramHandle: "",
 })
@@ -49,8 +67,37 @@ const { execute: executeLimitData, refresh: refreshLimitData } = await useFetch(
     }),
     baseURL: config.public.BFF_URL,
     immediate: false,
-    onResponse: (res) => {
+    onResponse: async (res) => {
       questionLimitReached.value = res.response._data.questionLimitReached
+
+      // if the user has not reached the question limit, pause the player and hide it
+      if (!questionLimitReached.value) {
+        // pause the player if audio is playing & hide the player
+        if (isEpisodePlaying.value) {
+          await RemoteStreamer.pause()
+        }
+        // alert the user that audio is disabled
+        if (currentEpisode.value) {
+          toast.add({
+            severity: "info",
+            summary:
+              "Your audio has been disabled during the submission process",
+            life: 6000,
+            closable: true,
+          })
+
+          // hide the player
+          isPlayerMinimized.value = true
+        }
+        if (isNativeApp.value) {
+          // tell OneSignal to pause in-app notifications during the submission process
+          await OneSignal.InAppMessages.setPaused(true)
+
+          // hide the menu hide-bottom-menu
+          showBottomMenu.value = false
+        }
+      }
+
       isLoading.value = false
     },
   }
@@ -70,14 +117,16 @@ const getSession = async () => {
 const onFormSubmit = async () => {
   try {
     // scroll the user to the top
-    setTimeout(() => {
-      window.scrollTo(0, 0)
-    }, 250)
+    if (import.meta.client) {
+      setTimeout(() => {
+        window.scrollTo(0, 0)
+      }, 250)
+    }
 
     await UploadMediaREF.value?.uploadFiles()
 
-    // update OneSignal tags for App env only
-    if (isApp.value) {
+    // update OneSignal tags for native app env only
+    if (isNativeApp.value) {
       try {
         await OneSignal.User.addTags({
           "ask-the-mayor": "true",
@@ -133,12 +182,9 @@ const onSignupClick = () => {
 }
 
 onMounted(async () => {
-  if (isApp.value) {
-    // tell OneSignal to pause in-app notifications
-    await OneSignal.InAppMessages.setPaused(true)
-  }
   // get the session that will trigger the useFetch to run
   await getSession()
+
   // send GA page view
   const { $analytics } = useNuxtApp()
   $analytics.sendPageView({
@@ -149,9 +195,19 @@ onMounted(async () => {
 })
 
 onUnmounted(async () => {
-  if (isApp.value) {
+  if (isNativeApp.value) {
     // tell OneSignal to resume in-app notifications
     await OneSignal.InAppMessages.setPaused(false)
+    // show the menu hide-bottom-menu
+    showBottomMenu.value = true
+  }
+  // restore the player
+  if (currentEpisode.value) {
+    isPlayerMinimized.value = false
+  }
+  // resume the player if it was playing before the user entered the submission page
+  if (wasPlaying.value) {
+    await RemoteStreamer.resume()
   }
 })
 
@@ -183,7 +239,7 @@ watch(
 </script>
 
 <template>
-  <div class="ask-the-mayor submission">
+  <div class="ask-the-mayor submission thinContent">
     <Html lang="en">
       <Head>
         <Title
@@ -274,7 +330,7 @@ watch(
                           }}
                           WNYC account
                         </h2>
-                        <p>Submit your question in the 3 easy steps</p>
+                        <p>Submit your question in 3 easy steps</p>
                       </div>
                     </div>
                   </div>
@@ -312,28 +368,30 @@ watch(
                       returnRoute="/ask-the-mayor/submission"
                     >
                       <template #header>
-                        <p>
+                        <div>
                           Already have an account?
                           <VFlexibleLink
+                            to="#"
                             aria-label="log in"
                             @flexible-link-click="onLoginClick"
                           >
                             Log in
                           </VFlexibleLink>
-                        </p>
+                        </div>
                       </template>
                     </Signup>
                     <Login v-else returnRoute="/ask-the-mayor/submission">
                       <template #header>
-                        <p>
+                        <div>
                           Don't have an account yet?
                           <VFlexibleLink
+                            to="#"
                             aria-label="sign up"
                             @flexible-link-click="onSignupClick"
                           >
                             Sign up
                           </VFlexibleLink>
-                        </p>
+                        </div>
                       </template>
                     </Login>
                   </div>
@@ -380,6 +438,7 @@ watch(
                         <i
                           class="pi pi-spinner pi-spin"
                           style="color: var(--p-sky-500)"
+                          aria-hidden="true"
                         ></i>
                         <span class="ml-2">{{ submitProgress }}</span>
                       </p>

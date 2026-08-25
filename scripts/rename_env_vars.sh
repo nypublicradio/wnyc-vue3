@@ -15,7 +15,7 @@ while IFS= read -r env_var; do
     echo "${new_env_var}" >> local-env
 done < <(printenv | grep "^${env_var_prefix}")
 
-export APP_VERSION=$(git tag --sort=-committerdate | grep -v "demo" | head -n 1 | sed -E 's/(v[0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+export APP_VERSION=$(git tag --sort=-committerdate | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+' | head -n 1 | sed -E 's/(v[0-9]+\.[0-9]+\.[0-9]+).*/\1/')
 
 echo "APP_VERSION=${APP_VERSION}" >> local-env
 echo "APP_VERSION_MAJOR=$(echo ${APP_VERSION} | cut -d. -f1 | cut -c2-)" >> local-env

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useCurrentEpisode } from "~/composables/states"
+import { useCurrentEpisode, useIsApp } from "~/composables/states"
 import { getCssVar } from "~/utilities/helpers"
 const props = defineProps({
   threshold: {
@@ -9,20 +9,23 @@ const props = defineProps({
 })
 
 const currentEpisode = useCurrentEpisode()
-const bottomMenuHeight: number | string = getCssVar("--bottom-menu-height")
-const playerHeight: number | string = getCssVar("--player-height")
+const isApp = useIsApp()
+const bottomBuffer = ref("0px")
 
-const bottomBuffer = ref(`${bottomMenuHeight}px`)
+onMounted(() => {
+  // only the app has the bottom menu
+  const bottomMenuHeight = isApp.value ? getCssVar("--bottom-menu-height") : 0
+  const playerHeight = getCssVar("--player-height")
 
-watch(
-  currentEpisode,
-  () => {
+  // Calculate the initial buffer based on whether an episode is loaded that would show the bottom player.
+  const updateBuffer = () => {
     bottomBuffer.value = currentEpisode.value
       ? `${Number(bottomMenuHeight) + Number(playerHeight)}px`
       : `${bottomMenuHeight}px`
-  },
-  { immediate: true }
-)
+  }
+  updateBuffer()
+  watch(currentEpisode, updateBuffer)
+})
 </script>
 
 <template>

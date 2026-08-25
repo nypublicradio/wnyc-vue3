@@ -11,7 +11,7 @@ const fetchCommentCounts = async function (commentIds: string[]): Promise<Record
     const counts = {}
     const ids = commentIds.slice(0)
     // OpenWeb API  comment count api limits requests to 30 counts at a time
-    const requests = [];
+    const requests = []
     while (ids.length) {
         const idList = ids.splice(0, 30).join(',')
         const options = {

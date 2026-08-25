@@ -26,6 +26,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  textClass: {
+    type: String,
+    default: "",
+  },
 })
 
 const settingSideBar = useSettingSideBar()
@@ -54,6 +58,7 @@ const onClick = () => {
         <Button
           :label="label"
           class="w-full text-left line-height-3"
+          :class="props.textClass"
           text
           aria-label="menu item"
         />
@@ -62,6 +67,7 @@ const onClick = () => {
         <Button
           :label="label"
           class="w-full text-left line-height-3"
+          :class="props.textClass"
           text
           aria-label="menu item"
         />
@@ -71,7 +77,7 @@ const onClick = () => {
           class="label-holder flex flex-column gap-1 h-full w-auto py-3 justify-items-center cursor-pointer"
           @click="emit('label-click')"
         >
-          <p class="label">
+          <p class="label" :class="props.textClass">
             {{ label }}
           </p>
           <p v-if="description" class="description">

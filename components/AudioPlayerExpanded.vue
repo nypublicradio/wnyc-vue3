@@ -2,10 +2,10 @@
 import {
   trackClickEvent,
   shareAPI,
-  templatizePublisherImageUrl,
   checkIsFavorited,
   addToFavorites2,
-  getEpisodeFallBackImage,
+  isolateSlug,
+  getTrueSlug,
 } from "~/utilities/helpers"
 import {
   useCurrentEpisode,
@@ -15,6 +15,7 @@ import {
   useSleepTimerRunning,
   useIsApp,
 } from "~/composables/states"
+import { mediaTypeRoutes } from "~/composables/globals"
 import useSleepTimer from "~/composables/useSleepTimer"
 import { fetchAndStoreMp3, isAlreadyDownloaded } from "~/utilities/file-system"
 
@@ -42,26 +43,67 @@ const isApp = useIsApp()
 const { handleSleepTimer } = useSleepTimer()
 
 const isFavorited = ref(false)
+const isShowFollowed = ref(false)
+const isShowFollowable = ref(true)
 const showDownload = ref(true)
-watchEffect(async () => {
-  // hide share if it is a segment, which is only set in NPR direct show episodes
-  currentEpisode.value?.isSegment
-    ? (showShare.value = false)
-    : (showShare.value = true)
-  isFavorited.value = await checkIsFavorited(
-    currentEpisode.value.showSlug ||
-      currentEpisode.value.slug ||
-      currentEpisode.value.meta?.slug ||
-      null
-  )
-  // show/hide download button based on show title
-  const showsWithoutDownload = ["nyc now", "wnyc news"]
-  const showTitle = (
-    currentEpisode.value.showTitle || currentEpisode.value.title
-  )?.toLowerCase()
-  showDownload.value = showTitle
-    ? !showsWithoutDownload.includes(showTitle) || !isApp.value
-    : true
+const route = useRoute()
+
+// get true slug from id
+const getTrueSlugFromRedirects = async (link, isolateReturn = true) => {
+  const currentSlug = isolateSlug(link)
+  return await getTrueSlug(currentSlug, isolateReturn)
+}
+
+const trueSlug = ref(null)
+const trueTo = ref(null)
+
+const isLive = computed(() => {
+  return isLiveStream.value
+})
+
+watch(
+  currentEpisode,
+  async () => {
+    // initially populate the true slug
+    trueSlug.value = await getTrueSlugFromRedirects(
+      currentEpisode.value.detailsLink,
+      true
+    )
+    // initially populate the true "to" destination if LIVE only
+    if (isLive.value) {
+      trueTo.value = await getTrueSlugFromRedirects(
+        currentEpisode.value.detailsLink,
+        false
+      )
+      // handle if isShowFollowable
+      isShowFollowable.value = !trueTo.value.includes("http")
+    }
+  },
+  { immediate: true }
+)
+
+onMounted(() => {
+  watchEffect(async () => {
+    if (!user.value) return
+    // hide share if it is a segment, which is only set in NPR direct show episodes
+    currentEpisode.value?.isSegment
+      ? (showShare.value = false)
+      : (showShare.value = true)
+    isFavorited.value = await checkIsFavorited(
+      currentEpisode.value?.meta?.slug || currentEpisode.value?.slug
+    )
+    //const trueSlug = await getTrueSlugFromRedirects(currentEpisode.value.detailsLink)
+    isShowFollowed.value = await checkIsFavorited(trueSlug.value)
+
+    // show/hide download button based on show title
+    const showsWithoutDownload = ["nyc now", "wnyc news"]
+    const showTitle = (
+      currentEpisode.value.showTitle || currentEpisode.value.title
+    )?.toLowerCase()
+    showDownload.value = showTitle
+      ? !showsWithoutDownload.includes(showTitle) || !isApp.value
+      : true
+  })
 })
 
 onMounted(() => {
@@ -80,17 +122,41 @@ const handleAddToFavorites = () => {
     isFavorited.value = !isFavorited.value
   }
 }
+
 // add show to favorites
-const handleFollow = async (showSlug) => {
+const handleFollowLive = async () => {
   try {
-    const show = await $fetch(`${config.public.BFF_URL}/api/show/${showSlug}`)
+    let showData = null
+    if (user.value) {
+      // Step 1: get the trueSlug from the detailsLink declared on the root and set in the watch
+
+      // Step 2: fetch wagtail show data if we successfully resolved a true slug
+      if (trueSlug.value) {
+        showData = await $fetch(
+          `${config.public.BFF_URL}/api/pages/wagtail/${trueSlug.value}?showOnly=true`
+        ).catch(() => null)
+      }
+
+      if (!showData) {
+        console.warn("Unable to find the show properties.")
+        globalToast.value = {
+          severity: "warn",
+          summary: "Unable to find the show to follow.",
+          life: 3000,
+        }
+        return
+      }
+    }
+
+    // add show to favorites (this is not nested under the user check because this function handles the user prompt to login/create an account)
     addToFavorites2({
-      item: show.show,
-      isFavorited: isFavorited.value,
+      item: showData,
+      isFavorited: isShowFollowed.value,
       message: "Updated your followed shows.",
     })
+    // toggle the followed state if the user is logged in
     if (user.value) {
-      isFavorited.value = !isFavorited.value
+      isShowFollowed.value = !isShowFollowed.value
     }
   } catch (error) {
     console.error(`Error following this show: ${error}`)
@@ -139,35 +205,40 @@ const handleShare = () => {
 //   )
 // }
 
-const isLive = computed(() => {
-  return isLiveStream.value
-})
-
 // set the items for the Dot menu
 const getDotMenuItems = () => {
   return [
     ...(isLive.value
       ? [
-          {
-            label: `${isFavorited.value ? "Unfollow" : "Follow"} ${
-              currentEpisode.value.title
-            }`,
-            customIcon: FollowIcon,
-            active: isFavorited.value,
-            title: currentEpisode.value.title,
-            command: () => {
-              handleFollow(currentEpisode.value.showSlug)
-            },
-          },
-          {
-            label: "Sleep Timer",
-            customIcon: SleepIcon,
-            active: sleepTimerRunning.value,
-            title: currentEpisode.value.title,
-            command: () => {
-              handleSleepTimer()
-            },
-          },
+          ...(isShowFollowable.value
+            ? [
+                {
+                  label: `${isShowFollowed.value ? "Unfollow" : "Follow"} ${
+                    currentEpisode.value.title
+                  }`,
+                  customIcon: FollowIcon,
+                  active: isShowFollowed.value,
+                  title: currentEpisode.value.title,
+                  command: () => {
+                    handleFollowLive()
+                  },
+                },
+              ]
+            : []),
+
+          ...(isApp.value
+            ? [
+                {
+                  label: "Sleep Timer",
+                  customIcon: SleepIcon,
+                  active: sleepTimerRunning.value,
+                  title: currentEpisode.value.title,
+                  command: () => {
+                    handleSleepTimer()
+                  },
+                },
+              ]
+            : []),
           // ...(showShare.value
           //   ? [
           //       {
@@ -207,15 +278,19 @@ const getDotMenuItems = () => {
                 },
               ]
             : []),
-          {
-            label: "Sleep Timer",
-            customIcon: SleepIcon,
-            active: sleepTimerRunning.value,
-            title: currentEpisode.value.title,
-            command: () => {
-              handleSleepTimer()
-            },
-          },
+          ...(isApp.value
+            ? [
+                {
+                  label: "Sleep Timer",
+                  customIcon: SleepIcon,
+                  active: sleepTimerRunning.value,
+                  title: currentEpisode.value.title,
+                  command: () => {
+                    handleSleepTimer()
+                  },
+                },
+              ]
+            : []),
           ...(showDownload.value
             ? [
                 {
@@ -276,16 +351,31 @@ const onMenuChange = (e) => {
 }
 
 // handles the click on the bottom fixed footer
-const moreFromClick = () => {
+const moreFromClick = async () => {
   const title = currentEpisode.value.showTitle || currentEpisode.value.title
-  const slug = currentEpisode.value.showSlug || currentEpisode.value.show
+  const slug =
+    currentEpisode.value.showSlug ||
+    currentEpisode.value.meta?.showSlug ||
+    currentEpisode.value.showId ||
+    currentEpisode.value.show
+  const finalSlug = await getTrueSlug(slug)
+
   trackClickEvent(
     `Click Tracking - Expanded Audio Player More from ${title}`,
     "Expanded Audio Player",
     title
   )
   emit("close-panel")
-  navigateTo(`/browse/shows/${slug}`)
+
+  // if you are routing to the same page scroll to top of the page
+  if (route.params.slug === finalSlug) {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    })
+  }
+
+  navigateTo(`${mediaTypeRoutes.show}${finalSlug}`)
 }
 </script>
 
@@ -293,16 +383,7 @@ const moreFromClick = () => {
   <section class="expanded-player flex flex-column gap-3">
     <!-- <pre class="text-xs">{{ currentEpisode }}</pre> -->
     <div class="tools flex justify-content-between">
-      <div v-if="isLive" class="flex gap-3">
-        <!-- <Button
-          text
-          severity="secondary"
-          rounded
-          aria-label="Create Free Account"
-          @click="handleAddToFavorites"
-        >
-          <template #icon> <FollowIcon /></template>
-        </Button> -->
+      <div v-if="isLive && isApp" class="flex gap-3">
         <SleepTimerButton
           @emit-click="handleSleepTimer"
           :isActive="sleepTimerRunning"
@@ -315,11 +396,14 @@ const moreFromClick = () => {
           rounded
           aria-label="add to favorites"
           @click="handleAddToFavorites"
-          v-if="!currentEpisode.hideFavorite"
+          v-if="!currentEpisode.hideFavorite && !isLive"
         >
-          <template #icon> <StarIcon :active="isFavorited" /></template>
+          <template #icon>
+            <StarIcon :active="isFavorited" />
+          </template>
         </Button>
         <SleepTimerButton
+          v-if="isApp"
           @emit-click="handleSleepTimer"
           :isActive="sleepTimerRunning"
         />
@@ -331,7 +415,9 @@ const moreFromClick = () => {
           @click="handleDownload"
           v-if="currentEpisode.hideFavorite && showDownload"
         >
-          <template #icon> <DownloadIcon /></template>
+          <template #icon>
+            <DownloadIcon />
+          </template>
         </Button>
         <DownloadProgress
           v-if="
@@ -352,10 +438,12 @@ const moreFromClick = () => {
           aria-label="share"
           @click="handleShare"
         >
-          <template #icon> <ShareIcon /></template>
+          <template #icon>
+            <ShareIcon />
+          </template>
         </Button>
-
         <DotMenu
+          v-if="getDotMenuItems().length > 0"
           :menuItems="getDotMenuItems()"
           size="large"
           class="-mr-2"
@@ -375,15 +463,10 @@ const moreFromClick = () => {
             <div>
               <div class="flex gap-3 align-items-center px-4">
                 <VImage
-                  :src="
-                    templatizePublisherImageUrl(currentEpisode.image) ??
-                    getEpisodeFallBackImage()
-                  "
+                  :src="currentEpisode.image"
                   :alt="`${currentEpisode.title} show image`"
-                  :width="116"
-                  :height="116"
+                  :size="{ xs: [60, 60] }"
                   class="show-image-in-menu flex-none"
-                  :ratio="[1, 1]"
                   style="height: 60px; width: 60px"
                 />
 
@@ -401,36 +484,37 @@ const moreFromClick = () => {
     </div>
     <VImage
       v-if="
-        !!currentEpisode.onTodaysShowImageTemplate
-          ? false
-          : currentEpisode.player_image !==
-            (currentEpisode.image.template ?? currentEpisode.image)
+        Boolean(currentEpisode?.image || currentEpisode?.image?.template)
+          ? currentEpisode?.player_image !== currentEpisode?.image
+          : false
       "
-      :src="
-        currentEpisode.image?.template ??
-        currentEpisode.image ??
-        FALLBACKIMAGEWAGTAIL
-      "
-      :alt="`${currentEpisode.title} featured image`"
-      :width="672"
-      :sizes="[2]"
+      :src="currentEpisode?.image || currentEpisode?.image?.template"
+      :alt="`${currentEpisode?.title} featured image`"
+      sizes="xs:327, sm:528, md:672"
       class="card-feature-image"
     >
       <template #caption>
         <VImageCaption
-          v-if="currentEpisode.image.caption"
-          :text="currentEpisode.image.caption"
+          v-if="currentEpisode?.image?.caption"
+          :text="currentEpisode?.image?.caption"
           class="caption"
         />
       </template>
     </VImage>
-    <HtmlConvert :htmlContent="currentEpisode.details" />
+    <HtmlConvert
+      :htmlContent="currentEpisode.details"
+      :key="`details-${currentEpisode.id || 'default'}`"
+    />
     <VImage
-      v-if="currentEpisode.onTodaysShowImageTemplate"
-      :src="currentEpisode.onTodaysShowImageTemplate"
+      v-if="
+        Boolean(currentEpisode?.onTodaysShowImageTemplate)
+          ? currentEpisode?.player_image !==
+            currentEpisode?.onTodaysShowImageTemplate
+          : false
+      "
+      :src="{ template: currentEpisode.onTodaysShowImageTemplate }"
       :alt="`${currentEpisode.title} featured image`"
-      :width="672"
-      :sizes="[2]"
+      sizes="xs:327, sm:528, md:672"
       class="show-feature-image"
     >
       <template #caption>
@@ -441,16 +525,16 @@ const moreFromClick = () => {
         />
       </template>
       <template #belowImage>
-        <div class="text-xs mt-2">
+        <div class="text-xs mt-3">
           {{ currentEpisode.onTodaysShowImageCredits }}
         </div>
         <HtmlConvert
           :htmlContent="currentEpisode.episodeBody"
-          class="caption text-sm mt-2"
+          class="caption text-sm mt-6"
+          :key="`body-${currentEpisode.id || 'default'}`"
         />
       </template>
     </VImage>
-
     <div v-if="currentEpisode.onTodaysShowHosts" class="mt-3">
       <h2>Host{{ currentEpisode.onTodaysShowHosts.length > 1 ? "s" : "" }}</h2>
       <div class="flex gap-4 flex-wrap my-3">
@@ -470,11 +554,19 @@ const moreFromClick = () => {
     </div>
     <div v-if="currentEpisode.episodeTranscript">
       <h2>Transcript</h2>
-      <HtmlConvert :htmlContent="currentEpisode.episodeTranscript" />
+      <HtmlConvert
+        :htmlContent="currentEpisode.episodeTranscript"
+        :key="`transcript-${currentEpisode.id || 'default'}`"
+      />
     </div>
     <div
       ref="expandedFooterRef"
-      v-if="currentEpisode.showSlug || currentEpisode.show"
+      v-if="
+        !isLiveStream &&
+        (currentEpisode.showSlug ||
+          currentEpisode.meta?.showSlug ||
+          currentEpisode.show)
+      "
       class="expanded-footer"
     >
       <section class="pb-2">
@@ -501,8 +593,10 @@ const moreFromClick = () => {
 <style lang="scss">
 :root {
   $expandedFooterHeight: 100px;
+
   .persistent-player {
     .expanded-player {
+      max-width: $thinContentWidth;
       padding-bottom: calc(
         $bottomMenuHeight + $expandedFooterHeight + env(safe-area-inset-bottom) +
           2rem
@@ -519,22 +613,34 @@ const moreFromClick = () => {
         transition: bottom var(--p-transition-duration);
         -webkit-transition: bottom var(--p-transition-duration);
       }
+    }
 
-      .tools {
-      }
-    }
     &.expanded {
+      &.browser {
+        // fixes android chrome ignoring the top safe area
+        padding-top: max(30px, env(safe-area-inset-top));
+      }
       .expanded-footer {
-        bottom: calc($bottomMenuHeight + env(safe-area-inset-bottom));
+        bottom: env(safe-area-inset-bottom);
       }
     }
+
     .template-blank {
       .expanded-footer {
         bottom: env(safe-area-inset-bottom) !important;
       }
     }
+
     .header-cast-btn {
       display: none;
+    }
+
+    &.app {
+      &.expanded {
+        .expanded-footer {
+          bottom: calc($bottomMenuHeight + env(safe-area-inset-bottom));
+        }
+      }
     }
   }
 }

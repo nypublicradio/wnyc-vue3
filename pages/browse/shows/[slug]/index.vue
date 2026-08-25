@@ -1,0 +1,250 @@
+<script setup>
+import { checkIsFavorited, slugify } from "~/utilities/helpers"
+import { useIsApp } from "~/composables/states"
+import { useFetchWrapper } from "~/composables/useFetchWrapper"
+import {
+  getShowTitle,
+  getShowDescription,
+  getShowImage,
+} from "~/utilities/metadataHelpers"
+import useSeoMetaOverrides from "~/composables/useSeoMetaOverrides"
+import useSocialMetaOverrides from "~/composables/useSocialMetaOverrides"
+const config = useRuntimeConfig()
+const route = useRoute()
+const isApp = useIsApp()
+/**
+ * Return the first value when a route query parameter is repeated.
+ */
+const getQueryValue = (value) => (Array.isArray(value) ? value[0] : value)
+const isPreview = computed(
+  () =>
+    route.query.preview === "true" &&
+    route.query.identifier &&
+    route.query.token
+)
+
+const showEndpoint = computed(() => {
+  const baseUrl = `${config.public.BFF_URL}/api/pages/wagtail/${
+    route.params.slug
+  }?isApp=${String(isApp.value)}`
+
+  if (!isPreview.value) return baseUrl
+
+  const params = new URLSearchParams({
+    preview: "true",
+    identifier: getQueryValue(route.query.identifier),
+    token: getQueryValue(route.query.token),
+  })
+  return `${baseUrl}?${params.toString()}`
+})
+
+const showFetchArgs = [
+  showEndpoint,
+  {
+    key: isPreview.value
+      ? `show-page-preview-${route.params.slug}-${getQueryValue(
+          route.query.identifier
+        )}`
+      : `show-page-${route.params.slug}`,
+    watch: false,
+  },
+]
+
+const { data: show, status, error } = await useFetchWrapper(...showFetchArgs)
+
+// redirect if the show has a redirect property.
+const redirectIfNeeded = (page) => {
+  if (!page?.redirect) return
+
+  return navigateTo(page.location, {
+    redirectCode: page.statusCode || 301,
+    external: /^https?:\/\//.test(page.location),
+  })
+}
+
+watch(show, (page) => {
+  redirectIfNeeded(page)
+})
+
+await redirectIfNeeded(show.value)
+
+// Auto-refresh handled by useFetchWrapper
+
+const sectionAnchorData = computed(
+  () =>
+    show?.value?.inPageNavigation?.map((item) => ({
+      label: item.value.linkText,
+      id: slugify(item.value.targetId || item.value.linkText),
+    })) ?? []
+)
+
+// if user is logged in, check if item is already favorited
+const isFavorited = ref(false)
+onMounted(() => {
+  watchEffect(async () => {
+    isFavorited.value = await checkIsFavorited(route.params.slug)
+  })
+})
+
+const firstCuratedListIndex = computed(() => {
+  const index = show.value?.body?.findIndex(
+    (item) => item.type === "curated_list"
+  )
+  return index !== undefined && index > -1 ? index : null
+})
+
+// scrolls to the selected section from the jump link buttons
+const scrollToSection = (sectionId, behavior = "smooth", offset = 90) => {
+  const element = document.getElementById(sectionId)
+
+  if (element) {
+    const elementPosition =
+      element.getBoundingClientRect().top + window.pageYOffset
+    const offsetPosition = elementPosition - offset
+
+    window.scrollTo({
+      top: offsetPosition,
+      behavior,
+    })
+  }
+}
+
+const breadcrumbs = computed(() => [
+  { label: "Home", route: "/home" },
+  { label: "Browse", route: "/browse" },
+  { label: show?.value?.title },
+])
+
+onMounted(() => {
+  if (isPreview.value) return
+
+  // send GA page view
+  const { $analytics } = useNuxtApp()
+  $analytics.sendPageView({
+    page_title: "Browse Shows",
+    page_type: "browse_shows_page",
+    content_group: "app_tab",
+  })
+})
+
+const title = getShowTitle(show)
+const description = getShowDescription(show)
+const image = getShowImage(show)
+useHead({
+  title,
+})
+useSeoMeta({
+  title,
+  ogTitle: title,
+  description,
+  ogDescription: description,
+})
+if (image) {
+  useSeoMeta({
+    ogImage: image,
+  })
+}
+useSeoMetaOverrides(show)
+useSocialMetaOverrides(show)
+</script>
+
+<template>
+  <div class="shows-page pb-7" :class="{ 'is-app': isApp }">
+    <section>
+      <div class="flex align-items-center">
+        <Breadcrumbs :items="breadcrumbs" />
+      </div>
+      <FetchError v-if="status === 'error'" />
+    </section>
+    <template v-if="!error">
+      <ShowHeader :show="show" :class="route.params.slug" />
+      <!-- JUMP LINKS -->
+      <section v-if="!isApp" class="hidden md:block">
+        <div class="grid">
+          <div class="col-fixed hidden xxl:block w-20rem"></div>
+          <div class="col pr-2 lg:pr-4">
+            <div
+              class="flex flex-wrap justify-content-start align-items-center gap-3 my-4"
+            >
+              <template v-if="sectionAnchorData.length">
+                <Button
+                  v-for="i in sectionAnchorData"
+                  :key="i.id"
+                  :label="i.label"
+                  severity="secondary"
+                  class="px-3 md:px-3 lg:px-4"
+                  @click="scrollToSection(i.id)"
+                />
+              </template>
+              <template v-else>
+                <Skeleton
+                  v-for="i in 3"
+                  :key="`jump-link-${i}`"
+                  height="2rem"
+                  width="8rem"
+                  borderRadius="1.75rem"
+                  class="w-7rem md:w-8rem lg:w-11rem"
+                />
+              </template>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- <pre>{{ show }}</pre> -->
+      <section class="py-4">
+        <div class="grid">
+          <div class="col-fixed hidden xxl:block w-20rem"></div>
+          <div class="col pr-2 lg:pr-4">
+            <div v-if="status === 'success'" class="flex flex-column gap-5">
+              <VStreamfield :streamfieldBlocks="show?.body">
+                <template #adBlock="slotProps">
+                  <div
+                    class="lg:hidden mt-4 mb-6"
+                    v-if="
+                      slotProps.index === firstCuratedListIndex &&
+                      firstCuratedListIndex !== null
+                    "
+                  >
+                    <story-htlAd
+                      layout="rectangle"
+                      slotClass="htlad-wnyc_show_page_rectangle"
+                      fineprint="WNYC is funded by sponsors and member donations"
+                    />
+                  </div>
+                </template>
+              </VStreamfield>
+            </div>
+            <div v-if="status !== 'success'">
+              <div
+                class="flex justify-content-between align-items-center mb-5 mt-2"
+              >
+                <Skeleton height="18px" width="80px" borderRadius="4px" />
+                <Skeleton height="18px" width="80px" borderRadius="4px" />
+              </div>
+              <skeleton-media-card
+                v-for="i in 10"
+                :key="`sk1-${i}`"
+                is-horizontal
+                imgCol="w-7rem md:w-10rem"
+                :size="[1, 1]"
+                :showBg="false"
+                :showBgMobile="false"
+                showTease
+                class="mb-6 mt-5"
+              />
+            </div>
+            <div v-if="!isApp">
+              <div class="block lg:hidden mt-8">
+                <ShowSummary :show="show" />
+              </div>
+            </div>
+          </div>
+          <div class="col-fixed hidden lg:block w-20rem">
+            <ShowSummary :show="show" />
+          </div>
+        </div>
+      </section>
+      <BackToTopButton />
+    </template>
+  </div>
+</template>

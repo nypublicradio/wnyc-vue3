@@ -1,7 +1,7 @@
 <script setup>
 import { RemoteStreamer } from "@nypublicradio/capacitor-remote-streamer"
 import { Capacitor } from "@capacitor/core"
-import { ref, watch } from "vue"
+import { ref, watch, nextTick } from "vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
 import PauseIcon from "~/components/icons/PauseIcon.vue"
 import Previous10 from "~/components/icons/Previous10.vue"
@@ -22,21 +22,23 @@ import {
   useIsNetworkConnected,
   useDeviceId,
   useCurrentUserProfile,
-  useGlobalToast,
+  //useGlobalToast,
 } from "~/composables/states"
 import {
   trackAudioEvent,
   trackClickEvent,
-  templatizePublisherImageUrl,
   getDate,
   hasQueryParams,
-  getEpisodeFallBackImage,
 } from "~/utilities/helpers"
-
+import useManageScrollPosition from "~/composables/useManageScrollPosition"
 import { initMediaSession } from "~/utilities/media-session.js"
 
-const devicePlatform = Capacitor.getPlatform()
-
+// Initialize device platform on client-side only to avoid SSR errors
+const devicePlatform = ref("web")
+if (process.client) {
+  devicePlatform.value = Capacitor.getPlatform()
+}
+const { saveScrollPosition, restoreScrollPosition } = useManageScrollPosition()
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isLiveStream = useIsLiveStream()
@@ -52,32 +54,45 @@ const currentEpisodeProgress = useCurrentEpisodeProgress()
 const isNetworkConnected = useIsNetworkConnected()
 const deviceId = useDeviceId()
 const currentUser = useCurrentUserProfile()
-const globalToast = useGlobalToast()
+//const globalToast = useGlobalToast()
 
 const showPlayer = ref(false)
 const playerRef = ref(null)
 const isBuffering = ref(false)
+const suppressTransitionErrorsUntil = ref(0)
+const playbackFromAuto = ref(false)
 
 const route = useRoute()
 
 let delay = 250
-const isError = ref(null)
 
-const getDescription = computed(() => {
-  if (isLiveStream.value) {
-    return currentEpisode?.value?.episodeTitle
-  } else {
-    return currentEpisode?.value?.showTitle
-  }
+// function that returns the image for the episode
+const getTitle = computed(() => {
+  return currentEpisode?.value?.episodeTitle ?? currentEpisode?.value?.title
 })
 
+// function that returns the media type for the episode
 const getMediaType = computed(() => {
   // if the hls value is set, then it is a live stream
   return currentEpisode?.value?.hls ? "live" : "on_demand"
 })
 
-const getTitle = computed(() => {
-  return currentEpisode?.value?.title
+// function that returns the description of the episode
+const getDescription = computed(() => {
+  // if the title and the description are the same, return null for description
+  return currentEpisode?.value?.showTitle !== getTitle.value
+    ? currentEpisode?.value?.showTitle
+    : null
+})
+
+const getEpisodeContextLabel = computed(() => {
+  return (
+    currentEpisode.value?.showTitle ||
+    currentEpisode.value?.station ||
+    currentEpisode.value?.headers?.brand?.title ||
+    currentEpisode.value?.show ||
+    ""
+  )
 })
 
 /*function that updated the global useIsPlayerMinimized */
@@ -100,18 +115,17 @@ then we merge it all together and return it to the player as the source for the 
 */
 
 const getConfiguredAudioUrl = computed(() => {
-  const desktop = devicePlatform === "web"
-  // if it is not the desktop, then we use the hls value, else we use the file value
-  const url = !desktop
-    ? currentEpisode.value?.hls ||
-      currentEpisode.value?.file ||
-      currentEpisode.value?.audio ||
-      ""
-    : currentEpisode.value?.file || currentEpisode.value?.audio || ""
+  // we start with HLS, then file, then audio
+  // if none of those are set, then we return an empty string
+  const url =
+    currentEpisode.value?.hls ||
+    currentEpisode.value?.file ||
+    currentEpisode.value?.audio ||
+    ""
   const hasQuery = hasQueryParams(url)
   const adID = deviceId.value?.identifier ?? "0"
   const userID = currentUser?.value?.id ?? "0"
-  const thisDevice = devicePlatform
+  const thisDevice = devicePlatform.value
   // update restriction when we have the value from setting panel
   const restriction = "0"
   return `${url}${
@@ -129,28 +143,61 @@ const releasePlayer = async () => {
   }
 }
 
+// setVolume
+const currentVolume = ref(1)
+const isMuted = ref(false)
+// function that handles the volume change
+const setVolume = (e) => {
+  RemoteStreamer.setVolume({ volume: e })
+  currentVolume.value = e
+}
+// function that handles the mute toggle
+const muteToggle = () => {
+  if (isMuted.value) {
+    RemoteStreamer.setVolume({ volume: currentVolume.value })
+    isMuted.value = false
+  } else {
+    RemoteStreamer.setVolume({ volume: 0 })
+    isMuted.value = true
+  }
+}
+
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
 const switchEpisode = async (val) => {
+  const wasPlayingBeforeSwitch = isEpisodePlaying.value
   isNewEpisode.value = true
   showPlayer.value = false
+  suppressTransitionErrorsUntil.value = wasPlayingBeforeSwitch
+    ? Date.now() + 5000
+    : 0
 
-  await releasePlayer()
+  // Skip native teardown/play if Auto/CarPlay already started playback
+  const fromAuto = playbackFromAuto.value
+  playbackFromAuto.value = false
 
-  // Small delay to ensure cleanup completes
-  await new Promise((resolve) => setTimeout(resolve, 100))
+  if (!fromAuto) {
+    await releasePlayer()
+    // Small delay to ensure cleanup completes
+    await new Promise((resolve) => setTimeout(resolve, 100))
+  }
 
   currentEpisode.value = val
-  isStreamLoading.value = true
+  isStreamLoading.value = !fromAuto // already playing if from Auto
   await nextTick()
 
-  await RemoteStreamer.play({
-    url: getConfiguredAudioUrl.value,
-    enableCommandCenter: true,
-    enableCommandCenterSeek: !isLiveStream.value,
-  })
+  if (!fromAuto) {
+    await RemoteStreamer.play({
+      url: getConfiguredAudioUrl.value,
+      enableCommandCenter: true,
+      enableCommandCenterSeek: !isLiveStream.value,
+    })
+  }
 
-  // initializes the media session in ~/utilities/media-session.js
-  initMediaSession(currentEpisode.value)
+  currentEpisodeDuration.value = currentEpisode.value?.duration || 0
+  // Skip media session update when Auto initiated — it already has correct metadata
+  if (!fromAuto) {
+    initMediaSession(currentEpisode.value)
+  }
   setTimeout(() => {
     showPlayer.value = true
     delay = 250
@@ -160,14 +207,24 @@ const switchEpisode = async (val) => {
 // function that handles the skip to time with the plugin
 const handleSkipTo = (e) => {
   RemoteStreamer.seekTo({ position: e })
-  trackAudioEvent("skip", getMediaType.value, getTitle.value, getDescription.value)
+  trackAudioEvent(
+    "skip",
+    getMediaType.value,
+    getTitle.value,
+    getDescription.value
+  )
 }
 //
 const handleSeekTo = (e) => {
   // convert the percentage to the time
   const time = (e / 100) * currentEpisodeDuration.value
   RemoteStreamer.seekTo({ position: time })
-  trackAudioEvent("seek", getMediaType.value, getTitle.value, getDescription.value)
+  trackAudioEvent(
+    "seek",
+    getMediaType.value,
+    getTitle.value,
+    getDescription.value
+  )
 }
 
 // handle the toggle play button and tracking
@@ -177,10 +234,13 @@ const togglePlayHere = async (e) => {
     //await enableBackgroundMode()
     isEpisodePlaying.value = true
 
-    if (isNewEpisode.value) {
-      trackAudioEvent("play", getMediaType.value, getTitle.value, getDescription.value)
-    } else {
-      trackAudioEvent("resume", getMediaType.value, getTitle.value, getDescription.value)
+    if (!isNewEpisode.value) {
+      trackAudioEvent(
+        "resume",
+        getMediaType.value,
+        getTitle.value,
+        getDescription.value
+      )
     }
     isNewEpisode.value = false
   } else if (!e && isEpisodePlaying.value) {
@@ -192,16 +252,13 @@ const togglePlayHere = async (e) => {
   // Remove the redundant isEpisodePlaying.value = e line
 }
 
-//const handleCast = () => {
-//console.log("playerRef.value = ", playerRef.value)
-//console.log("remoteControl = ", remoteControl)
-//playerRef.value.$mediaPlayerRef.requestGoogleCast()
-//playerRef.value.castToGoogleCast()
-//remoteControl.requestGoogleCast()
-//}
-
 // function that handles the expanded player from the persistent player emit
 const handleIsExpanded = (e) => {
+  if (e) {
+    saveScrollPosition()
+  } else {
+    restoreScrollPosition()
+  }
   isPlayerExpanded.value = e
 }
 
@@ -209,13 +266,18 @@ const handleIsExpanded = (e) => {
 //I have to check for "e" it fires 2 times... once with the error and once without
 const handleError = async (e) => {
   if (e) {
-    await releasePlayer()
-    globalToast.value = {
-      severity: "error",
-      summary: "We are having a problem loading the audio. Please try again later.",
-      life: 6000,
-      closable: true,
+    if (Date.now() < suppressTransitionErrorsUntil.value) {
+      return
     }
+
+    await releasePlayer()
+    // globalToast.value = {
+    //   severity: "error",
+    //   summary:
+    //     "We are having a problem loading the audio. Please try again later.",
+    //   life: 6000,
+    //   closable: true,
+    // }
 
     if (isEpisodePlaying.value) {
       playerRef.value.togglePlay()
@@ -267,11 +329,6 @@ watch(isNetworkConnected, () => {
   }
 })
 
-//
-// watch(isBuffering, (e) => {
-//   console.log("watch: isBuffering = ", isBuffering.value, e)
-// })
-
 // function that handles the skip ahead toggle trigger
 const handleSkipAhead = () => {
   skipAheadTrigger.value = !skipAheadTrigger.value
@@ -282,8 +339,6 @@ const handleSkipBack = () => {
 }
 
 watch(currentEpisode, (newVal, oldVal) => {
-  //console.log("newVal", newVal)
-  //console.log("oldVal", oldVal)
   // only switches the episode if the new value is not null and the audio, hls, or file values have changed. so when coming back into focus, the data can be updated in the currentEpisode, like if it was live and the show changed.
   if (
     newVal !== null &&
@@ -306,6 +361,13 @@ watch(skipBackTrigger, () => {
   handleSkipTo(currentEpisodeProgress.value - PLAYER_SKIP_TIME)
 })
 
+// if the global isPlayerMinimized state changes, sync it to the player component
+watch(isPlayerMinimized, (val) => {
+  if (playerRef.value) {
+    playerRef.value.toggleMinimize(val)
+  }
+})
+
 // if the route changes, and the expanded player is expanded, close the expanded player
 watch(
   () => route.name,
@@ -318,21 +380,41 @@ watch(
 
 onMounted(async () => {
   await RemoteStreamer.addListener("error", (err) => {
-    isError.value = err
+    handleError(err)
   })
   await RemoteStreamer.addListener("timeUpdate", (data) => {
     currentEpisodeProgress.value = data.currentTime
   })
+  RemoteStreamer.addListener("ready", (data) => {
+    currentEpisodeDuration.value = data.duration
+    currentEpisode.value.duration = data.duration
+    isStreamLoading.value = false
+  })
   await RemoteStreamer.addListener("play", () => {
     isEpisodePlaying.value = true
-    isStreamLoading.value = false
-    currentEpisodeDuration.value = currentEpisode.value.duration
+
+    suppressTransitionErrorsUntil.value = 0
+
+    if (isNewEpisode.value) {
+      trackAudioEvent(
+        "play",
+        getMediaType.value,
+        getTitle.value,
+        getDescription.value
+      )
+      isNewEpisode.value = false
+    }
   })
 
   await RemoteStreamer.addListener("pause", () => {
     if (isEpisodePlaying.value) {
       isEpisodePlaying.value = false
-      trackAudioEvent("pause", getMediaType.value, getTitle.value, getDescription.value)
+      trackAudioEvent(
+        "pause",
+        getMediaType.value,
+        getTitle.value,
+        getDescription.value
+      )
     }
   })
 
@@ -351,7 +433,12 @@ onMounted(async () => {
     // this is work webview detecting the end of the audio
     if (e?.ended) {
       episodeEnded()
-      trackAudioEvent("ended", getMediaType.value, getTitle.value, getDescription.value)
+      trackAudioEvent(
+        "ended",
+        getMediaType.value,
+        getTitle.value,
+        getDescription.value
+      )
     }
   })
   await RemoteStreamer.addListener("ended", (e) => {
@@ -360,9 +447,74 @@ onMounted(async () => {
     currentEpisodeProgress.value = 0
     if (e.ended) {
       episodeEnded()
-      trackAudioEvent("ended", getMediaType.value, getTitle.value, getDescription.value)
+      trackAudioEvent(
+        "ended",
+        getMediaType.value,
+        getTitle.value,
+        getDescription.value
+      )
     }
   })
+
+  // Auto/CarPlay initiated playback — load the content in the app player
+  const handleAutoPlayEvent = (data) => {
+    const mediaId = data.mediaId || data.id || ""
+    const isLive = Boolean(data.isLive)
+    isLiveStream.value = isLive
+
+    // Build a minimal episode object from the metadata
+    const episode = {
+      id: mediaId,
+      title: data.title || mediaId,
+      showTitle: data.artist || "",
+      station: data.artist || "",
+      player_image: data.imageUrl || null,
+      image: data.imageUrl || null,
+      duration: data.duration || 0,
+      estimatedDuration: data.duration || 0,
+    }
+
+    if (isLive) {
+      episode.hls = data.streamUrl || ""
+    } else {
+      episode.audio = data.streamUrl || ""
+      episode.file = data.streamUrl || ""
+    }
+
+    // Set the flag so switchEpisode skips the native play call
+    playbackFromAuto.value = true
+    currentEpisode.value = episode
+    // Update global duration immediately — the "play" event won't fire again
+    // if playback is already in progress (e.g. app opened after CarPlay started)
+    if (episode.duration > 0) {
+      currentEpisodeDuration.value = episode.duration
+    }
+  }
+
+  await RemoteStreamer.addListener("playFromCarPlay", handleAutoPlayEvent)
+  await RemoteStreamer.addListener("playFromMediaId", handleAutoPlayEvent)
+
+  // Sync with Auto/CarPlay if playback is already in progress when app opens
+  if (Capacitor.isNativePlatform()) {
+    try {
+      const state = await RemoteStreamer.getCurrentState()
+      if (state.currentMediaId && !currentEpisode.value) {
+        handleAutoPlayEvent({
+          mediaId: state.currentMediaId,
+          isLive: state.isLiveStream,
+          streamUrl: state.streamUrl || state.currentUrl,
+          title: state.title,
+          artist: state.artist,
+          imageUrl: state.imageUrl,
+          duration: state.duration,
+        })
+        // Match the play/pause state from Auto
+        isEpisodePlaying.value = Boolean(state.isPlaying)
+      }
+    } catch (e) {
+      console.warn("Failed to get current playback state:", e)
+    }
+  }
 })
 </script>
 
@@ -375,14 +527,11 @@ onMounted(async () => {
         class="style-mode-dark"
         :can-expand="true"
         :can-expand-with-swipe="true"
-        :can-unexpand-with-swipe="false"
+        :can-unexpand-with-swipe="true"
         :title="getTitle"
-        :station="currentEpisode?.name"
+        :station="currentEpisode?.station"
         :description="getDescription"
-        :image="
-          templatizePublisherImageUrl(currentEpisode?.player_image) ??
-          getEpisodeFallBackImage()
-        "
+        :image="currentEpisode?.player_image"
         :platform="devicePlatform"
         @togglePlay="togglePlayHere"
         @is-minimized="updateUseIsPlayerMinimized"
@@ -391,27 +540,28 @@ onMounted(async () => {
         @skip-back="handleSkipBack"
         @error="handleError"
         @scrub-timeline-end="handleSeekTo($event)"
+        @volume-change="setVolume($event)"
+        @volume-toggle-mute="muteToggle"
         can-click-anywhere
+        :showVolume="true"
         :isStreamLoading
         :isEpisodePlaying
         :isLiveStream
         :currentEpisodeDuration
         :currentEpisodeProgress
+        :volume="currentVolume"
+        :isMuted="isMuted"
       >
         <template #expanded-player-title>
-          <PipeData class="text-xs">
+          <PipeData v-if="!isLiveStream" class="text-xs md:text-base">
             <template #left>
-              {{
-                currentEpisode.showTitle ||
-                currentEpisode.station ||
-                currentEpisode.headers.brand.title
-              }}
+              {{ getEpisodeContextLabel }}
             </template>
             <template #right>
               {{ getDate(currentEpisode) }}
             </template>
           </PipeData>
-          <div class="expanded-title">{{ currentEpisode.title }}</div>
+          <div class="expanded-title">{{ getTitle }}</div>
         </template>
         <template #skipBack>
           <Previous10 />
@@ -441,13 +591,31 @@ html.style-mode-dark .persistent-player {
   .expanded-view .header,
   .expanded-view .expanded-footer {
     background-color: var(--persistent-player-header-footer-bg) !important;
-    opacity: var(--persistent-player-header-footer-bg-opacity);
-    backdrop-filter: blur(var(--persistent-player-header-footer-bg-blur));
   }
 }
-
+body {
+  &.app {
+    .persistent-player:not(.expanded) {
+      bottom: calc(var(--bottom-menu-height) + env(safe-area-inset-bottom));
+    }
+  }
+  &.browser {
+    .persistent-player {
+      bottom: env(safe-area-inset-bottom);
+      &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: calc(-1 * env(safe-area-inset-bottom));
+        height: env(safe-area-inset-bottom);
+        background-color: var(--persistent-player-bg);
+      }
+    }
+  }
+}
 .persistent-player:not(.expanded) {
-  bottom: calc(var(--bottom-menu-height) + env(safe-area-inset-bottom));
+  //bottom: calc(var(--bottom-menu-height) + env(safe-area-inset-bottom));
 
   // no live icon
   .track-info-livestream {
@@ -465,7 +633,7 @@ html.style-mode-dark .persistent-player {
   }
 
   .track-info {
-    margin-left: 6px;
+    //margin-left: 6px;
   }
   media-play-button {
     margin-right: 6px;
@@ -480,6 +648,11 @@ html.style-mode-dark .persistent-player {
 }
 
 .persistent-player {
+  .content {
+    max-width: $playerMaxWidth;
+    margin: auto;
+    width: 100%;
+  }
   &.expanded {
     bottom: 0;
   }
@@ -509,15 +682,32 @@ html.style-mode-dark .persistent-player {
         @include content-formatting();
       }
       .expanded-title {
-        font-size: 18px;
+        font-size: 2rem;
         font-family: var(--font-family-header);
-        line-height: 26.78px;
+        line-height: 1.25em;
         font-weight: var(--font-weight-600);
+        @include media("<md") {
+          font-size: 18px;
+        }
       }
       .expanded-footer {
         background-color: var(--persistent-player-header-footer-bg);
-        opacity: var(--persistent-player-header-footer-bg-opacity);
-        backdrop-filter: blur(var(--persistent-player-header-footer-bg-blur));
+        &:after {
+          pointer-events: none;
+          content: "";
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: -75px;
+          height: 75px;
+
+          // background gradient for fade effect
+          background: linear-gradient(
+            to top,
+            var(--persistent-player-header-footer-bg) 0%,
+            rgba(255, 255, 255, 0) 100%
+          );
+        }
       }
     }
     #expandedControls {

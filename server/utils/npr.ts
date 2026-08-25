@@ -4,16 +4,19 @@ import { deduplicateArray, howLongAgo } from '~/utilities/helpers'
 // Class to normailze NPR data
 export class NPR {
     // Fetch the document from the NPR API
-    getFromNPR (path: string, options: Record<string, unknown> = {}, baseURL: string = '/v1/'): Promise<void> {
+    getFromNPR(path: string, options: Record<string, unknown> = {}, baseURL: string = '/v1/'): Promise<void> {
         if (typeof options.headers !== 'object' || options.headers === null) {
             options.headers = {}
         }
         options.headers['Authorization'] = `Bearer ${process.env.NPR_CDS_API_KEY}`
+        if (!options.timeout) {
+            options.timeout = 10000
+        }
         const url = `${process.env.NPR_CDS_API}${baseURL}${path}`
         return axios.get(url, options).catch(e => { console.error('NPR CDS error', e) })
     }
 
-    async multiDocumentRequest (ids, maxDocumentsPerRequest = 20) {
+    async multiDocumentRequest(ids, maxDocumentsPerRequest = 20) {
         // if no ids are provided, return an empty array
         if (!ids.length || !ids[0].length) {
             return []
@@ -31,15 +34,15 @@ export class NPR {
     }
 
     // Fetch the image of the show
-    findImageUrl (item) {
+    findImageUrl(item) {
         try {
             let imageUrl = null
             for (const asset of Object.values(item.resources[0].assets)) {
                 if (asset.profiles?.some(profile => profile.href === '/v1/profiles/image')) {
-                    const imageEnclosure = asset.enclosures.find(enclosure => enclosure.rels.includes('image-square'))
+                    const imageEnclosure = asset.enclosures.find(enclosure => enclosure.rels.includes('image-square'));
                     if (imageEnclosure) {
-                        imageUrl = { href: imageEnclosure.href, template: imageEnclosure.hrefTemplate }
-                        break // Exit the loop once the matching image URL is found
+                        imageUrl = { href: imageEnclosure.href, template: imageEnclosure.hrefTemplate };
+                        break; // Exit the loop once the matching image URL is found
                     }
                 }
             }
@@ -50,7 +53,7 @@ export class NPR {
         }
     }
     // Fetch the image of the episode
-    async findEpisodeImage (item, imageRatio = 'image-standard') {
+    async findEpisodeImage(item, imageRatio = 'image-standard') {
         try {
             if (item?.assets) {
                 for (const asset of Object.values(item?.assets)) {
@@ -79,7 +82,7 @@ export class NPR {
         return null
     }
     // Check if the item has audio
-    async hasAudio (id) {
+    async hasAudio(id) {
         try {
             const res = await this.getFromNPR(`documents?collectionIds=${id}`)
             for (const item of res.data.resources) {
@@ -99,7 +102,7 @@ export class NPR {
     }
 
     // Fetch all segments for a episode and return audio array
-    async findAudio (id, show, image = FALLBACKIMAGEEP) {
+    async findAudio(id, show, image = FALLBACKIMAGEEP) {
         const showTitle = show.resources[0].title
         const audio = []
         try {
@@ -146,7 +149,7 @@ export class NPR {
         }
     }
     // Add metadata to the audio array
-    async addMetadata (audio, itemData) {
+    async addMetadata(audio, itemData) {
         const categories = audio.map(item => item.categoryId).filter(item => item)
         const categoryDocsRequest = this.multiDocumentRequest(categories)
         const bylineDocIds = audio.reduce((acc, item) => { return acc.concat(item.bylineIds) }, [])
@@ -185,7 +188,7 @@ export class NPR {
         return audioWithMetadata
     }
     // parses item for document ids of bylines
-    getBylineIds (item) {
+    getBylineIds(item) {
         // Get the byline ids from all bylineDocuments with type biography
         const bylineIds = item.bylines?.map(byline => {
             const assetId = byline.href.split('/')[2]
@@ -197,7 +200,7 @@ export class NPR {
         return bylineIds
     }
     // parses item for document id of the category
-    getCategoryId (item: { collections?: Array<{ rels: string[]; href: string }> }): string | undefined {
+    getCategoryId(item: { collections?: Array<{ rels: string[]; href: string }> }): string | undefined {
         // Get the category id from the first collection that has a topic or program relationship
         const categoryId = item.collections?.find(
             (collection) => collection.rels.includes('topic') || collection.rels.includes('program') || collection.rels.includes('series')
@@ -205,7 +208,7 @@ export class NPR {
         return categoryId
     }
     // Fetch the document from the NPR API
-    async getDocument (url: string): Promise<unknown> {
+    async getDocument(url: string): Promise<unknown> {
         const response = await this.getFromNPR(url, {}, '')
         return response?.data
     }

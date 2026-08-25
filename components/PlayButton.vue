@@ -20,7 +20,15 @@ const props = defineProps({
     type: String,
     default: "Play",
   },
+  size: {
+    type: String,
+    default: "small",
+  },
   live: {
+    type: Boolean,
+    default: false,
+  },
+  liveBadge: {
     type: Boolean,
     default: false,
   },
@@ -41,24 +49,40 @@ const props = defineProps({
     default: {},
     type: Object,
   },
+  severity: {
+    default: "secondary",
+    type: String,
+  },
+  buttonClass: {
+    default: "",
+    type: String,
+  },
+  labelClass: {
+    default: "",
+    type: String,
+  },
 })
 
 const emit = defineEmits(["on-click"])
 
 // handles the click event
 const togglePlay = () => {
+  if (isStreamLoading.value) return
   emit("on-click")
 }
 
 const getProgress = computed(() => {
-  return Math.ceil((currentEpisodeProgress.value / currentEpisodeDuration.value) * 100)
+  return Math.ceil(
+    (currentEpisodeProgress.value / currentEpisodeDuration.value) * 100
+  )
 })
 
 const isPlaying = ref(false)
 watch(
-  isEpisodePlaying,
+  [isEpisodePlaying, currentEpisode],
   () => {
-    isPlaying.value = String(currentEpisode.value?.id) === String(props.data?.id)
+    isPlaying.value =
+      String(currentEpisode.value?.id) === String(props.data?.id)
   },
   {
     immediate: true,
@@ -69,13 +93,14 @@ watch(
 <template>
   <div class="small-play" :class="[{ circle: props.label === '' }]">
     <Button
-      severity="secondary"
+      :severity="props.severity"
       @click.prevent="togglePlay"
       :aria-disabled="isStreamLoading"
       aria-label="play"
       tabindex="0"
-      :class="[{ active: isPlaying }]"
+      :class="[{ active: isPlaying }, props.buttonClass]"
       class="flex align-items-center cursor-pointer"
+      :size="props.size"
     >
       <slot name="icon">
         <Transition name="fade" mode="out-in">
@@ -87,13 +112,17 @@ watch(
             <CircularProgressBar :progress="getProgress" />
             <PlayIcon v-if="!isEpisodePlaying && !isStreamLoading" />
             <PauseIcon v-if="isEpisodePlaying && !isStreamLoading" />
-            <i v-if="isStreamLoading" class="pi pi-spin pi-spinner"></i>
+            <i
+              v-if="isStreamLoading"
+              class="pi pi-spin pi-spinner"
+              aria-hidden="true"
+            ></i>
           </div>
           <div
             v-else-if="isPlaying && isStreamLoading"
             class="flex align-items-center icon relative"
           >
-            <i class="pi pi-spin pi-spinner"></i>
+            <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
           </div>
           <div v-else class="flex align-items-center icon">
             <PlayIcon />
@@ -101,10 +130,14 @@ watch(
         </Transition>
       </slot>
       <slot>
-        <div class="content flex white-space-nowrap align-items-center">
-          <span class="center">{{ props.label }}</span>
+        <div
+          class="content flex white-space-nowrap align-items-center justify-content-center w-full"
+        >
+          <span class="center" :class="props.labelClass">{{
+            props.label
+          }}</span>
           <LiveBadge
-            v-if="props.live"
+            v-if="props.liveBadge"
             font-size="14px"
             bg-color="transparent"
             padding="1px 3px 1px 3px"
@@ -119,6 +152,7 @@ watch(
 <style lang="scss" scoped>
 .small-play {
   .p-button {
+    min-height: 33px;
     &.active {
       //border: var(--bw-toggle) 1px solid;
     }
@@ -150,13 +184,10 @@ watch(
     }
   }
   .content {
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: var(--font-weight-700);
-    line-height: normal;
+    line-height: 0;
     align-items: center;
-    * {
-      line-height: 1;
-    }
   }
   &.circle {
     height: 40px;

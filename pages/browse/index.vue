@@ -1,18 +1,30 @@
 <script setup>
 import { useFuse } from "@vueuse/integrations/useFuse"
-import { showTopics } from "~/composables/globals.ts"
-import { goToShowPage } from "~/utilities/helpers"
-
+//import { showTopics } from "~/composables/globals.ts"
+import { useBreakpoints } from "~/composables/useBreakpoints"
+import { useIsApp } from "~/composables/states"
 const config = useRuntimeConfig()
-const { data: shows, pending, error } = useLazyFetch(
-  `${config.public.BFF_URL}/api/v2/shows`
-)
+const isApp = useIsApp()
+const route = useRoute()
+const {
+  data: shows,
+  status,
+  error,
+} = await useFetchWrapper(`${config.public.BFF_URL}/api/v3/shows`, {
+  key: "v3-shows",
+})
 
 const router = useRouter()
-const route = useRoute()
 const searchFieldValue = ref("")
 const isSearching = ref(false)
-const activeTab = ref(route.query.tab ?? "0")
+const allOrFeatured = computed(() => route.query.all !== "true")
+const { isMobileBreakpoint } = useBreakpoints()
+
+// computed property to get the current shows based on allOrFeatured
+const currentShows = computed(() => {
+  if (!shows.value) return []
+  return allOrFeatured.value ? shows.value.featuredShows : shows.value.all
+})
 
 const options = computed(() => ({
   fuseOptions: {
@@ -23,7 +35,11 @@ const options = computed(() => ({
   },
 }))
 
-const search = ref(null)
+const { results: searchResults } = useFuse(
+  searchFieldValue,
+  computed(() => shows.value?.all ?? []),
+  options
+)
 
 // clear the search field
 const clearSearchField = () => {
@@ -31,20 +47,30 @@ const clearSearchField = () => {
 }
 
 // route to the show page and add query
-const selectTopic = (topic) => {
-  router.push({
-    path: "browse/browse-topic",
-    query: { topic: topic.value, label: topic.label },
+// const selectTopic = (topic) => {
+//   router.push({
+//     path: "browse/browse-topic",
+//     query: { topic: topic.value, label: topic.label },
+//   })
+// }
+
+// handle the click on the "All Topics" button
+// const handleAllTopics = () => {
+//   // not sure what we are doing here yet.
+// }
+
+// handle the toggle of all or featured shows
+const toggleAllShows = () => {
+  router.replace({
+    query: {
+      ...route.query,
+      all: allOrFeatured.value ? "true" : "false",
+    },
   })
 }
 
-// handle the active tab for the featured and all shows to set url query
-const handleActiveTab = (e) => {
-  router.push({ query: { tab: e } })
-  activeTab.value = e
-}
-
 watch(searchFieldValue, () => {
+  if (!import.meta.client) return
   // sets the scroll to the top of the page when search field is updated. a delay is needed to allow the search to complete
   setTimeout(() => {
     window.scrollTo(0, 0)
@@ -61,153 +87,122 @@ onMounted(() => {
   })
 })
 
-watch(
-  shows,
-  () => {
-    // init the search when shoes is populated
-    if (shows) {
-      search.value = useFuse(searchFieldValue, shows?.value?.all, options)
-    }
-  },
-  { once: true }
-)
+const title = "Browse Shows | WNYC"
+const description =
+  "Learn more about the shows airing on WNYC, America's most listened-to public radio station."
+useHead({
+  title,
+})
+useSeoMeta({
+  title,
+  description,
+  ogTitle: title,
+  ogDescription: description,
+})
 </script>
 
 <template>
   <div class="browse-page">
-    <Html lang="en">
-      <Head>
-        <Title
-          >Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio,
-          News</Title
-        >
-        <Meta
-          name="og:title"
-          content="Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-        <Meta
-          name="twitter:title"
-          content="Browse Shows | WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News"
-        />
-      </Head>
-    </Html>
-    <section class="search z-2">
-      <IconField>
-        <InputIcon v-if="isSearching" class="pi pi-spin pi-spinner text-color" />
-        <InputIcon v-else class="pi pi-search text-color" />
-        <InputText
-          v-model="searchFieldValue"
-          placeholder="Search"
-          class="w-full on-white"
-        />
-        <InputIcon v-if="searchFieldValue" class="relative">
-          <Button
-            rounded
-            text
-            plain
-            icon="pi pi-times text-color"
-            aria-label="clear search"
-            class="absolute right-0 top-0 bottom-0 m-auto"
-            @click="clearSearchField"
-          ></Button>
-        </InputIcon>
-      </IconField>
-    </section>
-    <div class="content-holder">
+    <div class="search z-2" :class="{ 'is-app': isApp }">
+      <section class="thinContent">
+        <h1 class="hidden md:block mb-3 md:mb-4">Browse All Shows</h1>
+        <IconField>
+          <InputIcon
+            v-if="isSearching"
+            class="pi pi-spin pi-spinner z-2"
+            aria-hidden="true"
+          />
+          <InputIcon v-else class="pi pi-search z-2" />
+          <InputText
+            v-model="searchFieldValue"
+            placeholder="Search"
+            class="search w-full on-white"
+          />
+          <InputIcon v-if="searchFieldValue" class="relative">
+            <Button
+              rounded
+              text
+              plain
+              icon="pi pi-times text-color"
+              aria-label="clear search"
+              class="absolute right-0 top-0 bottom-0 m-auto"
+              @click="clearSearchField"
+            ></Button>
+          </InputIcon>
+        </IconField>
+      </section>
+    </div>
+    <!-- <pre>{{ shows }}</pre> -->
+    <div class="content-holder md:mt-3">
       <div v-if="!searchFieldValue">
-        <div class="topics">
-          <section>
-            <h2>Browse By Topic</h2>
-          </section>
-          <HorizontalScrollFeature class="topics-holder" :data="shows">
-            <div class="flex w-full">
-              <div
-                v-for="topic in showTopics"
-                class="station-holder item"
-                :key="topic.label"
-              >
-                <div class="relative topic-btn-holder">
-                  <Button
-                    class="topic-btn text-sm white-space-nowrap font-meta btn"
-                    :label="topic.label"
-                    :aria-label="`${topic.label} topic button`"
-                    @click="selectTopic(topic)"
-                    :style="`background-color: ${topic.color};`"
-                  />
-                </div>
-              </div>
-            </div>
-          </HorizontalScrollFeature>
-        </div>
         <FetchError v-if="error" />
+
         <section class="tabs mt-2">
           <Tabs
-            value="0"
-            :lazy="true"
-            :activeIndex="Number(activeTab)"
-            @update:value="handleActiveTab"
+            class="mb-5"
+            :value="allOrFeatured ? '0' : '1'"
+            @update:value="toggleAllShows"
           >
             <TabList>
               <Tab value="0">Featured Shows</Tab>
               <Tab value="1">All Shows</Tab>
             </TabList>
-            <TabPanels>
-              <TabPanel value="0">
-                <div class="shows flex flex-column gap-5">
-                  <template v-if="!pending">
-                    <ShowItem
-                      v-for="show in shows?.featuredShows"
-                      :data="show"
-                      :key="show.title"
-                      @onClick="goToShowPage(show)"
-                    />
-                  </template>
-                  <skeleton-show-item
-                    v-else
-                    v-for="(show, index) in 27"
-                    :key="`sk1-${index}`"
-                  />
-                </div>
-              </TabPanel>
-              <TabPanel value="1">
-                <div class="shows flex flex-column gap-5">
-                  <template v-if="!pending">
-                    <ShowItem
-                      v-for="show in shows?.all"
-                      :data="show"
-                      :key="show.title"
-                      @onClick="goToShowPage(show)"
-                    />
-                  </template>
-                  <skeleton-show-item
-                    v-else
-                    v-for="(show, index) in 27"
-                    :key="`sk2-${index}`"
-                  />
-                </div>
-              </TabPanel>
-            </TabPanels>
           </Tabs>
+
+          <Transition name="fade" mode="out-in">
+            <div
+              v-if="status === 'success'"
+              :key="`shows-${allOrFeatured}`"
+              class="shows grid"
+            >
+              <ShowItem
+                v-for="show in currentShows"
+                :data="show"
+                :key="show.title"
+                class="col-12 md:col-4 md:mb-5"
+                rootClass="md:align-items-start"
+                contentClass="md:flex-column gap-3 md:gap-2"
+                imageClass="w-6rem xs:w-7rem md:w-13rem"
+                :size="{ xxs: [96, 96], xs: [112, 112], md: [208, 208] }"
+                :hideButtons="!isMobileBreakpoint"
+              />
+            </div>
+            <div v-else key="loading" class="shows grid">
+              <skeleton-show-item
+                v-for="(show, index) in 27"
+                :key="`sk1-${index}`"
+                class="col-12 md:col-4 md:mb-5"
+                contentClass="md:flex-column gap-3 md:gap-2"
+                imageClass="w-7rem md:w-13rem h-7rem md:h-13rem"
+                :hideButtons="!isMobileBreakpoint"
+              />
+            </div>
+          </Transition>
         </section>
       </div>
       <div v-else>
         <section class="results">
           <!-- if results show them -->
-          <div class="results-list mb-2">
+          <div class="results-list mb-4 mt-2">
             <h2>Search Results</h2>
           </div>
-          <div class="shows flex flex-column gap-5">
+          <div class="shows grid">
             <ShowItem
-              v-for="show in search.results"
+              v-for="show in searchResults"
               :data="show.item"
               :key="show.item.title"
-              @onClick="goToShowPage(show.item)"
+              class="col-12 md:col-4 md:mb-5"
+              rootClass="md:align-items-start"
+              contentClass="md:flex-column gap-3 md:gap-2"
+              imageClass="w-6rem xs:w-7rem md:w-13rem"
+              :size="{ xxs: [96, 96], xs: [112, 112], md: [208, 208] }"
+              :hideButtons="!isMobileBreakpoint"
             />
           </div>
           <!-- if no results show this -->
           <div
-            v-if="search.results.length === 0"
-            class="text-center flex flex-column gap-4 mt-8"
+            v-if="searchResults.length === 0"
+            class="text-center flex flex-column gap-4 my-6"
           >
             <h2>No results for "{{ searchFieldValue }}"</h2>
             <NoResultsGraphic class="max-w-6rem m-auto" alt="No Results" />
@@ -238,18 +233,51 @@ watch(
 .browse-page {
   .search {
     position: sticky;
-    top: env(safe-area-inset-top);
-    background: var(--background2);
+    top: calc(env(safe-area-inset-top) + $headerHeight);
+    background: var(--header-background);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
     z-index: 1;
+    &.is-app {
+      top: env(safe-area-inset-top);
+    }
   }
   .content-holder {
+    max-width: $thinContentWidth;
+    margin: auto;
     .topics {
+      .station-holder {
+        &:last-child:not(.desktop) {
+          padding-right: 5rem !important;
+        }
+        &.desktop {
+          .topic-btn {
+            width: 100%;
+            height: 130px;
+            border-radius: 16px;
+            background-size: cover;
+            background-position: center;
+            transition: transform var(--p-transition-duration),
+              opacity var(--p-transition-duration);
+            -webkit-transition: transform var(--p-transition-duration),
+              opacity var(--p-transition-duration);
+            &:hover {
+              transform: scale(1.05);
+            }
+            .p-button-label {
+              margin-top: -2rem;
+            }
+          }
+        }
+      }
       .topic-btn-holder {
         .topic-btn {
+          font-family: var(--font-family-header);
           border: 1px solid transparent !important;
           &:hover,
           &:focus,
           &:active {
+            opacity: 0.8;
             border: 1px solid transparent !important;
           }
         }
@@ -273,6 +301,50 @@ watch(
           .arrow {
             bottom: -10px;
           }
+        }
+      }
+    }
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
+
+<style lang="scss">
+.browse-page {
+  .content-holder {
+    .topics {
+      .station-holder {
+        &.desktop {
+          .topic-btn {
+            .p-button-label {
+              margin-top: -2rem;
+            }
+          }
+        }
+      }
+    }
+    .shows {
+      .browse-item {
+        &:hover {
+          .v-image-wrapper {
+            opacity: 0.8;
+            transform: scale(1.05);
+          }
+        }
+        .v-image-wrapper {
+          transition: transform var(--p-transition-duration),
+            opacity var(--p-transition-duration);
+          -webkit-transition: transform var(--p-transition-duration),
+            opacity var(--p-transition-duration);
         }
       }
     }

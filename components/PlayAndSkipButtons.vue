@@ -17,13 +17,21 @@ const props = defineProps({
     default: false,
     type: Boolean,
   },
+  justify: {
+    default: "justify-content-center md:justify-content-start",
+    type: String,
+  },
 })
 
 const isEpisodePlaying = useIsEpisodePlaying()
 const isLiveStream = useIsLiveStream()
 const isStreamLoading = useIsStreamLoading()
 
-const emit = defineEmits(["beforeTogglePlay", "beforeSkipAhead", "beforeSkipBack"])
+const emit = defineEmits([
+  "beforeTogglePlay",
+  "beforeSkipAhead",
+  "beforeSkipBack",
+])
 
 // handles the click on the play button to toggle play
 const togglePlay = () => {
@@ -50,7 +58,7 @@ const isLiveOnly = computed(() => {
 </script>
 
 <template>
-  <div class="play-and-skip-buttons flex gap-3 justify-content-center">
+  <div class="play-and-skip-buttons flex gap-3" :class="props.justify">
     <template v-if="!props.hideSkip">
       <Button
         v-if="!isLive"
@@ -84,7 +92,11 @@ const isLiveOnly = computed(() => {
     </Button>
     <Button v-if="isStreamLoading" severity="secondary" rounded>
       <template #icon>
-        <i v-if="isStreamLoading" class="pi pi-spin pi-spinner"></i
+        <i
+          v-if="isStreamLoading"
+          class="pi pi-spin pi-spinner"
+          aria-hidden="true"
+        ></i
       ></template>
     </Button>
 

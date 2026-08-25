@@ -1,8 +1,12 @@
 :root,
 [data-style-mode='light'],
 .style-mode-light {
-    --persistent-player-image-size: 60px;
-    --persistent-player-height: 60px;
+    --persistent-player-height: #{$playerHeightBrowser};
+    @include media('<lg') {
+        --persistent-player-height: #{$playerHeight};
+    }
+    --persistent-player-image-size: var(--persistent-player-height);
+
     --persistent-player-padding: 0px 1rem 0 0 !important;
     --persistent-player-height-buffer: 20px;
     --persistent-player-bg: var(--p-surface-0);
@@ -29,22 +33,30 @@
     --persistent-player-button-bg-color: var(--p-surface-950) --persistent-player-button-bg-color-hover:
         var(--p-surface-200);
 
-    --persistent-player-title-size: var(--font-size-6);
+    --persistent-player-title-size: var(--font-size-7);
     --persistent-player-title-font-family: var(--font-family-header);
-    --persistent-player-title-height: var(--font-size-8);
+    --persistent-player-title-height: var(--font-size-9);
     --persistent-player-title-weight: var(--font-weight-500);
     --persistent-player-title-color: var(--p-text-color);
     --persistent-player-title-decoration: none;
     --persistent-player-title-hover-decoration: underline;
 
-    --persistent-player-desc-size: var(--font-size-3);
-    --persistent-player-desc-height: var(--font-size-5);
+    --persistent-player-desc-size: var(--font-size-4);
+    --persistent-player-desc-height: var(--font-size-6);
     --persistent-player-desc-weight: var(--font-weight-400);
     --persistent-player-desc-color: var(--p-text-color);
 
-    --persistent-player-time-size: var(--font-size-4);
+    --persistent-player-time-size: var(--font-size-5);
     --persistent-player-time-weight: var(--font-weight-400);
     --persistent-player-time-color: var(--p-text-color);
+
+    @include media('<lg') {
+        --persistent-player-title-size: var(--font-size-6);
+        --persistent-player-title-height: var(--font-size-8);
+        --persistent-player-desc-size: var(--font-size-3);
+        --persistent-player-desc-height: var(--font-size-5);
+        --persistent-player-time-size: var(--font-size-4);
+    }
 
     --persistent-player-header-footer-bg: var(--p-surface-0);
     --persistent-player-header-footer-bg-opacity: 0.9;

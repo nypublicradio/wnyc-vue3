@@ -6,11 +6,7 @@ import InputText from "primevue/inputtext"
 import Password from "primevue/password"
 import { computed, reactive, ref } from "vue"
 import { trackClickEvent } from "~/utilities/helpers"
-import {
-  useCurrentUser,
-  useCurrentUserProfile,
-  useEditProfileSideBar,
-} from "~/composables/states"
+import { useCurrentUser, useCurrentUserProfile } from "~/composables/states"
 import { useToast } from "primevue/usetoast"
 
 const toast = useToast()
@@ -20,13 +16,13 @@ const emit = defineEmits([
   "submit-error",
   "submit-success",
   "login-success",
+  "close",
 ])
 
 const client = useSupabaseClient()
 //const config = useRuntimeConfig()
 const currentUser = useCurrentUser()
 const currentUserProfile = useCurrentUserProfile()
-const editProfileSideBar = useEditProfileSideBar()
 
 const tempPassword = "••••••••••"
 
@@ -115,9 +111,9 @@ const submitForm = async () => {
     //console.log('validated')
     //success with Vuelidate
 
-    // if nothing has changed, then abort and ckose the sidebar
+    // if nothing has changed, then abort and close the sidebar
     if (!hasAnyFieldsChanged()) {
-      editProfileSideBar.value = false
+      emit("close")
       return
     }
 
@@ -147,7 +143,7 @@ const submitForm = async () => {
         )
         // update local state
         currentUserProfile.value.name = formData.name
-        editProfileSideBar.value = false
+        emit("close")
       }
     }
 
@@ -189,7 +185,7 @@ const submitForm = async () => {
         )
         // update local state
         currentUserProfile.value.email = formData.email
-        editProfileSideBar.value = false
+        emit("close")
       }
     }
 
@@ -211,17 +207,18 @@ const submitForm = async () => {
       } else {
         //success with Supabase
         emit("submit-success")
-        toast.add({
-          severity: "success",
-          summary: "Password updated",
-          life: 6000,
-        })
+        // commenting this out per Kelly for now!
+        // toast.add({
+        //   severity: "success",
+        //   summary: "Password updated",
+        //   life: 6000,
+        // })
         trackClickEvent(
           "Event Tracking - Account password updated",
           "Settings Sidebar - Account",
           "Password data private"
         )
-        editProfileSideBar.value = false
+        emit("close")
       }
     }
   }
@@ -234,16 +231,20 @@ const beforeYouLeave = () => {
   if (hasAnyFieldsChanged()) {
     beforeYouLeaveDialog.value = true
   } else {
-    editProfileSideBar.value = false
+    emit("close")
   }
 }
+
+defineExpose({
+  beforeYouLeave,
+})
 </script>
 
 <template>
-  <div>
+  <div class="edit-profile-form">
     <div>
-      <SHeader label="Account" @close-sidebar="beforeYouLeave" />
-      <form v-if="formData" class="mt-6" novalidate @submit.prevent="submitForm">
+      <!-- <SHeader label="Account" @close-sidebar="beforeYouLeave" /> -->
+      <form v-if="formData" class="form mt-6" novalidate @submit.prevent="submitForm">
         <div class="grid mb-2">
           <div class="flex flex-column gap-2 col-12">
             <label for="first_name">Name</label>
@@ -369,7 +370,7 @@ const beforeYouLeave = () => {
               @click="
                 () => {
                   beforeYouLeaveDialog = false
-                  editProfileSideBar = false
+                  emit('close')
                 }
               "
               autofocus
@@ -380,3 +381,13 @@ const beforeYouLeave = () => {
     </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.edit-profile-form {
+  width: 100%;
+  .form {
+    margin: auto;
+    max-width: $thinContentWidth;
+  }
+}
+</style>

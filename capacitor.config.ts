@@ -62,6 +62,10 @@ const config: CapacitorConfig = {
       iconColor: "#de1e3d",
       sound: "notification.wav"
     },
+    RemoteStreamer: {
+      carExperienceEnabled: false,
+      bffBaseUrl: `${process.env.BFF_URL}`,
+    }
   }
 }
 

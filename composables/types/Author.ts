@@ -21,4 +21,5 @@ export default interface Author {
   website?: string
   email?: string
   slug?: string
+  shareUrl?: string
 }

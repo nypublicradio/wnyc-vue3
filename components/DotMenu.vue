@@ -4,6 +4,14 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  showTitle: {
+    type: Boolean,
+    default: false,
+  },
+  severity: {
+    type: String,
+    default: "secondary",
+  },
   menuItems: {
     type: Object,
     default: null,
@@ -13,24 +21,58 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  isText: {
+    type: Boolean,
+    default: true,
+  },
+  checkMark: {
+    type: Boolean,
+    default: false,
+  },
+  initSelectedData: {
+    type: String,
+    default: null,
+  },
+  // classes for the content in the desktop popover
+  contentClassPopover: {
+    type: String,
+    default: null,
+  },
+  // classes for the content in the mobile drawer
+  contentClassDrawer: {
+    type: String,
+    default: null,
+  },
 })
 const dataRef = ref(props.label)
 const emit = defineEmits(["changeEmit"])
+const menuButton = ref(null)
+const menuButtonElement = ref(null)
+onMounted(() => {
+  menuButtonElement.value = menuButton.value?.$el
+})
 </script>
 <template>
   <DropupMenu
     v-model:data="dataRef"
     :options="props.menuItems"
     :label="props.label"
+    :showTitle="props.showTitle"
+    :checkMark="props.checkMark"
+    :initSelectedData="props.initSelectedData"
+    :contentClassPopover="props.contentClassPopover"
+    :contentClassDrawer="props.contentClassDrawer"
+    :buttonElement="menuButtonElement"
     @change="emit('changeEmit', $event)"
   >
     <template #customButton="slotProps">
       <slot name="myCustomButton" label="">
         <Button
+          ref="menuButton"
           class="rounded"
-          severity="secondary"
+          :class="{ 'p-button-text': props.isText }"
+          :severity="props.severity"
           icon="pi pi-ellipsis-v"
-          text
           rounded
           aria-label="options menu"
           :size="props.size"
@@ -41,7 +83,7 @@ const emit = defineEmits(["changeEmit"])
       </slot>
     </template>
     <template #header="slotProps">
-      <div class="style-mode-dark">
+      <div>
         <slot name="header-bottom" />
       </div>
     </template>

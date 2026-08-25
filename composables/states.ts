@@ -1,4 +1,18 @@
-import { masterNotificationChannelsArray } from "~/composables/useOneSignal"
+// notification channels array from the BFF server
+export const useMasterNotificationChannelsArray = () => useState<any[]>('masterNotificationChannelsArray', () => null)
+// global state for the master notification channels pulled from Supabase that the user can subscribed to
+export const getMasterNotificationChannels = async () => {
+    const masterNotificationChannelsArray = useMasterNotificationChannelsArray()
+    // get notification topics
+    const client = useSupabaseClient()
+    const { data } = await client
+        .from("notification_topics")
+        .select("*")
+
+    masterNotificationChannelsArray.value = data
+    return data
+}
+
 // Homepage data
 // // global state for the Bff useHomepageData data
 // export const useHomepageData = () => useState('useHomepageData', () => null)
@@ -10,7 +24,7 @@ const localUserProfileDefault: object = {
     autodownload: false,
     default_live_stream: "WNYC 93.9 FM",
     receive_general_notifications: false,
-    one_signal_notification_channels: masterNotificationChannelsArray,
+    one_signal_notification_channels: null, // Will be populated from useMasterNotificationChannelsArray
     text_size: "Normal",
     dark_mode: false,
     sleep_timer: 90,
@@ -26,6 +40,9 @@ export const useIsDarkMode = () => useState('useIsDarkMode', () => false)
 
 // keep track if the app is int eh foreground and active
 export const useIsActive = () => useState('useIsActive', () => true)
+
+// flag to suppress appStateChange refresh when the native share sheet is open
+export const useIsShareDialogOpen = () => useState('useIsShareDialogOpen', () => false)
 
 const currentUser = null
 // global state for the current authorized user
@@ -43,6 +60,9 @@ export const useCurrentUserProfile = () => useState('useCurrentUserProfile', () 
 
 // setting sidebar state
 export const useSettingSideBar = () => useState('useSettingSideBar', () => false)
+
+// setting sidebar state
+export const useSettingsSideBarBrowser = () => useState('useSettingsSideBarBrowser', () => false)
 
 // login sidebar state
 export const useLoginSideBar = () => useState('useLoginSideBar', () => false)
@@ -88,6 +108,9 @@ export const useIsNetworkConnected = () => useState('useIsNetworkConnected', () 
 
 // global state if this instance is a native app
 export const useIsApp = () => useState('useIsApp', () => false)
+
+// global state for the actual Capacitor native runtime (ios/android only)
+export const useIsNativeApp = () => useState('useIsNativeApp', () => false)
 
 
 // audio player globals
@@ -170,13 +193,6 @@ const skipBackTrigger = false
  */
 export const useSkipBackTrigger = () => useState('useSkipBackTrigger', () => skipBackTrigger)
 
-
-const playerSeek = { bool: false, time: 20 }
-/**
- * Global state to trigger the skip back.
- */
-export const usePlayerSeek = () => useState('usePlayerSeek', (bool, time) => playerSeek)
-
 const currentStreamStation = 'wnyc-fm939'
 /**
  * Global state for the current streaming station / initial selection in the stream switcher dropdown. 
@@ -225,6 +241,12 @@ export const useSensitiveContent = () => useState<boolean>('sensitiveContent', (
 // global toast
 export const useGlobalToast = () => useState<object>('globalToast', () => null)
 
+// device info
+export const useFullDeviceInfo = () => useState<object>('fullDeviceInfo', () => null)
+
+// app download link
+export const useAppDownloadLink = () => useState<string>('appDownloadLink', () => '')
+
 // saved page tab state
 export const useSelectedSavedTab = () => useState<number>('useSelectedSavedTab', () => 0)
 
@@ -233,3 +255,10 @@ export const useDeviceId = () => useState<string>('useDeviceId', () => null)
 
 // track if it's the initial play or not
 export const useIsInitialPlay = () => useState<boolean>('useIsInitialPlay', () => true)
+
+// CMS preview globals
+const previewData = null
+/**
+ * Global state for the current episode object.
+ */
+export const usePreviewData = () => useState('usePreviewData', () => previewData)

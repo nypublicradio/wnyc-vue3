@@ -1,10 +1,20 @@
 import { sentryVitePlugin } from "@sentry/vite-plugin"
 import MyPreset from "./assets/wnyc-theme.js"
 
+const isSsrEnabled =
+  process.env.NUXT_SSR === "true" && process.env.FORCE_APP_MODE !== "true"
+
 export default defineNuxtConfig({
+  //devtools: { enabled: true },
+
+  // Nitro doesn't self-terminate after build in Docker; force-exit when Nuxt closes
+  hooks: {
+    close: () => process.exit(0),
+  },
+
   modules: [
     "@nuxtjs/supabase",
-    "@nuxtjs/ionic",
+    ...(isSsrEnabled ? [] : ["@nuxtjs/ionic"]),
     "@nuxtjs/device",
     "@nuxt/image",
     "@hypernym/nuxt-gsap",
@@ -35,11 +45,20 @@ export default defineNuxtConfig({
     url: process.env.SUPABASE_URL,
     key: process.env.SUPABASE_KEY,
     redirect: false,
+    useSsrCookies: isSsrEnabled,
+    // Allow insecure cookies on localhost:
+    cookieOptions: {
+      secure: process.env.NODE_ENV === 'production',
+    }
   },
 
   image: {
+    // In app/client-only builds there is no runtime IPX server at https://localhost,
+    // so default to original image URLs instead of /_ipx transformed URLs.
+    provider: isSsrEnabled ? 'ipx' : 'none',
     dir: "public/",
     screens: {
+      xxs: 375,
       xs: 390,
       sm: 640,
       md: 767,
@@ -51,6 +70,7 @@ export default defineNuxtConfig({
     wagtail: {
       baseURL: process.env.IMAGE_BASE_URL,
       screens: {
+        xxs: 375,
         xs: 390,
         sm: 640,
         md: 767,
@@ -62,12 +82,37 @@ export default defineNuxtConfig({
     },
   },
 
-  /* ssr: process.env.ISAPP === 'false' ? true : false, */
-  ssr: false,
+  ssr: isSsrEnabled,
+
+  nitro: {
+    // Ensure generate output always goes to dist/ for Capacitor (webDir: 'dist')
+    ...(!isSsrEnabled ? {
+      output: {
+        publicDir: 'dist',
+      },
+    } : {}),
+    prerender: {
+      // When building for the app (SPA), don't crawl — just generate the shell
+      ...(!isSsrEnabled ? { crawlLinks: false, routes: ['/'] } : {}),
+      // Don't crawl into show pages during generate — they are client-rendered
+      // and transient CMS 500s should not block the entire build
+      ignore: ['/browse/shows/**'],
+    },
+    // Route rules only apply in SSR/website mode
+    routeRules: isSsrEnabled && process.env.NODE_ENV === 'production' ? {
+      '/home': { swr: 60 },
+      // Cache ALL shows and any nested episode pages under a show for 15 minutes
+      '/browse/shows/**': { swr: 900 },
+      '/npr/**': { swr: 900 },
+      '/events/**': { swr: 900 },
+      '/confirm': { ssr: false },
+    } : {},
+  },
 
   ionic: {
     integrations: {
       router: false,
+      pwa: false,
     },
     css: {
       core: false,
@@ -76,36 +121,26 @@ export default defineNuxtConfig({
   },
 
   app: {
-    //pageTransition: { name: 'rotate', mode: 'out-in' },
-    pageTransition: {
-      name: "page",
-      mode: "out-in", // default
-    },
-    layoutTransition: true,
     head: {
-      title: "WNYC | New York Public Radio, Podcasts, Live Streaming Radio, News",
-      meta: [
-        {
-          name: "viewport",
-          content:
-            "viewport-fit=cover, width=device-width, initial-scale=1, maximum-scale=1",
-        },
-        // { name: 'msapplication-TileColor', content: '#ffffff' },
-        // { name: 'theme-color', content: '#ffffff' }
-      ],
       link: [
-        {
-          rel: "icon",
-          type: "image/x-icon",
-          href: "https://media.wnyc.org/static/img/favicon_wnyc.ico?_=1553611630",
-        },
-      ],
+        // APIs & Backend
+        { rel: 'preconnect', href: 'https://vuycervrdrtycpjzhqxg.supabase.co' },
+        { rel: 'preconnect', href: 'https://firebase.googleapis.com' },
+        { rel: 'preconnect', href: 'https://api.wnyc.org' },
+        { rel: 'preconnect', href: 'https://api.prod.nypr.digital' },
+        { rel: 'preconnect', href: 'https://cms.prod.nypr.digital' },
+        // Audio & Assets
+        { rel: 'preconnect', href: 'https://assets.webstream.wnyc.org' },
+      ]
     },
+    //pageTransition: { name: 'rotate', mode: 'out-in' },
+    pageTransition: false,
+    layoutTransition: false,
   },
 
   css: [
     "~/assets/scss/fonts/fonts.css",
-    "~/assets/scss/primeflex.min.css",
+    "~/assets/scss/primeflex-xxl.min.css",
     "primeicons/primeicons.css",
     "~/assets/scss/_main.scss",
   ],
@@ -113,6 +148,9 @@ export default defineNuxtConfig({
   //serverMiddleware: ['~/search/algolia-index'],
 
   vite: {
+    define: {
+      __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: true,
+    },
     css: {
       preprocessorOptions: {
         scss: {
@@ -136,11 +174,13 @@ export default defineNuxtConfig({
       },
     },
     plugins: [
-      process.env.SENTRY_ENV === "development"
+      process.env.SENTRY_ENV === "development" || !process.env.SENTRY_AUTH_TOKEN
         ? null
         : sentryVitePlugin({
-          include: ".nuxt/dist",
-          ignore: ["node_modules", "nuxt.config.ts"],
+          sourcemaps: {
+            assets: ".nuxt/dist/**",
+            ignore: ["node_modules", "nuxt.config.ts"],
+          },
           org: "nypublicradio",
           project: "wnyc-vue3",
           authToken: process.env.SENTRY_AUTH_TOKEN,
@@ -149,8 +189,8 @@ export default defineNuxtConfig({
   },
 
   sourcemap: {
-    client: true,
-    server: true,
+    client: Boolean(process.env.SENTRY_AUTH_TOKEN),
+    server: Boolean(process.env.SENTRY_AUTH_TOKEN),
   },
 
   components: ["~/components", "~/components/icons", "~/components/logos"],
@@ -168,25 +208,26 @@ export default defineNuxtConfig({
   },
 
   plugins: [
-    "~/plugins/router-guards.js",
-    "~/plugins/error-handler.js",
-    "~/plugins/firebase.js",
+    "~/plugins/router-guards.client.js",
+    "~/plugins/firebase.client.js",
   ],
 
   experimental: {
-    crossOriginPrefetch: true,
+    // crossOriginPrefetch only makes sense in SSR/website mode
+    crossOriginPrefetch: isSsrEnabled,
   },
 
 
 
   runtimeConfig: {
     // Server-only runtime values (read at runtime by Nitro)
-    aviaryBaseApi:
-      ((process.env.ENV === 'demo' || process.env.environment === 'demo')
-        ? (process.env.DEMO_AVIARY_BASE_API || process.env.AVIARY_BASE_API)
-        : process.env.AVIARY_BASE_API) ||
-      "https://cms.prod.nypr.digital/api/v2/",
+
+    aviaryBaseApi: process.env.AVIARY_BASE_API,
+    simplecastUrl: process.env.SIMPLECAST_URL ?? 'https://api.simplecast.com',
+    simplecastApiKey: process.env.SIMPLECAST_API_KEY,
+    featuredShowsPageId: process.env.FEATURED_SHOWS_PAGE_ID,
     public: {
+      cmsSite: process.env.CMS_SITE ?? 'demo.wnyc.org:443',
       SENTRY_DSN: process.env["SENTRY_DSN"],
       SENTRY_ENV: process.env.SENTRY_ENV ?? "development",
       ENV: process.env.ENV ?? "prod",
@@ -195,23 +236,25 @@ export default defineNuxtConfig({
       HTL_IS_TESTING: process.env.HTL_IS_TESTING ?? "yes",
       LIVESTREAM_URL:
         process.env.LIVESTREAM_URL ?? "https://api.prod.nypr.digital/api/v4/whats_on/",
+      HEADER_NAVIGATION_API:
+        process.env.HEADER_NAVIGATION_API ??
+        "https://cms.prod.nypr.digital/api/v2/navigation/4/",
       NAVIGATION_API:
         process.env.NAVIGATION_API ??
         "https://cms.prod.nypr.digital/api/v2/navigation/4/",
       SYSTEM_MESSAGES_API:
         process.env.SYSTEM_MESSAGES_API ??
         "https://cms.prod.nypr.digital/api/v2/system_messages/4/",
+      SYSTEM_NAVIGATION_API:
+        process.env.SYSTEM_NAVIGATION_API ??
+        "https://cms.prod.nypr.digital/api/v2/navigation/4/",
       STORIES_API:
         process.env.STORIES_API ??
         "https://cms.prod.nypr.digital/api/v2/pages/?type=news.ArticlePage&fields=ancestry%2Cdescription%2Clead_asset%2Clegacy_id%2Clisting_image%2Cpublication_date%2Cshow_as_feature%2Csponsored_content%2Ctags%2Cupdated_date%2Curl%2Cuuid%2Clisting_title%2Clisting_summary%2Crelated_authors&order=-publication_date&show_on_index_listing=true&limit=3&show_as_feature=true&sponsored_content=false",
       PUBLISHER_BASE_API: process.env.PUBLISHER_BASE_API ?? "https://api.wnyc.org/api/",
-      AVIARY_BASE_API:
-        ((process.env.ENV === 'demo' || process.env.environment === 'demo')
-          ? (process.env.DEMO_AVIARY_BASE_API || process.env.AVIARY_BASE_API)
-          : process.env.AVIARY_BASE_API) ||
-        "https://cms.prod.nypr.digital/api/v2/",
+      AVIARY_BASE_API: process.env.AVIARY_BASE_API,
       IMAGE_BASE_URL:
-        process.env.IMAGE_BASE_URL ?? "https://cms.prod.nypr.digital/images/",
+        process.env.IMAGE_BASE_URL ?? "https://cms.demo.nypr.digital/images/",
       FEATURED_SHOWS:
         process.env.FEATURED_SHOWS ?? "https://www.wnyc.org/api/v2/discover/shows/",
       FB_MEASUREMENT_ID: process.env.FB_MEASUREMENT_ID,
@@ -226,7 +269,8 @@ export default defineNuxtConfig({
       FB_APP_ID_IOS: process.env.FB_APP_ID_IOS,
       FB_APP_ID_ANDROID: process.env.FB_APP_ID_ANDROID,
       ONESIGNAL_APP_ID: process.env.ONESIGNAL_APP_ID,
-      BFF_URL: process.env.BFF_URL ?? "https://demo.native-app.wnyc.org",
+      BFF_URL: process.env.BFF_URL ?? "https://demo.wnyc.org",
+      NATIVE_URL_SCHEME: process.env.NATIVE_URL_SCHEME ?? "wnycalpha",
       GTM_ID: process.env.GTM_ID ?? "GTM-TKFJ684",
       environment: process.env.environment ?? "prod",
       supabaseUrl: process.env.SUPABASE_URL,
@@ -246,6 +290,11 @@ export default defineNuxtConfig({
         process.env.SETTINGS_MENU_DONATION_URL ??
         "https://pledge.wnyc.org/support/wnyc-app/?utm_medium=wnyc-app&utm_source=donation-button&utm_campaign=settings_menu",
       APP_VERSION: process.env.APP_VERSION ?? "x.x.x",
+      SPRINGBOARD_URL: process.env.SPRINGBOARD_URL ?? "https://nypr.hosted.jacksonriverdev.com",
+      NEWSLETTER_API: process.env.NEWSLETTER_API ?? 'https://api.demo.nypr.digital/email-proxy/subscribe',
+      NEWSLETTER_MULTI_LIST_IDS: 'WNYC Weekly Brief++WNYC Membership',
+      NUXT_SSR: isSsrEnabled ? 'true' : 'false',
+      FORCE_APP_MODE: process.env.FORCE_APP_MODE === 'true' ? 'true' : 'false',
     },
   },
 

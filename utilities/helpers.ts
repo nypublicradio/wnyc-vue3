@@ -1,11 +1,14 @@
 import { format, formatDistanceToNowStrict } from "date-fns"
 import { StatusBar, Style } from "@capacitor/status-bar"
+import { Device, type DeviceInfo } from '@capacitor/device'
+import { useAuth } from "~/composables/useAuth"
 import {
   useCurrentEpisode,
   useCurrentEpisodeHolder,
   useDeviceId,
   useTextSizeOption,
   useIsApp,
+  useIsNativeApp,
   useCurrentUser,
   useCurrentUserProfile,
   useLocalUserProfileDefault,
@@ -28,13 +31,7 @@ import {
   cmsSources,
   mediaTypeRoutes,
   localUserProfileKey,
-  FALLBACKIMAGEEP,
-  FALLBACKIMAGEEPHEAD,
-  FALLBACKIMAGEEPDARK,
-  FALLBACKIMAGEEPHEADDARK,
-  FALLBACKUSER,
-  FALLBACKUSERDARK,
-  NPRIMAGEDOMAINSOURCES,
+  liveStationPreferences,
 } from "~/composables/globals"
 import { updateAllLiveStreams } from "~/composables/data/liveStream"
 import axios from "axios"
@@ -42,6 +39,10 @@ import { Share } from "@capacitor/share"
 import { Clipboard } from "@capacitor/clipboard"
 import { initDeviceId } from "~/utilities/device-id.js"
 import { deleteDirectory } from "~/utilities/file-system"
+import {
+  buildAudioEventParams,
+  buildClickEventParams,
+} from "~/utilities/analytics"
 //import { useSupabaseClient } from '@nuxtjs/supabase'
 import {
   AppTrackingTransparency,
@@ -50,9 +51,55 @@ import {
   type AppTrackingStatusResponse,
 } from "capacitor-plugin-app-tracking-transparency"
 import { initMediaSession } from "~/utilities/media-session.js"
-import useOneSignal from "~/composables/useOneSignal"
 import { capacitorIosNotificationSettings } from '@nypublicradio/capacitor-ios-notification-settings'
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics'
+import { WAGTAIL_PAGE_TYPES } from "~/composables/data/basePages"
+
+// Dynamic import for FirebaseAnalytics to avoid SSR errors
+const loadFirebaseAnalytics = async () => {
+  const isNativeApp = useIsNativeApp()
+  if (typeof window === 'undefined' || !isNativeApp.value) return null
+  try {
+    const module = await import('@capacitor-firebase/analytics')
+    // Return plain function wrappers instead of the raw Capacitor plugin proxy.
+    // Returning the proxy directly from an async function can trigger a `.then`
+    // lookup and cause: "FirebaseAnalytics.then() is not implemented on android".
+    return {
+      setUserId: (options) => module.FirebaseAnalytics.setUserId(options),
+    }
+  } catch (error) {
+    console.error('Failed to load FirebaseAnalytics:', error)
+    return null
+  }
+}
+
+// helper function that turns any string into a valid element id or slug
+export const slugify = (text) => {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
+}
+
+// handle an internal route or external link
+export const getRouteOrLink = (
+  url: string,
+  routingDomains: string[] = [
+    "wnyc.org",
+    "demo.wnyc.org",
+    "prod.wnyc.org",
+    "www.wnyc.org",
+    "www.demo.wnyc.org",
+    "www.prod.wnyc.org",
+  ]
+) => {
+  if (!url) return url
+  const parsedUrl = new URL(url)
+  if (routingDomains.includes(parsedUrl.hostname)) {
+    return parsedUrl.pathname
+  }
+  return url
+}
 
 // function to check if a URL returns a 404
 export const checkUrl404 = async (url) => {
@@ -65,79 +112,63 @@ export const checkUrl404 = async (url) => {
   }
 }
 
-// return organization name from CMS source
-export const getOrg = (cmsSource) => {
+// return organization name from CMS source and/or the url for Wagtail
+export const getOrg = (data) => {
+  const cmsSource = data?.cmsSource
+  const url = data?.meta?.htmlUrl || data?.url
   switch (cmsSource) {
     case cmsSources.PUBLISHER:
       return "WNYC"
     case cmsSources.WAGTAIL:
-      return "Gothamist"
+      if (url?.includes('gothamist.com')) {
+        return "Gothamist"
+      } else if (url?.includes('wqxr.org')) {
+        return "WQXR"
+      } else if (url?.includes('NPR.org')) {
+        return "NPR"
+      }
+      return "WNYC"
     case cmsSources.NPR:
       return "NPR"
+    case cmsSources.SIMPLECAST:
+      return "WNYC"
     default:
       return "WNYC"
   }
 }
 
-// returns the time since the episode was published, but checks for updated_date first
-export const whenTime = (data) => {
-  const res = data?.updatedDate
-    ? howLongAgo(data?.updatedDate)
-    : data?.publicationDate
-      ? howLongAgo(data?.publicationDate)
-      : data?.publishAt
-        ? howLongAgo(data?.publishAt)
-        : howLongAgo(data?.firstPublishedAt)
-  return res
+// returns the time since the episode was published
+export const whenTime = (date) => {
+  return howLongAgo(date)
 }
 
 // format ISO timestamp to return only the time
-export function formatTime (date: any) {
+export function formatTime (date: any, formatString = "h:mm a") {
   if (date) {
     const dateObject = new Date(date)
-    return format(dateObject, "h:mm a")
+    return format(dateObject, formatString)
   }
   return null
 }
 
-/*
-formats the url of a publisher image so it works with our design system image components
-*/
-export const formatPublisherImageUrl = (url) => {
-  return url.replace("%s/%s/%s/%s", "%width%/%height%/c/%quality%")
-}
-
-/*
-finds the image first then formats the url of a publisher image so it works with our design system image components
-*/
-export const formatPublisherImage = (attributes) => {
-  const img = attributes.imageMain ?? attributes.image
-  const url = img.template
-  return url.replace("%s/%s/%s/%s", "%width%/%height%/c/%quality%")
-}
-
 // Function to strip HTML tags and return text content
-function stripHtmlTags (str) {
-  const parser = new DOMParser()
-  const dom = parser.parseFromString(str, "text/html")
-  return dom.body.textContent ?? ""
+export function stripHtmlTags (str) {
+  if (!str || typeof str !== 'string') return ''
+  return str.replace(/<[^>]*>?/gm, '')
 }
 
 // Computed property to calculate reading time
-export const getReadingTime = (htmlContent) => {
-  const textContent = stripHtmlTags(htmlContent)
+export const getReadingTime = (content: string | number): string => {
+  // If content is a number (seconds), convert directly to minutes
+  if (typeof content === 'number') {
+    return `${content} min read`
+  }
+
+  // If content is a string (HTML), calculate based on word count
+  const textContent = stripHtmlTags(content)
   const wordsPerMinute = 200 // Average reading speed
   const estimatedWordCount = textContent.split(/\s+/).length
   return `${Math.ceil(estimatedWordCount / wordsPerMinute)} min read`
-}
-
-interface ImageAttributes {
-  imageMain?: {
-    template: string
-  }
-  image?: {
-    template: string
-  }
 }
 
 // returns the rounded up minutes duration of the episode
@@ -160,124 +191,18 @@ export const getMinutes = (ms, mult = 1000) => {
   return duration
 }
 
-// returns a resized image url when provided the entire image object
-export const resizePublisherImage = (
-  attributes: ImageAttributes,
-  w: number,
-  h: number,
-  q = 80
-): string => {
-  const img = attributes.imageMain ?? attributes.image
-  const url = img.template
-
-  const pieces = url.split("/")
-  const finalUrlArr: string[] = []
-
-  pieces.forEach((piece: string, index: number) => {
-    if (index < 4 || index > 7) {
-      finalUrlArr.push(piece)
-    }
-    if (index === 4) {
-      finalUrlArr.push(`${w}/${h}/c/${q}`)
-    }
-  })
-  return finalUrlArr.join("/")
-}
-
-// returns a resized image url when provided just the image URL
-export const resizePublisherImageUrl = (
-  url: string,
-  w: number,
-  h: number,
-  q = 80
-): string => {
-  const pieces = url.split("/")
-  const finalUrlArr: string[] = []
-
-  pieces.forEach((piece: string, index: number) => {
-    if (index < 4 || index > 7) {
-      finalUrlArr.push(piece)
-    }
-    if (index === 4) {
-      finalUrlArr.push(`${w}/${h}/c/${q}`)
-    }
-  })
-  return finalUrlArr.join("/")
-}
-
-// returns a resized image url when provided just the image URL
-export const resizeNprImageUrl = (
-  url: string,
-  w: number,
-  q = 80,
-  format = "jpeg"
-): string => {
-  const finalUrl = url.replace('{width}', w.toString()).replace('{format}', format).replace('{quality}', q.toString())
-  return finalUrl
-}
-
-// returns a resized image url when provided just the image URL
-export const resizeWagtailImageUrl = (
-  id: string,
-  w: number,
-  h: number,
-  q = 80,
-  format = "jpeg"
-): string => {
-  const config = useRuntimeConfig()
-  const finalUrl = `${config.public.IMAGE_BASE_URL}${id}/fill-${w}x${h}-c0|format-${format}|${format}quality-${q}`
-  return finalUrl
-}
-// returns a templated image url when provided just the image URL
-export const templatizePublisherImageUrl = (url: string): string => {
-  if (url?.includes("media.wnyc.org")) {
-    const pieces = url.split("/")
-    const finalUrlArr: string[] = []
-
-    pieces.forEach((piece: string, index: number) => {
-      if (index < 4 || index > 7) {
-        finalUrlArr.push(piece)
-      }
-      if (index === 4) {
-        finalUrlArr.push("%s/%s/%s/%s")
-      }
-    })
-    return finalUrlArr.join("/")
-  } else {
-    return url
-  }
-}
-
-// central spot to handle image formatting from diff sources
-export const imageSolver = (url, options = {}) => {
-  // Default values for width, height, quality, and format
-  const { w = 288, h = 288, q = 80, format = "jpeg" }: { w?: number, h?: number, q?: number, format?: string } = options
-
-  let imgUrl = ""
-  if (/^\d+$/.test(url)) {
-    imgUrl = resizeWagtailImageUrl(url, w, h, q, format)
-  } else if (url.includes("media.wnyc.org")) {
-    imgUrl = resizePublisherImageUrl(url, w, h, q)
-  } else if (NPRIMAGEDOMAINSOURCES.some(domain => url.includes(domain))) {
-    imgUrl = resizeNprImageUrl(url, w, q, format)
-  } else {
-    imgUrl = url
-  }
-  return imgUrl
-}
-
-
 // function that tracks audio events to google analytics
 export const trackAudioEvent = (eventName, audioType, audioTitle, audioShow) => {
   const { $analytics } = useNuxtApp()
   const currentUser = useCurrentUser()
   const deviceId = useDeviceId()
-  $analytics.sendEvent(eventName, {
-    audio_type: audioType,
-    audio_title: audioTitle,
-    audio_show: audioShow,
-    user_id: currentUser.value?.id ?? deviceId.value,
-  })
+  $analytics.sendEvent(eventName, buildAudioEventParams({
+    audioType,
+    audioTitle,
+    audioShow,
+    currentUserId: currentUser.value?.id,
+    deviceId: deviceId.value,
+  }))
 }
 
 // function that tracks click events to google analytics
@@ -285,12 +210,13 @@ export const trackClickEvent = (category, component, label) => {
   const { $analytics } = useNuxtApp()
   const currentUser = useCurrentUser()
   const deviceId = useDeviceId()
-  $analytics.sendEvent("click_tracking", {
-    event_category: category,
+  $analytics.sendEvent("click_tracking", buildClickEventParams({
+    category,
     component,
-    event_label: label,
-    user_id: currentUser.value?.id ?? deviceId.value,
-  })
+    label,
+    currentUserId: currentUser.value?.id,
+    deviceId: deviceId.value,
+  }))
 }
 
 /**
@@ -316,21 +242,28 @@ export function howLongAgo (date) {
  * to get the desired date format for the header
  */
 export function getDate (data = null, formatString = "EEE, MMM do") {
-  const date = data?.updatedDate || data?.publicationDate
+  // checks FIRST for meta.firstPublishedAt that is stored in the Supabase DB meta column when saving and history.
+  const date = data?.meta?.firstPublishedAt || data?.updatedDate || data?.publicationDate
   if (date) {
-    const currentYear = new Date().getFullYear()
-    const currentDay = new Date().getDate()
+    const currentDate = new Date()
     const inputDate = new Date(date)
-    const inputYear = inputDate.getFullYear()
-    const inputDay = inputDate.getDate()
-    if (inputDay !== currentDay) {
-      if (inputYear !== currentYear) {
-        formatString = `${formatString}, yyyy` // Update formatString to include the year
-      }
-      return format(inputDate, formatString)
-    } else {
-      return whenTime(data)
+
+    // Check if it's the same day (year, month, and day)
+    const isSameDay =
+      currentDate.getFullYear() === inputDate.getFullYear() &&
+      currentDate.getMonth() === inputDate.getMonth() &&
+      currentDate.getDate() === inputDate.getDate()
+
+    if (isSameDay) {
+      return whenTime(date)
     }
+
+    // Add year to format string if it's not the current year
+    if (currentDate.getFullYear() !== inputDate.getFullYear()) {
+      formatString = `${formatString}, yyyy`
+    }
+
+    return format(inputDate, formatString)
   } else {
     return format(new Date(), formatString)
   }
@@ -341,12 +274,12 @@ export function getDate (data = null, formatString = "EEE, MMM do") {
  */
 export function formatDate (date = null, formatString = "EEE, MMM do") {
   if (date) {
-    const currentYear = new Date().getFullYear()
+    //const currentYear = new Date().getFullYear()
     const inputDate = new Date(date)
-    const inputYear = inputDate.getFullYear()
-    if (inputYear !== currentYear) {
-      formatString = `${formatString}, yyyy` // Update formatString to include the year
-    }
+    //const inputYear = inputDate.getFullYear()
+    // if (inputYear !== currentYear) {
+    //   formatString = `${formatString}, yyyy` // Update formatString to include the year
+    // }
     return format(inputDate, formatString)
   } else {
     return format(new Date(), formatString)
@@ -371,6 +304,9 @@ export function capitalizeFirstLetter (str) {
  * helper function to change the global font size
  */
 export function setFontSize (size: string) {
+  const isApp = useIsApp()
+  // no font size for browser yet
+  if (!import.meta.client || !isApp.value) return
   document.documentElement.style.fontSize = size
 }
 
@@ -378,45 +314,34 @@ export function setFontSize (size: string) {
  * helper function to toggle darkmode of the status bar
  */
 export async function setStatusDarkMode (bool: boolean) {
-  setTimeout(async () => {
-    const isApp = useIsApp()
-    if (isApp.value) {
+  if (!import.meta.client) return
+  await nextTick()
+  const isNativeApp = useIsNativeApp()
+  if (isNativeApp.value) {
+    // delay needed for some reason
+    setTimeout(async () => {
       bool
         ? await StatusBar.setStyle({ style: Style.Dark })
         : await StatusBar.setStyle({ style: Style.Light })
-    }
-  }, 1500)
+    }, 1000)
+  }
 }
 /**
  * helper function to toggle darkmode
  */
 export async function setDarkMode (bool: boolean) {
-  bool
+  if (!import.meta.client) return
+  // TEMP, no dark ode for browser yet
+  const isApp = useIsApp()
+  const dmBool = isApp.value ? bool : false
+  dmBool
     ? document.documentElement.classList.add("style-mode-dark")
     : document.documentElement.classList.remove("style-mode-dark")
-  await setStatusDarkMode(bool)
+  await setStatusDarkMode(dmBool)
   const isDarkMode = useIsDarkMode()
-  isDarkMode.value = bool
+  isDarkMode.value = dmBool
 }
 
-// function to get the EPISODE fallback image for the episode depending on darkmode
-export const getEpisodeFallBackImage = () => {
-  const isDarkMode = useIsDarkMode()
-  return isDarkMode.value ? FALLBACKIMAGEEPDARK : FALLBACKIMAGEEP
-}
-
-// function to get the EPISODE HEADER fallback image for the episode depending on darkmode
-export const getEpisodeHeadFallBackImage = () => {
-  const isDarkMode = useIsDarkMode()
-  return isDarkMode.value ? FALLBACKIMAGEEPHEADDARK : FALLBACKIMAGEEPHEAD
-}
-
-// function to get the USER icon fall back image
-export const getUserFallBackImage = () => {
-  const isDarkMode = useIsDarkMode()
-  return isDarkMode.value ? FALLBACKUSERDARK : FALLBACKUSER
-
-}
 
 // helper function to get the pixel size from thr label
 export const getTextSizePixel = (label) => {
@@ -430,6 +355,9 @@ export const getTextSizePixel = (label) => {
 
 // detect system theme preference
 export const detectSystemDarkMode = () => {
+  if (!import.meta.client) return false
+  // TEMP, no dark mode for browser yet
+  if (!useIsApp().value) return false
   return Boolean(
     window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
   )
@@ -468,19 +396,72 @@ export const toSystemSettings = (type = 'notification') => {
   }
 }
 
+// get device information
+export async function getFullDeviceInfo (): Promise<DeviceInfo | null> {
+  if (!import.meta.client) return null
+  try {
+    const info = await Device.getInfo()
+    return info
+  } catch (error) {
+    console.error('Error getting full device info:', error)
+    return null
+  }
+}
+
+//determine where to send the user to get the app based on their platform or if on browser
+export const getAppDownloadLink = async () => {
+  const androidStoreUrl = "https://play.google.com/store/apps/details?id=org.wnyc.android"
+  const iosStoreUrl = "https://apps.apple.com/us/app/wnyc/id470219771"
+
+  const info = await getFullDeviceInfo()
+
+  if (info?.platform === "android") {
+    return androidStoreUrl
+  } else if (info?.platform === "ios") {
+    return iosStoreUrl
+  } else if (info?.operatingSystem === 'ios') {
+    return iosStoreUrl
+  } else if (info?.operatingSystem === 'android') {
+    return androidStoreUrl
+  } else {
+    // For web browsers, redirect to the mobile route
+    return "/mobile"
+  }
+}
+
 // helper function to open a link in the browser IN the app
 export async function openLinkInAppBrowser (url: string) {
   await Browser.open({ url })
 }
 
 
-// global funcrtion for copying to clipboard
+// global function for copying to clipboard
 export const copyToClipBoard = async (content: string) => {
   const globalToast = useGlobalToast()
   try {
-    await Clipboard.write({
-      string: content,
-    })
+    if (Capacitor.getPlatform() === "ios" || Capacitor.getPlatform() === "android") {
+      // Use Capacitor Clipboard for mobile apps
+      await Clipboard.write({
+        string: content,
+      })
+    } else {
+      // Use native browser Clipboard API for web
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(content)
+      } else {
+        // Fallback for older browsers or insecure contexts
+        const textArea = document.createElement('textarea')
+        textArea.value = content
+        textArea.style.position = 'fixed'
+        textArea.style.left = '-999999px'
+        textArea.style.top = '-999999px'
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
+        document.execCommand('copy')
+        textArea.remove()
+      }
+    }
     globalToast.value = {
       severity: "info",
       summary: "Copied to clipboard",
@@ -496,44 +477,60 @@ export const copyToClipBoard = async (content: string) => {
   }
 }
 
-// helper function to remove HTML tags from a string
-export const removeHTMLTags = (str) => {
-  const parser = new DOMParser()
-  const parsedHTML = parser.parseFromString(str, "text/html")
-  return parsedHTML.body.textContent ?? ""
-}
 // share API
 export const shareAPI = async (
-  content: object,
+  content,
   componentOfOrigin = "Component of origin not specified"
 ) => {
-  // DESKTOP sharing is not supported yet
-  const shareContent = {
-    title: removeHTMLTags(content.title),
-    text: removeHTMLTags(content.details || content.description || content.title),
-    url: content.url || content.titleLink, // titleLink is for live streams
+  const shareData = {
+    title: stripHtmlTags(content.socialTitle || content.title),
+    text: stripHtmlTags(content.tease || content.description || content.title),
+    url: content.shareUrl || content.url || content.titleLink,
   }
-
-  trackClickEvent("Click Tracking - Share", componentOfOrigin, shareContent.title)
-  if (Capacitor.getPlatform() === "ios" || Capacitor.getPlatform() === "android") {
+  trackClickEvent("Click Tracking - Share", componentOfOrigin, shareData.title)
+  // Native Mobile Sharing
+  if (Capacitor.isNativePlatform()) {
+    const { useIsShareDialogOpen } = await import('~/composables/states')
+    const isShareDialogOpen = useIsShareDialogOpen()
+    isShareDialogOpen.value = true
     await Share.share({
-      // title: shareContent.title,
-      // text: shareContent.text,
-      url: content.url,
+      title: shareData.title,
+      text: shareData.text,
+      url: shareData.url,
       dialogTitle: "Share with buddies",
     })
-  } else {
+    return // Exit after native share
+  }
+
+  // Web Share API
+  if (navigator.share && shareData.url) {
     try {
-      await navigator.share(shareContent)
+      await navigator.share({
+        title: shareData.title,
+        text: shareData.text,
+        url: shareData.url,
+      })
     } catch (error) {
-      copyToClipBoard(shareContent.url)
-      //console.error('Error sharing', error)
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        // User cancelled the share. No action needed.
+      } else {
+        // Any other error, we fallback to clipboard
+        console.error("Web Share API error:", error)
+        copyToClipBoard(shareData.url)
+      }
+    }
+  } else {
+    // Fallback for browsers without Web Share API or if URL is missing
+    if (shareData.url) {
+      copyToClipBoard(shareData.url)
+    } else {
+      console.error("No URL provided to share or copy.")
     }
   }
 }
 
 // handle the delete of the stored audio file and GA tracking
-export const handleDelete = (file) => {
+export const handleDelete = (file, componentOfOrigin = "Episode Item") => {
   const globalToast = useGlobalToast()
   deleteDirectory(file)
   globalToast.value = {
@@ -544,8 +541,8 @@ export const handleDelete = (file) => {
   // GA tracking
   trackClickEvent(
     "Click Tracking - Audio file delete",
-    "Episode Item",
-    `deleting = ${file.directoryAudio.name}`
+    componentOfOrigin,
+    `deleting = ${file.directoryAudio?.name || file.title || 'unknown'}`
   )
 }
 
@@ -591,7 +588,7 @@ export const convertTime = (val) => {
 // get and set the user profile
 export const getAndSetUserProfile = async () => {
   const isNetworkConnected = useIsNetworkConnected()
-  const isApp = useIsApp()
+  const isNativeApp = useIsNativeApp()
   const currentUser = useCurrentUser()
   const currentUserProfile = useCurrentUserProfile()
   const localUserProfileDefault = useLocalUserProfileDefault()
@@ -602,22 +599,50 @@ export const getAndSetUserProfile = async () => {
   const masterNotificationChannelsArray = await getMasterNotificationChannels()
   // function that gets a user profile
   const getProfile = async () => {
-    const { data, error } = await client
-      .from("profiles")
-      .select("*")
-      .eq("id", currentUser.value.id)
-      .single()
-    if (error) {
-      console.error(error)
-      //account does not exist anymore, wipe local storage and session and hard refresh
-      if (error.code === 'PGRST116') {
-        await Preferences.clear()
-        await localStorage.clear()
-        location.reload()
+    // Guard: if currentUser was nulled by a parallel execution, bail out
+    if (!currentUser.value?.id) return
+
+    // Retry logic: the Supabase trigger that creates the profile row may not
+    // have completed by the time we query, especially for brand-new OAuth users.
+    const maxRetries = 5
+    const retryDelayMs = 500
+    let data = null
+    let error = null
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      if (!currentUser.value?.id) return // guard against race condition
+
+      const result = await client
+        .from("profiles")
+        .select("*")
+        .eq("id", currentUser.value.id)
+        .single()
+      data = result.data
+      error = result.error
+
+      if (!error || error.code !== 'PGRST116') break // success or non-retryable error
+
+      if (attempt < maxRetries) {
+        console.warn(`Profile not found (attempt ${attempt}/${maxRetries}), retrying in ${retryDelayMs}ms...`)
+        await new Promise(resolve => setTimeout(resolve, retryDelayMs))
       }
-    } else if (data) {
+    }
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // Profile row doesn't exist — let the initial-login branch handle creation
+        console.warn('Profile not found after retries, treating as initial login')
+        if (!currentUser.value?.id) return
+        data = { id: currentUser.value.id, initial: true }
+      } else {
+        console.error('Unexpected profile fetch error:', error)
+        return
+      }
+    }
+
+    if (data) {
       const lsSTRING = await Preferences.get({ key: localUserProfileKey })
-      const ls = JSON.parse(lsSTRING.value)
+      const ls = JSON.parse(lsSTRING.value) || localUserProfileDefault.value
 
       //what the user has already selected in the local storage OR the default
       const defaultNotificationChannels = ls?.one_signal_notification_channels || masterNotificationChannelsArray
@@ -646,11 +671,12 @@ export const getAndSetUserProfile = async () => {
         data.dark_mode = ls.dark_mode
         data.text_size = ls.text_size
 
-        // update supabase profile data
+        // upsert supabase profile data (upsert handles case where trigger didn't create the row)
         // set the supabase preferences with what is currently set in the local storage
         await client
           .from("profiles")
-          .update({
+          .upsert({
+            id: currentUser.value.id,
             initial: data.initial,
             autodownload: data.autodownload,
             default_live_stream: data.default_live_stream,
@@ -659,7 +685,6 @@ export const getAndSetUserProfile = async () => {
             dark_mode: data.dark_mode,
             text_size: data.text_size,
           })
-          .match({ id: currentUser.value.id })
 
         // set the current user profile state
         currentUserProfile.value = data
@@ -709,7 +734,8 @@ export const getAndSetUserProfile = async () => {
           })
 
           // set the current user profile state again after updating the channels
-          currentUserProfile.value = data
+          //currentUserProfile.value = data
+          Object.assign(currentUserProfile.value, data)
 
         } else {
 
@@ -731,13 +757,14 @@ export const getAndSetUserProfile = async () => {
             .match({ id: currentUser.value.id })
 
           // set the current user profile state again after the sync
-          currentUserProfile.value = data
+          //currentUserProfile.value = data
+          Object.assign(currentUserProfile.value, data)
 
         }
 
         // update streams and settings
         updateAllLiveStreams()
-        setDisplaySettings(data)
+        setDisplaySettings(currentUserProfile.value)
       }
     }
   }
@@ -767,6 +794,22 @@ export const getAndSetUserProfile = async () => {
         .match({ id: user.data.session.user.id })
     }
 
+    // update the profile name for Apple (and other OAuth providers) if not already set
+    if (user.data.session?.user.app_metadata.provider === 'apple') {
+      const providerName = user.data.session.user.user_metadata.full_name
+        || user.data.session.user.user_metadata.name
+        || null
+      if (providerName) {
+        await client
+          .from('profiles')
+          .update({
+            updated_at: new Date().toISOString(),
+            name: providerName,
+          })
+          .match({ id: user.data.session.user.id })
+      }
+    }
+
     // if no network connection, get the user profile from local storage
     if (!isNetworkConnected.value) {
       const lsSTRING = await Preferences.get({ key: localUserProfileKey })
@@ -791,6 +834,12 @@ export const getAndSetUserProfile = async () => {
 
           // get the system's notification permission and apply it to the initial defaults
           defaults.receive_general_notifications = await useOneSignal().checkPermissions()
+
+          // keep local settings aligned with master notification topics
+          defaults.one_signal_notification_channels = await syncMasterNotificationChannels(
+            defaults,
+            masterNotificationChannelsArray
+          )
 
 
           const defaultsSTRING = JSON.stringify(defaults)
@@ -834,12 +883,17 @@ export const getAndSetUserProfile = async () => {
         await getProfile()
 
         //init Firebase Analytics
-        await FirebaseAnalytics.setUserId({
-          userId: currentUser.value.id,
-        })
+        if (import.meta.client && currentUser.value) {
+          const FirebaseAnalytics = await loadFirebaseAnalytics()
+          if (FirebaseAnalytics) {
+            await FirebaseAnalytics.setUserId({
+              userId: currentUser.value.id,
+            })
+          }
+        }
 
         // get the device id if it's an app and not a browser
-        if (isApp.value) {
+        if (isNativeApp.value) {
           await initDeviceId()
         }
         await getFavoritedItems()
@@ -853,6 +907,7 @@ interface SavedItem {
   cmsSource: string
   media_id: string
   slug: string
+  url: string
   reading_time: string
   estimatedDuration: number
   title: string
@@ -919,12 +974,16 @@ export const saveFavorite = async (
       await deleteFavorite(existingRecord[0], tableArg)
     }
     const source = media?.cmsSource
+
+    const theUrl = media?.url
+
     // format the media object to save
     // the fallbacks take into account if the user is selecting  an item that was fed by the CMS or Supabase
     const uid = user.value?.id
     const cmsSource = source
     const media_id = media?.media_id ?? media?.id
     const slug = thisSlug
+    const url = theUrl
     const type = typeArg
     const reading_time = media?.reading_time ?? getReadingTime(media?.rawBody)
     const estimatedDuration = media?.estimatedDuration
@@ -932,15 +991,22 @@ export const saveFavorite = async (
     const title = media?.title
     const producingOrganizations = media?.producingOrganizations
     const authors = media?.authors
-    const meta = media?.meta
+    const meta = media?.meta ?? {}
     const audio = media?.audio ?? media?.hls
     const showTitle = media?.showTitle ?? media?.headers?.brand?.title ?? media?.station
+
+    // add firstPublishedAt if missing from meta
+    if (!meta.firstPublishedAt) {
+      meta.firstPublishedAt = media?.updatedDate || media?.publicationDate
+    }
+
     const itemToSave: SavedItem = {
       uid,
       type,
       cmsSource,
       media_id,
       slug,
+      url,
       reading_time,
       estimatedDuration,
       image,
@@ -968,15 +1034,11 @@ export const saveRecentlyPlayed = (media: object, typeArg = media.type) => {
 export const prepForPlayer = (item) => {
   const fileValue = item.file?.includes("blob:")
     ? item.file : item.audio || item.hls
-
-  const theImage = item.headers?.brand?.logoImage?.template ??
-    item.headers?.brand?.logoImage ??
-    item.showImage ??
-    item.image?.template ??
-    item.image ??
-    item.listingImage?.template ??
-    getEpisodeFallBackImage()
-
+  const theImage = item.headers?.brand?.logoImage?.url ||
+    item.headers?.brand?.logoImage ||
+    item.showImage ||
+    item.image ||
+    item.listingImage
   return {
     ...item,
     file: fileValue,
@@ -997,58 +1059,212 @@ export const togglePlayEpisode = (media, type = mediaTypes.EPISODE) => {
   const isLiveStream = useIsLiveStream()
   type === mediaTypes.LIVE ? isLiveStream.value = true : isLiveStream.value = false
 
-  if (currentEpisode.value?.audio !== media.audio) {
+  if (currentEpisode.value?.id !== media.id) {
     currentEpisode.value = prepForPlayer(media)
     saveRecentlyPlayed(media, type)
+    return
   }
-
   togglePlayTrigger.value = !togglePlayTrigger.value
 }
 
 // css var helper to get the css var value or as pixel value
 export const getCssVar = (name: string, px = false) => {
+  if (!import.meta.client) return px ? '0px' : 0
   const val = getComputedStyle(document.documentElement).getPropertyValue(name)
 
   return px ? val : Number(parseInt(val))
 }
 // ROUTING
+export const shouldOpenStoryInNewTab = (storyLink, cmsSource) => {
+  const isApp = useIsApp()
+  return !isApp.value && Boolean(storyLink) && cmsSource === cmsSources.WAGTAIL
+}
+
+// returns true if the story link is from gothamist.com
+export const shouldTrackOutgoingGothamistClick = (storyLink) =>
+  Boolean(storyLink) && storyLink.includes("gothamist.com")
+
 /* centralized function to route to a episode page */
-export const goToEpisodePage = (ep, params, log = true) => {
-  navigateTo({
-    path: `${mediaTypeRoutes[mediaTypes.EPISODE]}${ep.meta?.slug ?? ep.slug}`,
+export const goToEpisodePage = (ep, params, log = true, returnRoute = false) => {
+  const cmsSource = ep.cmsSource || cmsSources.PUBLISHER
+  // For Simplecast episodes, use UUID in URL path since Simplecast API requires UUIDs
+  // For other sources, use slug
+  const identifier = (cmsSource === cmsSources.SIMPLECAST && ep.meta?.simplecastId)
+    ? ep.meta?.simplecastId
+    : (ep.meta?.slug ?? ep.slug)
+
+  const routeObj = {
+    path: `${mediaTypeRoutes[mediaTypes.EPISODE]}${cmsSource}/${identifier}`,
     query: params,
-  })
+  }
+
+  if (returnRoute) return routeObj
+
+  navigateTo(routeObj)
+
   if (log) {
     saveRecentlyPlayed(ep)
   }
+  return undefined
 }
 
-/* centralized function to route to a story page */
-export const goToStoryPage = (story, params, log = true) => {
-  navigateTo({
-    path: `${mediaTypeRoutes[mediaTypes.STORY]}${story.media_id ?? story.id}`,
+/* centralized function to route to a live page */
+export const goToLivePage = (ep, params, log = true, returnRoute = false) => {
+  const routeObj = {
+    path: `${mediaTypeRoutes[mediaTypes.LIVE]}`,
     query: params,
-  })
-  if (log) {
-    saveRecentlyPlayed(story)
   }
+
+  if (returnRoute) return routeObj
+
+  navigateTo(routeObj)
+  if (log) {
+    saveRecentlyPlayed(ep)
+  }
+  return undefined
 }
 
 /* centralized function to route to a story page */
-export const goToNprPage = (story, log = true) => {
-  navigateTo({
-    path: `${mediaTypeRoutes[mediaTypes.NPR_EPISODE]}${story.media_id ?? story.id}`,
-  })
+export const goToStoryPage = (story, params, log = true, returnRoute = false) => {
+  const theLink = story.url || story.link || stripApiSubdomain(story.meta?.htmlUrl)
+  if (shouldOpenStoryInNewTab(theLink, story.cmsSource)) {
+    if (returnRoute) return theLink
+
+    if (shouldTrackOutgoingGothamistClick(theLink)) {
+      trackClickEvent(
+        "Click Tracking - Outgoing Gothamist Story",
+        "Story",
+        story.title ?? theLink
+      )
+    }
+    // open in new tab if web and wagtail source (Gothamist)
+    window.open(theLink, "_blank")
+  } else {
+    const routeObj = {
+      path: `${mediaTypeRoutes[mediaTypes.STORY]}${story.media_id || story.id}`,
+      query: params,
+    }
+    if (returnRoute) return routeObj
+
+    navigateTo(routeObj)
+  }
   if (log) {
     saveRecentlyPlayed(story)
   }
+  return undefined
+}
+
+/* centralized function to route to a story page */
+export const goToNprPage = (story, log = true, returnRoute = false) => {
+  const routeObj = {
+    path: `${mediaTypeRoutes[mediaTypes.NPR_EPISODE]}${story.media_id ?? story.id}`,
+  }
+
+  if (returnRoute) return routeObj
+
+  navigateTo(routeObj)
+  if (log) {
+    saveRecentlyPlayed(story)
+  }
+  return undefined
+}
+
+/* centralized function to route to a event page */
+export const goToEventPage = (story/* , log = true */, returnRoute = false) => {
+  const routeObj = {
+    path: `${mediaTypeRoutes[mediaTypes.EVENT]}${story.meta?.slug ?? story.slug ?? story.id}`,
+  }
+  if (returnRoute) return routeObj
+
+  navigateTo(routeObj)
+  // we are not saving events to recently played as of 3/26/2026
+  // if (log) {
+  //   saveRecentlyPlayed(story)
+  // }
+  return undefined
 }
 /* centralized function to route to a show page */
-export const goToShowPage = (show, params = null) => {
-  navigateTo({
-    path: `${mediaTypeRoutes[mediaTypes.SHOW]}${show.meta?.slug ?? show.slug}`,
+export const goToShowPage = (show, params = null, returnRoute = false) => {
+  const path = `${mediaTypeRoutes[mediaTypes.SHOW]}${show.meta?.slug ?? show.slug}`
+  const routeObj = {
+    path,
     query: params,
-  })
+  }
+  if (returnRoute) {
+    return routeObj
+  }
+  navigateTo(routeObj)
+  return undefined
+}
+
+/* centralized function to route to a card page */
+export const goToUrlOverrideDestination = (item, params = null, returnRoute = false) => {
+  const path = `${getRouteOrLink(item.url)}`
+
+  if (returnRoute) {
+    if (path.startsWith("http")) return path
+    return { path, query: params }
+  }
+
+  // if the path is a full url, open in new tab
+  if (path.startsWith("http")) {
+    window.open(path, "_blank")
+  } else {
+    navigateTo({
+      path,
+      query: params,
+    })
+  }
+  return undefined
+}
+
+/**
+ * Extracts the parent show slug for a series from explicit fields or parent URLs.
+ */
+const extractShowSlugFromSeries = (series) => {
+  const explicitShowSlug = series.showSlug ?? series.show?.slug ?? series.show?.meta?.slug
+  if (explicitShowSlug) return explicitShowSlug
+
+  const parentUrl = series.meta?.parent?.meta?.htmlUrl
+    ?? series.meta?.parent?.htmlUrl
+    ?? series.meta?.parent?.url
+    ?? series.parent?.meta?.htmlUrl
+    ?? series.parent?.htmlUrl
+    ?? series.parent?.url
+
+  if (!parentUrl) return null
+
+  try {
+    const pathname = new URL(parentUrl, "https://www.wnyc.org").pathname
+    return pathname.match(/\/browse\/shows\/([^/]+)/)?.[1] ?? null
+  } catch {
+    return null
+  }
+}
+
+/* centralized function to route to a series page */
+export const goToSeriesPage = (series, params = null, returnRoute = false) => {
+  const seriesSlug = series.meta?.slug ?? series.slug
+  const showSlug = extractShowSlugFromSeries(series)
+  const fallbackUrl = series.meta?.htmlUrl ?? series.url
+
+  if (!showSlug || !seriesSlug) {
+    if (fallbackUrl) {
+      return goToUrlOverrideDestination({ ...series, url: fallbackUrl }, params, returnRoute)
+    }
+    return goToEpisodePage(series, params, true, returnRoute)
+  }
+
+  const routeObj = {
+    path: `${mediaTypeRoutes[mediaTypes.SERIES]}${showSlug}/${seriesSlug}`,
+    query: params,
+  }
+
+  if (returnRoute) {
+    return routeObj
+  }
+  navigateTo(routeObj)
+  return undefined
 }
 
 // return bool if the url has a query param
@@ -1070,15 +1286,14 @@ export const hasAudio = (audio) => {
 
 // Function to get the raw body from a wagtail body array
 export const getWagtailRawBody = (bodyArr) => {
-  let rawbody = ""
-  rawbody += bodyArr.map((item) => {
-    if (item.type === "paragraph") {
-      return item.value
-    } else {
-      return ""
-    }
-  })
-  return rawbody
+  if (!Array.isArray(bodyArr)) {
+    return bodyArr
+  }
+
+  return bodyArr
+    .filter((item) => item.type === "paragraph")
+    .map((item) => item.value.replace(/<\/?[^>]+(>|$)/g, "")) // Strip HTML tags
+    .join(" ")
 }
 
 // Define the interface for the function parameters
@@ -1105,8 +1320,10 @@ export const addToFavorites2 = async ({ item, isFavorited, message = isFavorited
       if (callback) {
         callback()
       }
+
     } else {
-      await saveFavorite(episode, episode.type)
+      const type = WAGTAIL_PAGE_TYPES[episode.type] || episode.type
+      await saveFavorite(episode, type)
       getFavoritedItems()
       if (callback) {
         callback()
@@ -1117,9 +1334,10 @@ export const addToFavorites2 = async ({ item, isFavorited, message = isFavorited
       summary: message,
       life: 3000,
     }
+    const cardType = `Type:${item?.type || "unknown"} Title: ${item?.title || "unknown"} CMS Source: ${item?.cmsSource || "unknown"} ID: ${item?.id || "unknown"}`
     trackClickEvent(
       `Click Tracking - ${message}`,
-      "Episode Item",
+      cardType,
       item.title
     )
   } else {
@@ -1128,30 +1346,41 @@ export const addToFavorites2 = async ({ item, isFavorited, message = isFavorited
 }
 
 // handles how to use the correct navigate method based on the item type
-export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = false) => {
+export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = false, returnRoute = false) => {
   const isNetworkConnected = useIsNetworkConnected()
-  if (isNetworkConnected.value) {
-    switch (item.type) {
+  if (isNetworkConnected.value || returnRoute) {
+    // if the item has a url, we ignore everything and route based on the url, because it is the override destination, unless it is a gothamist link, then it will route in the app
+    if (item.url && !item.url.includes("gothamist.com")) {
+      const res = goToUrlOverrideDestination(item, null, returnRoute)
+      if (returnRoute) return res
+      return
+    }
+    switch (item.type || item.contentType) {
+      case mediaTypes.LIVE:
+        return goToLivePage(item, { slug: item.slug, type: item.type }, isSaveHistory, returnRoute)
       case mediaTypes.EPISODE:
       case mediaTypes.SEGMENT:
-        goToEpisodePage(item, { src: item.cmsSource, type: item.type }, isSaveHistory)
-        break
+      case mediaTypes.FULL:
+        return goToEpisodePage(item, null, isSaveHistory, returnRoute)
       case mediaTypes.STORY:
       case mediaTypes.ARTICLE:
       case mediaTypes.ARTICLE_PAGE:
-        item.audio
-          ? goToEpisodePage(item, null, isSaveHistory)
-          : goToStoryPage(item, { src: item.cmsSource, downloaded: isDownloaded, id: item.id, }, isSaveHistory)
-        break
+        return item.audio
+          ? goToEpisodePage(item, null, isSaveHistory, returnRoute)
+          : goToStoryPage(item, { src: item.cmsSource, downloaded: isDownloaded, id: item.id, }, isSaveHistory, returnRoute)
       case mediaTypes.SHOW:
-        goToShowPage(item)
-        break
+        return goToShowPage(item, null, returnRoute)
+      case mediaTypes.SERIES:
+        return goToSeriesPage(item, null, returnRoute)
       case mediaTypes.NPR_EPISODE:
       case mediaTypes.NPR_ARTICLE:
-        goToNprPage(item)
-        break
+        return goToNprPage(item, isSaveHistory, returnRoute)
+      case mediaTypes.EVENT:
+        return goToEventPage(item, returnRoute)
+      case mediaTypes.CARD:
+        return goToUrlOverrideDestination(item, null, returnRoute)
       default:
-        goToEpisodePage(item, null, isSaveHistory)
+        return goToEpisodePage(item, null, isSaveHistory, returnRoute)
     }
   } else {
     const globalToast = useGlobalToast()
@@ -1161,6 +1390,7 @@ export const dynamicNavigation = (item, isSaveHistory = true, isDownloaded = fal
       life: 3000,
       closable: true,
     }
+    return undefined
   }
 }
 
@@ -1204,9 +1434,13 @@ export const logOutUser = async () => {
   const currentEpisode = useCurrentEpisode()
   const currentEpisodeHolder = useCurrentEpisodeHolder()
   const isEpisodePlaying = useIsEpisodePlaying()
+  const { logout } = useAuth()
 
   // sign out from supabase
   await client.auth.signOut()
+
+  // clear JWT authentication state
+  logout()
 
   // set the currentUser composable to null
   currentUser.value = null
@@ -1215,9 +1449,6 @@ export const logOutUser = async () => {
   currentEpisode.value = null
   currentEpisodeHolder.value = null
   isEpisodePlaying.value = false
-
-  // clear the local storage
-  await Preferences.clear()
 
   // logout of OneSignal
   useOneSignal().logout()
@@ -1322,7 +1553,7 @@ export const refreshData = async (refreshUser = false) => {
   // update the schedule data
   // watch on the live.vue handles this schedule data
 
-  // update currentEpisode LIVE STREAM data and prep for player and media session IF it is or has been played and the expanded player and media session are open 
+  // update currentEpisode LIVE STREAM data and prep for player and media session IF it is or has been played and the expanded player and media session are open
   if (currentEpisode.value && isLiveStream.value) {
     currentEpisode.value = prepForPlayer(currentEpisodeHolder.value)
     //update media session
@@ -1339,4 +1570,155 @@ export function getPathAndQuery (urlString) {
     console.error("Invalid URL:", error)
     return null
   }
+}
+
+// strips any subdomain and replaces it with "www.", keeping only the root domain + TLD
+// e.g. https://api-demo.gothamist.com/... → https://www.gothamist.com/...
+// e.g. https://staging.gothamist.com/...  → https://www.gothamist.com/...
+export function stripApiSubdomain (urlString: string): string {
+  try {
+    const url = new URL(urlString)
+    const parts = url.hostname.split('.')
+    url.hostname = `www.${parts.slice(-2).join('.')}`
+    return url.toString()
+  } catch {
+    return urlString
+  }
+}
+
+// the CMS does not have the correct station names for WNYC and WQXR, so we need to customize them here
+export const getCustomStationLabel = (station: string): string => {
+  const stationPreference = liveStationPreferences.find(pref => pref.station === station)
+  return stationPreference?.label ?? station
+}
+
+// formats the station list for the dropdown
+export const initializeStationList = (stations) => {
+  if (!stations) return []
+
+  const tempMenuData = []
+
+  // the CMS does not have the correct station names for WNYC and WQXR, so we need to customize them here
+  const getCustomStationLabelFromSlug = (station) => {
+    const stationPreference = liveStationPreferences.find(pref => pref.slug === station.slug)
+    return stationPreference?.label ?? station.station
+  }
+
+  stations.forEach((station) => {
+    const customStation = getCustomStationLabelFromSlug(station)
+    const formattedStartTime = station.timeStart ? formatTime(station.timeStart, 'h:mm a') : ''
+    const formattedEndTime = station.timeEnd ? formatTime(station.timeEnd, 'h:mm a') : ''
+    tempMenuData.push({
+      id: station.station,  // what gets saved to Supabase
+      label: customStation,
+      name: station.title,
+      station: station.station,
+      code: station.title,
+      title: station.title,
+      slug: station.slug,
+      image: station.stationImage || station.image,
+      times: formattedStartTime && formattedEndTime ? `${formattedStartTime} - ${formattedEndTime}` : '',
+    })
+  })
+  return tempMenuData
+}
+
+// global function to toggle native pull to refresh
+export const toggleNativePullToRefresh = (enable: boolean) => {
+  if (enable) {
+    document.documentElement.style.overscrollBehavior = 'auto'
+  } else {
+    document.documentElement.style.overscrollBehavior = 'none'
+  }
+}
+// isolates the slug from the end of a url
+export const isolateSlug = (slug: string) => {
+  return slug?.split("/").filter(Boolean).pop()
+}
+
+// get the first sentence from a string of text
+export const getFirstSentence = (text: string): string => {
+  if (!text) return ''
+  const sentences = text.match(/(.*?[.?!])/)
+  return sentences ? sentences[0] : text
+}
+
+// Cached show-slug-redirects (this list rarely changes)
+let cachedSlugRedirects: { from: string; to: string }[] | null = null
+
+const getSlugRedirects = async (config: any) => {
+  if (!cachedSlugRedirects) {
+    const data = await $fetch<{ from: string; to: string }[]>(
+      `${config.public.BFF_URL}/api/show-slug-redirects`
+    )
+    cachedSlugRedirects = Array.isArray(data) ? data : []
+  }
+  return cachedSlugRedirects
+}
+
+// return match redirects and return true slug
+export const getTrueSlug = async (slug: string, isolateReturn = true) => {
+  const config = useRuntimeConfig()
+  let newSlug = slug
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    slug
+  )
+  // if isUuid get slug from uuid
+  if (isUuid) {
+    try {
+      const showSlug: any = await $fetch(
+        `${config.public.BFF_URL}/api/v2/show/${slug}?slugOnly=true`
+      )
+      newSlug = showSlug.show.slug
+    } catch (error) {
+      const globalToast = useGlobalToast()
+      globalToast.value = {
+        severity: "error",
+        summary: "We are having a problem loading the show page. Please try again later.",
+        life: 6000,
+        closable: true,
+      }
+      console.error(`Error getting true slug from uuid: ${error}`)
+      return newSlug
+    }
+  }
+
+  // check redirect table
+  try {
+    // get the list of redirects (cached)
+    const redirectsData = await getSlugRedirects(config)
+    // find the redirect in the list
+    const redirect = redirectsData?.find((r) => isolateSlug(r.from) === newSlug)
+    return redirect ? isolateReturn ? isolateSlug(redirect.to) : redirect.to : newSlug
+  } catch (error) {
+    console.error(`Error getting true slug from id: ${error}`)
+    return newSlug
+  }
+}
+
+export const normalizeShowTitle = (title?: string): string => {
+  if (!title || typeof title !== "string") return ""
+
+  return title
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/\s+(with|w\/)\s+.*$/, "")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+}
+
+export const areShowTitlesEquivalent = (a?: string, b?: string): boolean => {
+  const normalizedA = normalizeShowTitle(a)
+  const normalizedB = normalizeShowTitle(b)
+
+  if (!normalizedA || !normalizedB) return false
+  if (normalizedA === normalizedB) return true
+
+  const shortestLength = Math.min(normalizedA.length, normalizedB.length)
+  if (shortestLength < 6) return false
+
+  return (
+    normalizedA.includes(normalizedB) || normalizedB.includes(normalizedA)
+  )
 }

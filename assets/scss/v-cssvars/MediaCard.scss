@@ -1,0 +1,8 @@
+:root,
+[data-style-mode='light'],
+.style-mode-light {
+    --media-card-border-radius: var(--p-border-radius-xl);
+}
+[data-style-mode='dark'],
+.style-mode-dark {
+}

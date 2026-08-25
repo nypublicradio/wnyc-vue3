@@ -12,30 +12,54 @@
   &.full-width {
     max-width: 100%;
   }
+  &.thinContent {
+    max-width: $thinContentWidth !important;
+  }
   @include media('>=md') {
-    padding: 0.75rem 3rem;
+    padding: 0.75rem $paddingDesktop;
   }
 }
 
 @mixin html-formatting() {
+  color: var(--p-text-color);
   h1 {
-    font-size: var(--font-size-12);
-    line-height: var(--font-size-12);
-    font-weight: var(--font-weight-700);
+    line-height: 1.25em;
     letter-spacing: -1px;
+    color: var(--p-text-color) !important;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    letter-spacing: -0.75px;
+    font-weight: var(--font-weight-700);
+    line-height: normal;
+    color: var(--p-text-color) !important;
+  }
+  p,
+  span,
+  li,
+  a {
+    line-height: 1.5em;
     color: var(--p-text-color);
     @include media('<md') {
-      font-size: var(--font-size-9);
-      line-height: var(--font-size-9);
+      font-size: var(--font-size-6);
     }
   }
   a {
     -webkit-touch-callout: none; /* disable the iOS long press action */
     -webkit-user-select: none; /* disable text selection */
     color: var(--link-button-color);
+    transition: color var(--p-transition-duration);
+    -webkit-transition: color var(--p-transition-duration);
+    word-break: break-all;
     &:hover,
-    &:active {
-      color: var(--link-button-color);
+    &:active,
+    &:focus {
+      color: var(--p-link-700);
+      text-decoration: underline !important;
     }
     &:visited {
       color: var(--link-button-color);
@@ -45,7 +69,15 @@
   dl {
     margin-block-start: 1em;
     margin-block-end: 1em;
-    line-height: normal !important;
+    &:first-child {
+      margin-block-start: 0;
+    }
+    &:last-child {
+      margin-block-end: 0;
+    }
+  }
+  div {
+    color: var(--p-text-color) !important;
   }
   strong {
     font-weight: var(--font-weight-700);
@@ -104,18 +136,33 @@
 }
 
 @mixin cardTitle() {
-  font-size: var(--font-size-5);
-  line-height: var(--font-size-7);
+  font-family: var(--font-family-header);
+  font-size: var(--font-size-6);
+  line-height: 1.25em;
   font-weight: var(--font-weight-700);
   @include truncate();
   @include t3lines();
+  @include media('<md') {
+    font-size: var(--font-size-5);
+  }
 }
 @mixin cardBody() {
-  font-size: var(--font-size-4);
-  line-height: var(--font-size-6);
+  font-size: var(--font-size-5);
+  line-height: 1.4em;
   font-weight: var(--font-weight-400);
   @include truncate();
-  @include t4lines();
+  @include t2lines();
+}
+
+// Shared long-form body copy used by article-like streamfield/html content.
+// Mobile uses 16px text, then scales to 18px at md+.
+@mixin longFormBodyTypography() {
+  font-size: 1rem;
+  line-height: 180%;
+
+  @include media('>=md') {
+    font-size: 18px;
+  }
 }
 
 // font config
@@ -229,8 +276,8 @@ $spacing-base: 0.25; //  matches prime-flex
   }
 }
 
-.truncate {
-  @include truncate();
+@mixin t1lines() {
+  -webkit-line-clamp: 1;
 }
 @mixin t2lines() {
   -webkit-line-clamp: 2;
@@ -249,4 +296,23 @@ $spacing-base: 0.25; //  matches prime-flex
 }
 @mixin t7lines() {
   -webkit-line-clamp: 7;
+}
+
+@mixin vertical-effect() {
+}
+
+@mixin v-image-bg-blur($radius: 38) {
+  /* Use standard CSS blur and scale it up slightly to hide the semi-transparent edges.
+     This replaces the iOS-buggy feMorphology SVG filter. */
+  filter: blur(30px);
+  transform: scale(1.2);
+}
+
+//button focus ring
+@mixin focus-ring-defaults {
+  outline-color: var(--p-focus-ring-color);
+  outline-width: var(--p-focus-ring-width);
+  outline-offset: var(--p-focus-ring-offset);
+  outline-style: var(--p-focus-ring-style);
+  border-radius: 2px;
 }

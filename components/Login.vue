@@ -7,6 +7,7 @@ import {
   useLoginSideBar,
   useSettingSideBar,
   useForgotPasswordSideBar,
+  useIsApp,
 } from "~/composables/states"
 
 import { trackClickEvent } from "~/utilities/helpers"
@@ -31,6 +32,7 @@ const settingsSideBar = useSettingSideBar()
 const signUpSideBar = useSignupSideBar()
 const loginSideBar = useLoginSideBar()
 const forgotPasswordSideBar = useForgotPasswordSideBar()
+const isApp = useIsApp()
 
 const client = useSupabaseClient()
 const config = useRuntimeConfig()
@@ -41,10 +43,6 @@ const onSignupClick = () => {
   if (!props.isRoute) {
     loginSideBar.value = false
     signUpSideBar.value = true
-  } else {
-    navigateTo({
-      path: "/signup",
-    })
   }
   trackClickEvent(
     "Click Tracking - Sign up",
@@ -64,18 +62,22 @@ const onLogin = (provider) => {
 
 // close all sidebars
 const closeAll = () => {
-  onLogin("email")
   if (!props.isRoute) {
     loginSideBar.value = false
     signUpSideBar.value = false
     settingsSideBar.value = false
   }
+  onLogin("email")
 }
 
 // open the forgot password sidebar
 const openForgotPassword = () => {
-  loginSideBar.value = false
-  forgotPasswordSideBar.value = true
+  if (isApp.value) {
+    loginSideBar.value = false
+    forgotPasswordSideBar.value = true
+  } else {
+    navigateTo("/forgot-password")
+  }
 }
 // handle the close login if on a route or not
 const closeLogin = () => {
@@ -85,21 +87,28 @@ const closeLogin = () => {
 
 <template>
   <div class="login">
-    <div v-if="props.showHeader">
+    <section v-if="props.showHeader">
       <slot name="header">
-        <SHeader class="pb-4" label="Log in" @close-sidebar="closeLogin" />
-        <p>
+        <SHeader
+          :showButton="!props.isRoute"
+          class="pb-4"
+          label="Log in"
+          @close-sidebar="closeLogin"
+        />
+        <div>
           Don't have an account yet?
           <VFlexibleLink
+            :to="props.isRoute ? '/signup' : '#'"
             aria-label="sign up"
             @flexible-link-click="onSignupClick"
           >
             Sign up
           </VFlexibleLink>
-        </p>
+        </div>
       </slot>
-    </div>
-    <div class="pt-0">
+    </section>
+
+    <section class="px-0 md:px-6">
       <VLoginWithProvider
         :client="client"
         :config="config"
@@ -122,6 +131,7 @@ const closeLogin = () => {
         @submit-error="clearAuthReturnRoute()"
         @submit-success="onLogin('apple')"
       />
+      <!--  pt:content:style="background:var(--p-surface-25)" -->
       <Divider class="my-4 mask" align="center">
         <b>or</b>
       </Divider>
@@ -133,20 +143,17 @@ const closeLogin = () => {
         @submit-success="closeAll"
       >
         <template #belowSubmit>
-          <div class="mt-4 relative">
-            <p class="text-center">
-              <VFlexibleLink
-                to="#"
-                class="link m-auto block"
-                aria-label="forgot password"
-                @click="openForgotPassword"
-              >
-                Forgot password?
-              </VFlexibleLink>
-            </p>
+          <div class="mt-4 relative w-full">
+            <Button
+              severity="secondary"
+              variant="link"
+              class="link m-auto block"
+              @click="openForgotPassword"
+              label="Forgot password?"
+            ></Button>
           </div>
         </template>
       </VLoginWithEmail>
-    </div>
+    </section>
   </div>
 </template>

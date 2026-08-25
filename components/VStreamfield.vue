@@ -1,14 +1,133 @@
-<script setup>
-import { trackClickEvent } from "~/utilities/helpers"
+<script setup lang="ts">
+import { trackClickEvent, slugify, getRouteOrLink } from "~/utilities/helpers"
 import { cmsSources } from "~/composables/globals"
+import type { StreamfieldBlock } from "../composables/types/StreamfieldBlock"
+import { useIsApp } from "~/composables/states"
+// Static imports for all layout components to avoid defineAsyncComponent hydration mismatches
+import LayoutRiverThin from "~/components/layouts/river-thin.vue"
+import LayoutRiver from "~/components/layouts/river.vue"
+import LayoutRiverContainer from "~/components/layouts/river-container.vue"
+import LayoutVerticalFeature from "~/components/layouts/vertical-feature.vue"
+import LayoutVerticalFeatureThin from "~/components/layouts/vertical-feature-thin.vue"
+import LayoutHorizontalFeatureAd from "~/components/layouts/horizontal-feature-ad.vue"
+import LayoutCarousel from "~/components/layouts/carousel.vue"
+import LayoutTextOnly from "~/components/layouts/text-only.vue"
+import LayoutTextOnlyThin from "~/components/layouts/text-only-thin.vue"
+import LayoutFourPack from "~/components/layouts/four-pack.vue"
+import LayoutFourPackThin from "~/components/layouts/four-pack-thin.vue"
+import LayoutThreePack from "~/components/layouts/three-pack.vue"
+import LayoutPersonalitiesBanner from "~/components/layouts/personalities-banner.vue"
+
+const layoutComponentMap: Record<string, Component> = {
+  "river-thin": LayoutRiverThin,
+  river: LayoutRiver,
+  "river-container": LayoutRiverContainer,
+  "vertical-feature": LayoutVerticalFeature,
+  "vertical-feature-thin": LayoutVerticalFeatureThin,
+  "horizontal-feature-ad": LayoutHorizontalFeatureAd,
+  carousel: LayoutCarousel,
+  "text-only": LayoutTextOnly,
+  "text-only-thin": LayoutTextOnlyThin,
+  "four-pack": LayoutFourPack,
+  "four-pack-thin": LayoutFourPackThin,
+  "three-pack": LayoutThreePack,
+  "personalities-banner": LayoutPersonalitiesBanner,
+  default: LayoutRiverThin,
+}
+
 const props = defineProps({
   article: {
     type: Object,
     default: null,
   },
+  streamfieldBlocks: {
+    type: Array as () => StreamfieldBlock[],
+    default: null,
+  },
+  showDonation: {
+    type: Boolean,
+    default: true,
+  },
+  curatedListLayoutOverride: {
+    type: String,
+    default: "",
+  },
+  curatedListCardClass: {
+    type: String,
+    default: undefined,
+  },
+  enableCuratedListLoadMore: {
+    type: Boolean,
+    default: false,
+  },
+  curatedListInitialLimit: {
+    type: Number,
+    default: 15,
+  },
+  curatedListLimitIncrement: {
+    type: Number,
+    default: 15,
+  },
+  curatedListLoadMoreLabel: {
+    type: String,
+    default: "Load More",
+  },
 })
 
-const streamfield = props.article.body
+const emit = defineEmits(["curated-list-load-more"])
+const isApp = useIsApp()
+const streamfield = props.article?.body
+
+const defaultLayout = "river-thin"
+const headerClasses = "mb-3"
+const verticalSpacingClasses = "mb-6 md:mb-8"
+
+// Helper function to get the appropriate layout component based on the block's layout value
+const getLayoutComponent = (layout: string) => {
+  // if isApp is true and it is the personalities-banner layout, return null
+  if (isApp.value && layout === "personalities-banner") {
+    return null
+  }
+  return layoutComponentMap[layout] || layoutComponentMap[defaultLayout]
+}
+// Helper function to determine the layout for a curated list block, taking into account any override specified in the props
+const getCuratedListLayout = (block: StreamfieldBlock) => {
+  return (
+    props.curatedListLayoutOverride || block?.value?.layout || defaultLayout
+  )
+}
+// Helper function to determine if the "Load More" functionality should be enabled for a given curated list block
+const enableLoadMoreForBlock = (block: StreamfieldBlock) => {
+  return (
+    props.enableCuratedListLoadMore && getCuratedListLayout(block) === "river"
+  )
+}
+// Helper function to get the props for a curated list component, including handling the "Load More" functionality and any card class overrides
+const getCuratedListComponentProps = (
+  block: StreamfieldBlock,
+  index: number
+) => {
+  const layout = getCuratedListLayout(block)
+  const componentProps: Record<string, unknown> = {
+    list: block?.value?.list,
+    label: block?.value?.label,
+    seeMore: block?.value?.seeMoreLink,
+    loading: index === 0 ? "eager" : "lazy",
+  }
+
+  if (props.curatedListCardClass) {
+    componentProps.cardClass = props.curatedListCardClass
+  }
+
+  if (layout === "river") {
+    componentProps.enableLoadMore = enableLoadMoreForBlock(block)
+    componentProps.initialLimit = props.curatedListInitialLimit
+    componentProps.limitIncrement = props.curatedListLimitIncrement
+    componentProps.loadMoreLabel = props.curatedListLoadMoreLabel
+  }
+
+  return componentProps
+}
 
 onMounted(() => {
   // you can't have script tags in v-html
@@ -27,28 +146,156 @@ onMounted(() => {
 
 <template>
   <div class="streamfield">
-    <section
+    <div
       v-if="
-        props.article.cmsSource === cmsSources.PUBLISHER ||
-        props.article.cmsSource === cmsSources.NPR
+        props.article?.cmsSource === cmsSources.PUBLISHER ||
+        props.article?.cmsSource === cmsSources.NPR ||
+        typeof props.article?.body === 'string'
       "
     >
-      <HtmlConvert :htmlContent="props.article.body" />
-    </section>
+      <HtmlConvert
+        v-if="props.article?.body"
+        :htmlContent="props.article?.body"
+        :key="`article-body-${props.article?.id || 'default'}`"
+      />
+    </div>
+    <div v-else-if="streamfieldBlocks">
+      <template v-for="(block, index) in streamfieldBlocks">
+        <!-- Streamfield Document is not ready on the back end at this time
+        Keeping it here for future reference -->
+        <!-- <StreamfieldDocument
+          v-if="block.type === 'document'"
+          :key="`${block.id}-document`"
+          :block="block"
+          :class="verticalSpacingClasses"
+          :id="slugify(block?.value?.title)"
+        /> -->
+        <div
+          :key="`${block.id}-curated-list-${index}`"
+          v-if="
+            block.type === 'curated_list' &&
+            block?.value?.list?.listItems?.length
+          "
+          :class="verticalSpacingClasses"
+          :id="slugify(block?.value?.label)"
+        >
+          <component
+            :is="getLayoutComponent(getCuratedListLayout(block))"
+            v-bind="getCuratedListComponentProps(block, index)"
+            @load-more="emit('curated-list-load-more', block)"
+          />
+          <div
+            v-if="block?.value?.seeMoreLink"
+            class="flex justify-content-center mt-4 w-full"
+          >
+            <VFlexibleLink :to="getRouteOrLink(block?.value?.seeMoreLink.url)">
+              <Button
+                severity="secondary"
+                variant="link"
+                class="link px-5 text-sm md:text-base no-underline"
+                :label="block?.value?.seeMoreLink.label"
+                tabindex="-1"
+              />
+            </VFlexibleLink>
+          </div>
+        </div>
+
+        <StreamfieldCtaBlock
+          v-if="block.type === 'cta_block'"
+          :block="block"
+          :class="verticalSpacingClasses"
+          :key="`${block.id}-cta-block`"
+        />
+
+        <HtmlConvert
+          v-if="block.type === 'rich_text'"
+          :htmlContent="block"
+          :class="verticalSpacingClasses"
+          :key="`${block.id}-rich_text`"
+        />
+
+        <StreamfieldBlockQuote
+          v-else-if="block.type === 'block_quote'"
+          :key="`${block.id}-block-quote`"
+          :block="block"
+          :class="verticalSpacingClasses"
+        />
+
+        <StreamfieldCode
+          v-else-if="block.type === 'code'"
+          :key="`${block.id}-code`"
+          :block="block"
+          :class="verticalSpacingClasses"
+          :id="slugify(block.value.title)"
+        />
+
+        <StreamfieldContentCollection
+          v-else-if="block.type === 'content_collection'"
+          :key="`${block.id}-content-collection`"
+          :block="block"
+          tracking-component-location="Streamfield"
+          :class="verticalSpacingClasses"
+        />
+
+        <StreamfieldEmbed
+          v-else-if="block.type === 'embed'"
+          :key="`${block.id}-embed`"
+          :block="block"
+          :class="verticalSpacingClasses"
+          :id="slugify(block.value.title)"
+        />
+
+        <StreamfieldHeading
+          v-else-if="block.type === 'heading'"
+          :key="`${block.id}-heading`"
+          :block="block"
+          :class="headerClasses"
+          :id="slugify(block?.value)"
+        />
+
+        <StreamfieldImage
+          v-else-if="block.type === 'image'"
+          :key="`${block.id}-image`"
+          :block="block"
+          :class="verticalSpacingClasses"
+        />
+
+        <StreamfieldParagraph
+          v-else-if="block.type === 'paragraph'"
+          :key="`${block.id}-paragraph`"
+          :block="block"
+          :class="verticalSpacingClasses"
+        />
+
+        <StreamfieldAviaryPullQuote
+          v-else-if="block.type === 'pull_quote'"
+          :key="`${block.id}-pull-quote`"
+          :block="block"
+          :class="verticalSpacingClasses"
+        />
+
+        <StreamfieldFactbox
+          v-else-if="block.type === 'factbox'"
+          :key="`${block.id}-factbox`"
+          :block="block"
+          :class="verticalSpacingClasses"
+          :id="slugify(block.value.heading)"
+        />
+
+        <slot name="adBlock" :block="block" :index="index" />
+      </template>
+    </div>
     <!-- <pre>{{ props.article }}</pre> -->
     <div v-else v-for="(block, index) in streamfield" :key="`block-${index}`">
       <!-- image -->
-      <section v-if="block.type === 'image'" class="streamfield-image mt-4 mx-auto">
-        <!--     :width="block.value.image.width"
-          :height="block.value.image.height" -->
+      <div v-if="block.type === 'image'" class="streamfield-image mt-4 mx-auto">
         <VImage
-          :src="String(block.value.image.id)"
+          :src="block.value.image"
           :ratio="[block.value.image.width ?? 3, block.value.image.height ?? 2]"
           :alt="block.value.image.alt"
           :maxWidth="block.value.image.width"
           :maxHeight="block.value.image.height"
           sizes="xs:390px md:768px"
-          density="x1 x2"
         >
           <!--           <template #caption>
             <VImageCaption
@@ -67,45 +314,57 @@ onMounted(() => {
             </div>
           </template>
         </VImage>
-      </section>
+      </div>
 
-      <section v-else>
+      <div v-else>
         <!-- paragraph -->
         <HtmlConvert
           :htmlContent="block.value"
-          v-if="block.type === 'paragraph'"
+          v-if="block.type === 'paragraph' && block.value"
           class="streamfield-paragraph"
+          :key="`paragraph-${index}`"
         />
         <!-- image -->
 
         <!-- block-quote -->
-        <div v-else-if="block.type === 'block_quote'" class="streamfield-block-quote">
+        <div
+          v-else-if="block.type === 'block_quote'"
+          class="streamfield-block-quote"
+        >
           <blockquote>
-            <HtmlConvert :htmlContent="block.value.blockQuote" />
+            <HtmlConvert
+              v-if="block.value.blockQuote"
+              :htmlContent="block.value.blockQuote"
+              :key="`blockquote-${index}`"
+            />
           </blockquote>
         </div>
 
         <!-- code -->
         <HtmlConvert
-          v-else-if="block.type === 'code'"
+          v-else-if="block.type === 'code' && block.value.code"
           class="streamfield-code"
           :htmlContent="block.value.code"
+          :key="`code-${index}`"
         />
 
         <!-- embed -->
         <HtmlConvert
-          v-else-if="block.type === 'embed'"
+          v-else-if="block.type === 'embed' && block.value.embed"
           class="streamfield-embed"
           :htmlContent="block.value.embed"
+          :key="`embed-${index}`"
+          :id="`${block.title}`"
         />
 
         <!-- heading -->
 
         <HtmlConvert
-          v-else-if="block.type === 'heading'"
+          v-else-if="block.type === 'heading' && block.value"
           class="streamfield-heading"
           :htmlContent="block.value"
           :aria-label="block.value"
+          :key="`heading-${index}`"
         />
 
         <!-- pull-quote -->
@@ -114,10 +373,12 @@ onMounted(() => {
           :quote="block.value.pullQuote"
           :author="block.value.attribution"
         />
-      </section>
+      </div>
       <!-- 1/2 way through the streamfield, insert the donation block -->
       <streamfield-donation
-        v-if="index === Math.floor(streamfield.length / 2)"
+        v-if="
+          props.showDonation && index === Math.floor(streamfield.length / 2)
+        "
         @onClick="
           trackClickEvent(
             `story page id ${props.article.id}`,
@@ -131,6 +392,12 @@ onMounted(() => {
 </template>
 
 <style lang="scss">
+.streamfield {
+  img {
+    width: 100%;
+    height: auto;
+  }
+}
 .streamfield .streamfield-paragraph > * {
   @include html-formatting();
   margin-bottom: 1rem;
@@ -139,9 +406,16 @@ onMounted(() => {
   }
 }
 
+.streamfield .block:last-child {
+  margin-bottom: 0 !important;
+}
+
 .streamfield .streamfield-block-quote {
   // left border matches prime vue Divider styles
   border-left: 1px solid rgba(234, 234, 234, 1);
   padding-left: 1rem;
+}
+.streamfield *:first-child {
+  margin-top: 0;
 }
 </style>

@@ -16,7 +16,7 @@ const sensitiveContent = useSensitiveContent()
     </div>
     <p
       v-if="fineprint && !sensitiveContent"
-      :class="`type-fineprint ${fineprintClass || ''}`"
+      :class="`type-fineprint text-center ${fineprintClass || ''}`"
       class="mt-3"
     >
       {{ fineprint }}
@@ -24,6 +24,17 @@ const sensitiveContent = useSensitiveContent()
   </div>
 </template>
 <style lang="scss">
+.ad-wrapper {
+  max-width: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  
+  iframe {
+    max-width: 100%;
+  }
+}
+
 .ad-wrapper.leaderboard .htl-ad-gpt {
   min-width: 320px;
   min-height: 50px;

@@ -1,51 +1,57 @@
 <script setup>
-import { hasAudio, goToEpisodePage, goToStoryPage } from "~/utilities/helpers"
 
 const props = defineProps({
   articles: {
-    type: Array,
+    type: Object,
+    default: () => ({ listItems: [] }),
+  },
+  headerTitleOverride: {
+    type: String,
     default: null,
   },
-  responsive: {
-    type: Boolean,
-    default: true,
-  },
 })
+
+const reactiveArticles = toRef(props, "articles")
 </script>
 
 <template>
-  <div v-if="articles" class="top-stories" :class="props.responsive ? 'grid' : ''">
+  <div>
     <div
-      v-for="(article, index) in articles"
-      :key="article.id"
-      :class="props.responsive ? 'col-12 md:col-6 mb-3' : 'mb-5'"
+      v-if="reactiveArticles?.listItems?.length > 0"
+      class="top-stories flex flex-column gap-3"
     >
-      <!-- <pre class="text-xs">{{ article.url }}</pre> -->
-      <EpisodeItem
-        v-if="hasAudio(article.audio)"
-        :data="article"
-        @on-click="goToEpisodePage(article)"
+      <h2 class="mb-3">
+        {{ props.headerTitleOverride ?? reactiveArticles?.title }}
+      </h2>
+      <div
+        v-for="(article, index) in reactiveArticles?.listItems"
+        :key="`${article?.id}-${index}`"
+        class=""
+      >
+        <MediaCard
+          showTease
+          isHorizontal
+          :allowVerticalEffect="false"
+          imgCol="w-7rem md:w-12rem"
+          :data="article"
+          :size="{ xs: [112, 112], md: [192, 192] }"
+        />
+      </div>
+    </div>
+    <div v-else class="flex flex-column gap-3">
+      <Skeleton
+        height="18px"
+        width="45%"
+        borderRadius="16px"
+        style="margin-bottom: 6px"
       />
-      <StoryItem
-        v-else
-        :data="article"
-        :index="index"
-        @on-click="goToStoryPage(article, { src: article.cmsSource })"
-      />
+      <div v-for="index in 4" :key="`skeleton-top-stories-${index}`">
+        <skeleton-media-card
+          isHorizontal
+          imgCol="w-7rem md:w-12rem"
+          :size="{ xs: [112, 112], md: [192, 192] }"
+        />
+      </div>
     </div>
   </div>
-  <div v-else :class="props.responsive ? 'grid' : ''">
-    <skeleton-top-story
-      class="skeleton-holder"
-      :class="props.responsive ? 'col-12 md:col-6 mb-3' : 'mb-5'"
-      v-for="(article, index) in 6"
-      :key="`skeleton-${index}`"
-    />
-  </div>
 </template>
-
-<style lang="scss" scoped>
-$container-breakpoint-md: useBreakpointOrFallback("md", 768px);
-.top-stories {
-}
-</style>
