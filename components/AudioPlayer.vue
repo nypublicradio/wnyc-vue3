@@ -184,6 +184,8 @@ const switchEpisode = async (val) => {
 
   currentEpisode.value = val
   isStreamLoading.value = !fromAuto // already playing if from Auto
+  // Set initial duration from metadata as fallback — "ready" event will overwrite with accurate value
+  currentEpisodeDuration.value = currentEpisode.value?.duration || 0
   await nextTick()
 
   if (!fromAuto) {
@@ -193,15 +195,6 @@ const switchEpisode = async (val) => {
       enableCommandCenterSeek: !isLiveStream.value,
     })
   }
-
-  // get actual duration from the Remote Streamer audio player
-  const playerAudioState = await RemoteStreamer.getCurrentState()
-  const playerAudioStateDuration =
-    playerAudioState.duration || currentEpisode.value?.duration || 0
-
-  currentEpisodeDuration.value = playerAudioStateDuration
-  currentEpisode.value.duration = playerAudioStateDuration
-
   // Skip media session update when Auto initiated — it already has correct metadata
   if (!fromAuto) {
     initMediaSession(currentEpisode.value)
@@ -396,7 +389,7 @@ onMounted(async () => {
   await RemoteStreamer.addListener("timeUpdate", (data) => {
     currentEpisodeProgress.value = data.currentTime
   })
-  RemoteStreamer.addListener("ready", (data) => {
+  await RemoteStreamer.addListener("ready", (data) => {
     currentEpisodeDuration.value = data.duration
     currentEpisode.value.duration = data.duration
     isStreamLoading.value = false
