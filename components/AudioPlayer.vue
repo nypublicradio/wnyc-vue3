@@ -184,8 +184,10 @@ const switchEpisode = async (val) => {
 
   currentEpisode.value = val
   isStreamLoading.value = !fromAuto // already playing if from Auto
+
   // Set initial duration from metadata as fallback — "ready" event will overwrite with accurate value
   currentEpisodeDuration.value = currentEpisode.value?.duration || 0
+
   await nextTick()
 
   if (!fromAuto) {
