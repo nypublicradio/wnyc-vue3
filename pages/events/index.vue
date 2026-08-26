@@ -276,12 +276,12 @@ useSeoMeta({
     line-height: 1.6;
   }
 
-  .events-rail__social :deep(.social-buttons) {
+  .events-rail :deep(.events-rail__social) {
     gap: 12px;
     flex-wrap: nowrap;
   }
 
-  .events-rail__social :deep(.social-buttons p) {
+  .events-rail :deep(.events-rail__social a > .pi) {
     font-size: 14px;
     line-height: 20px;
   }
