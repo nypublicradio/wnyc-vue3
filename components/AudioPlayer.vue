@@ -194,7 +194,14 @@ const switchEpisode = async (val) => {
     })
   }
 
-  currentEpisodeDuration.value = currentEpisode.value?.duration || 0
+  // get actual duration from the Remote Streamer audio player
+  const playerAudioState = await RemoteStreamer.getCurrentState()
+  const playerAudioStateDuration =
+    playerAudioState.duration || currentEpisode.value?.duration || 0
+
+  currentEpisodeDuration.value = playerAudioStateDuration
+  currentEpisode.value.duration = playerAudioStateDuration
+
   // Skip media session update when Auto initiated — it already has correct metadata
   if (!fromAuto) {
     initMediaSession(currentEpisode.value)
