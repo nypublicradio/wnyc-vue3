@@ -93,6 +93,14 @@ const onLogOut = async () => {
   })
 }
 
+const focusActiveMenuButton = () => {
+  const activeMenuIndex = props.animMenu ? 0 : 1 // static header : sticky header
+  const activeMenuButton = document.querySelectorAll(".the-header .menu-button")[activeMenuIndex]
+  if (activeMenuButton) {
+    activeMenuButton.focus()
+  }
+}
+
 if (props.animMenu) {
   // handle scroll events to minimize the header menu
   const calcScroll = (y, isScrolling, previousY) => {
@@ -119,6 +127,12 @@ if (props.animMenu) {
       calcScroll(y, isScrolling, previousY)
     })
     calcScroll(1, true, 1)
+
+    watch(settingsSideBarBrowser, (newVal, oldVal) => {
+      if (typeof(oldVal) !== 'undefined' && oldVal !== newVal) {
+        focusActiveMenuButton()
+      }
+    })
   })
 }
 </script>
@@ -256,7 +270,7 @@ if (props.animMenu) {
 
               <Button
                 :disabled="!isNetworkConnected"
-                class="-mr-2"
+                class="-mr-2 menu-button"
                 variant="text"
                 severity="secondary"
                 rounded
