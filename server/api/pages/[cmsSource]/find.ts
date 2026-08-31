@@ -1,6 +1,7 @@
 import axios from 'axios'
 import humps from 'humps'
 import { getQuery, createError } from 'h3'
+import { transformCuratedContent } from '~/utilities/curatedContent'
 
 // Helper to obtain runtime config, with test override support.
 const __getConfig = () => {
@@ -57,7 +58,7 @@ const redirectResponse = (status: number, location?: string) => {
 }
 
 export default defineEventHandler(async (event) => {
-    setResponseHeader(event, 'Cache-Control', 'max-age=60, stale-while-revalidate=120')
+  setResponseHeader(event, 'Cache-Control', 'max-age=60, stale-while-revalidate=120')
   const config = __getConfig()
   const { html_path, cms_site } = getQuery(event)
 
@@ -92,8 +93,11 @@ export default defineEventHandler(async (event) => {
     if (pageRes.status < 200 || pageRes.status >= 300) {
       throw createError({ statusCode: pageRes.status, statusMessage: 'CMS page fetch failed' })
     }
-
     return humps.camelizeKeys(pageRes.data)
+    // let resData = humps.camelizeKeys(pageRes.data)
+    // resData.body = await transformCuratedContent(resData.body, 'default', null, resData.body)
+
+    // return resData
   }
 
   if (res.status >= 200 && res.status < 300) {
