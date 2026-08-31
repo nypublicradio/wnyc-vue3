@@ -289,13 +289,25 @@ onMounted(() => {
     <div v-else v-for="(block, index) in streamfield" :key="`block-${index}`">
       <!-- image -->
       <div v-if="block.type === 'image'" class="streamfield-image mt-4 mx-auto">
+        <!-- sizes="xs:390px md:768px" -->
+        <!-- :ratio="[block.value.image.width ?? 3, block.value.image.height ?? 2]" -->
+        <!-- max-height: 300px;
+    width: auto;
+    max-width: 100%;
+    margin: auto;
+    display: block; -->
         <VImage
           :src="block.value.image"
-          :ratio="[block.value.image.width ?? 3, block.value.image.height ?? 2]"
           :alt="block.value.image.alt"
           :maxWidth="block.value.image.width"
           :maxHeight="block.value.image.height"
-          sizes="xs:390px md:768px"
+          :size="{
+            xxs: [316],
+            xs: [517],
+            sm: [709],
+            md: [885],
+            lg: [662],
+          }"
         >
           <!--           <template #caption>
             <VImageCaption
