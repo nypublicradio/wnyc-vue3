@@ -93,7 +93,7 @@ export default defineEventHandler(async (event) => {
     if (pageRes.status < 200 || pageRes.status >= 300) {
       throw createError({ statusCode: pageRes.status, statusMessage: 'CMS page fetch failed' })
     }
-    //return humps.camelizeKeys(pageRes.data)
+
     let resData = humps.camelizeKeys(pageRes.data)
     resData.body = await transformCuratedContent(resData.body, 'default', null, resData.body)
 
