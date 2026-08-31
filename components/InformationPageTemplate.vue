@@ -27,7 +27,6 @@ useSeoMeta({
           {{ page.title }}
         </h1>
         <hr />
-        <pre>{{ page.body }}</pre>
         <v-streamfield
           v-if="page.body"
           :streamfield-blocks="page.body"

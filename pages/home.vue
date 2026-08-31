@@ -81,7 +81,6 @@ onMounted(() => {
     <section v-if="appSettings?.ask_the_mayor" class="mb-4 thinContent">
       <atm-cta />
     </section>
-    <pre>{{ pagedata?.new_home_template?.curatedContent }}</pre>
     <section v-if="status === 'success'">
       <VStreamfield
         :streamfieldBlocks="pagedata?.new_home_template?.curatedContent"
