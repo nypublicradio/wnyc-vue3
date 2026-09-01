@@ -291,16 +291,26 @@ onMounted(() => {
       <div v-if="block.type === 'image'" class="streamfield-image mt-4 mx-auto">
         <!-- sizes="xs:390px md:768px" -->
         <!-- :ratio="[block.value.image.width ?? 3, block.value.image.height ?? 2]" -->
-        <!-- max-height: 300px;
+        <!-- max-height: 400px;
     width: auto;
     max-width: 100%;
     margin: auto;
     display: block; -->
+        <!-- :size="{
+            xxs: [316],
+            xs: [517],
+            sm: [709],
+            md: [885],
+            lg: [662, 372],
+          }" -->
+        <!-- sizes="xs:390px md:768px" -->
         <VImage
           :src="block.value.image"
           :alt="block.value.image.alt"
           :maxWidth="block.value.image.width"
           :maxHeight="block.value.image.height"
+          style="background-color: #cccccc"
+          :ratio="[16, 9]"
           :size="{
             xxs: [316],
             xs: [517],

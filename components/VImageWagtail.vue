@@ -405,6 +405,9 @@ const handleProvider = computed(() => {
       img {
         cursor: default;
       }
+      &.contain {
+        object-fit: contain;
+      }
     }
     .enlarge-button-holder {
       position: absolute;
