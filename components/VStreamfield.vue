@@ -310,6 +310,7 @@ onMounted(() => {
           :maxWidth="block.value.image.width"
           :maxHeight="block.value.image.height"
           style="background-color: #cccccc"
+          object-fit="contain"
           :ratio="[16, 9]"
           :size="{
             xxs: [316],
