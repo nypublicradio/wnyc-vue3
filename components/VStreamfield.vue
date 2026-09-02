@@ -304,6 +304,15 @@ onMounted(() => {
             lg: [662, 372],
           }" -->
         <!-- sizes="xs:390px md:768px" -->
+
+        <!-- :object-fit="
+            block.value.image.objectFit === 'fit' ? 'contain' : 'cover'
+          "
+          :ratio="
+            block.value.image.objectFit === 'fit'
+              ? [16, 9]
+              : [block.value.image.width ?? 16, block.value.image.height ?? 9]
+          " -->
         <VImage
           :src="block.value.image"
           :alt="block.value.image.alt"
