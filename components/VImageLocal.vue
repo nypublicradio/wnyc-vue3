@@ -9,6 +9,7 @@ const props = defineProps({
   width: { default: null, type: Number },
   height: { default: null, type: Number },
   ratio: { default: () => [1, 1], type: Array },
+  objectFit: { default: "cover", type: String },
 })
 
 const emit = defineEmits(["image-load", "image-error"])
@@ -21,7 +22,10 @@ const emit = defineEmits(["image-load", "image-error"])
       :style="`aspect-ratio:${props.ratio[0]} / ${props.ratio[1]}`"
     >
       <img
-        class="image"
+        :class="[
+          'image',
+          props.objectFit ? `object-fit-${props.objectFit}` : '',
+        ]"
         :src="props.src"
         :alt="props.isDecorative ? '' : props.alt"
         :loading="props.loading"
@@ -50,7 +54,22 @@ const emit = defineEmits(["image-load", "image-error"])
       width: 100%;
       height: 100%;
       top: 0;
-      object-fit: cover;
+
+      &.object-fit-cover {
+        object-fit: cover;
+      }
+
+      &.object-fit-contain {
+        object-fit: contain;
+      }
+
+      &.object-fit-fill {
+        object-fit: fill;
+      }
+
+      &.object-fit-scale-down {
+        object-fit: scale-down;
+      }
     }
   }
 }

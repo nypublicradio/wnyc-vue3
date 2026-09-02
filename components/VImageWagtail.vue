@@ -291,14 +291,11 @@ const handleProvider = computed(() => {
           ref="imageRef"
           :format="props.format"
           :provider="handleProvider"
-          class="image native-image"
-          :class="{
-            'is-vertical': isVertical,
-            'object-fit-cover': props.objectFit === 'cover',
-            'object-fit-contain': props.objectFit === 'contain',
-            'object-fit-fill': props.objectFit === 'fill',
-            'object-fit-scale-down': props.objectFit === 'scale-down',
-          }"
+          :class="[
+            'image native-image',
+            { 'is-vertical': isVertical },
+            props.objectFit ? `object-fit-${props.objectFit}` : '',
+          ]"
           :src="computedSrc"
           :width="computedWidth"
           :height="computedHeight"
@@ -417,8 +414,17 @@ const handleProvider = computed(() => {
       &.object-fit-cover {
         object-fit: cover;
       }
+
       &.object-fit-contain {
         object-fit: contain;
+      }
+
+      &.object-fit-fill {
+        object-fit: fill;
+      }
+
+      &.object-fit-scale-down {
+        object-fit: scale-down;
       }
       img {
         cursor: default;

@@ -313,9 +313,9 @@ onMounted(() => {
           object-fit="contain"
           :ratio="[16, 9]"
           :size="{
-            xxs: [316],
+            xxs: [317],
             xs: [517],
-            sm: [709],
+            sm: [672],
             md: [885],
             lg: [662],
           }"
