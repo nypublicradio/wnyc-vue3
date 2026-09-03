@@ -33,7 +33,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.930.0",
     "@capacitor-community/video-recorder": "^6.5.0",
-    "@capacitor-firebase/analytics": "^6.1.0",
+    "@capacitor-firebase/analytics": "^6.3.1",
     "@capacitor/android": "^6.1.2",
     "@capacitor/app": "6.0.1",
     "@capacitor/assets": "3.0.5",
@@ -83,7 +83,7 @@
     "capacitor-native-settings": "6.0.1",
     "capacitor-plugin-app-tracking-transparency": "^2.0.5",
     "date-fns-tz": "^2.0.1",
-    "firebase": "^10.12.5",
+    "firebase": "^12.18.0",
     "fuse.js": "^6.6.2",
     "hls-parser": "^0.13.5",
     "htmlparser2": "^10.1.0",
