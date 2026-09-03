@@ -622,6 +622,7 @@ A user is considered an **active sustainer** if they have at least one active re
 {
     autodownload: false,
     default_live_stream: "WNYC 93.9 FM",
+    continuous_play: true,
     receive_general_notifications: false,
     one_signal_notification_channels: [...],
     text_size: "Normal",

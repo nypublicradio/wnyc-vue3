@@ -21,6 +21,7 @@ To implement the `isActiveSustainer` feature on the `main` branch, you need to m
 const localUserProfileDefault: object = {
     autodownload: false,
     default_live_stream: "WNYC 93.9 FM",
+    continuous_play: true,
     receive_general_notifications: false,
     one_signal_notification_channels: masterNotificationChannelsArray,
     text_size: "Normal",
