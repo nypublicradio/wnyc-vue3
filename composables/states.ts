@@ -23,6 +23,7 @@ export const getMasterNotificationChannels = async () => {
 const localUserProfileDefault: object = {
     autodownload: false,
     default_live_stream: "WNYC 93.9 FM",
+    continuous_play: true,
     receive_general_notifications: false,
     one_signal_notification_channels: null, // Will be populated from useMasterNotificationChannelsArray
     text_size: "Normal",

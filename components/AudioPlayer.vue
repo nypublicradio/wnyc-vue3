@@ -32,7 +32,8 @@ import {
 } from "~/utilities/helpers"
 import useManageScrollPosition from "~/composables/useManageScrollPosition"
 import { initMediaSession } from "~/utilities/media-session.js"
-
+import { useContinuousPlay } from "~/composables/useContinuousPlay"
+const { initContinuousPlay } = useContinuousPlay()
 // Initialize device platform on client-side only to avoid SSR errors
 const devicePlatform = ref("web")
 if (process.client) {
@@ -183,6 +184,10 @@ const switchEpisode = async (val) => {
 
   currentEpisode.value = val
   isStreamLoading.value = !fromAuto // already playing if from Auto
+
+  // Set initial duration from metadata as fallback — "ready" event will overwrite with accurate value
+  currentEpisodeDuration.value = currentEpisode.value?.duration || 0
+
   await nextTick()
 
   if (!fromAuto) {
@@ -192,8 +197,6 @@ const switchEpisode = async (val) => {
       enableCommandCenterSeek: !isLiveStream.value,
     })
   }
-
-  currentEpisodeDuration.value = currentEpisode.value?.duration || 0
   // Skip media session update when Auto initiated — it already has correct metadata
   if (!fromAuto) {
     initMediaSession(currentEpisode.value)
@@ -309,6 +312,9 @@ const episodeEnded = async () => {
   }
   await releasePlayer()
   trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
+
+  // if the user has continuous play enabled, then we want to play the live stream after the episode has ended
+  initContinuousPlay()
 }
 
 // resume the player if the network is connected where they left off
@@ -385,7 +391,7 @@ onMounted(async () => {
   await RemoteStreamer.addListener("timeUpdate", (data) => {
     currentEpisodeProgress.value = data.currentTime
   })
-  RemoteStreamer.addListener("ready", (data) => {
+  await RemoteStreamer.addListener("ready", (data) => {
     currentEpisodeDuration.value = data.duration
     currentEpisode.value.duration = data.duration
     isStreamLoading.value = false

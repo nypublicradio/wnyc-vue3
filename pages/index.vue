@@ -1,4 +1,5 @@
 <script setup>
+import { useIsApp } from "~/composables/states"
 definePageMeta({
   layout: "default",
 })
@@ -11,11 +12,11 @@ useHead({
     class: "no-bottom-padding hide-bottom-menu hide-footer",
   },
 })
-
+const isApp = useIsApp()
 // Redirect to /home immediately (works on both server and client)
 // Server-side: sends a 302 redirect so /home loads with full SSR data
 // Client-side (app mode): navigates after mount for the loader animation
-if (import.meta.server) {
+if (import.meta.server && !isApp.value) {
   navigateTo("/home", { redirectCode: 302 })
 }
 

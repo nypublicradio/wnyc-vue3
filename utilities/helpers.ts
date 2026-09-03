@@ -666,6 +666,7 @@ export const getAndSetUserProfile = async () => {
         data.initial = false
         data.autodownload = ls.autodownload
         data.default_live_stream = ls.default_live_stream
+        data.continuous_play = ls.continuous_play
         data.receive_general_notifications = ls.receive_general_notifications
         data.one_signal_notification_channels = defaultNotificationChannels
         data.dark_mode = ls.dark_mode
@@ -680,6 +681,7 @@ export const getAndSetUserProfile = async () => {
             initial: data.initial,
             autodownload: data.autodownload,
             default_live_stream: data.default_live_stream,
+            continuous_play: data.continuous_play,
             receive_general_notifications: data.receive_general_notifications,
             one_signal_notification_channels: data.one_signal_notification_channels,
             dark_mode: data.dark_mode,
@@ -856,6 +858,13 @@ export const getAndSetUserProfile = async () => {
         } else {
 
           const localUserProfile = JSON.parse(isLocalUserProfile.value)
+          // check the state localUserProfileDefault and update the local storage if there are any new settings added to the default state
+          const lupd = localUserProfileDefault.value
+          for (const key of Object.keys(lupd)) {
+            if (!(key in localUserProfile)) {
+              localUserProfile[key] = lupd[key]
+            }
+          }
 
           // check if supabase master notification channels changed and sync them with the local storage and supabase and OneSignal
           localUserProfile.one_signal_notification_channels = await syncMasterNotificationChannels(localUserProfile, masterNotificationChannelsArray)
@@ -1721,4 +1730,39 @@ export const areShowTitlesEquivalent = (a?: string, b?: string): boolean => {
   return (
     normalizedA.includes(normalizedB) || normalizedB.includes(normalizedA)
   )
+}
+
+// quick simple way to play local mp3 files and detect when it is complete
+export function playLocalMp3 (url: string, callback: () => void) {
+  const audio = new Audio()
+
+  // Add event listener for audio completion
+  audio.addEventListener('ended', () => {
+    // execute the callback function
+    if (callback) {
+      callback()
+    }
+  })
+  // Set the source URL
+  audio.src = url
+
+  // Play the audio
+  audio.play().catch((error) => {
+    console.error('Error playing audio:', error)
+  })
+
+  // Return a function to stop the audio and remove the event listener
+  const stopLocalMp3 = () => {
+    audio.removeEventListener('ended', () => {
+      if (callback) {
+        callback()
+      }
+    })
+    audio.pause()
+    audio.currentTime = 0
+  }
+
+  return {
+    stopLocalMp3
+  }
 }
