@@ -3,6 +3,11 @@ import axios from 'axios'
 import humps from 'humps'
 import { cmsSources } from '~/composables/globals'
 import { estimateMp3Duration } from '~/server/utils/duration'
+import { NPR } from '~/server/utils/npr'
+
+const npr = new NPR()
+// NPR CDS collection id for the NPR News Now podcast-channel document
+const NPR_NEWS_NOW_COLLECTION_ID = '500005'
 
 // handleDuration is a helper function that checks if the estimated duration is available and if not, it estimates it using the audio URL in the estimateMp3Duration function.
 const handleDuration = async (estimatedDuration: number, audioURL: string) => {
@@ -55,29 +60,50 @@ const getNationalNewscast = async () => {
 		creditsName: "",
 		template: 'https://media.wnyc.org/i/%s/%s/%s/%s/2023/09/npr-news-now.jpeg'
 	}
+
+	// NPR CDS collection id for the NPR News Now podcast-channel document
+	const NPR_NEWS_NOW_COLLECTION_ID = '500005'
 	try {
-		const options = {
-			method: 'GET',
-			url: `${config.public.PUBLISHER_BASE_API}v3/story/npr-newscast`,
-			timeout: 8000,
+		const nprHeaders = { Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}` }
+		const [episodeRes, channelRes] = await Promise.all([
+			axios({
+				method: 'GET',
+				url: `${config.public.NPR_CDS_API}/v1/documents`,
+				params: {
+					collectionIds: NPR_NEWS_NOW_COLLECTION_ID,
+					profileIds: 'podcast-episode,newscast',
+					sort: 'publishDateTime:desc',
+					limit: 1,
+				},
+				headers: nprHeaders,
+			}),
+			axios({
+				method: 'GET',
+				url: `${config.public.NPR_CDS_API}/v1/documents/${NPR_NEWS_NOW_COLLECTION_ID}`,
+				headers: nprHeaders,
+			}),
+		])
+		const episode = episodeRes.data.resources[0]
+		// the audio asset lives in the episode's assets map, keyed by an arbitrary asset id
+		const audioAsset: any = Object.values(episode.assets ?? {}).find((asset: any) =>
+			asset.profiles?.some((profile: any) => profile.href === '/v1/profiles/audio')
+		)
+		const audioHref = audioAsset?.enclosures?.[0]?.href
+		// show artwork lives on the podcast-channel document, not the episode
+		const channelImage = npr.findImageUrl(channelRes.data)
+		return {
+			file: audioHref,
+			audio: audioHref,
+			image: channelImage?.template ?? channelImage?.href ?? 'https://media.wnyc.org/i/%s/%s/%s/%s/2023/09/npr-news-now.jpeg',
+			duration: await handleDuration(audioAsset?.duration, audioHref),
+			cardTitle: 'NPR News Now',
+			showTitle: episode.title ?? 'NPR News Now',
+			newsdate: episode.publishDateTime,
+			type: 'podcast-episode',
+			id: episode.id,
+			cmsSource: cmsSources.NPR,
+			hideFavorite: true,
 		}
-		const res = await axios(options)
-		const resData = humps.camelizeKeys(res.data).data
-		// Use HEAD request to get last-modified without downloading the full audio file
-		const mp3Res = await axios.head(resData.attributes.audio)
-		resData.attributes.newsdate = mp3Res.headers['last-modified']
-		resData.attributes.publicationDate = mp3Res.headers['last-modified']
-		resData.attributes.file = resData.attributes.audio
-		resData.attributes.image = hardcodedNprImage
-		resData.attributes.headers.brand.logoImage = hardcodedNprImage
-		resData.attributes.duration = await handleDuration(resData.attributes.estimatedDuration, resData.attributes.audio)
-		resData.attributes.cardTitle = 'NPR News Now'
-		resData.attributes.showTitle = 'NPR'
-		resData.attributes.type = resData.type
-		resData.attributes.id = resData.id
-		resData.attributes.cmsSource = cmsSources.PUBLISHER
-		resData.attributes.hideFavorite = true
-		return resData.attributes
 	} catch (e) {
 		console.error('getNationalNewscast = ', e)
 	}
@@ -89,7 +115,7 @@ const getNationalNewscast = async () => {
  * Reachable /api/homepage
  */
 export default defineEventHandler(async (event) => {
-    setResponseHeader(event, 'Cache-Control', 'max-age=60, stale-while-revalidate=120')
+	setResponseHeader(event, 'Cache-Control', 'max-age=60, stale-while-revalidate=120')
 	const [local_newscast, national_newscast] = await Promise.all([
 		getLocalNewscast(),
 		getNationalNewscast(),
