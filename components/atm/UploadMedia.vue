@@ -1,6 +1,5 @@
 <script setup>
 import { ref } from "vue"
-import CaptureVideoAudio from "./CaptureVideoAudio.vue"
 import useTranscribe from "~/composables/atm/useTranscribe"
 
 // Component props with defaults
@@ -286,7 +285,7 @@ defineExpose({
     <div class="capture-container">
       <!-- Video Capture Component -->
       <div v-if="isCapturing" class="capture-wrapper">
-        <CaptureVideoAudio
+        <LazyAtmCaptureVideoAudio
           :bucket="bucket"
           :subfolder="subfolder"
           :patientId="user?.id"

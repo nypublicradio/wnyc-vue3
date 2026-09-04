@@ -107,7 +107,7 @@ watch(settingsSideBarBrowser, async (newVal) => {
           </div>
         </div>
       </template>
-      <SettingsBrowser />
+      <LazySettingsBrowser />
     </Drawer>
     <Drawer
       v-model:visible="settingsSideBar"
@@ -126,7 +126,7 @@ watch(settingsSideBarBrowser, async (newVal) => {
       "
     >
       <template #header><span></span></template>
-      <Settings />
+      <LazySettings />
     </Drawer>
     <Drawer
       v-model:visible="loginSideBar"
@@ -147,7 +147,7 @@ watch(settingsSideBarBrowser, async (newVal) => {
     >
       <!-- <template #header><h1 class="font-medium">Log in</h1></template> -->
       <section>
-        <Login />
+        <LazyLogin />
       </section>
     </Drawer>
     <Drawer
@@ -168,7 +168,7 @@ watch(settingsSideBarBrowser, async (newVal) => {
       "
     >
       <section>
-        <Signup />
+        <LazySignup />
       </section>
     </Drawer>
     <Drawer
@@ -188,7 +188,7 @@ watch(settingsSideBarBrowser, async (newVal) => {
         }
       "
     >
-      <ForgotPassword />
+      <LazyForgotPassword />
     </Drawer>
 
     <Drawer
@@ -208,7 +208,7 @@ watch(settingsSideBarBrowser, async (newVal) => {
         }
       "
     >
-      <EditProfile @close="editProfileSideBar = false" />
+      <LazyEditProfile @close="editProfileSideBar = false" />
     </Drawer>
     <Drawer
       v-model:visible="accountPromptSideBar"
@@ -226,7 +226,7 @@ watch(settingsSideBarBrowser, async (newVal) => {
         }
       "
     >
-      <AccountPromptSideBar />
+      <LazyAccountPromptSideBar />
     </Drawer>
     <Drawer
       v-model:visible="accountDeleteSideBar"
@@ -244,7 +244,7 @@ watch(settingsSideBarBrowser, async (newVal) => {
         }
       "
     >
-      <AccountDeleteSideBar />
+      <LazyAccountDeleteSideBar />
     </Drawer>
 
     <Drawer
@@ -264,7 +264,7 @@ watch(settingsSideBarBrowser, async (newVal) => {
         }
       "
     >
-      <SleepTimer />
+      <LazySleepTimer />
     </Drawer>
   </div>
 </template>

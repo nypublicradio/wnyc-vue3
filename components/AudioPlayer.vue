@@ -527,7 +527,7 @@ onMounted(async () => {
 <template>
   <div v-if="currentEpisode">
     <transition name="player">
-      <player-v-new-persistent-player
+      <LazyPlayerVNewPersistentPlayer
         v-show="showPlayer"
         ref="playerRef"
         class="style-mode-dark"
@@ -583,9 +583,9 @@ onMounted(async () => {
         </template>
         <template #expanded-content>
           <!-- <Button label="Cast" @click="handleCast" /> -->
-          <AudioPlayerExpanded @close-panel="playerRef.toggleExpanded()" />
+          <LazyAudioPlayerExpanded @close-panel="playerRef.toggleExpanded()" />
         </template>
-      </player-v-new-persistent-player>
+      </LazyPlayerVNewPersistentPlayer>
     </transition>
   </div>
 
