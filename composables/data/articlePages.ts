@@ -9,11 +9,6 @@ import { estimateMp3Duration } from '~/server/utils/duration'
 import axios from 'axios'
 import memoize from 'memoize'
 
-// Card list-items never render these fields (detail-page SEO / duplicate title+description
-// copies). Cards use `title` + `tease`; share() falls back to those, so `socialTitle` and
-// `description` are intentionally kept.
-const CARD_OMIT_FIELDS = ['seoTitle', 'searchDescription', 'listingTitle', 'listingDescription', 'socialDescription']
-
 /**
  * Trim a normalized list-item (card) so heavy article text never ships to the client:
  *  - drop `rawBody` (the normalizers precompute `reading_time` from it);
@@ -21,18 +16,25 @@ const CARD_OMIT_FIELDS = ['seoTitle', 'searchDescription', 'listingTitle', 'list
  *  - drop detail-only SEO / duplicate copies.
  * Mutates and returns the same object. Only for *ListItem (card) normalizers, never detail pages.
  */
-export const trimCardFields = <T extends Record<string, any>>(card: T): T => {
+export const trimCardFields = <T extends Record<string, any>> (card: T): T => {
   if (!card || typeof card !== 'object') return card
-  const c = card as Record<string, any>
+  const cardRecord = card as Record<string, any>
 
-  for (const field of CARD_OMIT_FIELDS) delete c[field]
+  // Detail-page SEO / duplicate title+description copies that cards never render.
+  // Cards use `title` + `tease`; share() falls back to those, so `socialTitle` and
+  // `description` are intentionally kept.
+  delete cardRecord.seoTitle
+  delete cardRecord.searchDescription
+  delete cardRecord.listingTitle
+  delete cardRecord.listingDescription
+  delete cardRecord.socialDescription
 
   // `reading_time` is precomputed by the normalizers, so `rawBody` is only an
   // intermediate value used to derive it and never needs to reach the client.
-  delete c.rawBody
+  delete cardRecord.rawBody
 
   // `body` is only needed for audio items (player details); drop full text on articles.
-  if (!(c.hasAudio || c.audio)) delete c.body
+  if (!(cardRecord.hasAudio || cardRecord.audio)) delete cardRecord.body
 
   return card
 }
