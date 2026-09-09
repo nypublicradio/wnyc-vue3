@@ -186,7 +186,7 @@ jobs:
           clean-bundle: true
       - setup_npmrc
       - node/install:
-          node-version: 18.18.2
+          node-version: 24.20.0
       - node/install-packages
       - run:
           name: Capacitor Setup
@@ -239,7 +239,7 @@ jobs:
           app-dir: android
           key: v1-gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "android/Gemfile.lock" }}
       - node/install:
-          node-version: 18.18.2
+          node-version: 24.20.0
       - setup_npmrc
       - android/restore-gradle-cache
       - android/decode-keystore:
@@ -292,7 +292,7 @@ commands:
 executors:
   default:
     docker:
-      - image: node:18.18.2
+      - image: node:24.20.0
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASS
