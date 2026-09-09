@@ -1,4 +1,4 @@
-FROM 493123279066.dkr.ecr.us-east-1.amazonaws.com/nypr-node:18.18.2 as build
+FROM 493123279066.dkr.ecr.us-east-1.amazonaws.com/nypr-node:24.20.0 as build
 
 WORKDIR /code
 
@@ -100,7 +100,7 @@ COPY . .
 ENV NUXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
-FROM 493123279066.dkr.ecr.us-east-1.amazonaws.com/nypr-node:18.18.2 as app
+FROM 493123279066.dkr.ecr.us-east-1.amazonaws.com/nypr-node:24.20.0 as app
 
 WORKDIR /app
 COPY --chown=www:www --chmod=755 scripts/entrypoint.sh ./scripts/entrypoint.sh
