@@ -61,8 +61,6 @@ const getNationalNewscast = async () => {
 		template: 'https://media.wnyc.org/i/%s/%s/%s/%s/2023/09/npr-news-now.jpeg'
 	}
 
-	// NPR CDS collection id for the NPR News Now podcast-channel document
-	const NPR_NEWS_NOW_COLLECTION_ID = '500005'
 	try {
 		const nprHeaders = { Authorization: `Bearer ${process.env.NPR_CDS_API_KEY}` }
 		const [episodeRes, channelRes] = await Promise.all([
