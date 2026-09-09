@@ -318,9 +318,14 @@ onMounted(() => {
           :alt="block.value.image.alt"
           :maxWidth="block.value.image.width"
           :maxHeight="block.value.image.height"
-          style="background-color: #cccccc"
-          object-fit="contain"
-          :ratio="[16, 9]"
+          :object-fit="
+            block.value.image.objectFit === 'fit' ? 'contain' : 'cover'
+          "
+          :ratio="
+            block.value.image.objectFit === 'fit'
+              ? [16, 9]
+              : [block.value.image.width ?? 16, block.value.image.height ?? 9]
+          "
           :size="{
             xxs: [317],
             xs: [517],
