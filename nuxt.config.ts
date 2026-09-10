@@ -57,6 +57,11 @@ export default defineNuxtConfig({
     // so default to original image URLs instead of /_ipx transformed URLs.
     provider: isSsrEnabled ? 'ipx' : 'none',
     dir: "public/",
+    // Remote hosts IPX is allowed to fetch + resize. Without this, external images
+    // (e.g. full-res Simplecast podcast art) bypass optimization and ship at source size.
+    domains: [
+      'image.simplecastcdn.com',
+    ],
     screens: {
       xxs: 375,
       xs: 390,
@@ -106,6 +111,11 @@ export default defineNuxtConfig({
       '/npr/**': { swr: 900 },
       '/events/**': { swr: 900 },
       '/confirm': { ssr: false },
+      // Simplecast sources are external/uncontrolled, so don't cache hard. Serve fresh
+      // for 1 day, then stale-while-revalidate for a week (background refresh, no stall).
+      '/_ipx/**': { headers: { 'cache-control': 'public, max-age=86400, stale-while-revalidate=604800' } },
+      // Static brand art; long TTL but not immutable so edits recover within a month.
+      '/personalities/**': { headers: { 'cache-control': 'public, max-age=2592000' } },
     } : {},
   },
 
@@ -123,13 +133,10 @@ export default defineNuxtConfig({
   app: {
     head: {
       link: [
-        // APIs & Backend
-        { rel: 'preconnect', href: 'https://vuycervrdrtycpjzhqxg.supabase.co' },
+        // Preconnect only to origins requested early in the load. Others (supabase,
+        // api.wnyc.org, api/cms.prod.nypr.digital) resolved too late to help and were
+        // flagged as unused by Lighthouse, so they're dropped to stay under ~4 hints.
         { rel: 'preconnect', href: 'https://firebase.googleapis.com' },
-        { rel: 'preconnect', href: 'https://api.wnyc.org' },
-        { rel: 'preconnect', href: 'https://api.prod.nypr.digital' },
-        { rel: 'preconnect', href: 'https://cms.prod.nypr.digital' },
-        // Audio & Assets
         { rel: 'preconnect', href: 'https://assets.webstream.wnyc.org' },
       ]
     },
