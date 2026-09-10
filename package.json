@@ -62,7 +62,7 @@
     "@huggingface/transformers": "^3.8.1",
     "@hypernym/nuxt-gsap": "^2.4.3",
     "@nuxt/image": "^1.11.0",
-    "@nuxtjs/supabase": "^2.0.4",
+    "@nuxtjs/supabase": "^2.0.10",
     "@nypublicradio/capacitor-ios-notification-settings": "^1.0.4",
     "@nypublicradio/capacitor-remote-streamer": "^0.9.22",
     "@primevue/themes": "^4.5.0",
