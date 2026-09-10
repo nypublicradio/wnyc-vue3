@@ -148,6 +148,9 @@ export default defineNuxtConfig({
   //serverMiddleware: ['~/search/algolia-index'],
 
   vite: {
+    server: {
+      allowedHosts: ["local.dev.nypr.digital"],
+    },
     define: {
       __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: true,
     },

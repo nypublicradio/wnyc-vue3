@@ -419,12 +419,7 @@ html {
       .p-tablist {
         margin-left: -3rem;
         margin-right: -3rem;
-        @include media("<md") {
-          margin-left: -1.5rem;
-          margin-right: -1.5rem;
-        }
-
-        webkit-mask-image: linear-gradient(
+        -webkit-mask-image: linear-gradient(
           to right,
           rgba(0, 0, 0, 0) 0%,
           rgb(0, 0, 0) 6%,
@@ -438,6 +433,10 @@ html {
           rgb(0, 0, 0) 94%,
           rgba(0, 0, 0, 0) 100%
         );
+        @include media("<md") {
+          margin-left: -1.5rem;
+          margin-right: -1.5rem;
+        }
 
         .p-tablist-content {
           padding-left: 3rem;

@@ -9,10 +9,7 @@ import {
   useAppDownloadLink,
   useAllCurrentStations,
 } from "~/composables/states"
-import {
-  togglePlayEpisode,
-  initializeStationList,
-} from "~/utilities/helpers"
+import { togglePlayEpisode, initializeStationList } from "~/utilities/helpers"
 import useLiveStream, {
   updateLiveStream,
   updateAllLiveStreams,
@@ -311,6 +308,7 @@ const onUpdateStation = (station) => {
     flex: none;
     width: 280px;
     height: 280px;
+    background-color: #ffffff99;
     @include media("<xl") {
       width: 172px;
       height: 172px;
@@ -319,11 +317,13 @@ const onUpdateStation = (station) => {
       width: 138px;
       height: 138px;
     }
-    background-color: #ffffff99;
     .image,
     .image-loader-anim {
       width: 280px;
       height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       @include media("<xl") {
         width: 172px;
         height: 172px;
@@ -332,9 +332,6 @@ const onUpdateStation = (station) => {
         width: 138px;
         height: 138px;
       }
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
   }
   .content {

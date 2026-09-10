@@ -180,10 +180,10 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
         line-height: var(--persistent-player-title-height);
         font-family: var(--persistent-player-title-font-family);
         @include truncate;
+        box-sizing: border-box;
         @include media(">lg") {
           @include t2lines();
         }
-        box-sizing: border-box;
       }
     }
     .track-info-description {

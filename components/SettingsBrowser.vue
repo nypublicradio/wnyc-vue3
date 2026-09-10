@@ -1,5 +1,8 @@
 <script setup>
-import { useCurrentUser, useSettingsSideBarBrowser } from "~/composables/states.ts"
+import {
+  useCurrentUser,
+  useSettingsSideBarBrowser,
+} from "~/composables/states.ts"
 const currentUser = useCurrentUser()
 const settingsSideBarBrowser = useSettingsSideBarBrowser()
 const { allNavigationData } = await useNavigationData()
@@ -38,6 +41,7 @@ const { allNavigationData } = await useNavigationData()
     max-width: $contentWidth;
     margin: auto;
     gap: 4rem;
+    flex-wrap: wrap;
 
     @include media("<1010px") {
       gap: 4rem 3rem;
@@ -50,8 +54,6 @@ const { allNavigationData } = await useNavigationData()
     @include media(">=1025px") {
       gap: 4rem;
     }
-
-    flex-wrap: wrap;
 
     .menu-holder {
       min-width: 262px;

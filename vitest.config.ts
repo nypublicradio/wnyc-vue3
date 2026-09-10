@@ -1,6 +1,6 @@
 /// <reference types="vitest" />
 
-import { defineConfig/* , loadEnv */ } from 'vite'
+import { defineConfig } from 'vitest/config'
 import { fileURLToPath } from 'url'
 import { dirname, resolve } from 'node:path'
 import vue from '@vitejs/plugin-vue'
@@ -16,18 +16,6 @@ export default (/* { mode } */) => {
     plugins: [
       vue(),
     ],
-    esbuild: {
-      tsconfigRaw: {
-        compilerOptions: {
-          baseUrl: '.',
-          target: 'ESNext',
-          module: 'ESNext',
-          moduleResolution: 'Node',
-          resolveJsonModule: true,
-          types: ['node', 'vitest/globals'],
-        },
-      },
-    },
     resolve: {
       alias: {
         '~': resolve(__dirname, '.'),
