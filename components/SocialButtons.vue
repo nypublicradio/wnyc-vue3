@@ -19,7 +19,7 @@ const getServiceIcon = (service) => {
 }
 </script>
 <template>
-  <div class="social-buttons flex gap-3 align-items-center flex-wrap">
+  <div class="social-buttons flex gap-2 align-items-center flex-wrap">
     <p v-if="props.label" class="text-sm">{{ props.label }}</p>
     <a
       v-for="(item, index) in props.data"
@@ -39,7 +39,10 @@ const getServiceIcon = (service) => {
         }
       "
     >
-      <span :class="`pi pi-${getServiceIcon(item.value?.service)}`" aria-hidden="true"></span>
+      <span
+        :class="`pi pi-${getServiceIcon(item.value?.service)}`"
+        aria-hidden="true"
+      ></span>
     </a>
   </div>
 </template>
