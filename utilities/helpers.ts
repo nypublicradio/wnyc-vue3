@@ -158,17 +158,32 @@ export function stripHtmlTags (str) {
 }
 
 // Computed property to calculate reading time
+// Estimate reading time in whole minutes from HTML/text content.
+export const getReadingTimeMinutes = (content: string): number => {
+  const textContent = stripHtmlTags(content)
+  const wordsPerMinute = 200 // Average reading speed
+  const estimatedWordCount = textContent.split(/\s+/).length
+  return Math.ceil(estimatedWordCount / wordsPerMinute)
+}
+
 export const getReadingTime = (content: string | number): string => {
-  // If content is a number (seconds), convert directly to minutes
+  // If content is already a number of minutes, format it directly.
   if (typeof content === 'number') {
     return `${content} min read`
   }
 
-  // If content is a string (HTML), calculate based on word count
-  const textContent = stripHtmlTags(content)
-  const wordsPerMinute = 200 // Average reading speed
-  const estimatedWordCount = textContent.split(/\s+/).length
-  return `${Math.ceil(estimatedWordCount / wordsPerMinute)} min read`
+  // If content is a string (HTML), calculate based on word count.
+  return `${getReadingTimeMinutes(content)} min read`
+}
+
+/**
+ * Reading time (whole minutes) for a card: prefer a CMS-provided numeric value,
+ * otherwise derive it from the article text with getReadingTimeMinutes(). Returns
+ * undefined when there is no usable text, so no reading time is shown.
+ */
+export const cardReadingMinutes = (existing: any, text: any): number | undefined => {
+  if (typeof existing === 'number') return existing
+  return typeof text === 'string' && text.trim() ? getReadingTimeMinutes(text) : undefined
 }
 
 // returns the rounded up minutes duration of the episode

@@ -1,4 +1,5 @@
-import { normalizeSimplecastListItem, normalizeWagtailListItem, normalizeNprPage } from '~/composables/data/articlePages'
+import { normalizeSimplecastListItem, normalizeWagtailListItem, normalizeNprPage, trimCardFields } from '~/composables/data/articlePages'
+import { cardReadingMinutes } from '~/utilities/helpers'
 
 interface NprProfile {
 	href: string
@@ -37,14 +38,14 @@ async function handleNprCdsItem (listItem: any, componentType: string, showSlug?
 			return null
 		}
 
-		return await normalizeNprPage(nprDocument, componentType, showSlug)
+		return trimCardFields(await normalizeNprPage(nprDocument, componentType, showSlug))
 	}
 
 	// Handle simple curated NPR items (title, url, image, body directly on listItem)
 	const hasTitle = listItem.title && typeof listItem.title === 'string' && listItem.title.trim()
 	const hasUrl = listItem.url && typeof listItem.url === 'string' && listItem.url.trim()
 	if (hasTitle && hasUrl) {
-		return {
+		return trimCardFields({
 			id: listItem.url,
 			uuid: listItem.url,
 			title: listItem.title,
@@ -57,11 +58,12 @@ async function handleNprCdsItem (listItem: any, componentType: string, showSlug?
 			type: 'npr_article',
 			body: listItem.body || '',
 			rawBody: listItem.body || '',
+			reading_time: cardReadingMinutes(undefined, listItem.body),
 			meta: {
 				slug: listItem.url,
 			},
 			canDownloadEpisodes: allData?.canDownloadEpisodes ?? undefined // support the download button based on the show preferences
-		}
+		})
 	}
 
 	console.warn('NPR item missing valid title or URL. Title:', listItem.title, 'URL:', listItem.url, 'Keys:', Object.keys(listItem))
