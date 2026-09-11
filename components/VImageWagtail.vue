@@ -143,6 +143,13 @@ const props = defineProps({
     default: null,
     type: Number,
   },
+  /**
+   * The desired object fit for image
+   */
+  objectFit: {
+    default: "cover",
+    type: String,
+  },
 })
 const emit = defineEmits([
   "image-click",
@@ -284,8 +291,11 @@ const handleProvider = computed(() => {
           ref="imageRef"
           :format="props.format"
           :provider="handleProvider"
-          class="image native-image"
-          :class="isVertical ? 'is-vertical' : ''"
+          :class="[
+            'image native-image',
+            { 'is-vertical': isVertical },
+            props.objectFit ? `object-fit-${props.objectFit}` : '',
+          ]"
           :src="computedSrc"
           :width="computedWidth"
           :height="computedHeight"
@@ -397,10 +407,24 @@ const handleProvider = computed(() => {
       width: 100%;
       height: 100%;
       top: 0;
-      object-fit: cover;
       &.is-vertical {
         margin: auto;
         display: block;
+      }
+      &.object-fit-cover {
+        object-fit: cover;
+      }
+
+      &.object-fit-contain {
+        object-fit: contain;
+      }
+
+      &.object-fit-fill {
+        object-fit: fill;
+      }
+
+      &.object-fit-scale-down {
+        object-fit: scale-down;
       }
       img {
         cursor: default;

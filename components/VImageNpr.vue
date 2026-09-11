@@ -125,6 +125,13 @@ const props = defineProps({
     default: null,
     type: [Number, String],
   },
+  /**
+   * The desired object fit for image
+   */
+  objectFit: {
+    default: "cover",
+    type: String,
+  },
 })
 const emit = defineEmits([
   "image-click",
@@ -308,7 +315,10 @@ onMounted(async () => {
         </div>
         <img
           class="image native-image"
-          :class="isVertical ? 'is-vertical' : ''"
+          :class="[
+            { 'is-vertical': isVertical },
+            props.objectFit ? `object-fit-${props.objectFit}` : '',
+          ]"
           :src="theSrc"
           :width="computedWidth"
           :height="props.height"
@@ -412,7 +422,23 @@ onMounted(async () => {
       width: 100%;
       height: 100%;
       top: 0;
-      object-fit: cover;
+
+      &.object-fit-cover {
+        object-fit: cover;
+      }
+
+      &.object-fit-contain {
+        object-fit: contain;
+      }
+
+      &.object-fit-fill {
+        object-fit: fill;
+      }
+
+      &.object-fit-scale-down {
+        object-fit: scale-down;
+      }
+
       &.is-vertical {
         margin: auto;
         display: block;
