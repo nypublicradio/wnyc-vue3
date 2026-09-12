@@ -1004,16 +1004,16 @@ $container-breakpoint-md: useBreakpointOrFallback("md", 768px);
     //background-color: #ffffff;
     display: block;
 
+    width: var(--persistent-player-image-size);
+    max-width: var(--persistent-player-image-size);
+    height: var(--persistent-player-image-size);
+
     // prettier-ignore
     &.hideImageOnMobile {
       @container (max-width: #{$container-breakpoint-md}) {
         display: none;
       }
     }
-
-    width: var(--persistent-player-image-size);
-    max-width: var(--persistent-player-image-size);
-    height: var(--persistent-player-image-size);
 
     //flex: 1 0 var(--persistent-player-image-size);
     .image-with-caption {

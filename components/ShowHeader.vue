@@ -565,12 +565,12 @@ const isThisShowStreaming = computed(() => {
         transform: scaleX(1.2);
       }
       &.mobile {
-        @include media("<md") {
-          display: inline-flex !important;
-        }
         transform: scaleX(0.8);
         width: 100%;
         margin-top: 1rem;
+        @include media("<md") {
+          display: inline-flex !important;
+        }
       }
     }
   }
