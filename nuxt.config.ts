@@ -106,10 +106,13 @@ export default defineNuxtConfig({
     // Route rules only apply in SSR/website mode
     routeRules: isSsrEnabled && process.env.NODE_ENV === 'production' ? {
       '/home': { swr: 60 },
-      // Cache ALL shows and any nested episode pages under a show for 15 minutes
-      '/browse/shows/**': { swr: 900 },
-      '/npr/**': { swr: 900 },
-      '/events/**': { swr: 900 },
+      // These are unbounded URL spaces (one entry per show/episode/event). `swr`
+      // stores full responses in Nitro's in-process memory cache with no eviction,
+      // which leaked ~1MB/entry until the process hit its heap limit and crashed.
+      // CloudFront already caches on this same header, so emit it directly instead.
+      '/browse/shows/**': { headers: { 'cache-control': 's-maxage=900, stale-while-revalidate' } },
+      '/npr/**': { headers: { 'cache-control': 's-maxage=900, stale-while-revalidate' } },
+      '/events/**': { headers: { 'cache-control': 's-maxage=900, stale-while-revalidate' } },
       '/confirm': { ssr: false },
       // Simplecast sources are external/uncontrolled, so don't cache hard. Serve fresh
       // for 1 day, then stale-while-revalidate for a week (background refresh, no stall).
