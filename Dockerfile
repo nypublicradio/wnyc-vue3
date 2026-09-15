@@ -104,6 +104,7 @@ FROM 493123279066.dkr.ecr.us-east-1.amazonaws.com/nypr-node:18.18.2 as app
 
 WORKDIR /app
 COPY --chown=www:www --chmod=755 scripts/entrypoint.sh ./scripts/entrypoint.sh
+COPY --chown=www:www --chmod=755 scripts/start-nuxt.sh ./scripts/start-nuxt.sh
 
 COPY --chown=www:www nginx/*.conf /etc/nginx/
 COPY --chown=www:www public/robots* ./public/
