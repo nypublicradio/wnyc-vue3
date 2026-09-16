@@ -399,8 +399,8 @@ onMounted(() => {
   }
 }
 .streamfield .streamfield-paragraph > * {
-  @include html-formatting();
   margin-bottom: 1rem;
+  @include html-formatting();
   &:last-child {
     margin-bottom: 0;
   }

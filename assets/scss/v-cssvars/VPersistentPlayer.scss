@@ -2,19 +2,16 @@
 [data-style-mode='light'],
 .style-mode-light {
     --persistent-player-height: #{$playerHeightBrowser};
-    @include media('<lg') {
-        --persistent-player-height: #{$playerHeight};
-    }
     --persistent-player-image-size: var(--persistent-player-height);
 
     --persistent-player-padding: 0px 1rem 0 0 !important;
     --persistent-player-height-buffer: 20px;
     --persistent-player-bg: var(--p-surface-0);
-    --persistent-player-minimize-btn-color: var(--p-surface-950) --persistent-player-minimize-btn-bg:
-        var(--persistent-player-bg);
+    --persistent-player-minimize-btn-color: var(--p-surface-950);
+    --persistent-player-minimize-btn-bg: var(--persistent-player-bg);
     --persistent-player-minimize-btn-bg-hover: var(--p-surface-200);
-    --persistent-player-maximize-btn-color: var(--p-surface-950) --persistent-player-maximize-btn-bg:
-        var(--persistent-player-bg);
+    --persistent-player-maximize-btn-color: var(--p-surface-950);
+    --persistent-player-maximize-btn-bg: var(--persistent-player-bg);
     --persistent-player-maximize-btn-bg-hover: var(--p-surface-200);
     --persistent-player-z-index: 1000;
 
@@ -30,8 +27,8 @@
     --persistent-player-button-radius: 50%;
     --persistent-player-button-color: var(--p-surface-950);
     --persistent-player-button-color-hover: var(--p-surface-950);
-    --persistent-player-button-bg-color: var(--p-surface-950) --persistent-player-button-bg-color-hover:
-        var(--p-surface-200);
+    --persistent-player-button-bg-color: var(--p-surface-950);
+    --persistent-player-button-bg-color-hover: var(--p-surface-200);
 
     --persistent-player-title-size: var(--font-size-7);
     --persistent-player-title-font-family: var(--font-family-header);
@@ -50,17 +47,18 @@
     --persistent-player-time-weight: var(--font-weight-400);
     --persistent-player-time-color: var(--p-text-color);
 
+    --persistent-player-header-footer-bg: var(--p-surface-0);
+    --persistent-player-header-footer-bg-opacity: 0.9;
+    --persistent-player-header-footer-bg-blur: 4px;
+
     @include media('<lg') {
+        --persistent-player-height: #{$playerHeight};
         --persistent-player-title-size: var(--font-size-6);
         --persistent-player-title-height: var(--font-size-8);
         --persistent-player-desc-size: var(--font-size-3);
         --persistent-player-desc-height: var(--font-size-5);
         --persistent-player-time-size: var(--font-size-4);
     }
-
-    --persistent-player-header-footer-bg: var(--p-surface-0);
-    --persistent-player-header-footer-bg-opacity: 0.9;
-    --persistent-player-header-footer-bg-blur: 4px;
 }
 
 [data-style-mode='dark'],
@@ -71,8 +69,8 @@
     --persistent-player-maximize-btn-bg: var(--persistent-player-bg);
     --persistent-player-maximize-btn-color: var(--p-surface-0);
     --persistent-player-live-indicator-bg: var(--p-surface-0);
-    --persistent-player-live-indicator-color: var(--p-surface-950) --persistent-player-button-color:
-        var(--p-surface-950);
+    --persistent-player-live-indicator-color: var(--p-surface-950);
+    --persistent-player-button-color: var(--p-surface-950);
     --persistent-player-button-bg-color: var(--p-surface-0);
     --persistent-player-button-bg-color-hover: var(--p-surface-300);
     --persistent-player-title-color: var(--p-text-color);

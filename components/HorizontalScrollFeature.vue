@@ -87,6 +87,8 @@ onMounted(() => {
 .horizontal-scroll-feature {
   .scroll {
     .item {
+      min-width: v-bind(itemSize);
+      max-width: v-bind(itemSize);
       &:first-child {
         margin-left: 3rem;
         @include media("<md") {
@@ -107,8 +109,6 @@ onMounted(() => {
       .btn {
         //margin-left: 1.5rem;
       }
-      min-width: v-bind(itemSize);
-      max-width: v-bind(itemSize);
     }
   }
 }

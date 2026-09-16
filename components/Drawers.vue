@@ -280,12 +280,11 @@ watch(settingsSideBarBrowser, async (newVal) => {
     max-width: $contentWidth;
     width: 100%;
     margin: auto;
+    justify-content: space-between;
 
     @include media("<lg") {
       padding: 0.5rem;
     }
-
-    justify-content: space-between;
   }
 
   .p-drawer-content {

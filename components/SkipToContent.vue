@@ -59,25 +59,24 @@ function skipToContent() {
   position: absolute;
   top: 7px;
   left: 140px;
+  text-decoration: none;
+  outline: none;
+  clip: rect(1px, 1px, 1px, 1px);
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+
   @include media("<md") {
     top: 5px;
     left: 100px;
   }
-  text-decoration: none;
 
   p {
     font-weight: 600;
     margin: 0;
     color: var(--p-secondary-text-color);
   }
-
-  outline: none;
-
-  clip: rect(1px, 1px, 1px, 1px);
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  overflow: hidden;
 
   &.is-focused,
   &:focus {
