@@ -40,7 +40,16 @@ onMounted(() => {
 <template>
   <div class="login-page">
     <section class="grid m-auto pb-0 lg:pr-0 pt-0">
-      <Login isRoute class="col-12 lg:col-6" />
+      <Login isRoute class="col-12 lg:col-6">
+        <template #header-bottom>
+          <div class="mt-3">
+            Manage donations
+            <VFlexibleLink :to="memberCenterLink" aria-label="Member Center">
+              Member Center
+            </VFlexibleLink>
+          </div>
+        </template>
+      </Login>
       <LoginSignupSideContent class="hidden col-6 lg:flex" />
     </section>
   </div>

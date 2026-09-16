@@ -1,4 +1,5 @@
 <script setup>
+import { memberCenterLink } from "~/composables/globals"
 useHead({
   bodyAttrs: {
     class: "no-bottom-padding",
@@ -39,7 +40,16 @@ onMounted(() => {
 <template>
   <div class="signup-page">
     <section class="grid m-auto pb-0 lg:pr-0 pt-0">
-      <Signup isRoute class="col-12 lg:col-6" />
+      <Signup isRoute class="col-12 lg:col-6">
+        <template #header-bottom>
+          <div class="mt-3">
+            Manage donations
+            <VFlexibleLink :to="memberCenterLink" aria-label="Member Center">
+              Member Center
+            </VFlexibleLink>
+          </div>
+        </template>
+      </Signup>
       <LoginSignupSideContent class="hidden col-6 lg:flex" />
     </section>
   </div>
