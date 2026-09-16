@@ -159,7 +159,10 @@ useSocialMetaOverrides(show)
     <template v-if="!error">
       <ShowHeader :show="show" :class="route.params.slug" />
       <!-- JUMP LINKS -->
-      <section v-if="!isApp" class="hidden md:block">
+      <section
+        v-if="!isApp && sectionAnchorData.length"
+        class="hidden md:block"
+      >
         <div class="grid">
           <div class="col-fixed hidden xxl:block w-20rem"></div>
           <div class="col pr-2 lg:pr-4">
