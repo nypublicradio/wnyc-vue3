@@ -34,7 +34,7 @@ function stringToSafeNumber (str: string): number {
  * @param id 
  * @returns 
  */
-function idToNumber (id: any): number {
+export function idToNumber (id: any): number {
   const num = Number(id)
   if (!isNaN(num) && isFinite(num)) {
     return num
