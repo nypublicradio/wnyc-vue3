@@ -353,4 +353,7 @@ watch(settingsSideBarBrowser, async (newVal) => {
     }
   }
 }
+#account-prompt-sidebar.p-drawer .p-drawer-header {
+  justify-content: right;
+}
 </style>
