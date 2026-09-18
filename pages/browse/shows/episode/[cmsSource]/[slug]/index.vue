@@ -1,11 +1,12 @@
 <script setup>
 import { useToast } from "primevue/usetoast"
-import {
-  isolateSlug,
-  togglePlayEpisode,
-} from "~/utilities/helpers"
+import { isolateSlug, togglePlayEpisode } from "~/utilities/helpers"
 import { useTopStories } from "~/composables/useTopStories"
-import { getSimplecastEpisodeTitle, getSimplecastEpisodeDescription, getSimplecastEpisodeImage } from "~/utilities/metadataHelpers"
+import {
+  getSimplecastEpisodeTitle,
+  getSimplecastEpisodeDescription,
+  getSimplecastEpisodeImage,
+} from "~/utilities/metadataHelpers"
 const { getFilteredTopStories } = useTopStories()
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -160,6 +161,9 @@ if (image) {
         :show="show"
         :showPending="showStatus === 'pending'"
       >
+        <template #end-of-content>
+          <AntiFraudMessage />
+        </template>
         <template #bottom>
           <Divider class="mt-8 mb-5" />
           <TopStories :articles="filteredTopStories" />

@@ -649,6 +649,7 @@ const getDotMenuItems = (bucketItem) => {
               class="mb-5"
             />
           </div>
+          <slot name="end-of-content" />
           <story-article-footer
             class="lg:hidden"
             :article="props.episodeData"
