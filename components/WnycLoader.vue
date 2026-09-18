@@ -14,7 +14,7 @@ const props = defineProps({
   },
   color: {
     type: String,
-    default: "var(--p-text-color)",
+    default: "var(--p-text-color, #101012)",
   },
   svgXscale: {
     type: Number,
@@ -47,11 +47,11 @@ const svgWidth = 75
     role="status"
     aria-label="loading and audio indicator"
   >
-    <div class="svg-holder flex">
+    <div class="svg-holder flex" :style="{ width: props.size }">
       <i
         v-if="props.spinner"
         class="pi pi-spin pi-spinner"
-        :style="`font-size: ${props.size}; color: ${props.color};`"
+        :style="`font-size: ${props.size}; color: ${props.color}; width: ${props.size}; height: ${props.size};`"
         aria-hidden="true"
       ></i>
       <svg
@@ -60,6 +60,10 @@ const svgWidth = 75
         x="0px"
         y="0px"
         viewBox="0 0 75.1 30"
+        :style="{
+          width: props.size,
+          transform: `scaleX(${props.svgXscale}) scaleY(${props.svgYscale})`,
+        }"
         aria-label="animated sound bars loader and/or audio is playing indicator"
       >
         <!-- <rect id="b4" x="58.1" y="22" class="st1" width="16.9" height="30" />
@@ -75,6 +79,7 @@ const svgWidth = 75
           class="st1"
           width="16.9"
           height="30"
+          :style="`fill: ${props.color}`"
         />
       </svg>
     </div>
@@ -109,7 +114,6 @@ const svgWidth = 75
 
   .svg-holder {
     position: relative;
-    width: v-bind(size);
     height: 100%;
     .svg {
       position: absolute;
@@ -118,15 +122,10 @@ const svgWidth = 75
       bottom: 0;
       right: 0;
       margin: auto;
-      width: v-bind(size);
       height: auto;
-      transform: scalex(v-bind(svgXscale));
-      transform: scaleY(v-bind(svgYscale));
       .st1 {
         animation: moveUpAndDown 2s infinite;
         transform-origin: top;
-        fill: v-bind(color);
-        transform: translateY(-30);
       }
     }
     .pi-spinner {
@@ -136,9 +135,6 @@ const svgWidth = 75
       bottom: 0;
       right: 0;
       margin: auto;
-      width: v-bind(size);
-      height: v-bind(size);
-      color: v-bind(color);
     }
   }
 
