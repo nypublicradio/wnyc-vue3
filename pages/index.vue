@@ -23,7 +23,7 @@ if (import.meta.server && !isApp.value) {
 onMounted(() => {
   setTimeout(() => {
     navigateTo("/home")
-  }, 2000)
+  }, 1000)
 })
 </script>
 <template>
