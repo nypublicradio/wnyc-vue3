@@ -294,13 +294,11 @@ onMounted(() => {
           :alt="block.value.image.alt"
           :maxWidth="block.value.image.width"
           :maxHeight="block.value.image.height"
-          :object-fit="
-            block.value.image.objectFit === 'fit' ? 'contain' : 'cover'
-          "
+          :object-fit="block.value.imageFit === 'fit' ? 'cover' : 'contain'"
           :ratio="
-            block.value.image.objectFit === 'fit'
-              ? [16, 9]
-              : [block.value.image.width ?? 16, block.value.image.height ?? 9]
+            block.value.imageFit === 'fit'
+              ? [block.value.image.width ?? 16, block.value.image.height ?? 9]
+              : [16, 9]
           "
           :size="{
             xxs: [317],
