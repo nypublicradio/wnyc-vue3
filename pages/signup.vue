@@ -52,7 +52,7 @@ const trackMemberCenter = () => {
       <Signup isRoute class="col-12 lg:col-6">
         <template #header-bottom>
           <div class="mt-3">
-            Manage donations
+            Manage donations:
             <VFlexibleLink
               :to="memberCenterLink"
               aria-label="Member Center"
