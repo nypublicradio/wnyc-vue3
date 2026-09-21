@@ -811,7 +811,9 @@ $contentPaddingY: 1.25rem;
       border-radius: 0;
     }
 
-    flex-direction: column;
+    & {
+      flex-direction: column;
+    }
 
     @include media("<md") {
       flex-direction: row;

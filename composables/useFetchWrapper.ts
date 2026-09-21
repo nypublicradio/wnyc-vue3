@@ -24,11 +24,16 @@ export function useFetchWrapper (request, options = {}) {
         // In local dev, omit getCachedData entirely so useFetch always fetches fresh.
         // In production, cache on client navigations for maxAge duration.
         ...(!isLocal && {
-            getCachedData: (cacheKey, nuxtApp) => {
+            getCachedData: (cacheKey, nuxtApp, ctx) => {
                 // Always honour payload during hydration to prevent mismatches
                 if (nuxtApp.isHydrating) {
                     return nuxtApp.payload.data[cacheKey]
                 }
+
+                // Nuxt 4 calls getCachedData on every fetch (initial, refresh, watch).
+                // Only serve cache on the initial load/navigation; explicit refresh()
+                // and watch-triggered refetches must always hit the network.
+                if (ctx?.cause !== 'initial') return undefined
 
                 const cached = nuxtApp.static.data?.[cacheKey]
                 if (!cached) return undefined

@@ -10,6 +10,7 @@ import { initFileSystem } from "~/utilities/file-system"
 import { Capacitor } from "@capacitor/core"
 import { App } from "@capacitor/app"
 import { ScreenOrientation } from "@capacitor/screen-orientation"
+import { SplashScreen } from "@capacitor/splash-screen"
 import type { URLOpenListenerEvent } from "@capacitor/app"
 import {
   useIsApp,
@@ -34,7 +35,6 @@ import { getGtmHeadConfig } from "~/utilities/gtm"
 //import { useNewFeatureBadge } from "~/composables/useNewFeatureBadge"
 import useOneSignal from "~/composables/useOneSignal"
 import { useAuthReturnRoute } from "~/composables/useAuthReturnRoute"
-
 const { fetchSchedule } = useLiveStream()
 
 // temp system to handle the new feature badge on the sleep timer
@@ -160,6 +160,12 @@ onMounted(async () => {
 
     // initial check for notification permission
     await notificationPermissionSync()
+
+    // App is initialized — dismiss the native splash early. launchAutoHide +
+    // launchShowDuration in capacitor.config act as a fallback if this never runs.
+    SplashScreen.hide({ fadeOutDuration: 300 }).catch((e) =>
+      console.warn("SplashScreen.hide failed:", e)
+    )
   }
 
   // initial fetch of the schedule to start the live stream refresh loop
@@ -224,15 +230,6 @@ watch(
     }
   }
 )
-
-useHead({
-  script: [
-    {
-      src: config.public.HTL_JS,
-      async: true,
-    },
-  ],
-})
 
 watch(globalToast, (optionsObj) => {
   if (optionsObj) {

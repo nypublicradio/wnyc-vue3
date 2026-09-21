@@ -1,7 +1,7 @@
 
 # Requirements
 
-- Node v18.18.2
+- Node v24.20.0
 - [Homebrew pacakge manager](https://brew.sh/)
 - Ruby >= 3
 - [Xcode](https://apps.apple.com/us/app/xcode/id497799835?mt=12)

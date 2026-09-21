@@ -111,7 +111,9 @@ const { width: imageWidth, height: imageHeight } = useVImageDimensions({
         />
       </div>
       <div class="content col">
-        <div class="flex gap-2 flex-column justify-content-between w-full h-full">
+        <div
+          class="flex gap-2 flex-column justify-content-between w-full h-full"
+        >
           <div class="flex gap-1 flex-column w-full">
             <div class="flex gap-0 flex-column align-items-start">
               <Skeleton
@@ -122,7 +124,12 @@ const { width: imageWidth, height: imageHeight } = useVImageDimensions({
                 class="mb-1 opacity-70"
               />
               <div class="skeleton-title-container">
-                <Skeleton height="14px" width="95%" borderRadius="16px" class="mb-1" />
+                <Skeleton
+                  height="14px"
+                  width="95%"
+                  borderRadius="16px"
+                  class="mb-1"
+                />
                 <Skeleton
                   v-if="!props.isFeature"
                   height="14px"
@@ -209,12 +216,28 @@ const { width: imageWidth, height: imageHeight } = useVImageDimensions({
               borderRadius="16px"
               class="z-2"
             />
-            <Skeleton v-else height="28px" width="60px" borderRadius="16px" class="z-2" />
+            <Skeleton
+              v-else
+              height="28px"
+              width="60px"
+              borderRadius="16px"
+              class="z-2"
+            />
 
             <slot>
               <div class="flex align-items-center gap-4">
-                <Skeleton class="" height="16px" width="16px" borderRadius="16px" />
-                <Skeleton class="mr-2" height="25px" width="5px" borderRadius="16px" />
+                <Skeleton
+                  class=""
+                  height="16px"
+                  width="16px"
+                  borderRadius="16px"
+                />
+                <Skeleton
+                  class="mr-2"
+                  height="25px"
+                  width="5px"
+                  borderRadius="16px"
+                />
               </div>
             </slot>
           </div>
@@ -258,7 +281,9 @@ const { width: imageWidth, height: imageHeight } = useVImageDimensions({
     @include media("<md") {
       border-radius: 0;
     }
-    flex-direction: column;
+    & {
+      flex-direction: column;
+    }
     @include media("<md") {
       flex-direction: row;
     }
