@@ -283,9 +283,13 @@ onMounted(() => {
         />
 
         <slot name="adBlock" :block="block" :index="index" />
+        <!-- slot only one at the very end of the streamfield -->
+        <slot
+          v-if="index === streamfieldBlocks.length - 1"
+          name="end-of-streamfield"
+        />
       </template>
     </div>
-    <!-- <pre>{{ props.article }}</pre> -->
     <div v-else v-for="(block, index) in streamfield" :key="`block-${index}`">
       <!-- image -->
       <div v-if="block.type === 'image'" class="streamfield-image mt-4 mx-auto">
@@ -387,6 +391,8 @@ onMounted(() => {
           )
         "
       />
+      <!-- slot only one at the very end of the streamfield -->
+      <slot v-if="index === streamfield.length - 1" name="end-of-streamfield" />
     </div>
   </div>
 </template>

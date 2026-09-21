@@ -2,7 +2,8 @@
 import { useFallbackImages } from "~/composables/useFallbackImages"
 //import { useAppDownloadLink } from "~/composables/states"
 import { mediaTypeRoutes } from "~/composables/globals"
-
+import AntiFraudMessage from "./AntiFraudMessage.vue"
+import { cmsSources } from "~/composables/globals"
 const props = defineProps({
   show: {
     type: Object,
@@ -63,7 +64,11 @@ const handleShowClick = () => {
           ? null
           : { body: show?.tease || show?.description }
       "
-    />
+    >
+      <template #end-of-streamfield>
+        <AntiFraudMessage v-if="show?.cmsSource === cmsSources.SIMPLECAST" />
+      </template>
+    </VStreamfield>
     <story-htlAd
       class="hidden lg:block"
       layout="rectangle"
