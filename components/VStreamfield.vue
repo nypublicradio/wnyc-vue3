@@ -283,11 +283,6 @@ onMounted(() => {
         />
 
         <slot name="adBlock" :block="block" :index="index" />
-        <!-- slot only one at the very end of the streamfield -->
-        <slot
-          v-if="index === streamfieldBlocks.length - 1"
-          name="end-of-streamfield"
-        />
       </template>
     </div>
     <div v-else v-for="(block, index) in streamfield" :key="`block-${index}`">
@@ -391,8 +386,6 @@ onMounted(() => {
           )
         "
       />
-      <!-- slot only one at the very end of the streamfield -->
-      <slot v-if="index === streamfield.length - 1" name="end-of-streamfield" />
     </div>
   </div>
 </template>

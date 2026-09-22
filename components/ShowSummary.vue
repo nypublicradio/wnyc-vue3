@@ -64,11 +64,8 @@ const handleShowClick = () => {
           ? null
           : { body: show?.tease || show?.description }
       "
-    >
-      <template #end-of-streamfield>
-        <AntiFraudMessage v-if="show?.cmsSource === cmsSources.SIMPLECAST" />
-      </template>
-    </VStreamfield>
+    />
+    <AntiFraudMessage v-if="show?.cmsSource !== cmsSources.NPR" />
     <story-htlAd
       class="hidden lg:block"
       layout="rectangle"
