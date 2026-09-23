@@ -118,7 +118,7 @@ const normalizeSchedule = (scheduleData: any): any[] => {
                 scheduleEventTitle: null,
                 scheduleEventUrl: null,
                 parentTitle: episode.name || '',
-                parentUrl,
+                parentUrl: episode.url || parentUrl,
                 longDescription: episode.longDescription || '',
                 showId: episode.showId || null,
                 images: episode.images || [],
@@ -240,15 +240,15 @@ const getScheduleFromS3 = async (bucketName: string, key: string) => {
     }
 }
 
-function getEpisodeStartMs (episode: any) {
+function getEpisodeStartMs(episode: any) {
     return new Date(episode.startTime).getTime()
 }
 
-function getEpisodeEndMs (episode: any) {
+function getEpisodeEndMs(episode: any) {
     return new Date(episode.endTime).getTime()
 }
 
-function getPreviousEpisode (episodes: any[], now: Date) {
+function getPreviousEpisode(episodes: any[], now: Date) {
     const nowMs = now.getTime()
     return [...episodes]
         .filter((episode: any) => {
@@ -258,7 +258,7 @@ function getPreviousEpisode (episodes: any[], now: Date) {
         .sort((a: any, b: any) => getEpisodeEndMs(b) - getEpisodeEndMs(a))[0]
 }
 
-function includePreviousEpisodeIfRequested (
+function includePreviousEpisodeIfRequested(
     scheduleData: any,
     filteredEpisodes: any[],
     now: Date,
@@ -278,7 +278,7 @@ function includePreviousEpisodeIfRequested (
 }
 
 // Remove past episodes that have already aired
-function removePastEpisodes (scheduleData: any, includePreviousEpisode = false) {
+function removePastEpisodes(scheduleData: any, includePreviousEpisode = false) {
     if (!scheduleData.episodes || !Array.isArray(scheduleData.episodes)) {
         return scheduleData
     }
@@ -312,7 +312,7 @@ const includesCurrentDate = (startDate: string, endDate: string): boolean => {
 }
 
 // Filter episodes for the next 24 hours
-function filterNext24Hours (scheduleData: any, includePreviousEpisode = false) {
+function filterNext24Hours(scheduleData: any, includePreviousEpisode = false) {
     if (!scheduleData.episodes || !Array.isArray(scheduleData.episodes)) {
         return scheduleData
     }
