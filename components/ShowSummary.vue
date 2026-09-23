@@ -8,6 +8,10 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  showAntiFraudMessage: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 const { show } = toRefs(props)
@@ -64,7 +68,7 @@ const handleShowClick = () => {
           : { body: show?.tease || show?.description }
       "
     />
-    <AntiFraudMessage v-if="show?.cmsSource !== cmsSources.NPR" />
+    <AntiFraudMessage v-if="props.showAntiFraudMessage" />
     <story-htlAd
       class="hidden lg:block"
       layout="rectangle"

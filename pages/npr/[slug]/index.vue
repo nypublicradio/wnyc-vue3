@@ -1,6 +1,10 @@
 <script setup>
 import { useTopStories } from "~/composables/useTopStories"
-import { getNprTitle, getNprDescription, getNprImage } from "~/utilities/metadataHelpers"
+import {
+  getNprTitle,
+  getNprDescription,
+  getNprImage,
+} from "~/utilities/metadataHelpers"
 const { getFilteredTopStories } = useTopStories()
 
 const route = useRoute()
@@ -9,14 +13,19 @@ const config = useRuntimeConfig()
 const storySource = "NPR"
 //const breadcrumbs = computed(() => [{ label: "Home", route: "/home" }])
 
-const { data: storyData, status, error } = await useFetchWrapper(
+const {
+  data: storyData,
+  status,
+  error,
+} = await useFetchWrapper(
   () => `${config.public.BFF_URL}/api/npr/${route.params.slug}`,
   {
     key: `npr-story-${route.params.slug}`,
     onResponseError() {
       globalToast.value = {
         severity: "error",
-        summary: "We are having a problem loading this article. Please try again later.",
+        summary:
+          "We are having a problem loading this article. Please try again later.",
         life: 6000,
         closable: true,
       }
@@ -24,7 +33,9 @@ const { data: storyData, status, error } = await useFetchWrapper(
   }
 )
 
-const filteredTopStories = computed(() => getFilteredTopStories(storyData.value))
+const filteredTopStories = computed(() =>
+  getFilteredTopStories(storyData.value)
+)
 
 onMounted(() => {
   if (!storyData.value) return
@@ -33,7 +44,9 @@ onMounted(() => {
     page_title: storyData.value?.title,
     page_type: "article",
     content_group: `${storySource}_article`,
-    article_authors: storyData.value?.authors?.map((author) => author.name).join(","),
+    article_authors: storyData.value?.authors
+      ?.map((author) => author.name)
+      .join(","),
     article_publish_date: storyData.value?.publicationDate,
     article_updated_date: storyData.value?.updatedDate
       ? storyData.value?.updatedDate
@@ -73,7 +86,7 @@ useSeoMeta({
 })
 if (image) {
   useSeoMeta({
-    ogImage: image
+    ogImage: image,
   })
 }
 </script>
