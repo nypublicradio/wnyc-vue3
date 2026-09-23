@@ -95,28 +95,29 @@ const firstEpisodeWithAudio = () => {
     (item) => item.type === "curated_list"
   )
 
-  listItems?.forEach((item) => {
-    allListItems.push(...item.value?.list?.listItems)
-  })
-
-  const firstPlayableEpisode = allListItems.find((item) => {
-    if (hasAudio(item.audio)) {
-      return true
-    } else if (typeof item.audio === "string") {
-      return true
-    } else {
-      return false
-    }
-  })
-  if (!firstPlayableEpisode) {
-    toast.add({
-      severity: "info",
-      summary: "No playable episodes",
-      detail: "We couldn't find any playable audio for this show right now.",
-      life: 3000,
+  if (listItems?.length) {
+    listItems?.forEach((item) => {
+      allListItems.push(...item.value?.list?.listItems)
     })
+
+    const firstPlayableEpisode = allListItems.find((item) => {
+      if (hasAudio(item.audio)) {
+        return true
+      } else if (typeof item.audio === "string") {
+        return true
+      } else {
+        return false
+      }
+    })
+    return firstPlayableEpisode
   }
-  return firstPlayableEpisode
+  toast.add({
+    severity: "info",
+    summary: "No playable episodes",
+    detail: "We couldn't find any playable audio for this show right now.",
+    life: 3000,
+  })
+  return null
 }
 // computed properties to identify what is currently loaded
 const isLoadedEpisode = computed(() => {
