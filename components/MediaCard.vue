@@ -9,6 +9,7 @@ import {
   useIsNetworkConnected,
   useCurrentUser,
   useIsApp,
+  useRecentlyFocused,
 } from "~/composables/states"
 import {
   checkIsFavorited,
@@ -195,6 +196,9 @@ const eventDate = ref(props.data?.startDatetime)
 
 const reactiveData = toRef(props, "data")
 
+const dotMenuRef = ref(null)
+
+
 // set dynamic route
 const dynamicRoute = computed(() =>
   dynamicNavigation(
@@ -267,6 +271,8 @@ onMounted(() => {
 
 // add item to favorites
 const handleAddToFavorites = (bucketItem) => {
+  const recentlyFocused = useRecentlyFocused()
+  recentlyFocused.value = dotMenuRef.value.$el && dotMenuRef.value.$el.querySelector('button')
   // helper func for adding to favorites, also handles account prompt if not logged in
   addToFavorites2({
     item: bucketItem,
@@ -681,6 +687,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                     label=""
                     @changeEmit="onMenuChange"
                     class="z-1"
+                    ref="dotMenuRef"
                   >
                     <template #header-bottom>
                       <div>

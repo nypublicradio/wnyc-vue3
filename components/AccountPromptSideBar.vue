@@ -1,5 +1,5 @@
 <script setup>
-import { useSignupSideBar, useLoginSideBar, useIsApp } from "~/composables/states"
+import { useSignupSideBar, useLoginSideBar, useIsApp, useRecentlyFocused } from "~/composables/states"
 
 const props = defineProps({
   styleMode: {
@@ -16,6 +16,7 @@ const loginSideBar = useLoginSideBar()
 const signupSideBar = useSignupSideBar()
 const accountPromptSideBar = useAccountPromptSideBar()
 const isApp = useIsApp()
+const recentlyFocused = useRecentlyFocused()
 
 const bgColorRef = ref(props.bgColor)
 const accountPromptHeading = ref(null)
@@ -23,6 +24,12 @@ onMounted(() => {
   if (accountPromptHeading.value) {
     accountPromptHeading.value.setAttribute('tabindex', '-1')
     accountPromptHeading.value.focus()
+  }
+})
+onUnmounted(() => {
+  console.log('recentlyFocused before unmount:', recentlyFocused.value)
+  if (recentlyFocused.value) {
+    recentlyFocused.value.focus()
   }
 })
 </script>

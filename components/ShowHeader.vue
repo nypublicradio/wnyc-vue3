@@ -21,6 +21,7 @@ import {
   useCurrentEpisode,
   useIsLiveStream,
   useIsStreamLoading,
+  useRecentlyFocused,
 } from "~/composables/states"
 //import { mediaTypeRoutes, mediaTypes } from "~/composables/globals"
 import useSleepTimer from "~/composables/useSleepTimer"
@@ -79,6 +80,7 @@ const isEpisodePlaying = useIsEpisodePlaying()
 const isLiveStream = useIsLiveStream()
 const { getEpisodeFallBackImage } = useFallbackImages()
 const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
+const followButtonRef = ref(null)
 
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
@@ -196,6 +198,8 @@ const listenLiveNow = () => {
 
 // add item to favorites
 const handleAddToFavorites = () => {
+  const recentlyFocused = useRecentlyFocused()
+  recentlyFocused.value = followButtonRef.value?.$el
   // helper func for adding to favorites, also handles account prompt if not logged in
   addToFavorites2({
     item: show.value,
@@ -321,6 +325,7 @@ const isThisShowStreaming = computed(() => {
                   :aria-label="isFavorited ? 'Unfollow' : 'Follow'"
                   :label="isFavorited ? 'Unfollow' : 'Follow'"
                   @click="handleAddToFavorites"
+                  ref="followButtonRef"
                 >
                   <template #icon>
                     <FollowIcon

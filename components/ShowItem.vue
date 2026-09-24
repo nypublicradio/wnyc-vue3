@@ -6,7 +6,7 @@ import {
   isolateSlug,
   goToShowPage,
 } from "~/utilities/helpers"
-import { useCurrentEpisodeHolder } from "~/composables/states"
+import { useCurrentEpisodeHolder, useRecentlyFocused } from "~/composables/states"
 
 const emit = defineEmits(["on-click", "on-delete-favorite"])
 
