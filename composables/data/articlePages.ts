@@ -4,10 +4,40 @@ import type ISocial from '../types/Social'
 import type { ArticlePage } from '../types/Page'
 import { cmsSources, mediaTypes, mediaTypeRoutes } from '~/composables/globals'
 import { normalizePage } from './basePages'
-import { getWagtailRawBody } from "~/utilities/helpers"
+import { getWagtailRawBody, cardReadingMinutes } from "~/utilities/helpers"
 import { estimateMp3Duration } from '~/server/utils/duration'
 import axios from 'axios'
 import memoize from 'memoize'
+
+/**
+ * Trim a normalized list-item (card) so heavy article text never ships to the client:
+ *  - drop `rawBody` (the normalizers precompute `reading_time` from it);
+ *  - drop `body` for non-audio items (audio keeps it for the player's `details`);
+ *  - drop detail-only SEO / duplicate copies.
+ * Mutates and returns the same object. Only for *ListItem (card) normalizers, never detail pages.
+ */
+export const trimCardFields = <T extends Record<string, any>> (card: T): T => {
+  if (!card || typeof card !== 'object') return card
+  const cardRecord = card as Record<string, any>
+
+  // Detail-page SEO / duplicate title+description copies that cards never render.
+  // Cards use `title` + `tease`; share() falls back to those, so `socialTitle` and
+  // `description` are intentionally kept.
+  delete cardRecord.seoTitle
+  delete cardRecord.searchDescription
+  delete cardRecord.listingTitle
+  delete cardRecord.listingDescription
+  delete cardRecord.socialDescription
+
+  // `reading_time` is precomputed by the normalizers, so `rawBody` is only an
+  // intermediate value used to derive it and never needs to reach the client.
+  delete cardRecord.rawBody
+
+  // `body` is only needed for audio items (player details); drop full text on articles.
+  if (!(cardRecord.hasAudio || cardRecord.audio)) delete cardRecord.body
+
+  return card
+}
 
 // Simplecast article data interface
 interface SimplecastArticle {
@@ -258,7 +288,8 @@ export async function normalizeWagtailListItem (article: Record<string, any | un
   if (typeof article === 'undefined')
     return null
   const normalizedImage = article.image ?? article.listingImage ?? article.content?.listingImage ?? article.leadAsset?.[0]?.value?.image ?? article.leadAsset?.[0]?.value?.defaultImage
-  return Object.assign({}, await normalizePage(article), {
+  const rawBodyText = getWagtailRawBody(article.body)
+  return trimCardFields(Object.assign({}, await normalizePage(article), {
     image: normalizedImage,
     imageFullWidth: normalizedImage?.width ?? article.leadAsset?.[0]?.value?.image?.width ?? article.leadAsset?.[0]?.value?.defaultImage?.width,
     imageFullHeight: normalizedImage?.height ?? article.leadAsset?.[0]?.value?.image?.height ?? article.leadAsset?.[0]?.value?.defaultImage?.height,
@@ -277,13 +308,12 @@ export async function normalizeWagtailListItem (article: Record<string, any | un
     url: article.url,
     shareUrl: article.url,
     section: { name: article.ancestry?.[0].title, slug: article.ancestry?.[0].slug },
-    rawBody: getWagtailRawBody(article.body),
     audio: article.audio,
     hasAudio: article.audio ? true : false,
     canDownloadEpisodes: article?.canDownloadEpisodes || undefined,
     // for comments
     estimatedDuration: undefined,
-    readingTime: article.readingTime,
+    reading_time: cardReadingMinutes(article.readingTime, rawBodyText),
     sortDate: article.sortDate,
     meta: article.meta,
     showTitle: article.showTitle,
@@ -304,7 +334,7 @@ export async function normalizeWagtailListItem (article: Record<string, any | un
     startDatetime: article.startDatetime,
     endDatetime: article.endDatetime,
     tags: article.tags
-  })
+  }))
 }
 
 // SimpleCast: Transform page data from the SimpleCast API into a simpler and typed format
@@ -321,7 +351,7 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
   const showImageUrl = article.showImageUrl || article.show_image_url
   // if subtitle same as showTitle, skip it, but we need this to support the curation override for the subtitle to populate the tease
   const tease = article.tease || (article.subtitle === article.showTitle ? null : article.subtitle) || article.description
-  return Object.assign({}, await normalizePage(article), {
+  return trimCardFields(Object.assign({}, await normalizePage(article), {
     tease, // OVERRIDE from the normalizePage
     uuid: simplecastId, // Preserve the Simplecast UUID
     showId, // Preserve the show UUID
@@ -357,7 +387,7 @@ export async function normalizeSimplecastListItem (article: Record<string, any |
     meta: { slug: article.slug, type: 'episode', simplecastId },
     showTitle,
     headers: showTitle && showImageUrl ? { brand: { title: showTitle, logoImage: { url: showImageUrl } } } : undefined,
-  })
+  }))
 }
 
 /**
@@ -618,7 +648,7 @@ export async function normalizePublisherListItem (article: Record<string, any | 
       }
     })
   }
-  return Promise.resolve(Object.assign({}, await normalizePage(article), {
+  return Promise.resolve(trimCardFields(Object.assign({}, await normalizePage(article), {
     image: article.type === 'show' || article.type === 'tout' ? article.attributes.image : article.attributes.imageMain,
     imageFullWidth: article.type === 'show' || article.type === 'tout' ? article.attributes.image?.w : article.attributes.imageMain?.w,
     imageFullHeight: article.type === 'show' || article.type === 'tout' ? article.attributes.image?.h : article.attributes.imageMain?.h,
@@ -644,7 +674,7 @@ export async function normalizePublisherListItem (article: Record<string, any | 
     show: article.attributes.show,
     showTitle: article.attributes.showTitle,
     headers: article.attributes.headers,
-  }))
+  })))
 }
 
 // fetch tweet/X content from tweetId
@@ -1049,6 +1079,7 @@ export async function normalizeNprPage (article: NprArticle, componentType = "de
     showSlug: derivedShowSlug,
     body: textBody,
     rawBody: textBody,
+    reading_time: cardReadingMinutes(undefined, textBody),
     link: article.webPages?.[0]?.href ?? '/',
     shareUrl: `${config.public.BFF_URL}${mediaTypeRoutes[mediaTypes.NPR_ARTICLE]}${article.id}`,
     authors,
