@@ -14,6 +14,7 @@ import {
   useGlobalToast,
   useSleepTimerRunning,
   useIsApp,
+  useRecentlyFocused,
 } from "~/composables/states"
 import { mediaTypeRoutes } from "~/composables/globals"
 import useSleepTimer from "~/composables/useSleepTimer"
@@ -38,6 +39,7 @@ const sleepTimerRunning = useSleepTimerRunning()
 const expandedFooterRef = ref(null)
 const expandedFooterheight = ref(0)
 const showShare = ref(true)
+const dotMenuRef = ref(null)
 const isApp = useIsApp()
 
 const { handleSleepTimer } = useSleepTimer()
@@ -113,6 +115,8 @@ onMounted(() => {
 
 // add item to favorites
 const handleAddToFavorites = () => {
+  const recentlyFocused = useRecentlyFocused()
+  recentlyFocused.value = dotMenuRef.value?.$el?.querySelector('button')
   // helper func for adding to favorites, also handles account prompt if not logged in
   addToFavorites2({
     item: currentEpisode.value,
@@ -448,6 +452,7 @@ const moreFromClick = async () => {
           size="large"
           class="-mr-2"
           @changeEmit="onMenuChange"
+          ref="dotMenuRef"
         >
           <template #end v-if="currentEpisode.embedCode">
             <div class="p-0">
