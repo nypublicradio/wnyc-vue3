@@ -10,6 +10,7 @@ const props = defineProps({
 })
 
 const isApp = useIsApp()
+const router = useRouter()
 
 const lastItem = computed(() => {
   return props.items.length > 0 ? props.items[props.items.length - 1] : null
@@ -19,14 +20,26 @@ const parentItem = computed(() => {
   return props.items.length > 1 ? props.items[props.items.length - 2] : null
 })
 
-// navigate back to the parent page and track it
+// True when the user reached this page by navigating within the app.
+// `history.state.back` is null only at a true entry point (deep link,
+// share link, hard refresh, cold app start).
+const hasInAppHistory = () =>
+  import.meta.client && window.history.state?.back != null
+
+// Smart back: pop real history when we have it (returns to wherever the user
+// actually came from and can't loop), otherwise fall back to the breadcrumb
+// parent so a directly-opened page still lands somewhere sensible.
 const routeBack = () => {
   trackClickEvent(
     "Click Tracking - Back Button",
     `${lastItem.value?.label} breadcrumbs`,
     "route back"
   )
-  navigateTo(parentItem.value?.route || "/home")
+  if (hasInAppHistory()) {
+    router.back()
+  } else {
+    navigateTo(parentItem.value?.route || "/home")
+  }
 }
 </script>
 
