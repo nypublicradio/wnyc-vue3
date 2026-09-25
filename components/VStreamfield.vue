@@ -285,7 +285,6 @@ onMounted(() => {
         <slot name="adBlock" :block="block" :index="index" />
       </template>
     </div>
-    <!-- <pre>{{ props.article }}</pre> -->
     <div v-else v-for="(block, index) in streamfield" :key="`block-${index}`">
       <!-- image -->
       <div v-if="block.type === 'image'" class="streamfield-image mt-4 mx-auto">
