@@ -203,7 +203,7 @@ onMounted(() => {
 // add item to favorites
 const handleAddToFavorites = (bucketItem) => {
   const recentlyFocused = useRecentlyFocused()
-  recentlyFocused.value = dotMenuRef.value.$el && dotMenuRef.value.$el.querySelector('button')
+  recentlyFocused.value = dotMenuRef.value?.$el?.querySelector('button')
   // helper func for adding to favorites, also handles account prompt if not logged in
   addToFavorites2({
     item: bucketItem,
