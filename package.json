@@ -62,8 +62,8 @@
     "@hypernym/nuxt-gsap": "^2.4.3",
     "@nuxt/image": "^1.11.0",
     "@nuxtjs/supabase": "^2.0.10",
-    "@nypublicradio/capacitor-ios-notification-settings": "^1.0.4",
-    "@nypublicradio/capacitor-remote-streamer": "^0.9.22",
+    "@nypublicradio/capacitor-ios-notification-settings": "^1.0.5",
+    "@nypublicradio/capacitor-remote-streamer": "^0.9.23",
     "@primevue/themes": "^4.5.0",
     "@sentry/integrations": "^7.114.0",
     "@sentry/node": "^10.74.0",
@@ -111,12 +111,6 @@
     "node": ">=24.20.0"
   },
   "overrides": {
-    "@nypublicradio/capacitor-remote-streamer": {
-      "@capacitor/core": "$@capacitor/core"
-    },
-    "@nypublicradio/capacitor-ios-notification-settings": {
-      "@capacitor/core": "$@capacitor/core"
-    },
     "bp-capacitor-background-mode": {
       "@capacitor/core": "$@capacitor/core"
     }
