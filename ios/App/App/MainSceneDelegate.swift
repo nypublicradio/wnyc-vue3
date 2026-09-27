@@ -22,42 +22,18 @@ class MainSceneDelegate: UIResponder, UIWindowSceneDelegate {
             appDelegate.window = window
         }
 
-        // Handle URLs that launched the app from a cold start (e.g. OAuth deep links)
-        if let urlContext = connectionOptions.urlContexts.first {
-            _ = ApplicationDelegateProxy.shared.application(
-                UIApplication.shared,
-                open: urlContext.url,
-                options: [.openInPlace: urlContext.options.openInPlace]
-            )
-        }
-
-        // Handle universal links that launched the app from a cold start
-        if let userActivity = connectionOptions.userActivities.first {
-            _ = ApplicationDelegateProxy.shared.application(
-                UIApplication.shared,
-                continue: userActivity,
-                restorationHandler: { _ in }
-            )
-        }
+        // Capacitor 8.5+: delivers cold-start URLs and universal links once plugins have loaded
+        SceneDelegateProxy.shared.scene(scene, willConnectTo: session, options: connectionOptions)
     }
 
     // Bridge URL opens (custom scheme deep links) to Capacitor — required for Scene lifecycle
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        guard let urlContext = URLContexts.first else { return }
-        _ = ApplicationDelegateProxy.shared.application(
-            UIApplication.shared,
-            open: urlContext.url,
-            options: [.openInPlace: urlContext.options.openInPlace]
-        )
+        SceneDelegateProxy.shared.scene(scene, openURLContexts: URLContexts)
     }
 
     // Bridge universal link opens to Capacitor — required for Scene lifecycle
     func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
-        _ = ApplicationDelegateProxy.shared.application(
-            UIApplication.shared,
-            continue: userActivity,
-            restorationHandler: { _ in }
-        )
+        SceneDelegateProxy.shared.scene(scene, continue: userActivity)
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
