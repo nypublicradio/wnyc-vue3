@@ -2,6 +2,7 @@
 import { getAndSetUserProfile } from "~/utilities/helpers"
 import { useAuth } from "~/composables/useAuth"
 import { useAuthReturnRoute } from "~/composables/useAuthReturnRoute"
+import { useGlobalToast } from "~/composables/states"
 
 useHead({
   bodyAttrs: {
@@ -16,6 +17,7 @@ definePageMeta({
 
 const { handleOAuthCallback } = useAuth()
 const { getAuthReturnRoute, clearAuthReturnRoute } = useAuthReturnRoute()
+const globalToast = useGlobalToast()
 
 // On web, the OAuth provider redirects back here with tokens in the hash or code in query.
 // handleOAuthCallback handles all cases including when the Supabase plugin has already
@@ -40,6 +42,16 @@ onMounted(async () => {
       "Auth callback failed — no params in URL and no active Supabase session.",
       callbackUrl
     )
+    // Let the user know sign-in didn't complete. The technical provider error is
+    // logged to the console in handleOAuthCallback for debugging.
+    globalToast.value = {
+      severity: "error",
+      summary: "Sign-in failed",
+      detail:
+        "We couldn't complete your sign-in. Please try again, or use a different login method.",
+      life: 12000,
+      closeable: true,
+    }
   }
 
   const returnRoute = await getAuthReturnRoute()

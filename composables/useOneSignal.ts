@@ -132,12 +132,15 @@ export default function useOneSignal() {
     const { getAuthReturnRoute, clearAuthReturnRoute } = useAuthReturnRoute()
     const theReturnRoute = await getAuthReturnRoute()
 
-    // Check if this URL contains OAuth callback params (code or access_token)
+    // Check if this URL contains OAuth callback params (code or access_token) or an
+    // OAuth error. The provider may return the error in the query string or the hash
+    // fragment (e.g. Apple returns "#error=server_error&error_description=...").
     const hasAuthCode = urlObj.searchParams.get("code")
     const hashParams = new URLSearchParams(urlObj.hash.substring(1))
     const hasAccessToken = hashParams.get("access_token")
+    const authError = urlObj.searchParams.get("error") ?? hashParams.get("error")
 
-    if (hasAuthCode || hasAccessToken) {
+    if (hasAuthCode || hasAccessToken || authError) {
       // Delegate all OAuth handling to useAuth
       const { handleOAuthCallback } = useAuth()
 
@@ -153,10 +156,14 @@ export default function useOneSignal() {
         console.error("OAuth callback handling failed:", error)
       }
 
-      // Auth failed
+      // Auth failed — show a friendly, user-facing message. The technical provider
+      // error (e.g. expired Apple client secret) is logged to the console in
+      // handleOAuthCallback for debugging.
       globalToast.value = {
         severity: "error",
-        summary: "Authentication failed",
+        summary: "Sign-in failed",
+        detail:
+          "We couldn't complete your sign-in. Please try again, or use a different login method.",
         life: 6000,
       }
       return
