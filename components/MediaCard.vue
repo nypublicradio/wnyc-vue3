@@ -568,7 +568,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                 class="align-self-start"
               />
               <h2 v-if="isEvent" class="event-date">
-                {{ formatTime(eventDate, "MMMM d h:mm a") }}
+                {{ formatTime(eventDate, "MMMM d - h:mm a") }}
               </h2>
               <p v-if="props.showTitle" :class="props.showTitleClasses">
                 {{ props.data?.org ?? props.data?.showTitle }}
