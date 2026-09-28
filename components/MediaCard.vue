@@ -623,7 +623,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
             <div v-if="isEvent">
               <div class="flex flex-column gap-2">
                 <p class="text-md" style="word-break: break-word">
-                  {{ props.data.eventLocation }}
+                  {{ props.data.venueName }}
                 </p>
               </div>
             </div>
