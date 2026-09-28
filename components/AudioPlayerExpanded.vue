@@ -383,13 +383,13 @@ const moreFromClick = async () => {
   <section class="expanded-player flex flex-column gap-3">
     <!-- <pre class="text-xs">{{ currentEpisode }}</pre> -->
     <div class="tools flex justify-content-between">
-      <div v-if="isLive && isApp" class="flex gap-3">
+      <div v-if="isLive && isApp" class="flex gap-3 align-items-center">
         <SleepTimerButton
           @emit-click="handleSleepTimer"
           :isActive="sleepTimerRunning"
         />
       </div>
-      <div v-else class="flex gap-3">
+      <div v-else class="flex gap-3 align-items-center">
         <Button
           text
           severity="secondary"
@@ -429,7 +429,7 @@ const moreFromClick = async () => {
         />
       </div>
 
-      <div class="flex gap-1">
+      <div class="flex gap-1 align-items-center">
         <Button
           v-if="showShare && !isLive"
           text
