@@ -91,13 +91,19 @@ const getNationalNewscast = async () => {
 		const audioHref = audioAsset?.enclosures?.[0]?.href
 		// show artwork lives on the podcast-channel document, not the episode
 		const channelImage = npr.findImageUrl(channelRes.data)
+		const image = channelImage?.template
+			? { altText: 'NPR News Now', url: channelImage.href, template: channelImage.template }
+			: hardcodedNprImage
 		return {
 			file: audioHref,
 			audio: audioHref,
-			image: channelImage?.template ?? channelImage?.href ?? 'https://media.wnyc.org/i/%s/%s/%s/%s/2023/09/npr-news-now.jpeg',
+			// image is an object and the brand logo is the template string, so prepForPlayer gives a player_image that differs from image and the expanded player shows the feature image
+			image,
+			headers: { brand: { logoImage: channelImage?.template ?? hardcodedNprImage } },
 			duration: await handleDuration(audioAsset?.duration, audioHref),
 			cardTitle: 'NPR News Now',
-			showTitle: episode.title ?? 'NPR News Now',
+			title: episode.title ?? 'NPR Newscast',
+			showTitle: 'NPR',
 			newsdate: episode.publishDateTime,
 			type: 'podcast-episode',
 			id: episode.id,
