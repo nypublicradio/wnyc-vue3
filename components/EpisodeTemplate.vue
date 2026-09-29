@@ -3,6 +3,7 @@ import {
   useCurrentUser,
   useCurrentEpisode,
   useIsApp,
+  useRecentlyFocused,
 } from "~/composables/states"
 import { cmsSources } from "~/composables/globals"
 import { useBreakpoints } from "~/composables/useBreakpoints"
@@ -59,6 +60,7 @@ const currentEpisode = useCurrentEpisode()
 const user = useCurrentUser()
 const isApp = useIsApp()
 const progress = ref({})
+const dotMenuRef = ref(null)
 
 // Use the shared breakpoint composable
 const { breakpoint } = useBreakpoints()
@@ -200,6 +202,8 @@ onMounted(() => {
 
 // add item to favorites
 const handleAddToFavorites = (bucketItem) => {
+  const recentlyFocused = useRecentlyFocused()
+  recentlyFocused.value = dotMenuRef.value?.$el?.querySelector('button')
   // helper func for adding to favorites, also handles account prompt if not logged in
   addToFavorites2({
     item: bucketItem,
@@ -492,6 +496,7 @@ const getDotMenuItems = (bucketItem) => {
                   class="-mr-1"
                   :isText="false"
                   size="small"
+                  ref="dotMenuRef"
                 >
                   <template #header-bottom>
                     <div>
