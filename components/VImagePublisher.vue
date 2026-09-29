@@ -97,6 +97,13 @@ const props = defineProps({
     default: null,
     type: String,
   },
+  /**
+   * nuxt/image style sizes string (e.g. "xs:327, sm:528, md:672"). When set, the largest size is used as the requested image width
+   */
+  sizes: {
+    default: null,
+    type: String,
+  },
   /** * List of display densities to generate sizes for in the srcset */
   srcset: {
     default() {
@@ -184,14 +191,26 @@ const getDimensions = () => {
   }
 }
 
+// a function that returns the dimensions to request from the image server: the largest value in sizes, if provided, scaled to keep the ratio, otherwise the rendered dimensions
+const getRequestDimensions = () => {
+  const dimensions = getDimensions()
+  const sizesWidths = (props.sizes?.match(/\d+/g) ?? []).map(Number)
+  if (!sizesWidths.length || !dimensions.width) return dimensions
+  const width = Math.max(...sizesWidths)
+  return {
+    height: Math.round((width * dimensions.height) / dimensions.width),
+    width,
+  }
+}
+
 // a function that formats the url template
 const computedSrc = () => {
   const template = srcFormatted.value
 
   return template
     ? template
-        .replace(props.widthToken, getDimensions().width)
-        .replace(props.heightToken, getDimensions().height)
+        .replace(props.widthToken, getRequestDimensions().width)
+        .replace(props.heightToken, getRequestDimensions().height)
         .replace(props.qualityToken, props.quality)
     : undefined
 }
@@ -212,9 +231,10 @@ const srcset = computed(() => {
     let lastImage = false
     for (const size of props.srcset) {
       /* continue if it is NOT the lastImage and the image has more pixels than its rendered area */
-      if (!lastImage && props.maxWidth > getDimensions().width) {
-        let width = Math.round(getDimensions().width * size)
-        let height = Math.round(getDimensions().height * size)
+      const baseDimensions = getRequestDimensions()
+      if (!lastImage && props.maxWidth > baseDimensions.width) {
+        let width = Math.round(baseDimensions.width * size)
+        let height = Math.round(baseDimensions.height * size)
 
         /* the image no longer has enough resolution to support the next srcset, use its maximum size and make it the last on the srcset list */
         if (width > props.maxWidth || height > props.maxHeight) {

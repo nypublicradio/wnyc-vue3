@@ -74,11 +74,13 @@ const getNationalNewscast = async () => {
 					limit: 1,
 				},
 				headers: nprHeaders,
+				timeout: 5000, // Set timeout for the request in milliseconds
 			}),
 			axios({
 				method: 'GET',
 				url: `${config.public.NPR_CDS_API}/v1/documents/${NPR_NEWS_NOW_COLLECTION_ID}`,
 				headers: nprHeaders,
+				timeout: 5000, // Set timeout for the request in milliseconds
 			}),
 		])
 		const episode = episodeRes.data.resources[0]

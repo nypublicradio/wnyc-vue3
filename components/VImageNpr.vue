@@ -104,6 +104,13 @@ const props = defineProps({
     default: null,
     type: String,
   },
+  /**
+   * nuxt/image style sizes string (e.g. "xs:327, sm:528, md:672"). When set, the largest size is used as the requested image width
+   */
+  sizes: {
+    default: null,
+    type: String,
+  },
   /** * List of display densities to generate sizes for in the srcset */
   srcset: {
     default() {
@@ -137,10 +144,15 @@ const emit = defineEmits([
 const refThisImg = ref(null)
 // SSR-safe default: use props.width if available, otherwise a sensible default
 const thisWidth = ref(props.width || 600)
+// width to request from the NPR image server: the largest value in sizes, if provided, otherwise the width prop
+const requestWidth = computed(() => {
+  const sizesWidths = (props.sizes?.match(/\d+/g) ?? []).map(Number)
+  return sizesWidths.length ? Math.max(...sizesWidths) : props.width
+})
 const theSrc = computed(() => {
   if (!props.src) return ""
   return props.src
-    .replace("{width}", props.width)
+    .replace("{width}", requestWidth.value)
     .replace("{quality}", props.quality)
     .replace("{format}", props.format)
 })
@@ -232,8 +244,9 @@ const srcset = computed(() => {
     let lastImage = false
     for (const size of props.srcset) {
       /* continue if it is NOT the lastImage and the image has more pixels than its rendered area */
-      if (!lastImage && props.maxWidth > getDimensions().width) {
-        let width = Math.round(getDimensions().width * size)
+      const baseWidth = props.sizes ? requestWidth.value : getDimensions().width
+      if (!lastImage && props.maxWidth > baseWidth) {
+        let width = Math.round(baseWidth * size)
 
         /* the image no longer has enough resolution to support the next srcset, use its maximum size and make it the last on the srcset list */
         if (width > props.maxWidth) {
