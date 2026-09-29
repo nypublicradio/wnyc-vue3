@@ -9,6 +9,7 @@ import {
   useIsNetworkConnected,
   useCurrentUser,
   useIsApp,
+  useRecentlyFocused,
 } from "~/composables/states"
 import {
   checkIsFavorited,
@@ -195,6 +196,9 @@ const eventDate = ref(props.data?.startDatetime)
 
 const reactiveData = toRef(props, "data")
 
+const dotMenuRef = ref(null)
+
+
 // set dynamic route
 const dynamicRoute = computed(() =>
   dynamicNavigation(
@@ -267,6 +271,8 @@ onMounted(() => {
 
 // add item to favorites
 const handleAddToFavorites = (bucketItem) => {
+  const recentlyFocused = useRecentlyFocused()
+  recentlyFocused.value = dotMenuRef.value?.$el?.querySelector('button')
   // helper func for adding to favorites, also handles account prompt if not logged in
   addToFavorites2({
     item: bucketItem,
@@ -568,7 +574,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                 class="align-self-start"
               />
               <h2 v-if="isEvent" class="event-date">
-                {{ formatTime(eventDate, "MMMM d h:mm a") }}
+                {{ formatTime(eventDate, "MMMM d - h:mm a") }}
               </h2>
               <p v-if="props.showTitle" :class="props.showTitleClasses">
                 {{ props.data?.org ?? props.data?.showTitle }}
@@ -623,7 +629,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
             <div v-if="isEvent">
               <div class="flex flex-column gap-2">
                 <p class="text-md" style="word-break: break-word">
-                  {{ props.data.eventLocation }}
+                  {{ props.data.venueName }}
                 </p>
               </div>
             </div>
@@ -681,6 +687,7 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
                     label=""
                     @changeEmit="onMenuChange"
                     class="z-1"
+                    ref="dotMenuRef"
                   >
                     <template #header-bottom>
                       <div>

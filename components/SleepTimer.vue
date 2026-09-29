@@ -30,7 +30,6 @@ if (process.client) {
 const { initBackgroundMode } = useBackgroundMode()
 
 const timeLengthOptions = [
-  { id: "1 minutes", label: "1 minutes", value: 10 },
   { id: "15 minutes", label: "15 minutes", value: 900 },
   { id: "30 minutes", label: "30 minutes", value: 1800 },
   { id: "45 minutes", label: "45 minutes", value: 2700 },
