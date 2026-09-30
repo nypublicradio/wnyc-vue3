@@ -87,7 +87,7 @@ const props = defineProps({
    * desired ratio of the image
    */
   ratio: {
-    default: () => [16, 9],
+    default: () => [3, 2],
     type: Array,
   },
   /**
