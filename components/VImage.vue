@@ -92,7 +92,8 @@ const imageVisibilityClass = computed(() => {
 
 // Use the simplified image dimensions composable
 const { width: imageWidth, height: imageHeight } = useVImageDimensions({
-  size: props.size,
+  size: props.size || props.sizes,
+  ratio: props.ratio,
 })
 const { getCmsSourceAndImageTemplate } = useVImage()
 

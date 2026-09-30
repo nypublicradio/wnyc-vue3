@@ -8,7 +8,7 @@ const props = defineProps({
   loading: { default: "lazy", type: String },
   width: { default: null, type: Number },
   height: { default: null, type: Number },
-  ratio: { default: () => [1, 1], type: Array },
+  ratio: { default: () => [3, 2], type: Array },
 })
 
 const emit = defineEmits(["image-load", "image-error"])

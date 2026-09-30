@@ -2,6 +2,28 @@ import { ref, watch } from "vue"
 import { useBreakpoints } from "~/composables/useBreakpoints"
 
 /**
+ * Convert a nuxt/image `sizes` string into the breakpoint size object format
+ * @param {string} sizes - e.g. "xs:327, sm:528, md:672" or "xs:390px md:768px"
+ * @param {Array} ratio - [width, height] ratio used to calculate each height, defaults to [1, 1]
+ * @returns {Object} - e.g. { xs: [327, 327], sm: [528, 528], md: [672, 672] }
+ */
+function convertSizesToSize (sizes, ratio) {
+    const [ratioWidth, ratioHeight] = ratio?.length === 2 ? ratio : [1, 1]
+    const sizeConfig = {}
+
+    // entries can be separated by commas and/or spaces
+    sizes.split(/[\s,]+/).filter(Boolean).forEach((entry) => {
+        const [breakpoint, value] = entry.split(':')
+        // skip entries without a breakpoint or with non-pixel units (vw, %) that can't be converted
+        if (!breakpoint || !/^\d+(px)?$/.test(value ?? '')) return
+        const width = parseInt(value)
+        sizeConfig[breakpoint] = [width, Math.round(width * ratioHeight / ratioWidth)]
+    })
+
+    return sizeConfig
+}
+
+/**
  * Get the size for the current breakpoint with smart defaults
  * @param {Object|Array} sizeConfig - Size configuration object or legacy array
  * @param {string} breakpoint - Current breakpoint name
@@ -49,11 +71,16 @@ function getSizeForBreakpoint (sizeConfig, breakpoint) {
  * @param {Object|Array} options.size - Responsive size configuration:
  *   - Object format: { xxs: [100,100], xs: [112,112], md: [600,400] } - different sizes per breakpoint
  *   - Array format (legacy): [3, 2] - converted to ratio-based default size
+ *   - String format (nuxt/image sizes): "xs:327, sm:528, md:672" - converted to object format using the ratio
  *   - Default: {} (uses [300,200] default size)
+ * @param {Array} options.ratio - [width, height] ratio used when converting a sizes string, defaults to [1, 1]
  * @returns {Object} - Reactive width, height, and current breakpoint
  */
 export function useVImageDimensions (options = {}) {
-    const { size = {} } = options
+    const { ratio } = options
+    const size = typeof options.size === 'string'
+        ? convertSizesToSize(options.size, ratio)
+        : options.size ?? {}
 
     // Use the shared breakpoint composable
     const { currentBreakpoint } = useBreakpoints()
