@@ -20,7 +20,7 @@ const story = (newsdate?: string | null) => ({
     itemType: 'article',
     estimatedDuration: 60,
     appearances: { authors: [] },
-    publishAt: '2000-01-01T05:00:00Z',
+    publishAt: '2000-01-01T00:00:00',
     newsdate,
   },
 })
@@ -32,12 +32,14 @@ describe.each([
   it('adds a detail-only editorial date and preserves release timestamps', async () => {
     const result = await normalize(story('1993-06-27T00:00:00-04:00'))
     expect(result.displayDate).toBe(normalize === normalizePublisherPage ? '1993-06-27' : undefined)
-    expect(result.publicationDate).toEqual(new Date('2000-01-01T05:00:00Z'))
+    expect(result.releaseDateTime).toBe(normalize === normalizePublisherPage ? '2000-01-01T05:00:00.000Z' : undefined)
+    expect(result.displayDateTime).toBe(normalize === normalizePublisherPage ? '1993-06-27T04:00:00.000Z' : undefined)
+    expect(result.publicationDate).toEqual(new Date('2000-01-01T00:00:00'))
     // Preserve the legacy release timestamp for installed apps and analytics.
     expect(result.meta.firstPublishedAt).toEqual(result.publicationDate)
     expect(result.meta.slug).toBe('robert-kiley')
     if (normalize === normalizePublisherPage) expect(getStoryDetailDate(result, () => 'release')).toBe('Jun 27, 1993')
-    if (normalize === normalizePublisherPage) expect(result.sortDate).toBe('2000-01-01T05:00:00Z')
+    if (normalize === normalizePublisherPage) expect(result.sortDate).toBe('2000-01-01T00:00:00')
   })
 
   it('formats a serialized response with the real frontend date helpers', async () => {
@@ -59,13 +61,15 @@ describe.each([
 
   it.each([undefined, null, '', 'Episode 12', '1900-01-01T00:00:00Z', '2026-02-30'])('falls back to publishAt when newsdate is %s', async (newsdate) => {
     const result = await normalize(story(newsdate))
-    expect(result.publicationDate).toEqual(new Date('2000-01-01T05:00:00Z'))
+    expect(result.publicationDate).toEqual(new Date('2000-01-01T00:00:00'))
     expect(result.meta.firstPublishedAt).toEqual(result.publicationDate)
+    expect(result.displayDate).toBeUndefined()
+    expect(getStoryDetailDate(result, () => 'legacy')).toBe(normalize === normalizePublisherPage ? 'Jan 1, 2000' : 'legacy')
   })
 
   it('falls back when the editorial date is malformed', async () => {
     const result = await normalize(story('not-a-date'))
-    expect(result.publicationDate).toEqual(new Date('2000-01-01T05:00:00Z'))
+    expect(result.publicationDate).toEqual(new Date('2000-01-01T00:00:00'))
     expect(result.displayDate).toBeUndefined()
   })
 
@@ -93,5 +97,15 @@ describe('curated date overrides', () => {
       }] } },
     }])
     expect(block.value.list.listItems[0].publicationDate).toEqual(new Date('1993-06-27T12:00:00'))
+  })
+})
+
+describe('unknown detail release dates', () => {
+  it.each(['1900-01-01T00:00:00', '1900-01-01T00:00:00Z', 'invalid'])('hides the date for %s without changing legacy fields', async publishAt => {
+    const data = story()
+    data.attributes.publishAt = publishAt
+    const result = JSON.parse(JSON.stringify(await normalizePublisherPage(data)))
+    expect(result.releaseDateTime).toBeNull()
+    expect(getStoryDetailDate(result, () => 'legacy')).toBeNull()
   })
 })

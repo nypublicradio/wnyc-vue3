@@ -27,6 +27,7 @@ import {
   getMinutes,
   trackClickEvent,
   getDate,
+  whenTime,
   togglePlayEpisode,
   checkIsFavorited,
   shareAPI,
@@ -65,6 +66,8 @@ const dotMenuRef = ref(null)
 
 // Use the shared breakpoint composable
 const { breakpoint } = useBreakpoints()
+const storyDateLabel = computed(() => getStoryDetailDate(props.episodeData, getDate, whenTime))
+
 const isMobileBtn = computed(() => breakpoint("<md"))
 
 const cmsSource = computed(
@@ -393,13 +396,13 @@ const getDotMenuItems = (bucketItem) => {
               <VByline :authors="props.episodeData?.authors" />
             </div>
             <!-- :hide-pipe="!!!props.episodeData?.showTitle" -->
-            <PipeData class="text-sm">
+            <PipeData class="text-sm" :hide-pipe="!storyDateLabel">
               <template #left>{{
                 props.episodeData?.showTitle || storySource
               }}</template>
               <template #right>
                 <span class="nobreak inline-flex gap-1"
-                  >{{ getStoryDetailDate(props.episodeData, getDate) }}
+                  >{{ storyDateLabel }}
                 </span>
               </template>
             </PipeData>
