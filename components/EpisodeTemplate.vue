@@ -1,4 +1,5 @@
 <script setup>
+import { getStoryDetailDate } from "~/utilities/storyDate"
 import {
   useCurrentUser,
   useCurrentEpisode,
@@ -398,7 +399,7 @@ const getDotMenuItems = (bucketItem) => {
               }}</template>
               <template #right>
                 <span class="nobreak inline-flex gap-1"
-                  >{{ getDate(props.episodeData, "LLL d") }}
+                  >{{ getStoryDetailDate(props.episodeData, getDate) }}
                 </span>
               </template>
             </PipeData>

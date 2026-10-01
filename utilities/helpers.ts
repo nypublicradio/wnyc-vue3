@@ -1,5 +1,4 @@
 import { format, formatDistanceToNowStrict } from "date-fns"
-import { getStoryDate } from "~/utilities/storyDate"
 import { StatusBar, Style } from "@capacitor/status-bar"
 import { Device, type DeviceInfo } from '@capacitor/device'
 import { useAuth } from "~/composables/useAuth"
@@ -243,7 +242,31 @@ export function howLongAgo (date) {
  * to get the desired date format for the header
  */
 export function getDate (data = null, formatString = "EEE, MMM do") {
-  return getStoryDate(data, formatString, whenTime)
+  // checks FIRST for meta.firstPublishedAt that is stored in the Supabase DB meta column when saving and history.
+  const date = data?.meta?.firstPublishedAt || data?.updatedDate || data?.publicationDate
+  if (date) {
+    const currentDate = new Date()
+    const inputDate = new Date(date)
+
+    // Check if it's the same day (year, month, and day)
+    const isSameDay =
+      currentDate.getFullYear() === inputDate.getFullYear() &&
+      currentDate.getMonth() === inputDate.getMonth() &&
+      currentDate.getDate() === inputDate.getDate()
+
+    if (isSameDay) {
+      return whenTime(date)
+    }
+
+    // Add year to format string if it's not the current year
+    if (currentDate.getFullYear() !== inputDate.getFullYear()) {
+      formatString = `${formatString}, yyyy`
+    }
+
+    return format(inputDate, formatString)
+  } else {
+    return format(new Date(), formatString)
+  }
 }
 
 /**
