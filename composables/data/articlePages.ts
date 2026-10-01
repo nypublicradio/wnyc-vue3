@@ -8,6 +8,7 @@ import { getWagtailRawBody } from "~/utilities/helpers"
 import { estimateMp3Duration } from '~/server/utils/duration'
 import axios from 'axios'
 import memoize from 'memoize'
+import { getPublisherDisplayDate, getPublisherTimestamp } from '~/utilities/publisherDate'
 
 // Simplecast article data interface
 interface SimplecastArticle {
@@ -561,6 +562,10 @@ export async function normalizePublisherPage (article: Record<string, any | unde
     contributingOrganizations: article.attributes?.producingOrganizations,
     sponsors: undefined,
 
+    // Additive field: keep release timestamps unchanged for installed apps and analytics.
+    displayDate: getPublisherDisplayDate(article.attributes.newsdate),
+    displayDateTime: typeof article.attributes.newsdate === "string" && article.attributes.newsdate.length > 10 ? getPublisherTimestamp(article.attributes.newsdate)?.toISOString() : undefined,
+    releaseDateTime: getPublisherTimestamp(article.attributes.publishAt)?.toISOString() ?? null,
     publicationDate: article.attributes.publishAt && new Date(article.attributes.publishAt),
     updatedDate: undefined, //Does this exist in publisher?
     showAsFeature: undefined, //Does this exist in publisher?

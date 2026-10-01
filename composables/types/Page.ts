@@ -94,6 +94,9 @@ export interface ArticlePage extends Page {
     firstPublishedAt: string
     slug: string
   }
+  displayDate?: string
+  displayDateTime?: string
+  releaseDateTime?: string | null
   publicationDate: Date
   publishAt: Date
   updatedDate: Date | null
