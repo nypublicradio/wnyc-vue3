@@ -8,6 +8,7 @@ import { getWagtailRawBody } from "~/utilities/helpers"
 import { estimateMp3Duration } from '~/server/utils/duration'
 import axios from 'axios'
 import memoize from 'memoize'
+import { getPublisherPublicationDate } from '~/utilities/storyDate'
 
 // Simplecast article data interface
 interface SimplecastArticle {
@@ -528,6 +529,8 @@ export async function normalizePublisherPage (article: Record<string, any | unde
       }
     })
   }
+  // Publisher's newsdate is the editorial/archive date; publishAt is the release time.
+  const publicationDate = getPublisherPublicationDate(article.attributes)
   const authors = article.attributes.appearances?.authors.map(normalizeAuthor)
   const config = useRuntimeConfig()
   // Remove publisher author fields because we don't haven't built out the author pages for publisher
@@ -550,7 +553,7 @@ export async function normalizePublisherPage (article: Record<string, any | unde
     leadImage: article.attributes.slideshow?.[0],
     leadGallery: article.attributes.slideshow?.[0],
     meta: {
-      firstPublishedAt: article.attributes.publishAt && new Date(article.attributes.publishAt),
+      firstPublishedAt: publicationDate,
       slug: article.attributes.slug,
     },
     title: article.attributes.title,
@@ -561,7 +564,7 @@ export async function normalizePublisherPage (article: Record<string, any | unde
     contributingOrganizations: article.attributes?.producingOrganizations,
     sponsors: undefined,
 
-    publicationDate: article.attributes.publishAt && new Date(article.attributes.publishAt),
+    publicationDate,
     updatedDate: undefined, //Does this exist in publisher?
     showAsFeature: undefined, //Does this exist in publisher?
     sensitiveContent: undefined, //Does this exist in publisher?
@@ -618,6 +621,7 @@ export async function normalizePublisherListItem (article: Record<string, any | 
       }
     })
   }
+  const publicationDate = getPublisherPublicationDate(article.attributes)
   return Promise.resolve(Object.assign({}, await normalizePage(article), {
     image: article.type === 'show' || article.type === 'tout' ? article.attributes.image : article.attributes.imageMain,
     imageFullWidth: article.type === 'show' || article.type === 'tout' ? article.attributes.image?.w : article.attributes.imageMain?.w,
@@ -625,14 +629,14 @@ export async function normalizePublisherListItem (article: Record<string, any | 
     type: article.type === 'show' || article.type === 'tout' ? article.type : article.attributes.itemType,
     cmsSource: cmsSources.PUBLISHER,
     meta: {
-      firstPublishedAt: article.attributes.publishAt && new Date(article.attributes.publishAt),
+      firstPublishedAt: publicationDate,
       slug: article.attributes.slug,
     },
     title: article.attributes.title,
     tease: article.attributes.tease,
     authors: article.attributes.appearances?.authors.map(normalizeAuthor),
     contributingOrganizations: article.attributes?.producingOrganizations,
-    publicationDate: article.attributes.publishAt && new Date(article.attributes.publishAt),
+    publicationDate,
     url: article.attributes.url,
     shareUrl: article.attributes.url,
     rawBody: null,
