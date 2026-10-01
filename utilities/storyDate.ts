@@ -4,9 +4,11 @@ import { formatInTimeZone, zonedTimeToUtc } from 'date-fns-tz'
 const PUBLISHER_TIME_ZONE = 'America/New_York'
 type Timestamp = string | Date
 
-// Publisher timestamps without an offset are New York wall time, not viewer-local time.
+// Only offsetless ISO timestamps are New York wall time; GMT newscast dates already identify an instant.
 function parsePublisherTimestamp (value: Timestamp): Date {
-  return typeof value === 'string' && !/(?:Z|[+-]\d{2}:?\d{2})$/i.test(value)
+  const isOffsetlessIso = typeof value === 'string'
+    && /^\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?)?$/.test(value)
+  return isOffsetlessIso
     ? zonedTimeToUtc(value, PUBLISHER_TIME_ZONE)
     : new Date(value instanceof Date ? value.getTime() : value)
 }

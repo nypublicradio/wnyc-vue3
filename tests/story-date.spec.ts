@@ -13,7 +13,7 @@ describe('Publisher date display across server and viewer timezones', () => {
       const moduleUrl = pathToFileURL(resolve('utilities/storyDate.ts')).href
       const code = `
         import { getPublisherPublicationDate, getStoryDate } from ${JSON.stringify(moduleUrl)};
-        const dates = ['1993-06-27T00:00:00-04:00', '1993-06-27T00:00:00', '1993-06-27'];
+        const dates = ['1993-06-27T00:00:00-04:00', '1993-06-27T00:00:00', '1993-06-27', 'Sun, 27 Jun 1993 04:00:00 GMT'];
         const labels = dates.map(newsdate => {
           const publicationDate = getPublisherPublicationDate({ newsdate });
           const data = JSON.parse(JSON.stringify({ cmsSource: 'publisher', publicationDate, meta: { firstPublishedAt: publicationDate } }));
@@ -29,7 +29,7 @@ describe('Publisher date display across server and viewer timezones', () => {
       })
       expect(child.status, child.stderr).toBe(0)
       expect(JSON.parse(child.stdout)).toEqual([
-        ...Array.from({ length: 3 }, () => ({ instant: '1993-06-27T04:00:00.000Z', label: 'Jun 27, 1993' })),
+        ...Array.from({ length: 4 }, () => ({ instant: '1993-06-27T04:00:00.000Z', label: 'Jun 27, 1993' })),
         { instant: '2000-01-01T05:00:00.000Z', label: 'Jan 1, 2000' },
         { label: 'Jan 1, 2000' },
       ])
@@ -71,6 +71,24 @@ describe('Publisher date display across server and viewer timezones', () => {
     const data = { cmsSource: 'publisher', meta: { firstPublishedAt: '2026-10-01T04:00:00' } }
     expect(getStoryDate(data, 'LLL d', relativeTime)).toBe('4 hours ago')
     expect(relativeTime).toHaveBeenCalledWith(new Date('2026-10-01T08:00:00Z'))
+  })
+
+  it('preserves the GMT instant of a saved homepage newscast for relative time', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-10-01T12:00:00Z'))
+    const relativeTime = vi.fn(() => '2 hours ago')
+    const data = { cmsSource: 'publisher', meta: { firstPublishedAt: 'Thu, 01 Oct 2026 10:00:00 GMT' } }
+    expect(getStoryDate(data, 'LLL d', relativeTime)).toBe('2 hours ago')
+    expect(relativeTime).toHaveBeenCalledWith(new Date('2026-10-01T10:00:00Z'))
+  })
+
+  it('formats an older saved GMT newscast on its New York calendar day', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-10-01T12:00:00Z'))
+    const relativeTime = vi.fn()
+    const data = { cmsSource: 'publisher', meta: { firstPublishedAt: 'Thu, 01 Oct 2026 01:00:00 GMT' } }
+    expect(getStoryDate(data, 'LLL d', relativeTime)).toBe('Sep 30')
+    expect(relativeTime).not.toHaveBeenCalled()
   })
 
   it('keeps same-day relative time for non-Publisher sources', () => {
