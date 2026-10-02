@@ -70,7 +70,7 @@ const submitForm = async () => {
     //success with Vuelidate
     const sbError = await innerClient.value.auth.signInWithOtp(
       { email: formData.email },
-      { redirectTo: innerConfig.value.supabaseAuthSignInRedirectTo }
+      { redirectTo: innerConfig.value.public.supabaseAuthSignInRedirectTo }
     )
     if (!sbError.error) {
       //success with Supabase
@@ -98,11 +98,20 @@ const submitForm = async () => {
       </Message>
     </template>
     <template v-if="sbSuccessMsg">
-      <Message class="center mb-4" severity="success" :closable="false" icon="ci-check">
+      <Message
+        class="center mb-4"
+        severity="success"
+        :closable="false"
+        icon="ci-check"
+      >
         <span v-html="sbSuccessMsg"></span>
       </Message>
     </template>
-    <form v-if="formData && !sbSuccessMsg" novalidate @submit.prevent="submitForm">
+    <form
+      v-if="formData && !sbSuccessMsg"
+      novalidate
+      @submit.prevent="submitForm"
+    >
       <div class="mb-4">
         <InputText
           v-model="formData.email"
