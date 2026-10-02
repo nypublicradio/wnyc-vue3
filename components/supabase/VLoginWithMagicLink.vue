@@ -115,7 +115,7 @@ const submitForm = async () => {
       <div class="mb-4">
         <InputText
           v-model="formData.email"
-          type="text"
+          type="email"
           name="email"
           class="w-full"
           :class="{ 'p-invalid': v$.email.$error && v$.email.$invalid }"
