@@ -5,6 +5,7 @@ import Button from "primevue/button"
 import InputText from "primevue/inputtext"
 import Message from "primevue/message"
 import { computed, reactive, ref } from "vue"
+import { useAuth } from "~/composables/useAuth"
 const props = defineProps({
   client: {
     default: null,
@@ -34,6 +35,7 @@ const emit = defineEmits(["submit-click", "submit-error", "submit-success"])
 
 const innerClient = ref(props.client)
 const innerConfig = ref(props.config)
+const { getOAuthRedirectUrl } = useAuth()
 
 // fallback incase the parent component doesn't pass in the client and config
 if (!props.client && !props.config) {
@@ -68,10 +70,10 @@ const submitForm = async () => {
   v$.value.$validate()
   if (!v$.value.$error) {
     //success with Vuelidate
-    const sbError = await innerClient.value.auth.signInWithOtp(
-      { email: formData.email },
-      { redirectTo: innerConfig.value.public.supabaseAuthSignInRedirectTo }
-    )
+    const sbError = await innerClient.value.auth.signInWithOtp({
+      email: formData.email,
+      options: { emailRedirectTo: getOAuthRedirectUrl() },
+    })
     if (!sbError.error) {
       //success with Supabase
       emit("submit-success")
