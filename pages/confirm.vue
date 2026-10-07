@@ -31,6 +31,13 @@ onMounted(async () => {
     await nextTick()
     try {
       await getAndSetUserProfile()
+      globalToast.value = {
+        severity: "success",
+        summary: "Sign-in successful",
+        detail: "You have successfully signed in.",
+        life: 6000,
+        closeable: true,
+      }
     } catch (error) {
       console.warn(
         "Profile setup (getAndSetUserProfile) incomplete on first login, will retry on home:",
