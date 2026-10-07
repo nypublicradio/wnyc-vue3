@@ -116,7 +116,7 @@ onMounted(() => {
 // add item to favorites
 const handleAddToFavorites = () => {
   const recentlyFocused = useRecentlyFocused()
-  recentlyFocused.value = dotMenuRef.value?.$el?.querySelector('button')
+  recentlyFocused.value = dotMenuRef.value?.$el?.querySelector("button")
   // helper func for adding to favorites, also handles account prompt if not logged in
   addToFavorites2({
     item: currentEpisode.value,
@@ -495,7 +495,7 @@ const moreFromClick = async () => {
       "
       :src="currentEpisode?.image || currentEpisode?.image?.template"
       :alt="`${currentEpisode?.title} featured image`"
-      sizes="xs:327, sm:528, md:672"
+      sizes="xs:327 sm:672"
       class="card-feature-image"
     >
       <template #caption>
@@ -519,7 +519,7 @@ const moreFromClick = async () => {
       "
       :src="{ template: currentEpisode.onTodaysShowImageTemplate }"
       :alt="`${currentEpisode.title} featured image`"
-      sizes="xs:327, sm:528, md:672"
+      sizes="xs:327 sm:672"
       class="show-feature-image"
     >
       <template #caption>

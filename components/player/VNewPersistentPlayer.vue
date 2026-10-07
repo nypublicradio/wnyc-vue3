@@ -138,7 +138,7 @@ const props = defineProps({
    * left image representing the audio
    */
   imageSize: {
-    default: 112,
+    default: 80,
     type: Number,
   },
   /**
