@@ -10,6 +10,7 @@ import {
   useAccountPromptSideBar,
   useAccountDeleteSideBar,
   useSleepTimerSideBar,
+  usePlaylistQueueSideBar,
 } from "~/composables/states"
 import useManageScrollPosition from "~/composables/useManageScrollPosition"
 import { useSwipe } from "@vueuse/core"
@@ -24,6 +25,7 @@ const editProfileSideBar = useEditProfileSideBar()
 const accountPromptSideBar = useAccountPromptSideBar()
 const accountDeleteSideBar = useAccountDeleteSideBar()
 const sleepTimerSideBar = useSleepTimerSideBar()
+const playlistQueueSideBar = usePlaylistQueueSideBar()
 const { saveScrollPosition, restoreScrollPosition } = useManageScrollPosition()
 
 const settingsSideBarBrowserRef = ref(null)
@@ -265,6 +267,26 @@ watch(settingsSideBarBrowser, async (newVal) => {
       "
     >
       <SleepTimer />
+    </Drawer>
+
+    <Drawer
+      v-model:visible="playlistQueueSideBar"
+      :baseZIndex="10003"
+      position="bottom"
+      class="w-full hideX no-safe-area h-auto"
+      :class="[{ hide: !playlistQueueSideBar }]"
+      id="playlist-queue-sidebar"
+      @hide="
+        () => {
+          trackClickEvent(
+            'Click Tracking - Playlist Queue Sidebar Close Button',
+            'Playlist Queue Sidebar',
+            `close sidebar`
+          )
+        }
+      "
+    >
+      <PlaylistQueue />
     </Drawer>
   </div>
 </template>

@@ -103,6 +103,9 @@ export const useAccountPromptSideBar = () => useState('useAccountPromptSideBar',
 // delete an account sidebar state
 export const useAccountDeleteSideBar = () => useState('useAccountDeleteSideBar', () => false)
 
+// delete an account sidebar state
+export const usePlaylistQueueSideBar = () => useState('usePlaylistQueueSideBar', () => false)
+
 // global state for the network connection
 export const useIsNetworkConnected = () => useState('useIsNetworkConnected', () => true)
 

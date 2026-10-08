@@ -7,6 +7,7 @@ import Button from "primevue/button"
 import { nextTick, onMounted, ref, watch } from "vue"
 import { useIsApp } from "~/composables/states"
 import { toggleNativePullToRefresh } from "~/utilities/helpers"
+import { usePlaylistQueueSideBar } from "~/composables/states"
 const props = defineProps({
   /**
    * get if the stream is buffering / loading
@@ -297,6 +298,7 @@ const emit = defineEmits([
   "swipe-down",
 ])
 const isApp = useIsApp()
+const playlistQueueSideBar = usePlaylistQueueSideBar()
 const isStreamLoading = computed(() => props.isStreamLoading)
 const isEpisodePlaying = computed(() => props.isEpisodePlaying)
 const isLiveStream = computed(() => props.isLiveStream)
@@ -311,9 +313,6 @@ const playButtonRef = ref(null)
 const isMinimized = ref(false)
 const isExpanded = ref(false)
 const isMounted = ref(false)
-
-// queue popover reference
-const queuePopoverRef = ref()
 
 // expanded player content scrolling container
 const expandedContentHolder = ref(null)
@@ -530,10 +529,8 @@ const handleClickAnywhere = (e) => {
 }
 
 // exposed method to handle the queue toggle
-const toggleQueue = (event) => {
-  if (queuePopoverRef.value) {
-    queuePopoverRef.value.toggle(event)
-  }
+const togglePlaylistQueue = () => {
+  playlistQueueSideBar.value = !playlistQueueSideBar.value
 }
 
 onMounted(async () => {
@@ -697,13 +694,10 @@ defineExpose({
                 severity="secondary"
                 variant="text"
                 title="Queue"
-                @click="toggleQueue"
+                @click="togglePlaylistQueue"
               >
                 <slot name="queue"><i class="pi pi-list"></i></slot>
               </Button>
-              <Popover ref="queuePopoverRef">
-                <div>Queue component here</div>
-              </Popover>
               <Button
                 v-if="props.canExpand"
                 class="flex-none p-button-icon-only p-button-secondary"
