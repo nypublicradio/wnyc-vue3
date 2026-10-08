@@ -312,6 +312,9 @@ const isMinimized = ref(false)
 const isExpanded = ref(false)
 const isMounted = ref(false)
 
+// queue popover reference
+const queuePopoverRef = ref()
+
 // expanded player content scrolling container
 const expandedContentHolder = ref(null)
 
@@ -526,6 +529,13 @@ const handleClickAnywhere = (e) => {
   }
 }
 
+// exposed method to handle the queue toggle
+const toggleQueue = (event) => {
+  if (queuePopoverRef.value) {
+    queuePopoverRef.value.toggle(event)
+  }
+}
+
 onMounted(async () => {
   // keyboard accessibility
   window.addEventListener("keydown", (event) => {
@@ -682,6 +692,18 @@ defineExpose({
                 @volume-toggle-mute="volumeToggleMute"
                 @volume-change="volumeChange"
               />
+              <Button
+                class="flex-none p-button-icon-only p-button-secondary"
+                severity="secondary"
+                variant="text"
+                title="Queue"
+                @click="toggleQueue"
+              >
+                <slot name="queue"><i class="pi pi-list"></i></slot>
+              </Button>
+              <Popover ref="queuePopoverRef">
+                <div>Queue component here</div>
+              </Popover>
               <Button
                 v-if="props.canExpand"
                 class="flex-none p-button-icon-only p-button-secondary"

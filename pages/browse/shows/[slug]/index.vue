@@ -193,7 +193,7 @@ useSocialMetaOverrides(show)
           </div>
         </div>
       </section>
-      <!-- <pre>{{ show }}</pre> -->
+      <!--     <pre>{{ show }}</pre> -->
       <section class="py-4">
         <div class="grid">
           <div class="col-fixed hidden xxl:block w-20rem"></div>

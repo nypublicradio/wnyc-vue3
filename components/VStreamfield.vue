@@ -178,6 +178,7 @@ onMounted(() => {
           "
           :class="verticalSpacingClasses"
           :id="slugify(block?.value?.label)"
+          is-curated-list
         >
           <component
             :is="getLayoutComponent(getCuratedListLayout(block))"
