@@ -135,6 +135,10 @@ export default defineNuxtConfig({
 
   app: {
     head: {
+      // viewport-fit=cover must be in the initial HTML (app.vue's useHead adds it too late):
+      // Capacitor 8's SystemBars checks it at first paint on Android to decide between
+      // edge-to-edge with CSS safe-area insets and padding the WebView natively.
+      viewport: "viewport-fit=cover, width=device-width, initial-scale=1",
       link: [
         // Preconnect only to origins requested early in the load. Others (supabase,
         // api.wnyc.org, api/cms.prod.nypr.digital) resolved too late to help and were

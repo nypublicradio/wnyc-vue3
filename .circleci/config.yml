@@ -209,7 +209,7 @@ jobs:
           path: ios/App/output/scan
   android:
     docker: 
-      - image: cimg/android:2023.07
+      - image: cimg/android:2026.08.1
     parameters:
       FASTLANE_LANE:
         type: string
@@ -254,7 +254,6 @@ jobs:
           command: |
             # Force NUXT_SSR=false for mobile builds (rename_env_vars.sh may override from context)
             export NUXT_SSR=false
-            patch node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/CapacitorWebView.java -i kludge/BackgroundPlay.diff
             npm run generate-splash
             npm run generate
             npx cap sync android
