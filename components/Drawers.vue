@@ -286,7 +286,7 @@ watch(settingsSideBarBrowser, async (newVal) => {
         }
       "
     >
-      <section class="playlist-queue">
+      <section class="playlist-queue p-0">
         <PlaylistQueue />
       </section>
     </Drawer>
@@ -381,6 +381,11 @@ watch(settingsSideBarBrowser, async (newVal) => {
 }
 #playlist-queue-sidebar.p-drawer {
   background-color: #ffffff;
+  .p-drawer-content {
+    max-width: $thinContentWidth;
+    max-height: 94dvh;
+    overflow-y: auto;
+  }
   .p-drawer-header {
     .p-drawer-close-button {
       margin-left: auto;

@@ -35,9 +35,9 @@ const handleRemove = (item: PlaylistItem) => {
 }
 </script>
 <template>
-  <div class="root px-3">
+  <div class="root">
     <!-- rows are not selectable: drag the handle to reorder, use the trash button to remove, and the MediaCard plays/navigates as normal -->
-    <h2 class="mb-4">Playlist</h2>
+    <h2 class="mb-4 ml-4 md: ml-0">Playlist</h2>
     <DataTable
       v-if="playlist.items.length"
       :value="playlist.items"
@@ -47,20 +47,20 @@ const handleRemove = (item: PlaylistItem) => {
       class="playlist-queue-table"
       @row-reorder="handleReorder"
     >
-      <Column rowReorder class="w-3rem" />
+      <Column rowReorder class="w-1rem pr-0" />
       <Column>
         <template #body="{ data }">
           <MediaCard
             :data="data"
             isHorizontal
-            imgCol="w-7rem"
-            :size="{ xs: [112, 112], md: [112, 112] }"
+            imgCol="xs:w-4rem md:w-8rem"
+            :size="{ xs: [112, 112], md: [130, 130] }"
             :allowVerticalEffect="false"
             @on-click="playlistQueueSideBar = false"
           />
         </template>
       </Column>
-      <Column class="w-3rem">
+      <Column class="w-1rem pl-0 pr-1">
         <template #body="{ data }">
           <!-- the playing item can't be removed, otherwise the playlist loses track of what plays next -->
           <Button
@@ -81,13 +81,23 @@ const handleRemove = (item: PlaylistItem) => {
 <style lang="scss" scoped>
 .root {
   padding-bottom: calc($playerHeightBrowser + 40px);
+  padding-left: 2rem;
+  padding-right: 2rem;
+  @include media("<md") {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 .playlist-queue-table {
+  .p-datatable-table-container {
+    overflow: visible;
+  }
   :deep(.p-datatable-tbody > tr) {
     background: transparent;
   }
   :deep(.p-datatable-tbody > tr.is-playing) {
-    background: var(--p-datatable-row-selected-background);
+    //background: var(--p-datatable-row-selected-background);
+    background: var(--p-surface-25);
   }
 }
 </style>
