@@ -273,7 +273,7 @@ watch(settingsSideBarBrowser, async (newVal) => {
       v-model:visible="playlistQueueSideBar"
       :baseZIndex="10003"
       position="bottom"
-      class="w-full hideX no-safe-area h-auto"
+      class="w-full h-auto style-mode-dark"
       :class="[{ hide: !playlistQueueSideBar }]"
       id="playlist-queue-sidebar"
       @hide="
@@ -286,7 +286,9 @@ watch(settingsSideBarBrowser, async (newVal) => {
         }
       "
     >
-      <PlaylistQueue />
+      <section class="playlist-queue">
+        <PlaylistQueue />
+      </section>
     </Drawer>
   </div>
 </template>
@@ -376,5 +378,13 @@ watch(settingsSideBarBrowser, async (newVal) => {
 }
 #account-prompt-sidebar.p-drawer .p-drawer-header {
   justify-content: right;
+}
+#playlist-queue-sidebar.p-drawer {
+  background-color: #101012;
+  .p-drawer-header {
+    .p-drawer-close-button {
+      margin-left: auto;
+    }
+  }
 }
 </style>

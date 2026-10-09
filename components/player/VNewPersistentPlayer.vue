@@ -693,10 +693,10 @@ defineExpose({
                 class="flex-none p-button-icon-only p-button-secondary"
                 severity="secondary"
                 variant="text"
-                title="Queue"
+                title="Playlist Queue"
                 @click="togglePlaylistQueue"
               >
-                <slot name="queue"><i class="pi pi-list"></i></slot>
+                <slot name="playlist"><i class="pi pi-list"></i></slot>
               </Button>
               <Button
                 v-if="props.canExpand"
