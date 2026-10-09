@@ -4,6 +4,36 @@ import Aura from "@primevue/themes/aura"
 
 import { definePreset } from "@primevue/themes"
 
+// Aura's accordion color tokens. Used for both color schemes so they are also declared under the .style-mode-dark selector.
+// Otherwise they are only declared on :root, resolve to the light values there, and nested .style-mode-dark containers can't change them.
+const accordionColorTokens = {
+  panel: {
+    borderColor: "{content.border.color}",
+  },
+  header: {
+    color: "{text.muted.color}",
+    hoverColor: "{text.color}",
+    activeColor: "{text.color}",
+    activeHoverColor: "{text.color}",
+    borderColor: "{content.border.color}",
+    background: "{content.background}",
+    hoverBackground: "{content.background}",
+    activeBackground: "{content.background}",
+    activeHoverBackground: "{content.background}",
+    toggleIcon: {
+      color: "{text.muted.color}",
+      hoverColor: "{text.color}",
+      activeColor: "{text.color}",
+      activeHoverColor: "{text.color}",
+    },
+  },
+  content: {
+    borderColor: "{content.border.color}",
+    background: "{content.background}",
+    color: "{text.color}",
+  },
+}
+
 const MyPreset = definePreset(Aura, {
   primitive: {
     borderRadius: {
@@ -689,6 +719,12 @@ const MyPreset = definePreset(Aura, {
     },
   },
   components: {
+    accordion: {
+      colorScheme: {
+        light: accordionColorTokens,
+        dark: accordionColorTokens,
+      },
+    },
     breadcrumb: {
       root: {
         padding: "0",

@@ -10,6 +10,7 @@ import {
   playLocalMp3,
 } from "~/utilities/helpers"
 import { mediaTypes } from "~/composables/globals"
+import { usePlaylistQueue } from "~/composables/usePlaylistQueue"
 
 // Function to initialize continuous play feature.
 export const useContinuousPlay = () => {
@@ -18,6 +19,7 @@ export const useContinuousPlay = () => {
   const currentEpisode = useCurrentEpisode()
   const isLiveStream = useIsLiveStream()
   const currentUser = useCurrentUserProfile()
+  const { playNextInPlaylist } = usePlaylistQueue()
 
   // Function to initialize continuous play feature. 
   const initContinuousPlay = () => {
@@ -28,6 +30,9 @@ export const useContinuousPlay = () => {
 
       // slight delay to allow the player to close before the live stream starts
       setTimeout(() => {
+        // play the next item in the playlist queue if there is one
+        if (playNextInPlaylist()) return
+
         // play the live stream audio bumper based on what is currently selected/last played, then when the bumper is done, play the live stream
         let checkInterval: ReturnType<typeof setInterval> | null = null
         const bumper = playLocalMp3(

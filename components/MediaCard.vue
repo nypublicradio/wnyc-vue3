@@ -37,6 +37,7 @@ import {
 import useSleepTimer from "~/composables/useSleepTimer"
 import { mediaTypes } from "~/composables/globals.ts"
 import { useEventData } from "~/composables/useEventData"
+import { PLAYLIST_QUEUE_PROVIDER_KEY } from "~/composables/usePlaylistQueue"
 const emit = defineEmits(["on-click", "on-delete-favorite"])
 
 const props = defineProps({
@@ -269,6 +270,24 @@ onMounted(() => {
   })
 })
 
+// when rendered inside a curated list, register this card so it can be part of the playlist queue
+const playlistProvider = inject(PLAYLIST_QUEUE_PROVIDER_KEY, null)
+if (playlistProvider) {
+  onMounted(() => {
+    watch(
+      reactiveData,
+      (newData, oldData) => {
+        if (oldData) playlistProvider.unregister(oldData)
+        if (newData) playlistProvider.register(newData)
+      },
+      { immediate: true }
+    )
+  })
+  onBeforeUnmount(() => {
+    if (reactiveData.value) playlistProvider.unregister(reactiveData.value)
+  })
+}
+
 // add item to favorites
 const handleAddToFavorites = (bucketItem) => {
   const recentlyFocused = useRecentlyFocused()
@@ -459,6 +478,8 @@ const handlePlayClick = () => {
   if (isDownloaded.value && !isNetworkConnected.value) {
     toggleDownloadedPlay(props.data)
   } else {
+    // populate the playlist queue with the curated list this card is in
+    playlistProvider?.startPlaylist(props.data)
     togglePlayEpisode(props.data)
     trackClickEvent(
       "Click Tracking - Play episode",
