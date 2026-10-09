@@ -180,11 +180,16 @@ onMounted(() => {
           :id="slugify(block?.value?.label)"
           is-curated-list
         >
-          <component
-            :is="getLayoutComponent(getCuratedListLayout(block))"
-            v-bind="getCuratedListComponentProps(block, index)"
-            @load-more="emit('curated-list-load-more', block)"
-          />
+          <CuratedListPlaylistProvider
+            :items="block?.value?.list?.listItems"
+            :source-key="`${block.id}-${index}`"
+          >
+            <component
+              :is="getLayoutComponent(getCuratedListLayout(block))"
+              v-bind="getCuratedListComponentProps(block, index)"
+              @load-more="emit('curated-list-load-more', block)"
+            />
+          </CuratedListPlaylistProvider>
           <div
             v-if="block?.value?.seeMoreLink"
             class="flex justify-content-center mt-4 w-full"

@@ -33,7 +33,11 @@ import {
 import useManageScrollPosition from "~/composables/useManageScrollPosition"
 import { initMediaSession } from "~/utilities/media-session.js"
 import { useContinuousPlay } from "~/composables/useContinuousPlay"
+import { usePlaylistQueue } from "~/composables/usePlaylistQueue"
 const { initContinuousPlay } = useContinuousPlay()
+// keep the playlist queue in sync with whatever is playing
+const { initPlaylistQueueWatcher } = usePlaylistQueue()
+initPlaylistQueueWatcher()
 // Initialize device platform on client-side only to avoid SSR errors
 const devicePlatform = ref("web")
 if (process.client) {

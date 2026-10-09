@@ -103,8 +103,21 @@ export const useAccountPromptSideBar = () => useState('useAccountPromptSideBar',
 // delete an account sidebar state
 export const useAccountDeleteSideBar = () => useState('useAccountDeleteSideBar', () => false)
 
-// delete an account sidebar state
+// playlist queue sidebar state
 export const usePlaylistQueueSideBar = () => useState('usePlaylistQueueSideBar', () => false)
+
+/**
+ * Global state for the playlist queue.
+ * sourceKey: the curated list that populated the playlist (null when it was populated by a single episode)
+ * items: the playlist items in play order
+ * currentId: the id of the playlist item that is playing (or last played), null when nothing in the playlist is selected
+ */
+export const usePlaylistQueueState = () =>
+  useState('usePlaylistQueueState', () => ({
+    sourceKey: null as string | null,
+    items: [] as Record<string, any>[],
+    currentId: null as string | null,
+  }))
 
 // global state for the network connection
 export const useIsNetworkConnected = () => useState('useIsNetworkConnected', () => true)

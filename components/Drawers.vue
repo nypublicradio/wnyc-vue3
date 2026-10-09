@@ -273,7 +273,7 @@ watch(settingsSideBarBrowser, async (newVal) => {
       v-model:visible="playlistQueueSideBar"
       :baseZIndex="10003"
       position="bottom"
-      class="w-full h-auto style-mode-dark"
+      class="w-full h-auto"
       :class="[{ hide: !playlistQueueSideBar }]"
       id="playlist-queue-sidebar"
       @hide="
@@ -380,7 +380,7 @@ watch(settingsSideBarBrowser, async (newVal) => {
   justify-content: right;
 }
 #playlist-queue-sidebar.p-drawer {
-  background-color: #101012;
+  background-color: #ffffff;
   .p-drawer-header {
     .p-drawer-close-button {
       margin-left: auto;
