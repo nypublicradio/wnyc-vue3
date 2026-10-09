@@ -1,7 +1,7 @@
 import { watch } from "vue"
 import type { InjectionKey } from "vue"
 import { useCurrentEpisode, usePlaylistQueueState } from "~/composables/states"
-import { togglePlayEpisode } from "~/utilities/helpers"
+import { togglePlayEpisode, hasAudio } from "~/utilities/helpers"
 
 type PlaylistItem = Record<string, any>
 
@@ -14,6 +14,27 @@ export interface PlaylistQueueProviderContext {
 
 export const PLAYLIST_QUEUE_PROVIDER_KEY: InjectionKey<PlaylistQueueProviderContext> =
   Symbol("playlistQueueProvider")
+
+// the mounted curated list providers keyed by their curated list block id, so components outside a curated list (e.g. ShowHeader) can start its playlist
+// only populated on the client (providers register on mount)
+const mountedCuratedListProviders = new Map<string, PlaylistQueueProviderContext>()
+
+export const registerCuratedListProvider = (
+  sourceKey: string,
+  provider: PlaylistQueueProviderContext
+) => {
+  mountedCuratedListProviders.set(sourceKey, provider)
+}
+
+export const unregisterCuratedListProvider = (
+  sourceKey: string,
+  provider: PlaylistQueueProviderContext
+) => {
+  // a newer provider for the same list may have mounted before this one unmounted
+  if (mountedCuratedListProviders.get(sourceKey) === provider) {
+    mountedCuratedListProviders.delete(sourceKey)
+  }
+}
 
 // ids can be numbers or strings depending on the source, so always compare them as strings
 const toId = (item: PlaylistItem | null | undefined) =>
@@ -43,6 +64,25 @@ export const usePlaylistQueue = () => {
     if (playlist.value.sourceKey === sourceKey && hasItem(clickedItem)) return
     // currentId is set by the watcher once the clicked item becomes the current episode
     playlist.value = { sourceKey, items: [...items], currentId: null }
+  }
+
+  // populate the playlist from a curated list block when one of its items is played from outside the list (e.g. ShowHeader)
+  const startPlaylistFromCuratedList = (
+    curatedList: PlaylistItem,
+    clickedItem: PlaylistItem
+  ) => {
+    const sourceKey = String(curatedList?.id)
+    // the curated list is rendered on this page, use its rendered items
+    const provider = mountedCuratedListProviders.get(sourceKey)
+    if (provider) {
+      provider.startPlaylist(clickedItem)
+      return
+    }
+    // the curated list is not rendered on this page, use all of its playable items
+    const playableItems = (curatedList?.value?.list?.listItems ?? []).filter(
+      (item: PlaylistItem) => hasAudio(item?.audio)
+    )
+    setPlaylistFromCuratedList(sourceKey, playableItems, clickedItem)
   }
 
   // append newly rendered curated list items (e.g. "Load More") to the playlist they populated
@@ -108,6 +148,7 @@ export const usePlaylistQueue = () => {
     playlist,
     isCurrentEpisode,
     setPlaylistFromCuratedList,
+    startPlaylistFromCuratedList,
     appendToPlaylist,
     removeFromPlaylist,
     reorderPlaylist,

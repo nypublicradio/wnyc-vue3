@@ -22,6 +22,7 @@ import {
   useIsNetworkConnected,
   useDeviceId,
   useCurrentUserProfile,
+  usePlaylistQueueState,
   //useGlobalToast,
 } from "~/composables/states"
 import {
@@ -59,6 +60,7 @@ const currentEpisodeProgress = useCurrentEpisodeProgress()
 const isNetworkConnected = useIsNetworkConnected()
 const deviceId = useDeviceId()
 const currentUser = useCurrentUserProfile()
+const playlistQueueState = usePlaylistQueueState()
 //const globalToast = useGlobalToast()
 
 const showPlayer = ref(false)
@@ -584,6 +586,24 @@ onMounted(async () => {
         </template>
         <template #skipAhead>
           <Next10 />
+        </template>
+        <template #header-content>
+          <div>
+            <Accordion
+              v-if="playlistQueueState.items.length > 1"
+              value="null"
+              class="mb-5 playlist-accordion"
+            >
+              <AccordionPanel value="0" style="border: none">
+                <AccordionHeader
+                  ><i class="pi pi-list"></i>Playlist</AccordionHeader
+                >
+                <AccordionContent>
+                  <PlaylistQueue header="" class="px-0 -mx-3" />
+                </AccordionContent>
+              </AccordionPanel>
+            </Accordion>
+          </div>
         </template>
         <template #expanded-content>
           <!-- <Button label="Cast" @click="handleCast" /> -->

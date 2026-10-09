@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { ref, computed, provide, watch } from "vue"
+import { ref, computed, provide, watch, onMounted, onBeforeUnmount } from "vue"
 import { hasAudio } from "~/utilities/helpers"
 import {
   usePlaylistQueue,
   PLAYLIST_QUEUE_PROVIDER_KEY,
+  registerCuratedListProvider,
+  unregisterCuratedListProvider,
 } from "~/composables/usePlaylistQueue"
+import type { PlaylistQueueProviderContext } from "~/composables/usePlaylistQueue"
 
 // wraps a curated list layout so the MediaCards rendered inside it can populate the playlist queue
 const props = defineProps({
@@ -13,7 +16,7 @@ const props = defineProps({
     type: Array as () => Record<string, any>[],
     default: () => [],
   },
-  // unique key for this curated list
+  // unique key for this curated list (the curated list block id)
   sourceKey: {
     type: String,
     required: true,
@@ -33,7 +36,7 @@ const playableItems = computed(() =>
   )
 )
 
-provide(PLAYLIST_QUEUE_PROVIDER_KEY, {
+const provider: PlaylistQueueProviderContext = {
   register: (item) => {
     renderedIds.value.push(String(item?.id))
   },
@@ -44,7 +47,14 @@ provide(PLAYLIST_QUEUE_PROVIDER_KEY, {
   startPlaylist: (item) => {
     setPlaylistFromCuratedList(props.sourceKey, playableItems.value, item)
   },
-})
+}
+
+// for the MediaCards rendered inside this curated list
+provide(PLAYLIST_QUEUE_PROVIDER_KEY, provider)
+
+// for components outside this curated list that play its items (e.g. ShowHeader)
+onMounted(() => registerCuratedListProvider(props.sourceKey, provider))
+onBeforeUnmount(() => unregisterCuratedListProvider(props.sourceKey, provider))
 
 // when more items are rendered (e.g. "Load More"), add them to the playlist if this list populated it
 // the initial render is skipped so coming back to the page does not re-add items the user removed

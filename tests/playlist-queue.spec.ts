@@ -14,11 +14,16 @@ vi.mock('~/composables/states', async () => {
 
 vi.mock('~/utilities/helpers', () => ({
   togglePlayEpisode: vi.fn(),
+  hasAudio: (audio: unknown) => typeof audio === 'string' && audio.trim() !== '',
 }))
 
 const { useCurrentEpisode, usePlaylistQueueState } = await import('~/composables/states')
 const { togglePlayEpisode } = await import('~/utilities/helpers')
-const { usePlaylistQueue } = await import('~/composables/usePlaylistQueue')
+const {
+  usePlaylistQueue,
+  registerCuratedListProvider,
+  unregisterCuratedListProvider,
+} = await import('~/composables/usePlaylistQueue')
 
 const currentEpisode = useCurrentEpisode() as Ref<Record<string, any> | null>
 const playlist = usePlaylistQueueState() as Ref<{
@@ -175,6 +180,46 @@ describe('playlist queue', () => {
 
     appendToPlaylist('list-a', [episode(2), episode(3)])
     expect(ids()).toEqual([1, 2, 3])
+  })
+
+  it('starts the playlist through the mounted provider of a curated list played from outside it', () => {
+    const { startPlaylistFromCuratedList } = usePlaylistQueue()
+    const provider = { register: vi.fn(), unregister: vi.fn(), startPlaylist: vi.fn() }
+    const curatedList = { id: 'block-1', value: { list: { listItems: [episode(1), episode(2)] } } }
+    registerCuratedListProvider('block-1', provider)
+
+    startPlaylistFromCuratedList(curatedList, episode(1))
+
+    expect(provider.startPlaylist).toHaveBeenCalledWith(episode(1))
+    unregisterCuratedListProvider('block-1', provider)
+  })
+
+  it('uses all playable items of a curated list that is not rendered on the page', () => {
+    const { startPlaylistFromCuratedList } = usePlaylistQueue()
+    const curatedList = {
+      id: 'block-2',
+      value: { list: { listItems: [episode(1), { id: 2, title: 'Article', audio: '' }, episode(3)] } },
+    }
+
+    startPlaylistFromCuratedList(curatedList, episode(1))
+
+    expect(ids()).toEqual([1, 3])
+    expect(playlist.value.sourceKey).toBe('block-2')
+  })
+
+  it('keeps a newer provider registered when an older one for the same list unmounts', () => {
+    const { startPlaylistFromCuratedList } = usePlaylistQueue()
+    const oldProvider = { register: vi.fn(), unregister: vi.fn(), startPlaylist: vi.fn() }
+    const newProvider = { register: vi.fn(), unregister: vi.fn(), startPlaylist: vi.fn() }
+    registerCuratedListProvider('block-3', oldProvider)
+    registerCuratedListProvider('block-3', newProvider)
+    unregisterCuratedListProvider('block-3', oldProvider)
+
+    startPlaylistFromCuratedList({ id: 'block-3' }, episode(1))
+
+    expect(newProvider.startPlaylist).toHaveBeenCalledWith(episode(1))
+    expect(oldProvider.startPlaylist).not.toHaveBeenCalled()
+    unregisterCuratedListProvider('block-3', newProvider)
   })
 
   it('removes an item from the playlist', () => {

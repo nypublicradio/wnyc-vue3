@@ -182,7 +182,7 @@ onMounted(() => {
         >
           <CuratedListPlaylistProvider
             :items="block?.value?.list?.listItems"
-            :source-key="`${block.id}-${index}`"
+            :source-key="String(block.id)"
           >
             <component
               :is="getLayoutComponent(getCuratedListLayout(block))"

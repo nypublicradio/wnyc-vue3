@@ -5,9 +5,10 @@ import VNewTrackInfo from "./VNewTrackInfo.vue"
 import { useSwipe } from "@vueuse/core"
 import Button from "primevue/button"
 import { nextTick, onMounted, ref, watch } from "vue"
-import { useIsApp } from "~/composables/states"
+import { useIsApp, usePlaylistQueueState } from "~/composables/states"
 import { toggleNativePullToRefresh } from "~/utilities/helpers"
 import { usePlaylistQueueSideBar } from "~/composables/states"
+const playlistQueueState = usePlaylistQueueState()
 const props = defineProps({
   /**
    * get if the stream is buffering / loading
@@ -690,6 +691,7 @@ defineExpose({
                 @volume-change="volumeChange"
               />
               <Button
+                v-if="playlistQueueState.items.length > 1"
                 class="flex-none p-button-icon-only p-button-secondary"
                 severity="secondary"
                 variant="text"
