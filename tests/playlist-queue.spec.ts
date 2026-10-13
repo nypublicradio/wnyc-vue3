@@ -6,9 +6,11 @@ vi.mock('~/composables/states', async () => {
   const { ref } = await import('vue')
   const currentEpisode = ref(null)
   const playlistState = ref({ sourceKey: null, items: [], currentId: null })
+  const isApp = ref(false)
   return {
     useCurrentEpisode: () => currentEpisode,
     usePlaylistQueueState: () => playlistState,
+    useIsApp: () => isApp,
   }
 })
 
@@ -17,7 +19,7 @@ vi.mock('~/utilities/helpers', () => ({
   hasAudio: (audio: unknown) => typeof audio === 'string' && audio.trim() !== '',
 }))
 
-const { useCurrentEpisode, usePlaylistQueueState } = await import('~/composables/states')
+const { useCurrentEpisode, usePlaylistQueueState, useIsApp } = await import('~/composables/states')
 const { togglePlayEpisode } = await import('~/utilities/helpers')
 const {
   usePlaylistQueue,
@@ -35,10 +37,13 @@ const playlist = usePlaylistQueueState() as Ref<{
 const episode = (id: number | string) => ({ id, title: `Episode ${id}`, audio: `https://audio/${id}.mp3` })
 const ids = () => playlist.value.items.map((item) => item.id)
 
+const isApp = useIsApp() as Ref<boolean>
+
 let scope: EffectScope
 
 beforeEach(() => {
   currentEpisode.value = null
+  isApp.value = false
   playlist.value = { sourceKey: null, items: [], currentId: null }
   vi.mocked(togglePlayEpisode).mockClear()
   // the watcher is normally registered once by the AudioPlayer
@@ -158,9 +163,60 @@ describe('playlist queue', () => {
     expect(togglePlayEpisode).toHaveBeenLastCalledWith(list[2])
 
     playlist.value.currentId = '2'
+    vi.mocked(togglePlayEpisode).mockClear()
     expect(playNextInPlaylist()).toBe(false)
-    expect(playlist.value.currentId).toBeNull()
+    // nothing changes at the end, so a next button can't deselect the playlist
+    expect(playlist.value.currentId).toBe('2')
+    expect(togglePlayEpisode).not.toHaveBeenCalled()
     expect(ids()).toEqual([1, 3, 2])
+  })
+
+  it('plays the previous item and stops at the start', () => {
+    const { playPreviousInPlaylist } = usePlaylistQueue()
+    playlist.value = { sourceKey: 'list-a', items: [episode(1), episode(2), episode(3)], currentId: '2' }
+
+    expect(playPreviousInPlaylist()).toBe(true)
+    expect(togglePlayEpisode).toHaveBeenLastCalledWith(episode(1))
+    expect(playlist.value.currentId).toBe('1')
+
+    vi.mocked(togglePlayEpisode).mockClear()
+    expect(playPreviousInPlaylist()).toBe(false)
+    expect(playlist.value.currentId).toBe('1')
+    expect(togglePlayEpisode).not.toHaveBeenCalled()
+  })
+
+  it('knows when it is at the start or end of the playlist', () => {
+    const { hasNext, hasPrevious } = usePlaylistQueue()
+    playlist.value = { sourceKey: 'list-a', items: [episode(1), episode(2), episode(3)], currentId: '1' }
+    expect([hasPrevious.value, hasNext.value]).toEqual([false, true])
+
+    playlist.value.currentId = '2'
+    expect([hasPrevious.value, hasNext.value]).toEqual([true, true])
+
+    playlist.value.currentId = '3'
+    expect([hasPrevious.value, hasNext.value]).toEqual([true, false])
+
+    // nothing selected (e.g. the live stream is playing)
+    playlist.value.currentId = null
+    expect([hasPrevious.value, hasNext.value]).toEqual([false, false])
+
+    // a single episode
+    playlist.value = { sourceKey: null, items: [episode(9)], currentId: '9' }
+    expect([hasPrevious.value, hasNext.value]).toEqual([false, false])
+  })
+
+  it('steps through the playlist on quick repeated presses, before the watcher catches up', () => {
+    const { playNextInPlaylist, playPreviousInPlaylist } = usePlaylistQueue()
+    playlist.value = { sourceKey: 'list-a', items: [episode(1), episode(2), episode(3)], currentId: '1' }
+
+    playNextInPlaylist()
+    playNextInPlaylist()
+    expect(vi.mocked(togglePlayEpisode).mock.calls.map(([item]) => item.id)).toEqual([2, 3])
+    expect(playlist.value.currentId).toBe('3')
+
+    playPreviousInPlaylist()
+    playPreviousInPlaylist()
+    expect(playlist.value.currentId).toBe('1')
   })
 
   it('has nothing next to play when nothing in the playlist is selected', () => {
@@ -229,5 +285,67 @@ describe('playlist queue', () => {
     removeFromPlaylist(episode('2'))
 
     expect(ids()).toEqual([1])
+  })
+
+  describe('browser media controls', () => {
+    const setActionHandler = vi.fn()
+    // the handler currently set for an action, null when the button is disabled
+    const handlerFor = (action: string) =>
+      setActionHandler.mock.calls.filter(([name]) => name === action).at(-1)?.[1]
+
+    let controlsScope: EffectScope
+
+    beforeEach(() => {
+      setActionHandler.mockClear()
+      Object.defineProperty(navigator, 'mediaSession', {
+        value: { setActionHandler },
+        configurable: true,
+      })
+      playlist.value = { sourceKey: 'list-a', items: [episode(1), episode(2), episode(3)], currentId: '1' }
+      controlsScope = effectScope()
+      controlsScope.run(() => usePlaylistQueue().initMediaSessionPlaylistControls())
+    })
+
+    afterEach(() => {
+      controlsScope.stop()
+      delete (navigator as any).mediaSession
+    })
+
+    it('enables next and previous only when there is somewhere to go', async () => {
+      expect(handlerFor('nexttrack')).toBeTypeOf('function')
+      expect(handlerFor('previoustrack')).toBeNull()
+
+      playlist.value.currentId = '3'
+      await nextTick()
+      expect(handlerFor('nexttrack')).toBeNull()
+      expect(handlerFor('previoustrack')).toBeTypeOf('function')
+
+      // live stream: nothing in the playlist is selected
+      playlist.value.currentId = null
+      await nextTick()
+      expect(handlerFor('nexttrack')).toBeNull()
+      expect(handlerFor('previoustrack')).toBeNull()
+    })
+
+    it('plays the next and previous playlist items', async () => {
+      playlist.value.currentId = '2'
+      await nextTick()
+
+      handlerFor('nexttrack')()
+      expect(togglePlayEpisode).toHaveBeenLastCalledWith(episode(3))
+
+      await nextTick()
+      handlerFor('previoustrack')()
+      expect(togglePlayEpisode).toHaveBeenLastCalledWith(episode(2))
+    })
+
+    it('leaves the buttons disabled in the app, which uses the native lock screen controls', async () => {
+      isApp.value = true
+      playlist.value.currentId = '2'
+      await nextTick()
+
+      expect(handlerFor('nexttrack')).toBeNull()
+      expect(handlerFor('previoustrack')).toBeNull()
+    })
   })
 })

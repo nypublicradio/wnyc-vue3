@@ -1,6 +1,10 @@
-import { watch } from "vue"
+import { computed, watch } from "vue"
 import type { InjectionKey } from "vue"
-import { useCurrentEpisode, usePlaylistQueueState } from "~/composables/states"
+import {
+  useCurrentEpisode,
+  useIsApp,
+  usePlaylistQueueState,
+} from "~/composables/states"
 import { togglePlayEpisode, hasAudio } from "~/utilities/helpers"
 
 type PlaylistItem = Record<string, any>
@@ -104,18 +108,40 @@ export const usePlaylistQueue = () => {
     playlist.value.items = items
   }
 
-  // play the item after the current one, returns false when there is nothing next to play
-  const playNextInPlaylist = () => {
-    const currentIndex = playlist.value.items.findIndex(
+  // position of the current item in the playlist, -1 when nothing in the playlist is selected (e.g. the live stream is playing)
+  const currentIndex = computed(() =>
+    playlist.value.items.findIndex(
       (item) => toId(item) === playlist.value.currentId
     )
-    const nextItem =
-      currentIndex === -1 ? null : playlist.value.items[currentIndex + 1]
-    if (!nextItem) {
-      playlist.value.currentId = null
-      return false
-    }
-    togglePlayEpisode(nextItem)
+  )
+
+  // whether there is an item before/after the current one, e.g. to disable the previous/next buttons at the start/end of the playlist
+  const hasPrevious = computed(() => currentIndex.value > 0)
+  const hasNext = computed(
+    () =>
+      currentIndex.value !== -1 &&
+      currentIndex.value < playlist.value.items.length - 1
+  )
+
+  // play the playlist item at the given position
+  const playPlaylistItemAt = (index: number) => {
+    const item = playlist.value.items[index]
+    // move the current item right away (the watcher only catches up on the next tick), so quick repeated presses step through the playlist instead of toggling pause on the item that is loading
+    playlist.value.currentId = toId(item)
+    togglePlayEpisode(item)
+  }
+
+  // play the item after the current one, returns false at the end of the playlist or when nothing in it is selected
+  const playNextInPlaylist = () => {
+    if (!hasNext.value) return false
+    playPlaylistItemAt(currentIndex.value + 1)
+    return true
+  }
+
+  // play the item before the current one, returns false at the start of the playlist or when nothing in it is selected
+  const playPreviousInPlaylist = () => {
+    if (!hasPrevious.value) return false
+    playPlaylistItemAt(currentIndex.value - 1)
     return true
   }
 
@@ -144,6 +170,29 @@ export const usePlaylistQueue = () => {
     })
   }
 
+  // browser media controls (e.g. Chrome's media hub): hook the next/previous track buttons up to the playlist
+  // the browser has no default for these buttons, so they are greyed out until a handler is set, and a null handler greys them out again
+  // the app (iOS/Android) uses the native player's lock screen controls instead, so it is skipped there
+  // this should only be called once, from the AudioPlayer, so there is only one watcher for the life of the app
+  const initMediaSessionPlaylistControls = () => {
+    if (typeof navigator === "undefined" || !("mediaSession" in navigator)) return
+    const isApp = useIsApp()
+    watch(
+      [hasNext, hasPrevious, isApp],
+      ([canPlayNext, canPlayPrevious, inApp]) => {
+        navigator.mediaSession.setActionHandler(
+          "nexttrack",
+          canPlayNext && !inApp ? () => playNextInPlaylist() : null
+        )
+        navigator.mediaSession.setActionHandler(
+          "previoustrack",
+          canPlayPrevious && !inApp ? () => playPreviousInPlaylist() : null
+        )
+      },
+      { immediate: true }
+    )
+  }
+
   return {
     playlist,
     isCurrentEpisode,
@@ -152,7 +201,11 @@ export const usePlaylistQueue = () => {
     appendToPlaylist,
     removeFromPlaylist,
     reorderPlaylist,
+    hasNext,
+    hasPrevious,
     playNextInPlaylist,
+    playPreviousInPlaylist,
     initPlaylistQueueWatcher,
+    initMediaSessionPlaylistControls,
   }
 }

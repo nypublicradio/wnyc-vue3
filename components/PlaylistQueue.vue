@@ -79,8 +79,8 @@ const handleRemove = (item: PlaylistItem) => {
           class="flex-1 min-w-0"
           :data="item"
           isHorizontal
-          imgCol="xs:w-4rem md:w-9rem"
-          :size="{ xs: [112, 112], md: [144, 144] }"
+          imgCol="xs:w-4rem md:w-10rem"
+          :size="{ xs: [112, 112], md: [160, 160] }"
           :allowVerticalEffect="false"
           @on-click="playlistQueueSideBar = false"
         />
@@ -111,7 +111,8 @@ const handleRemove = (item: PlaylistItem) => {
   }
 }
 .playlist-queue-item {
-  border-bottom: 1px solid var(--p-content-border-color);
+  //border-bottom: 1px solid var(--p-content-border-color);
+  border: none;
   &.is-playing {
     background: var(--p-surface-25);
   }
