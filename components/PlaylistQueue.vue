@@ -59,7 +59,19 @@ const handleRemove = (item: PlaylistItem) => {
 <template>
   <div class="root">
     <!-- rows are not selectable: drag the handle to reorder, use the trash button to remove, and the MediaCard plays/navigates as normal -->
-    <h2 v-if="props.header" class="mb-4 ml-4 md:ml-0">{{ props.header }}</h2>
+    <div
+      class="mb-4 ml-4 md:ml-0 flex justify-content-between align-items-center"
+    >
+      <h2 v-if="props.header">{{ props.header }}</h2>
+      <Button
+        class="flex-none ml-auto"
+        icon="pi pi-sort-alt"
+        severity="secondary"
+        variant="text"
+        title="Reverse order"
+        @click="reorderPlaylist(playlist.items.slice().reverse())"
+      />
+    </div>
     <!-- the list is always rendered because useSortable attaches to it on mount -->
     <ul ref="listRef" class="playlist-queue-list list-none p-0 m-0">
       <li
