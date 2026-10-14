@@ -9,7 +9,7 @@ import { togglePlayEpisode, hasAudio } from "~/utilities/helpers"
 
 type PlaylistItem = Record<string, any>
 
-// context provided by CuratedListPlaylistProvider to the MediaCards rendered inside a curated list
+// context provided by PlaylistProvider to the MediaCards rendered inside it (a curated list or the show episodes list)
 export interface PlaylistQueueProviderContext {
   register: (item: PlaylistItem) => void
   unregister: (item: PlaylistItem) => void

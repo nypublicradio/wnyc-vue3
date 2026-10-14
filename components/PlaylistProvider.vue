@@ -9,14 +9,15 @@ import {
 } from "~/composables/usePlaylistQueue"
 import type { PlaylistQueueProviderContext } from "~/composables/usePlaylistQueue"
 
-// wraps a curated list layout so the MediaCards rendered inside it can populate the playlist queue
+// wraps a list of MediaCards so the ones rendered inside it can populate the playlist queue
+// used for curated list layouts (VStreamfield) and the show episodes page
 const props = defineProps({
-  // all the items in the curated list (block.value.list.listItems)
+  // all the items in the list (e.g. block.value.list.listItems)
   items: {
     type: Array as () => Record<string, any>[],
     default: () => [],
   },
-  // unique key for this curated list (the curated list block id)
+  // unique key for this list (the curated list block id, or e.g. show-episodes-{slug})
   sourceKey: {
     type: String,
     required: true,

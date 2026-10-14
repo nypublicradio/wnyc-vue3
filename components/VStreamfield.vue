@@ -180,7 +180,7 @@ onMounted(() => {
           :id="slugify(block?.value?.label)"
           is-curated-list
         >
-          <CuratedListPlaylistProvider
+          <PlaylistProvider
             :items="block?.value?.list?.listItems"
             :source-key="String(block.id)"
           >
@@ -189,7 +189,7 @@ onMounted(() => {
               v-bind="getCuratedListComponentProps(block, index)"
               @load-more="emit('curated-list-load-more', block)"
             />
-          </CuratedListPlaylistProvider>
+          </PlaylistProvider>
           <div
             v-if="block?.value?.seeMoreLink"
             class="flex justify-content-center mt-4 w-full"
