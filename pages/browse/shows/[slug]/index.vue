@@ -35,7 +35,7 @@ const showEndpoint = computed(() => {
     identifier: getQueryValue(route.query.identifier),
     token: getQueryValue(route.query.token),
   })
-  return `${baseUrl}?${params.toString()}`
+  return `${baseUrl}&${params.toString()}`
 })
 
 const showFetchArgs = [

@@ -13,9 +13,9 @@ const token = route.query.token
 
 // Format data received from Aviary
 function formatData(data) {
-  const transformedData = transformResponseData(data)
+  const transformedData = transformResponseData(data.value)
   const normalizedData = normalizeFindPageResponse(
-    transformedData
+    { value: transformedData }
   ) as ArticlePage
   return normalizedData
 }
