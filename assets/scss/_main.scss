@@ -678,6 +678,7 @@ html.style-mode-dark {
       flex-direction: column;
       gap: 1rem;
       .p-menu-item-content {
+        background: none;
         cursor: pointer;
         transition: color var(--p-transition-duration);
         -webkit-transition: color var(--p-transition-duration);
@@ -690,7 +691,10 @@ html.style-mode-dark {
         &:hover {
           .option-holder {
             text-decoration: underline;
-            color: var(--p-red-500);
+            color: var(--p-button-link-hover-color);
+          }
+          svg path {
+            fill: var(--p-button-link-hover-color);
           }
         }
         .option {
@@ -701,7 +705,7 @@ html.style-mode-dark {
         &:focus-visible {
           outline: none;
           text-decoration: underline;
-          color: var(--p-red-500);
+          color: var(--p-button-link-hover-color);
           border: 2px solid var(--p-button-secondary-focus-ring-color);
           outline-color: var(--p-button-secondary-focus-ring-color);
           border-radius: var(--p-border-radius-xl);
