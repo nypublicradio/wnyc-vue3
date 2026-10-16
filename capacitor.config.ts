@@ -73,7 +73,7 @@ const config: CapacitorConfig = {
       defaultTitle: 'WNYC',
       android: {
         notification: {
-          smallIcon: 'ic_stat_wnyc', // android/app/src/main/res/drawable/ic_stat_wnyc.xml
+          smallIcon: 'ic_stat_wnyc', // android/app/src/main/res/drawable/ic_stat_wnyc.xml // this is the icon that will show up in the upper left corner of the player in the notification area
           channelName: 'Playback',
         },
       },
