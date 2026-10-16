@@ -214,24 +214,30 @@ onUnmounted(() => stop())
         <div class="col min-w-0 pr-2 lg:pr-4">
           <div class="flex flex-column gap-5">
             <h2 class="md:text-xl">All Episodes</h2>
-            <template v-for="ep in episodes" :key="ep.id">
-              <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
-              <MediaCard
-                v-if="
-                  ep?.type !== 'segment' &&
-                  ep.estimatedDuration !== 0 &&
-                  ep?.hasAudio
-                "
-                :data="ep"
-                showPlayButton
-                is-horizontal
-                imgCol="w-7rem md:w-12rem"
-                :size="{ xs: [112, 112], md: [192, 192] }"
-                showTease
-                :showBg="true"
-                :showBgMobile="false"
-              />
-            </template>
+            <!-- playing an episode populates the playlist queue with the episodes on the page, and lazy loaded episodes are added to it as they render -->
+            <PlaylistProvider
+              :items="episodes"
+              :source-key="`show-episodes-${route.params.slug}`"
+            >
+              <template v-for="ep in episodes" :key="ep.id">
+                <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
+                <MediaCard
+                  v-if="
+                    ep?.type !== 'segment' &&
+                    ep.estimatedDuration !== 0 &&
+                    ep?.hasAudio
+                  "
+                  :data="ep"
+                  showPlayButton
+                  is-horizontal
+                  imgCol="w-7rem md:w-12rem"
+                  :size="{ xs: [112, 112], md: [192, 192] }"
+                  showTease
+                  :showBg="true"
+                  :showBgMobile="false"
+                />
+              </template>
+            </PlaylistProvider>
           </div>
           <div v-if="status === 'pending' || scStatus === 'pending'">
             <skeleton-media-card

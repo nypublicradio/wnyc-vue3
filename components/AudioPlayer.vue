@@ -22,6 +22,7 @@ import {
   useIsNetworkConnected,
   useDeviceId,
   useCurrentUserProfile,
+  usePlaylistQueueState,
   //useGlobalToast,
 } from "~/composables/states"
 import {
@@ -33,7 +34,20 @@ import {
 import useManageScrollPosition from "~/composables/useManageScrollPosition"
 import { initMediaSession } from "~/utilities/media-session.js"
 import { useContinuousPlay } from "~/composables/useContinuousPlay"
+import { usePlaylistQueue } from "~/composables/usePlaylistQueue"
 const { initContinuousPlay } = useContinuousPlay()
+// keep the playlist queue in sync with whatever is playing
+const {
+  initPlaylistQueueWatcher,
+  initMediaSessionPlaylistControls,
+  hasNext,
+  hasPrevious,
+  playNextInPlaylist,
+  playPreviousInPlaylist,
+} = usePlaylistQueue()
+initPlaylistQueueWatcher()
+// browser media controls next/previous track buttons watcher init
+initMediaSessionPlaylistControls()
 // Initialize device platform on client-side only to avoid SSR errors
 const devicePlatform = ref("web")
 if (process.client) {
@@ -55,6 +69,7 @@ const currentEpisodeProgress = useCurrentEpisodeProgress()
 const isNetworkConnected = useIsNetworkConnected()
 const deviceId = useDeviceId()
 const currentUser = useCurrentUserProfile()
+const playlistQueueState = usePlaylistQueueState()
 //const globalToast = useGlobalToast()
 
 const showPlayer = ref(false)
@@ -344,6 +359,22 @@ const handleSkipBack = () => {
   skipBackTrigger.value = !skipBackTrigger.value
 }
 
+// handlePreviousInPlaylist
+const handlePreviousInPlaylist = () => {
+  // logic to handle previous in playlist
+  if (hasPrevious.value) {
+    playPreviousInPlaylist()
+  }
+}
+
+// handleNextInPlaylist
+const handleNextInPlaylist = () => {
+  // logic to handle next in playlist
+  if (hasNext.value) {
+    playNextInPlaylist()
+  }
+}
+
 watch(currentEpisode, (newVal, oldVal) => {
   // only switches the episode if the new value is not null and the audio, hls, or file values have changed. so when coming back into focus, the data can be updated in the currentEpisode, like if it was live and the show changed.
   if (
@@ -548,6 +579,8 @@ onMounted(async () => {
         @scrub-timeline-end="handleSeekTo($event)"
         @volume-change="setVolume($event)"
         @volume-toggle-mute="muteToggle"
+        @play-previous-in-playlist="handlePreviousInPlaylist"
+        @play-next-in-playlist="handleNextInPlaylist"
         can-click-anywhere
         :showVolume="true"
         :isStreamLoading
@@ -580,6 +613,24 @@ onMounted(async () => {
         </template>
         <template #skipAhead>
           <Next10 />
+        </template>
+        <template #header-content>
+          <div>
+            <Accordion
+              v-if="playlistQueueState.items.length > 1"
+              value="null"
+              class="mb-5 playlist-accordion"
+            >
+              <AccordionPanel value="0" style="border: none">
+                <AccordionHeader
+                  ><i class="pi pi-list"></i>Playlist</AccordionHeader
+                >
+                <AccordionContent>
+                  <PlaylistQueue header="" class="px-0 -mx-3" />
+                </AccordionContent>
+              </AccordionPanel>
+            </Accordion>
+          </div>
         </template>
         <template #expanded-content>
           <!-- <Button label="Cast" @click="handleCast" /> -->
