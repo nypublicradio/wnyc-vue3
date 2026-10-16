@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Instructions for AI coding agents (Claude Code, Qwen Code, Codex, GitHub Copilot and others) working in this repository. Claude Code reads it through `CLAUDE.md`, which imports it.
 
 ## What this is
 
@@ -21,7 +21,7 @@ npm run dev            # dev server (--host), http://localhost:3000
 npm run build          # SSR production build -> .output/
 npm run start          # run the built SSR server
 npm test               # vitest (watch mode); runs `nuxi prepare` first if .nuxt/ is missing
-npx vitest run         # run all tests once (what CI effectively does)
+npx vitest run         # run all tests once (what CI effectively does), ~15s
 npx vitest run tests/server/v2-show.spec.ts   # single file
 npx vitest run -t "test name substring"       # single test
 npm run coverage
@@ -38,6 +38,14 @@ pre-commit run detect-secrets --all-files   # secret scan (baseline: .secrets.ba
 There is no lint script. Prettier config: no semicolons, double quotes. `jest.config.js` is a leftover; tests run on Vitest (`vitest.config.ts`, jsdom, globals). CI (CircleCI) runs `npx nuxi prepare && npm run test` plus an `nginx -t` check.
 
 Local Docker dev: `docker compose up` (uses `Dockerfile.dev`, reads `.env`). `start-local.sh` sets up AWS SSO credentials for server routes that read S3.
+
+## Workflow
+
+- Issues are tracked in Jira project `WNYC` on `nypublicradio-digital.atlassian.net`: milestones are Epics `M<m>: <name>`, slices are Stories `M<m>.<n>: <title>` under them. Support tickets use the `SUP` project the same way. The narrative and status are in `docs/PLAN.md`. Research reports are in `docs/research/`.
+- One work item, one branch, one PR: branch `<handle>/<KEY-N>-<slug>`, PR body starts `Jira: <KEY-N>`, title `<KEY-N> <Imperative summary>`. Merging doesn't close the work item; move it to done on the board.
+- Every PR has tests for the positive and negative cases; every frontend change has tests. Run `npx vitest run` before pushing.
+- A PR that adds a command, a component, a route, a convention or an invariant updates this file.
+- Problems found outside the PR's scope become new Jira work items labelled `follow-up`.
 
 ## SSR vs. app mode (the most important concept)
 
@@ -90,5 +98,19 @@ Avoid Nitro `swr` route rules on unbounded URL spaces. They previously leaked me
 - Components, `components/icons`, and `components/logos` are auto-imported. Composables in `composables/`, `composables/icons`, and `composables/*/index.ts` are auto-imported too, but most code imports from `~/composables/states` explicitly.
 - UI uses PrimeVue 4 with a custom preset (`assets/wnyc-theme.js`, dark mode via the `.style-mode-dark` class) and PrimeFlex utility classes. `assets/scss/_global.scss` is injected into every SCSS block, so it should contain only variables and mixins. Font-size scale tokens (`--font-size-0` … `--font-size-20`) are listed at the bottom of the README.
 - TypeScript is non-strict (`strict: false`) and JS files are mixed in. From `.github/copilot-instructions.md`: prefer functional style, interfaces for data shapes, `const`/readonly, and `?.`/`??`.
-- Tests live in `tests/` (client) and `tests/server/` (BFF route and util tests). Server tests import route handlers directly and `vi.mock` their dependencies (`axios`, `~/composables/globals`, `~/server/utils/*`) rather than spinning up Nuxt.
 - Runtime config: add new env vars to `nuxt.config.ts` `runtimeConfig`. For them to exist at build time in deployed images, also add them as `ARG` and `ENV` in `Dockerfile` (and `docker-compose.yml` for local Docker). `.env_sample` lists the expected variables.
+
+## Invariants (preserve them)
+
+- Server-side caches stay bounded: `TtlCache` (`server/utils/simplecastCache.ts`) expires entries, coalesces concurrent fetches and times out stuck ones, checked by `tests/server/simplecast-cache.spec.ts`.
+- The legacy `/api/v2/discover/shows` route passes the Publisher response through unchanged, because older app versions still call it, checked by `tests/server/discover-shows.compat.spec.ts`.
+- Page-view and click analytics stay on the tracked routes and go through the shared payload builders, checked by `tests/analytics-coverage.spec.ts`.
+- Missing Publisher stories (`/story`) and Wagtail show pages (`/shows`) return Aviary redirect metadata, checked by `tests/server/cms-route-redirects.spec.ts`.
+- No Nitro `swr` route rules on unbounded URL spaces (see `nuxt.config.ts` `routeRules`). Not checked by a test yet.
+- Server routes that read or write user data verify the app JWT (`server/utils/jwt.ts`) and are rate-limited. Not checked by a test yet.
+- Code runs in both SSR and app mode: browser and Capacitor APIs are guarded (`import.meta.client`, `onMounted`, `*.client.ts`) and page data is fetched through `config.public.BFF_URL`. Not checked by a test yet.
+
+## Testing patterns
+
+- Tests live in `tests/` (client) and `tests/server/` (BFF route and util tests). Server tests import route handlers directly and `vi.mock` their dependencies (`axios`, `~/composables/globals`, `~/server/utils/*`) rather than spinning up Nuxt.
+- <!-- TODO: there are no Vue component tests yet. Pick the setup (`@nuxt/test-utils` `mountSuspended` or `@vue/test-utils`) and document it here; `tests/axe-helper.js` (jest-axe) is unused so far. -->
