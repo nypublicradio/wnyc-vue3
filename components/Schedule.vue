@@ -14,7 +14,7 @@ import {
   useIsDarkMode,
 } from "~/composables/states"
 import { useDebounceFn } from "@vueuse/core"
-import { getSchedulePdfLink } from "~/server/utils/liveSchedule"
+import { useFetchWrapper } from "~/composables/useFetchWrapper"
 import {
   scheduleLocalNotification,
   getEntryTitle,
@@ -38,6 +38,7 @@ const isApp = useIsApp()
 const isDarkMode = useIsDarkMode()
 const currentEpisodeHolder = useCurrentEpisodeHolder()
 const { isMobileBreakpoint } = useBreakpoints()
+const config = useRuntimeConfig()
 
 const disabledScheduleDate = ref(null)
 onMounted(() => {
@@ -109,6 +110,25 @@ const getAllScheduleData = async () => {
 // Debounce the schedule data fetching to prevent rapid successive calls
 const debouncedGetAllScheduleData = useDebounceFn(getAllScheduleData, 300)
 
+const getSchedulePdfLink = async () => {
+  // Need a way to configure the schedule ID and document base URL
+  const scheduleId = 28
+  const documentBaseUrl = `https://images-demo.gothamist.com/documents/`
+
+
+  const response = await useFetchWrapper(
+    `${config.public.BFF_URL}/api/documents/${scheduleId}`,
+    {
+      key: "schedule-pdf",
+    }
+  )
+  const pdfData = response.data
+  const scheduleDownloadUrl = pdfData?.value?.meta?.downloadUrl
+  const scheduleFilename = scheduleDownloadUrl?.split('/').pop()
+  const schedulePdfLink = `${documentBaseUrl}${scheduleFilename}`
+  return schedulePdfLink
+}
+
 watch(currentScheduleDate, () => {
   allLiveScheduleData.value.length = 0
   debouncedGetAllScheduleData()
@@ -136,7 +156,7 @@ const handleScheduleDownload = () => {
     "download schedule PDF"
   )
   // need to pull this from the CMS
-  window.open(getSchedulePdfLink(), "_blank")
+  getSchedulePdfLink().then(schedulePdfLink => window.open(schedulePdfLink, "_blank"))
 }
 
 // handles the click on the show title
