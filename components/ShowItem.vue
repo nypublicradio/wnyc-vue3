@@ -154,12 +154,12 @@ const getDotMenuItems = (bucketItem) => {
         rounded
         class="flex-none z-1 flex-row-reverse"
         :aria-label="isFavorited ? 'Unfollow' : 'Follow'"
+        @click="handleAddToFavorites"
       >
         <template #icon>
           <FollowIcon
             class="h-2rem"
             :active="isFavorited"
-            @click="handleAddToFavorites"
           />
         </template>
       </Button>
