@@ -1,0 +1,15 @@
+{
+  "recommendations": [
+    "anthropic.claude-code",
+    "github.vscode-pull-request-github",
+    "github.vscode-github-actions",
+    "editorconfig.editorconfig",
+    "streetsidesoftware.code-spell-checker",
+    "redhat.vscode-yaml",
+    "esbenp.prettier-vscode",
+    "vue.volar",
+    "vitest.explorer",
+    "ms-azuretools.vscode-containers",
+    "ms-vscode-remote.remote-containers"
+  ]
+}
