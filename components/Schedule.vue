@@ -112,7 +112,7 @@ const debouncedGetAllScheduleData = useDebounceFn(getAllScheduleData, 300)
 
 const getSchedulePdfLink = async () => {
   const response = await useFetchWrapper(
-    `${config.public.BFF_URL}/api/documents/${config.public.SCHEDULE_DOCUMENT_ID}`,
+    `${config.public.BFF_URL}/api/documents/${config.public.SCHEDULE_PDF_DOCUMENT_ID}`,
     {
       key: "schedule-pdf",
     }
@@ -121,7 +121,7 @@ const getSchedulePdfLink = async () => {
   const documentBaseUrl = config.public.IMAGE_BASE_URL.replace('images', 'documents')
   const scheduleDownloadUrl = pdfData?.value?.meta?.downloadUrl
   const scheduleFilename = scheduleDownloadUrl?.split('/').pop()
-  const schedulePdfLink = `${documentBaseUrl}${config.public.SCHEDULE_DOCUMENT_ID}/${scheduleFilename}`
+  const schedulePdfLink = `${documentBaseUrl}${config.public.SCHEDULE_PDF_DOCUMENT_ID}/${scheduleFilename}`
   return schedulePdfLink
 }
 
