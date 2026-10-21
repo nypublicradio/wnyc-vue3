@@ -111,21 +111,17 @@ const getAllScheduleData = async () => {
 const debouncedGetAllScheduleData = useDebounceFn(getAllScheduleData, 300)
 
 const getSchedulePdfLink = async () => {
-  // Need a way to configure the schedule ID and document base URL
-  const scheduleId = 28
-  const documentBaseUrl = `https://images-demo.gothamist.com/documents/`
-
-
   const response = await useFetchWrapper(
-    `${config.public.BFF_URL}/api/documents/${scheduleId}`,
+    `${config.public.BFF_URL}/api/documents/${config.public.SCHEDULE_DOCUMENT_ID}`,
     {
       key: "schedule-pdf",
     }
   )
   const pdfData = response.data
+  const documentBaseUrl = config.public.IMAGE_BASE_URL.replace('images', 'documents')
   const scheduleDownloadUrl = pdfData?.value?.meta?.downloadUrl
   const scheduleFilename = scheduleDownloadUrl?.split('/').pop()
-  const schedulePdfLink = `${documentBaseUrl}${scheduleFilename}`
+  const schedulePdfLink = `${documentBaseUrl}${config.public.SCHEDULE_DOCUMENT_ID}/${scheduleFilename}`
   return schedulePdfLink
 }
 
