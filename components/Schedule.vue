@@ -115,7 +115,6 @@ const getSchedulePdfLink = async () => {
     `${config.public.BFF_URL}/api/documents/${config.public.SCHEDULE_PDF_DOCUMENT_ID}`,
     {
       key: "schedule-pdf",
-      maxAge: 2 * 60 * 1000, // 2 minutes
     }
   )
   const pdfData = response.data

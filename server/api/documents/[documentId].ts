@@ -34,7 +34,7 @@ export default defineEventHandler(async (document) => {
     if (documentId) {
 
         const res = document?.node?.res
-        res.setHeader('Cache-Control', 'max-age=3600, stale-while-revalidate')
+        res.setHeader('Cache-Control', 'max-age=300, stale-while-revalidate')
 
         const documentData = await getWagtailDocumentById(documentId)
           .then(data => humps.camelizeKeys(data))
