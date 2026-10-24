@@ -104,6 +104,7 @@ onUnmounted(() => {
             <div class="flex flex-column align-items-start">
               <Button
                 label="Episode Details"
+                aria-label="Close Transcript and return to episode details"
                 icon="pi pi-chevron-left"
                 severity="info"
                 @click="handleReturnToEpisode"
@@ -122,6 +123,7 @@ onUnmounted(() => {
                   :alt="episode?.image?.altText || episode?.title"
                   class="episode-page-image flex-none w-7rem md:w-7rem"
                   :class="{ minimize: isMinimized }"
+                  :isDecorative="true"
                 >
                 </VImage>
 
@@ -178,6 +180,7 @@ onUnmounted(() => {
                 <Button
                   icon="pi pi-link"
                   severity="secondary"
+                  aria-label="Copy Transcript Link"
                   link
                   @click="handleTranscriptLinkClick"
                 />
