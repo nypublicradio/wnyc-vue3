@@ -4,6 +4,7 @@ import { useSortable, moveArrayElement } from "@vueuse/integrations/useSortable"
 import { usePlaylistQueueSideBar } from "~/composables/states"
 import { usePlaylistQueue } from "~/composables/usePlaylistQueue"
 import { trackClickEvent } from "~/utilities/helpers"
+import DragAndDropIcon from "./icons/DragAndDropIcon.vue"
 
 const props = defineProps({
   header: {
@@ -85,7 +86,7 @@ const handleRemove = (item: PlaylistItem) => {
           class="playlist-queue-handle flex-none flex align-items-center justify-content-center w-2rem h-3rem"
           :aria-label="`Drag to reorder ${item?.title}`"
         >
-          <i class="pi pi-bars"></i>
+          <DragAndDropIcon />
         </span>
         <MediaCard
           class="flex-1 min-w-0"
