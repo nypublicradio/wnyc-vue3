@@ -619,12 +619,10 @@ onMounted(async () => {
             <Accordion
               v-if="playlistQueueState.items.length > 1"
               value="null"
-              class="mb-5 playlist-accordion"
+              class="mb-5 playlist-accordion xs:-mx-4 sm:mx-0"
             >
               <AccordionPanel value="0" style="border: none">
-                <AccordionHeader
-                  ><i class="pi pi-list"></i>Playlist</AccordionHeader
-                >
+                <AccordionHeader><MoreEpisodesIcon />Playlist</AccordionHeader>
                 <AccordionContent>
                   <PlaylistQueue header="" class="px-0 -mx-3" />
                 </AccordionContent>
@@ -725,7 +723,7 @@ body {
       }
       .header-top {
         padding: 0 1.5rem;
-        .show-image {
+        .media-info .show-image {
           // to prevent a jump when the image finally loads and renders
           height: 144px;
           .image {

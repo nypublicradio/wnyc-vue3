@@ -750,7 +750,7 @@ defineExpose({
                 title="Playlist Queue"
                 @click="togglePlaylistQueue"
               >
-                <slot name="playlist"><i class="pi pi-list"></i></slot>
+                <slot name="playlist"><MoreEpisodesIcon /></slot>
               </Button>
               <Button
                 v-if="props.canExpand"
@@ -809,7 +809,7 @@ defineExpose({
             <slot name="header-content"></slot>
 
             <div
-              class="flex flex-column md:flex-row gap-3 md:align-items-center"
+              class="flex flex-column md:flex-row gap-3 md:align-items-center media-info"
             >
               <VImage
                 class="flex-none w-9rem h-9rem align-self-center md:align-self-start"
