@@ -12,7 +12,8 @@ export class NPR {
         if (!options.timeout) {
             options.timeout = 10000
         }
-        const url = `${process.env.NPR_CDS_API}${baseURL}${path}`
+        // runtime config, not process.env: the Docker app stage doesn't carry the build-time NPR_CDS_API env
+        const url = `${useRuntimeConfig().public.NPR_CDS_API}${baseURL}${path}`
         return axios.get(url, options).catch(e => { console.error('NPR CDS error', e) })
     }
 

@@ -1044,6 +1044,8 @@ export async function normalizeNprPage (article: NprArticle, componentType = "de
       firstPublishedAt: article.publishDateTime,
       slug: id,
       ...(derivedShowSlug ? { showSlug: derivedShowSlug } : {}),
+      // NPR collection id of the program (e.g. "2"), used to page through the show's back catalog
+      ...(programUrl ? { nprShowId: programUrl.split('/').pop() } : {}),
     },
     showTitle: showInfo.title,
     showSlug: derivedShowSlug,
