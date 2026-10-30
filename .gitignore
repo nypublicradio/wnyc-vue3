@@ -18,3 +18,5 @@ www
 *.key
 *.pem
 *.crt
+#graphify
+graphify-out/*
