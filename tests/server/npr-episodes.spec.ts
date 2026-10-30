@@ -107,7 +107,7 @@ describe('server/api/v3/show/npr/[showid]/episodes', () => {
     })
 
     it('throws a 502 when CDS fails (getFromNPR returns undefined)', async () => {
-        getFromNPR.mockResolvedValue(undefined)
+        // mockReset() in beforeEach leaves getFromNPR returning undefined
         const handler = (await import('../../server/api/v3/show/npr/[showid]/episodes')).default
         const { event } = makeEvent('8')
 
