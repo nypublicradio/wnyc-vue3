@@ -41,7 +41,12 @@ const props = defineProps({
 })
 
 const emit = defineEmits(["load-more"])
-const reactiveItems = computed(() => props.list?.listItems)
+const {
+  items: reactiveItems,
+  canLoadMore: canFetchMore,
+  pending: fetching,
+  loadMore: fetchMore,
+} = usePagedList(toRef(props, "list"))
 const visibleCount = ref(props.initialLimit)
 
 watch(
@@ -95,6 +100,15 @@ const loadMore = () => {
         severity="secondary"
         class="px-5"
         @click="loadMore"
+      />
+    </div>
+    <div v-if="canFetchMore" class="flex justify-content-center mt-5">
+      <Button
+        label="View more episodes"
+        severity="secondary"
+        class="px-5"
+        :loading="fetching"
+        @click="fetchMore"
       />
     </div>
     <div v-if="!reactiveItems?.length" class="grid">
