@@ -127,7 +127,8 @@ const handleRemove = (item: PlaylistItem) => {
   //border-bottom: 1px solid var(--p-content-border-color);
   border: none;
   &.is-playing {
-    background: var(--p-surface-25);
+    background: #101012;
+    border-radius: var(--media-card-border-radius);
   }
 }
 .playlist-queue-handle {
