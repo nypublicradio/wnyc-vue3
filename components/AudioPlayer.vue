@@ -2,7 +2,7 @@
 import { RemoteStreamer } from "@nypublicradio/capacitor-remote-streamer"
 import { WnycAuto } from "@nypublicradio/wnyc-auto"
 import { Capacitor } from "@capacitor/core"
-import { ref, watch, nextTick } from "vue"
+import { ref, watch, nextTick, onBeforeUnmount } from "vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
 import PauseIcon from "~/components/icons/PauseIcon.vue"
 import Previous10 from "~/components/icons/Previous10.vue"
@@ -24,7 +24,6 @@ import {
   useDeviceId,
   useCurrentUserProfile,
   usePlaylistQueueState,
-  //useGlobalToast,
 } from "~/composables/states"
 import {
   trackAudioEvent,
@@ -34,6 +33,11 @@ import {
 } from "~/utilities/helpers"
 import useManageScrollPosition from "~/composables/useManageScrollPosition"
 import { initMediaSession } from "~/utilities/media-session.js"
+import {
+  getStreamUrl,
+  isKnownDuration,
+  buildAutoPlayEpisode,
+} from "~/utilities/player"
 import { useContinuousPlay } from "~/composables/useContinuousPlay"
 import { usePlaylistQueue } from "~/composables/usePlaylistQueue"
 const { playNextAfterEnd, playLiveStreamAfterEnd, bumperEnded, cancelBumper } =
@@ -72,19 +76,15 @@ const isNetworkConnected = useIsNetworkConnected()
 const deviceId = useDeviceId()
 const currentUser = useCurrentUserProfile()
 const playlistQueueState = usePlaylistQueueState()
-//const globalToast = useGlobalToast()
 
 const showPlayer = ref(false)
 const playerRef = ref(null)
 const isBuffering = ref(false)
-const suppressTransitionErrorsUntil = ref(0)
 const playbackFromAuto = ref(false)
 // continuous play is starting the next item because the last one ended
 const advancingAfterEnd = ref(false)
 
 const route = useRoute()
-
-let delay = 250
 
 // function that returns the image for the episode
 const getTitle = computed(() => {
@@ -126,7 +126,7 @@ const updateUseIsPlayerMinimized = (e) => {
 }
 
 /*
-the url that comes down from publisher is in currentEpisode.value
+the url that comes down from publisher is in the episode
 then if we are in the App env, we check if the url has a param(a "?" already)
 then we grab the asID and the restriction value (0 default or 1)
 then we add the user id to the url (0 if not logged in)
@@ -134,14 +134,10 @@ then we detect the device and add it to the url
 then we merge it all together and return it to the player as the source for the request
 */
 
-const getConfiguredAudioUrl = computed(() => {
+const getConfiguredAudioUrl = (episode) => {
   // we start with HLS, then file, then audio
   // if none of those are set, then we return an empty string
-  const url =
-    currentEpisode.value?.hls ||
-    currentEpisode.value?.file ||
-    currentEpisode.value?.audio ||
-    ""
+  const url = getStreamUrl(episode)
   const hasQuery = hasQueryParams(url)
   const adID = deviceId.value?.identifier ?? "0"
   const userID = currentUser?.value?.id ?? "0"
@@ -151,7 +147,7 @@ const getConfiguredAudioUrl = computed(() => {
   return `${url}${
     hasQuery ? "&" : "?"
   }listenerid=${adID}&aw_0_1st.lmt=${restriction}&aw_0_1st.userid=${userID}&device=${thisDevice}`
-})
+}
 
 // CarPlay / Android Auto add the same parameters natively (wnyc-auto), but can't
 // see who is signed in, so share it. It's saved on the device for car cold starts.
@@ -196,14 +192,27 @@ const muteToggle = () => {
   }
 }
 
+// every switch gets a token, so a switch that a newer one overtook (e.g. a double tap on next) stops at its next await
+let switchToken = 0
+// the token of the last switch whose item started playing (or failed to), errors before that are from the previous item
+let startedSwitchToken = 0
+
+// shows the player paused after the audio failed, so the user can try again
+const playbackFailed = () => {
+  isStreamLoading.value = false
+  isEpisodePlaying.value = false
+  trackAudioEvent(
+    "audio error",
+    isLiveStream.value ? "live" : "on_demand",
+    getTitle.value,
+    getDescription.value
+  )
+}
+
 // function that handles the logic for the persistent player to show and hide when the user changes the episode
 const switchEpisode = async (val) => {
-  const wasPlayingBeforeSwitch = isEpisodePlaying.value
+  const token = ++switchToken
   isNewEpisode.value = true
-  showPlayer.value = false
-  suppressTransitionErrorsUntil.value = wasPlayingBeforeSwitch
-    ? Date.now() + 5000
-    : 0
 
   // Skip native teardown/play if Auto/CarPlay already started playback
   const fromAuto = playbackFromAuto.value
@@ -215,35 +224,54 @@ const switchEpisode = async (val) => {
   // anything starting replaces the live stream bumper
   cancelBumper()
 
+  // the player stays open while continuous play moves on
+  if (!afterEnd) showPlayer.value = false
+
   if (!fromAuto && !afterEnd) {
     await releasePlayer()
     // Small delay to ensure cleanup completes
     await new Promise((resolve) => setTimeout(resolve, 100))
+    if (token !== switchToken) return
   }
 
-  currentEpisode.value = val
   isStreamLoading.value = !fromAuto // already playing if from Auto
 
   // Set initial duration from metadata as fallback — "ready" event will overwrite with accurate value
-  currentEpisodeDuration.value = currentEpisode.value?.duration || 0
+  currentEpisodeDuration.value = val?.duration || 0
 
   await nextTick()
+  if (token !== switchToken) return
 
   if (!fromAuto) {
-    await RemoteStreamer.play({
-      url: getConfiguredAudioUrl.value,
-      enableCommandCenter: true,
-      enableCommandCenterSeek: !isLiveStream.value,
-    })
-  }
-  // Skip media session update when Auto initiated — it already has correct metadata
-  if (!fromAuto) {
+    try {
+      await RemoteStreamer.play({
+        url: getConfiguredAudioUrl(val),
+        enableCommandCenter: true,
+        enableCommandCenterSeek: !isLiveStream.value,
+      })
+    } catch (error) {
+      // e.g. the browser blocked autoplay, or the url can't be played
+      if (token !== switchToken) return
+      console.warn("Failed to play:", error)
+      startedSwitchToken = token
+      playbackFailed()
+      showPlayer.value = true
+      return
+    }
+    if (token !== switchToken) return
+    // Skip media session update when Auto initiated — it already has correct metadata
     initMediaSession(currentEpisode.value)
   }
-  setTimeout(() => {
+  startedSwitchToken = token
+
+  if (afterEnd) {
     showPlayer.value = true
-    delay = 250
-  }, delay)
+  } else {
+    setTimeout(() => {
+      // unless a newer switch hid it again
+      if (token === switchToken) showPlayer.value = true
+    }, 250)
+  }
 }
 
 // function that handles the skip to time with the plugin
@@ -273,7 +301,6 @@ const handleSeekTo = (e) => {
 const togglePlayHere = async (e) => {
   if (e && !isEpisodePlaying.value) {
     await RemoteStreamer.resume()
-    //await enableBackgroundMode()
     isEpisodePlaying.value = true
 
     if (!isNewEpisode.value) {
@@ -288,7 +315,6 @@ const togglePlayHere = async (e) => {
   } else if (!e && isEpisodePlaying.value) {
     // Pausing playback
     await RemoteStreamer.pause()
-    //await disableBackgroundMode()
     isEpisodePlaying.value = false
   }
   // Remove the redundant isEpisodePlaying.value = e line
@@ -304,49 +330,36 @@ const handleIsExpanded = (e) => {
   isPlayerExpanded.value = e
 }
 
-// function that handles the error event from the persistent player emit
-//I have to check for "e" it fires 2 times... once with the error and once without
+// function that handles the error event from the player
 const handleError = async (e) => {
-  if (e) {
-    if (Date.now() < suppressTransitionErrorsUntil.value) {
-      return
-    }
+  // errors while switching items are from the previous item, until the new one has started
+  if (!e || startedSwitchToken !== switchToken) return
 
-    await releasePlayer()
-    // globalToast.value = {
-    //   severity: "error",
-    //   summary:
-    //     "We are having a problem loading the audio. Please try again later.",
-    //   life: 6000,
-    //   closable: true,
-    // }
+  await releasePlayer()
+  playbackFailed()
+}
 
-    if (isEpisodePlaying.value) {
-      playerRef.value.togglePlay()
-      isEpisodePlaying.value = false
-    }
-
-    trackAudioEvent(
-      "audio error",
-      isLiveStream.value ? "live" : "on_demand",
-      getTitle.value,
-      getDescription.value
-    )
-  }
+// runs a continuous play step after an item ended: what it loads plays right away (see switchEpisode)
+// returns what the step returns
+const continueAfterEnd = async (step) => {
+  const endedEpisode = currentEpisode.value
+  advancingAfterEnd.value = true
+  const result = await step()
+  // nothing new was loaded (e.g. the bumper is playing), so no switch will take the flag
+  if (currentEpisode.value === endedEpisode) advancingAfterEnd.value = false
+  return result
 }
 
 /*function that fires when the episode has ended/completed */
 const episodeEnded = async () => {
   // the live stream bumper (continuous play) ended: on to the live stream
-  if (bumperEnded()) return
+  if (await continueAfterEnd(bumperEnded)) return
 
   // before anything changes the current episode
   trackAudioEvent("ended", getMediaType.value, getTitle.value, getDescription.value)
 
   // continuous play: straight on to the next item in the playlist queue, keeping the player open
-  advancingAfterEnd.value = true
-  if (playNextAfterEnd()) return
-  advancingAfterEnd.value = false
+  if (await continueAfterEnd(playNextAfterEnd)) return
 
   const endedEpisode = currentEpisode.value
   if (isPlayerExpanded.value) {
@@ -365,26 +378,29 @@ const episodeEnded = async () => {
   await releasePlayer()
 
   // if the user has continuous play enabled, then we want to play the live stream after the episode has ended
-  playLiveStreamAfterEnd()
+  continueAfterEnd(playLiveStreamAfterEnd)
 }
 
 // resume the player if the network is connected where they left off
-watch(isNetworkConnected, () => {
-  const tempEpisode = currentEpisode.value
-  const tempTime = currentEpisodeProgress.value
-  if (currentEpisode.value && isNetworkConnected.value && isBuffering.value) {
-    // the current episode does not resume, so we have to null it out and then set it back
-    currentEpisode.value = null
-    setTimeout(() => {
-      currentEpisode.value = tempEpisode
-    }, 500)
-    if (!isLiveStream.value) {
+// web only: the native players reconnect by themselves when the network comes back
+if (!Capacitor.isNativePlatform()) {
+  watch(isNetworkConnected, () => {
+    const tempEpisode = currentEpisode.value
+    const tempTime = currentEpisodeProgress.value
+    if (currentEpisode.value && isNetworkConnected.value && isBuffering.value) {
+      // the current episode does not resume, so we have to null it out and then set it back
+      currentEpisode.value = null
       setTimeout(() => {
-        RemoteStreamer.seekTo({ position: tempTime })
-      }, 1500)
+        currentEpisode.value = tempEpisode
+      }, 500)
+      if (!isLiveStream.value) {
+        setTimeout(() => {
+          RemoteStreamer.seekTo({ position: tempTime })
+        }, 1500)
+      }
     }
-  }
-})
+  })
+}
 
 // function that handles the skip ahead toggle trigger
 const handleSkipAhead = () => {
@@ -420,6 +436,10 @@ watch(currentEpisode, (newVal, oldVal) => {
       newVal?.file !== oldVal?.file)
   ) {
     switchEpisode(newVal)
+  } else {
+    // the flags are only for the switch they were set for
+    playbackFromAuto.value = false
+    advancingAfterEnd.value = false
   }
 })
 
@@ -451,23 +471,44 @@ watch(
   }
 )
 
+// the player listeners, removed when the player unmounts: it remounts after the error page and on HMR,
+// and listeners left behind would handle every event twice
+let listenerHandles = []
+let isUnmounted = false
+const addPlayerListener = async (eventName, listener) => {
+  const handle = await RemoteStreamer.addListener(eventName, listener)
+  // unmounted while the listener was being added
+  if (isUnmounted) {
+    handle.remove()
+  } else {
+    listenerHandles.push(handle)
+  }
+}
+
+onBeforeUnmount(() => {
+  isUnmounted = true
+  listenerHandles.forEach((handle) => handle.remove())
+  listenerHandles = []
+})
+
 onMounted(async () => {
-  await RemoteStreamer.addListener("error", (err) => {
+  await addPlayerListener("error", (err) => {
     handleError(err)
   })
-  await RemoteStreamer.addListener("timeUpdate", (data) => {
+  await addPlayerListener("timeUpdate", (data) => {
     currentEpisodeProgress.value = data.currentTime
   })
-  await RemoteStreamer.addListener("ready", (data) => {
-    currentEpisodeDuration.value = data.duration
-    // no episode while the live stream bumper plays
-    if (currentEpisode.value) currentEpisode.value.duration = data.duration
+  await addPlayerListener("ready", (data) => {
+    // only a real duration: Android sends 0 while it doesn't know it (and sends ready again after seeks), web sends Infinity for a live stream
+    if (isKnownDuration(data?.duration)) {
+      currentEpisodeDuration.value = data.duration
+      // no episode while the live stream bumper plays
+      if (currentEpisode.value) currentEpisode.value.duration = data.duration
+    }
     isStreamLoading.value = false
   })
-  await RemoteStreamer.addListener("play", () => {
+  await addPlayerListener("play", () => {
     isEpisodePlaying.value = true
-
-    suppressTransitionErrorsUntil.value = 0
 
     if (isNewEpisode.value) {
       trackAudioEvent(
@@ -480,7 +521,7 @@ onMounted(async () => {
     }
   })
 
-  await RemoteStreamer.addListener("pause", () => {
+  await addPlayerListener("pause", () => {
     if (isEpisodePlaying.value) {
       isEpisodePlaying.value = false
       trackAudioEvent(
@@ -492,7 +533,9 @@ onMounted(async () => {
     }
   })
 
-  await RemoteStreamer.addListener("buffering", (e) => {
+  await addPlayerListener("buffering", (e) => {
+    // older iOS builds send no payload, so there is nothing to go on
+    if (typeof e?.isBuffering !== "boolean") return
     isBuffering.value = e.isBuffering
     // timeout to prevent the loading spinner from flickering
     setTimeout(() => {
@@ -500,7 +543,7 @@ onMounted(async () => {
     }, 250)
   })
 
-  await RemoteStreamer.addListener("stop", (e) => {
+  await addPlayerListener("stop", (e) => {
     isEpisodePlaying.value = false
     isStreamLoading.value = false
     currentEpisodeProgress.value = 0
@@ -510,38 +553,39 @@ onMounted(async () => {
     }
   })
   // the end of an item on iOS (episodeEnded tracks it)
-  await RemoteStreamer.addListener("ended", (e) => {
+  await addPlayerListener("ended", (e) => {
     isEpisodePlaying.value = false
     isStreamLoading.value = false
     currentEpisodeProgress.value = 0
-    if (e.ended) {
+    if (e?.ended) {
       episodeEnded()
     }
   })
 
   // Auto/CarPlay initiated playback — load the content in the app player
   const handleAutoPlayEvent = (data) => {
-    const mediaId = data.mediaId || data.id || ""
-    const isLive = Boolean(data.isLive)
-    isLiveStream.value = isLive
+    isLiveStream.value = Boolean(data.isLive)
 
     // Build a minimal episode object from the metadata
-    const episode = {
-      id: mediaId,
-      title: data.title || mediaId,
-      showTitle: data.artist || "",
-      station: data.artist || "",
-      player_image: data.imageUrl || null,
-      image: data.imageUrl || null,
-      duration: data.duration || 0,
-      estimatedDuration: data.duration || 0,
-    }
+    const episode = buildAutoPlayEpisode(data)
 
-    if (isLive) {
-      episode.hls = data.streamUrl || ""
-    } else {
-      episode.audio = data.streamUrl || ""
-      episode.file = data.streamUrl || ""
+    // the car sent the item that is already loaded: nothing to switch, only a car-started item takes the new metadata
+    if (
+      currentEpisode.value &&
+      getStreamUrl(currentEpisode.value) === getStreamUrl(episode)
+    ) {
+      if (currentEpisode.value.fromAuto) {
+        const { title, showTitle, station, player_image, image } = episode
+        currentEpisode.value = {
+          ...currentEpisode.value,
+          title,
+          showTitle,
+          station,
+          player_image,
+          image,
+        }
+      }
+      return
     }
 
     // Set the flag so switchEpisode skips the native play call
@@ -555,12 +599,13 @@ onMounted(async () => {
   }
 
   // Playback started natively (CarPlay, Android Auto, Assistant): same event on both platforms
-  await RemoteStreamer.addListener("playFromMediaId", handleAutoPlayEvent)
+  await addPlayerListener("playFromMediaId", handleAutoPlayEvent)
 
   // Sync with Auto/CarPlay if playback is already in progress when app opens
   if (Capacitor.isNativePlatform()) {
     try {
       const state = await RemoteStreamer.getCurrentState()
+      if (isUnmounted) return
       if (state.currentMediaId && !currentEpisode.value) {
         handleAutoPlayEvent({
           mediaId: state.currentMediaId,
@@ -618,12 +663,17 @@ onMounted(async () => {
         :isMuted="isMuted"
       >
         <template #expanded-player-title>
-          <PipeData v-if="!isLiveStream" class="text-xs md:text-base">
+          <PipeData
+            v-if="!isLiveStream"
+            class="text-xs md:text-base"
+            :hidePipe="Boolean(currentEpisode?.fromAuto)"
+          >
             <template #left>
               {{ getEpisodeContextLabel }}
             </template>
+            <!-- an item started from the car has no date -->
             <template #right>
-              {{ getDate(currentEpisode) }}
+              {{ currentEpisode?.fromAuto ? "" : getDate(currentEpisode) }}
             </template>
           </PipeData>
           <div class="expanded-title">{{ getTitle }}</div>
@@ -657,7 +707,6 @@ onMounted(async () => {
           </div>
         </template>
         <template #expanded-content>
-          <!-- <Button label="Cast" @click="handleCast" /> -->
           <AudioPlayerExpanded @close-panel="playerRef.toggleExpanded()" />
         </template>
       </player-v-new-persistent-player>
@@ -702,23 +751,6 @@ body {
   .track-info-livestream {
     display: none !important;
   }
-  // no time
-  .media-time,
-  .media-time-divider {
-    display: none !important;
-  }
-
-  // no seek buttons
-  media-seek-button {
-    display: none !important;
-  }
-
-  .track-info {
-    //margin-left: 6px;
-  }
-  media-play-button {
-    margin-right: 6px;
-  }
 
   // because the desc is v-html and injecting a <p> tag that is overwriting the description styles
   .track-info-description * {
@@ -757,9 +789,6 @@ body {
             height: 144px;
           }
         }
-        #expandedViewPlayer {
-          margin-top: 1rem;
-        }
         @include content-formatting();
       }
       .expanded-title {
@@ -789,14 +818,6 @@ body {
             rgba(255, 255, 255, 0) 100%
           );
         }
-      }
-    }
-    #expandedControls {
-      min-height: 85px;
-      .next-10-icon,
-      .previous-10-icon {
-        width: 20px;
-        height: 20px;
       }
     }
   }

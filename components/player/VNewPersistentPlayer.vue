@@ -4,13 +4,14 @@ import GoogleCastIcon from "../icons/GoogleCastIcon.vue"
 import VNewTrackInfo from "./VNewTrackInfo.vue"
 import { useSwipe } from "@vueuse/core"
 import Button from "primevue/button"
-import { nextTick, onMounted, ref, watch } from "vue"
+import { onBeforeUnmount, onMounted, ref, watch } from "vue"
 import {
   useIsApp,
   usePlaylistQueueState,
   usePlaylistQueueSideBar,
 } from "~/composables/states"
 import { toggleNativePullToRefresh } from "~/utilities/helpers"
+import { stepVolume } from "~/utilities/player"
 import { usePlaylistQueue } from "~/composables/usePlaylistQueue"
 const { hasNext, hasPrevious } = usePlaylistQueue()
 const playlistQueueState = usePlaylistQueueState()
@@ -560,27 +561,29 @@ const playNextInPlaylist = () => {
   emit("play-next-in-playlist")
 }
 
-onMounted(async () => {
-  // keyboard accessibility
-  window.addEventListener("keydown", (event) => {
-    switch (event.code) {
-      case "ArrowUp":
-        if (props.volume < 1) {
-          emit("volume-change", props.volume + 0.1)
-        }
-        break
-      case "ArrowDown":
-        if (props.volume > 0) {
-          emit("volume-change", props.volume - 0.1)
-        }
-        break
-      default:
-        /* code */
-        break
-    }
-  })
+// keyboard accessibility: the up and down arrows change the volume
+const handleVolumeKeys = (event: KeyboardEvent) => {
+  if (event.code !== "ArrowUp" && event.code !== "ArrowDown") return
+  // unless the arrows are for something else: typing, or a control that handled them (e.g. a slider)
+  const target = event.target as HTMLElement | null
+  if (
+    event.defaultPrevented ||
+    target?.isContentEditable ||
+    target?.closest?.("input, textarea, select, [role='slider']")
+  ) {
+    return
+  }
+  const volume = stepVolume(props.volume, event.code === "ArrowUp" ? 0.1 : -0.1)
+  if (volume !== props.volume) {
+    emit("volume-change", volume)
+  }
+}
 
-  await nextTick()
+onMounted(() => {
+  window.addEventListener("keydown", handleVolumeKeys)
+})
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", handleVolumeKeys)
 })
 
 defineExpose({
