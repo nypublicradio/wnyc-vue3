@@ -11,7 +11,7 @@ A single Nuxt 4 / Vue 3 codebase that ships as two products:
 
 Core stack: **Nuxt 4 / Vue 3**, **PrimeVue 4** (UI components and theming), **Capacitor 8** (native shell and device APIs) and **Supabase** (auth and user data such as profiles and notification topics).
 
-Node `>=24.20.0` (see `.nvmrc`). Private `@nypublicradio/*` packages need a GitHub token in `.npmrc` (see `.npmrc.sample`).
+Node `>=24.22.1` (see `.nvmrc`). Private `@nypublicradio/*` packages need a GitHub token in `.npmrc` (see `.npmrc.sample`).
 
 ## Commands
 

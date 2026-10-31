@@ -1,5 +1,6 @@
 <script setup>
 import { RemoteStreamer } from "@nypublicradio/capacitor-remote-streamer"
+import { WnycAuto } from "@nypublicradio/wnyc-auto"
 import { Capacitor } from "@capacitor/core"
 import { ref, watch, nextTick } from "vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
@@ -35,7 +36,8 @@ import useManageScrollPosition from "~/composables/useManageScrollPosition"
 import { initMediaSession } from "~/utilities/media-session.js"
 import { useContinuousPlay } from "~/composables/useContinuousPlay"
 import { usePlaylistQueue } from "~/composables/usePlaylistQueue"
-const { initContinuousPlay } = useContinuousPlay()
+const { playNextAfterEnd, playLiveStreamAfterEnd, bumperEnded, cancelBumper } =
+  useContinuousPlay()
 // keep the playlist queue in sync with whatever is playing
 const {
   initPlaylistQueueWatcher,
@@ -77,6 +79,8 @@ const playerRef = ref(null)
 const isBuffering = ref(false)
 const suppressTransitionErrorsUntil = ref(0)
 const playbackFromAuto = ref(false)
+// continuous play is starting the next item because the last one ended
+const advancingAfterEnd = ref(false)
 
 const route = useRoute()
 
@@ -149,6 +153,20 @@ const getConfiguredAudioUrl = computed(() => {
   }listenerid=${adID}&aw_0_1st.lmt=${restriction}&aw_0_1st.userid=${userID}&device=${thisDevice}`
 })
 
+// CarPlay / Android Auto add the same parameters natively (wnyc-auto), but can't
+// see who is signed in, so share it. It's saved on the device for car cold starts.
+if (Capacitor.isNativePlatform()) {
+  watch(
+    () => currentUser?.value?.id ?? null,
+    (userId) => {
+      WnycAuto.setListenerContext({ userId: userId ? String(userId) : null }).catch((e) =>
+        console.warn("Failed to share listener context with the car experience:", e)
+      )
+    },
+    { immediate: true }
+  )
+}
+
 //player release utility function
 // ios and web just calls stop(), android calls releasePlayer()
 const releasePlayer = async () => {
@@ -190,8 +208,14 @@ const switchEpisode = async (val) => {
   // Skip native teardown/play if Auto/CarPlay already started playback
   const fromAuto = playbackFromAuto.value
   playbackFromAuto.value = false
+  // After an item ended there is nothing to tear down, and the app may be in the
+  // background, where it only runs briefly and timers are throttled: play right away
+  const afterEnd = advancingAfterEnd.value
+  advancingAfterEnd.value = false
+  // anything starting replaces the live stream bumper
+  cancelBumper()
 
-  if (!fromAuto) {
+  if (!fromAuto && !afterEnd) {
     await releasePlayer()
     // Small delay to ensure cleanup completes
     await new Promise((resolve) => setTimeout(resolve, 100))
@@ -313,12 +337,25 @@ const handleError = async (e) => {
 
 /*function that fires when the episode has ended/completed */
 const episodeEnded = async () => {
+  // the live stream bumper (continuous play) ended: on to the live stream
+  if (bumperEnded()) return
+
+  // before anything changes the current episode
+  trackAudioEvent("ended", getMediaType.value, getTitle.value, getDescription.value)
+
+  // continuous play: straight on to the next item in the playlist queue, keeping the player open
+  advancingAfterEnd.value = true
+  if (playNextAfterEnd()) return
+  advancingAfterEnd.value = false
+
+  const endedEpisode = currentEpisode.value
   if (isPlayerExpanded.value) {
     playerRef.value.toggleExpanded()
     handleIsExpanded(false)
     setTimeout(() => {
       showPlayer.value = false
-      currentEpisode.value = null
+      // unless something else (e.g. the live stream) has started meanwhile
+      if (currentEpisode.value === endedEpisode) currentEpisode.value = null
     }, 500)
   } else {
     showPlayer.value = false
@@ -326,10 +363,9 @@ const episodeEnded = async () => {
     handleIsExpanded(false)
   }
   await releasePlayer()
-  trackAudioEvent("ended", "on_demand", getTitle.value, getDescription.value)
 
   // if the user has continuous play enabled, then we want to play the live stream after the episode has ended
-  initContinuousPlay()
+  playLiveStreamAfterEnd()
 }
 
 // resume the player if the network is connected where they left off
@@ -424,7 +460,8 @@ onMounted(async () => {
   })
   await RemoteStreamer.addListener("ready", (data) => {
     currentEpisodeDuration.value = data.duration
-    currentEpisode.value.duration = data.duration
+    // no episode while the live stream bumper plays
+    if (currentEpisode.value) currentEpisode.value.duration = data.duration
     isStreamLoading.value = false
   })
   await RemoteStreamer.addListener("play", () => {
@@ -467,29 +504,18 @@ onMounted(async () => {
     isEpisodePlaying.value = false
     isStreamLoading.value = false
     currentEpisodeProgress.value = 0
-    // this is work webview detecting the end of the audio
+    // the end of an item on Android and web (episodeEnded tracks it)
     if (e?.ended) {
       episodeEnded()
-      trackAudioEvent(
-        "ended",
-        getMediaType.value,
-        getTitle.value,
-        getDescription.value
-      )
     }
   })
+  // the end of an item on iOS (episodeEnded tracks it)
   await RemoteStreamer.addListener("ended", (e) => {
     isEpisodePlaying.value = false
     isStreamLoading.value = false
     currentEpisodeProgress.value = 0
     if (e.ended) {
       episodeEnded()
-      trackAudioEvent(
-        "ended",
-        getMediaType.value,
-        getTitle.value,
-        getDescription.value
-      )
     }
   })
 
@@ -528,7 +554,7 @@ onMounted(async () => {
     }
   }
 
-  await RemoteStreamer.addListener("playFromCarPlay", handleAutoPlayEvent)
+  // Playback started natively (CarPlay, Android Auto, Assistant): same event on both platforms
   await RemoteStreamer.addListener("playFromMediaId", handleAutoPlayEvent)
 
   // Sync with Auto/CarPlay if playback is already in progress when app opens

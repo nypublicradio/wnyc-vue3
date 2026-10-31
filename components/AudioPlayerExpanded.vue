@@ -78,7 +78,8 @@ watch(
         false
       )
       // handle if isShowFollowable
-      isShowFollowable.value = !trueTo.value.includes("http")
+      isShowFollowable.value =
+        Boolean(trueTo.value) && !trueTo.value.includes("http")
     }
   },
   { immediate: true }

@@ -1731,38 +1731,3 @@ export const areShowTitlesEquivalent = (a?: string, b?: string): boolean => {
     normalizedA.includes(normalizedB) || normalizedB.includes(normalizedA)
   )
 }
-
-// quick simple way to play local mp3 files and detect when it is complete
-export function playLocalMp3 (url: string, callback: () => void) {
-  const audio = new Audio()
-
-  // Add event listener for audio completion
-  audio.addEventListener('ended', () => {
-    // execute the callback function
-    if (callback) {
-      callback()
-    }
-  })
-  // Set the source URL
-  audio.src = url
-
-  // Play the audio
-  audio.play().catch((error) => {
-    console.error('Error playing audio:', error)
-  })
-
-  // Return a function to stop the audio and remove the event listener
-  const stopLocalMp3 = () => {
-    audio.removeEventListener('ended', () => {
-      if (callback) {
-        callback()
-      }
-    })
-    audio.pause()
-    audio.currentTime = 0
-  }
-
-  return {
-    stopLocalMp3
-  }
-}

@@ -119,6 +119,9 @@ export const usePlaylistQueueState = () =>
     currentId: null as string | null,
   }))
 
+// whether continuous play is playing the live stream's audio bumper (it isn't an episode, so it has no player UI)
+export const useIsPlayingBumper = () => useState('useIsPlayingBumper', () => false)
+
 // global state for the network connection
 export const useIsNetworkConnected = () => useState('useIsNetworkConnected', () => true)
 
