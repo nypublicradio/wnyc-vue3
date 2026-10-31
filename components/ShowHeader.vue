@@ -28,7 +28,9 @@ import useSleepTimer from "~/composables/useSleepTimer"
 import useLiveStream from "~/composables/data/liveStream"
 import { useToast } from "primevue/usetoast"
 import { liveStationPreferences } from "~/composables/globals"
+import { usePlaylistQueue } from "~/composables/usePlaylistQueue"
 const { getStationBySlugAndPlayIt } = useLiveStream()
+const { startPlaylistFromCuratedList } = usePlaylistQueue()
 const props = defineProps({
   show: {
     type: Object,
@@ -90,29 +92,18 @@ if (import.meta.client) {
   })
 }
 
-// finds first episode with audio to play
+// finds first episode with audio to play, and the curated list it is in
 const firstEpisodeWithAudio = () => {
-  const allListItems = []
-  const listItems = show.value?.body?.filter(
-    (item) => item.type === "curated_list"
-  )
+  const curatedLists =
+    show.value?.body?.filter((item) => item.type === "curated_list") ?? []
 
-  if (listItems?.length) {
-    listItems?.forEach((item) => {
-      allListItems.push(...item.value?.list?.listItems)
-    })
-
-    const firstPlayableEpisode = allListItems.find((item) => {
-      if (hasAudio(item.audio)) {
-        return true
-      } else if (typeof item.audio === "string") {
-        return true
-      } else {
-        return false
-      }
-    })
-    return firstPlayableEpisode
+  for (const curatedList of curatedLists) {
+    const episode = curatedList.value?.list?.listItems?.find((item) =>
+      hasAudio(item.audio)
+    )
+    if (episode) return { curatedList, episode }
   }
+  // no curated lists, or none of their items have audio
   toast.add({
     severity: "info",
     summary: "No playable episodes",
@@ -174,9 +165,14 @@ const togglePlayMostRecentEpisode = () => {
   } else if (isCurrentlyLive.value) {
     getStationBySlugAndPlayIt(currentEpisodeHolder.value.slug, true)
   } else {
-    const ep = firstEpisodeWithAudio()
-    if (ep) {
-      togglePlayEpisode(ep)
+    const firstEpisode = firstEpisodeWithAudio()
+    if (firstEpisode) {
+      // populate the playlist queue with the curated list the episode is in
+      startPlaylistFromCuratedList(
+        firstEpisode.curatedList,
+        firstEpisode.episode
+      )
+      togglePlayEpisode(firstEpisode.episode)
     }
   }
 }

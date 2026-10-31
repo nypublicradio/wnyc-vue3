@@ -15,6 +15,8 @@ if (route.params.slug === "episode") {
   throw createError({
     statusCode: 404,
     statusMessage: "Series not found",
+    // shows the error page after a client-side navigation too (Vue errors are only reported once the app has loaded)
+    fatal: true,
   })
 }
 

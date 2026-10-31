@@ -10,7 +10,7 @@ const {
   formattedTime,
   startTimer,
   pauseTimer,
-  resetTimer,
+  cancelTimer,
   onUpdateDuration,
   sleepTimerPaused,
   updateUserPreferences,
@@ -235,7 +235,7 @@ watch(
             <Button v-if="sleepTimerPaused" @click="startTimer">Resume</Button>
             <Button v-else @click="pauseTimer">Pause</Button>
           </div>
-          <Button @click="resetTimer" severity="secondary">Cancel</Button>
+          <Button @click="cancelTimer" severity="secondary">Cancel</Button>
         </div>
       </div>
     </div>

@@ -4,9 +4,17 @@ import GoogleCastIcon from "../icons/GoogleCastIcon.vue"
 import VNewTrackInfo from "./VNewTrackInfo.vue"
 import { useSwipe } from "@vueuse/core"
 import Button from "primevue/button"
-import { nextTick, onMounted, ref, watch } from "vue"
-import { useIsApp } from "~/composables/states"
+import { onBeforeUnmount, onMounted, ref, watch } from "vue"
+import {
+  useIsApp,
+  usePlaylistQueueState,
+  usePlaylistQueueSideBar,
+} from "~/composables/states"
 import { toggleNativePullToRefresh } from "~/utilities/helpers"
+import { stepVolume } from "~/utilities/player"
+import { usePlaylistQueue } from "~/composables/usePlaylistQueue"
+const { hasNext, hasPrevious } = usePlaylistQueue()
+const playlistQueueState = usePlaylistQueueState()
 const props = defineProps({
   /**
    * get if the stream is buffering / loading
@@ -214,6 +222,13 @@ const props = defineProps({
     type: Boolean,
   },
   /**
+   * show the next/previous buttons
+   */
+  showNextPrevious: {
+    default: true,
+    type: Boolean,
+  },
+  /**
    * show the skip buttons
    */
   showVolume: {
@@ -295,8 +310,11 @@ const emit = defineEmits([
   "is-expanded",
   "swipe-up",
   "swipe-down",
+  "play-previous-in-playlist",
+  "play-next-in-playlist",
 ])
 const isApp = useIsApp()
+const playlistQueueSideBar = usePlaylistQueueSideBar()
 const isStreamLoading = computed(() => props.isStreamLoading)
 const isEpisodePlaying = computed(() => props.isEpisodePlaying)
 const isLiveStream = computed(() => props.isLiveStream)
@@ -526,27 +544,46 @@ const handleClickAnywhere = (e) => {
   }
 }
 
-onMounted(async () => {
-  // keyboard accessibility
-  window.addEventListener("keydown", (event) => {
-    switch (event.code) {
-      case "ArrowUp":
-        if (props.volume < 1) {
-          emit("volume-change", props.volume + 0.1)
-        }
-        break
-      case "ArrowDown":
-        if (props.volume > 0) {
-          emit("volume-change", props.volume - 0.1)
-        }
-        break
-      default:
-        /* code */
-        break
-    }
-  })
+// exposed method to handle the queue toggle
+const togglePlaylistQueue = () => {
+  playlistQueueSideBar.value = !playlistQueueSideBar.value
+}
 
-  await nextTick()
+// central place to check for playlistQueueState.items.length > 1
+const hasMultipleItemsInPlaylist = computed(() => {
+  return playlistQueueState.value?.items?.length > 1
+})
+
+const playPreviousInPlaylist = () => {
+  emit("play-previous-in-playlist")
+}
+const playNextInPlaylist = () => {
+  emit("play-next-in-playlist")
+}
+
+// keyboard accessibility: the up and down arrows change the volume
+const handleVolumeKeys = (event: KeyboardEvent) => {
+  if (event.code !== "ArrowUp" && event.code !== "ArrowDown") return
+  // unless the arrows are for something else: typing, or a control that handled them (e.g. a slider)
+  const target = event.target as HTMLElement | null
+  if (
+    event.defaultPrevented ||
+    target?.isContentEditable ||
+    target?.closest?.("input, textarea, select, [role='slider']")
+  ) {
+    return
+  }
+  const volume = stepVolume(props.volume, event.code === "ArrowUp" ? 0.1 : -0.1)
+  if (volume !== props.volume) {
+    emit("volume-change", volume)
+  }
+}
+
+onMounted(() => {
+  window.addEventListener("keydown", handleVolumeKeys)
+})
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", handleVolumeKeys)
 })
 
 defineExpose({
@@ -621,6 +658,19 @@ defineExpose({
               <div class="btns flex align-items-center justify-content-center">
                 <Transition name="skipBtnL">
                   <Button
+                    v-if="props.showNextPrevious && hasMultipleItemsInPlaylist"
+                    class="media-button flex-none p-button-icon-only skip-btn flex-grow-1"
+                    severity="secondary"
+                    @click="playPreviousInPlaylist"
+                    :disabled="isLiveStream || !hasPrevious"
+                  >
+                    <slot name="previousItem"
+                      ><i class="pi pi-step-backward text-xs"></i
+                    ></slot>
+                  </Button>
+                </Transition>
+                <Transition name="skipBtnL">
+                  <Button
                     v-if="props.showSkip"
                     class="media-button flex-none p-button-icon-only skip-btn flex-grow-1"
                     severity="secondary"
@@ -659,6 +709,19 @@ defineExpose({
                     <slot name="skipAhead"><i class="pi pi-refresh"></i></slot>
                   </Button>
                 </Transition>
+                <Transition name="skipBtnR">
+                  <Button
+                    v-if="props.showNextPrevious && hasMultipleItemsInPlaylist"
+                    class="media-button flex-none p-button-icon-only p-button-secondary skip-btn"
+                    severity="secondary"
+                    :disabled="isLiveStream || !hasNext"
+                    @click="playNextInPlaylist"
+                  >
+                    <slot name="nextItem"
+                      ><i class="pi pi-step-forward text-xs"></i
+                    ></slot>
+                  </Button>
+                </Transition>
               </div>
               <div class="w-full">
                 <player-v-timeline
@@ -682,6 +745,16 @@ defineExpose({
                 @volume-toggle-mute="volumeToggleMute"
                 @volume-change="volumeChange"
               />
+              <Button
+                v-if="hasMultipleItemsInPlaylist"
+                class="flex-none p-button-icon-only p-button-secondary"
+                severity="secondary"
+                variant="text"
+                title="Playlist Queue"
+                @click="togglePlaylistQueue"
+              >
+                <slot name="playlist"><MoreEpisodesIcon /></slot>
+              </Button>
               <Button
                 v-if="props.canExpand"
                 class="flex-none p-button-icon-only p-button-secondary"
@@ -739,7 +812,7 @@ defineExpose({
             <slot name="header-content"></slot>
 
             <div
-              class="flex flex-column md:flex-row gap-3 md:align-items-center"
+              class="flex flex-column md:flex-row gap-3 md:align-items-center media-info"
             >
               <VImage
                 class="flex-none w-9rem h-9rem align-self-center md:align-self-start"
@@ -783,6 +856,19 @@ defineExpose({
               >
                 <Transition name="skipBtnL">
                   <Button
+                    v-if="props.showNextPrevious && hasMultipleItemsInPlaylist"
+                    class="media-button flex-none p-button-icon-only"
+                    severity="secondary"
+                    @click="playPreviousInPlaylist"
+                    :disabled="isLiveStream || !hasPrevious"
+                  >
+                    <slot name="previousItem"
+                      ><i class="pi pi-step-backward"></i
+                    ></slot>
+                  </Button>
+                </Transition>
+                <Transition name="skipBtnL">
+                  <Button
                     v-if="!isLiveStream"
                     class="media-button flex-none p-button-icon-only"
                     severity="secondary"
@@ -817,6 +903,19 @@ defineExpose({
                     @click="skipAhead"
                   >
                     <slot name="skipAhead"><i class="pi pi-refresh"></i></slot>
+                  </Button>
+                </Transition>
+                <Transition name="skipBtnR">
+                  <Button
+                    v-if="props.showNextPrevious && hasMultipleItemsInPlaylist"
+                    class="media-button flex-none p-button-icon-only p-button-secondary"
+                    severity="secondary"
+                    :disabled="isLiveStream || !hasNext"
+                    @click="playNextInPlaylist"
+                  >
+                    <slot name="nextItem"
+                      ><i class="pi pi-step-forward"></i
+                    ></slot>
                   </Button>
                 </Transition>
               </div>

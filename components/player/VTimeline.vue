@@ -48,6 +48,7 @@ const emit = defineEmits([
 const currentEpisodeDuration = computed(() => props.currentEpisodeDuration)
 const currentEpisodeProgress = computed(() => props.currentEpisodeProgress)
 const isLiveStream = computed(() => props.isLiveStream)
+// the user is moving the position (drag, click or arrow keys), so the progress doesn't follow the audio meanwhile
 const isDragging = ref(false)
 const jumpToValue = ref(0)
 
@@ -74,17 +75,19 @@ const handleDragging = (value) => {
   jumpToValue.value = value
   progress.value = value
 }
-// handles drag end on the timeline
-const handleDragEnd = (data) => {
-  emit("scrub-timeline-end", data.value)
+// seeks to the position picked, once per drag, click or key press: the end of a drag on desktop is also a click,
+// so whichever comes first seeks and the other has nothing left to do
+const handleSeek = () => {
+  if (!isDragging.value) return
   isDragging.value = false
-  progress.value = data.value
+  emit("scrub-timeline-end", jumpToValue.value)
+  progress.value = jumpToValue.value
 }
 // handles click on the timeline
 const handleClick = () => {
   // uses the jumpToValue.value from the change event in the handleDragging function
   emit("scrub-timeline-click", jumpToValue.value)
-  handleDragEnd({ value: jumpToValue.value })
+  handleSeek()
 }
 </script>
 
@@ -109,8 +112,10 @@ const handleClick = () => {
       aria-label="progress slider"
       title="progress slider"
       aria-labelledby="progress slider"
-      @slideend="handleDragEnd"
+      @slideend="handleSeek"
       @click="handleClick"
+      @keyup="handleSeek"
+      @focusout="handleSeek"
       @update:modelValue="handleDragging"
     />
 
