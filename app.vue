@@ -291,6 +291,9 @@ useSeoMeta({
   twitterCard: "summary_large_image",
   twitterSite: "@WNYC",
   themeColor,
+  twitterTitle: title,
+  twitterDescription: description,
+  twitterImage: ogImage.url,
 })
 </script>
 
