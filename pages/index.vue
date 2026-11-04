@@ -20,11 +20,26 @@ if (import.meta.server && !isApp.value) {
   navigateTo("/home", { redirectCode: 302 })
 }
 
-onMounted(() => {
-  setTimeout(() => {
-    navigateTo("/home")
-  }, 1000)
-})
+const router = useRouter()
+let homeRedirectTimer = null
+
+// send the user to /home after a delay, unless they've already left this page
+const redirectHome = (delay) => {
+  clearTimeout(homeRedirectTimer)
+  homeRedirectTimer = setTimeout(() => {
+    if (router.currentRoute.value.path === "/") {
+      navigateTo("/home")
+    }
+  }, delay)
+}
+
+onMounted(() => redirectHome(1000))
+
+// something else (a deep link, notification tap, etc.) is routing away from this page. Give it time to finish,
+// and only fall back to /home if it fails and leaves the user stuck here
+onBeforeRouteLeave(() => redirectHome(5000))
+
+onBeforeUnmount(() => clearTimeout(homeRedirectTimer))
 </script>
 <template>
   <div class="index">

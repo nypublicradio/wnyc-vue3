@@ -96,24 +96,13 @@ const clearAllToasts = () => {
   toast.removeAllGroups()
 }
 
-// adds listeners for push notifications and appStateChange and appUrlOpen
-const addListeners = async () => {
-  await App.addListener("appUrlOpen", (event: URLOpenListenerEvent) => {
-    //Handle the app url open event
-    handleAppUrlOpen(event)
-  })
-}
-
 onMounted(async () => {
-  // Register deep link listener IMMEDIATELY so we don't miss the launch URL event
   if (isNativeApp.value) {
-    await addListeners()
-
-    // Also check if the app was cold-launched via a deep link (event may have fired before listener)
-    const launchUrl = await App.getLaunchUrl()
-    if (launchUrl?.url) {
-      handleAppUrlOpen(launchUrl)
-    }
+    // Listens for the life of the app: deep links, OAuth callbacks, actionids and triggers.
+    // On a cold start, Capacitor holds the launch URL's event until this listener is added.
+    await App.addListener("appUrlOpen", (event: URLOpenListenerEvent) => {
+      handleAppUrlOpen(event)
+    })
   }
 
   // Initialize device info and app download link asynchronously (client-side only)
@@ -282,8 +271,26 @@ useHead({
     {
       rel: "icon",
       type: "image/x-icon",
-      href: "https://media.wnyc.org/static/img/favicon_wnyc.ico?_=1553611630",
+      href: "/favicon.ico",
     },
+    {
+      rel: "apple-touch-icon",
+      sizes: "180x180",
+      href: "/apple-touch-icon.png",
+    },
+    {
+      rel: "icon",
+      type: "image/png",
+      sizes: "32x32",
+      href: "/favicon-32x32.png",
+    },
+    {
+      rel: "icon",
+      type: "image/png",
+      sizes: "16x16",
+      href: "/favicon-16x16.png",
+    },
+    { rel: "manifest", href: "/site.webmanifest" },
   ],
 })
 useSeoMeta({
@@ -302,6 +309,9 @@ useSeoMeta({
   twitterCard: "summary_large_image",
   twitterSite: "@WNYC",
   themeColor,
+  twitterTitle: title,
+  twitterDescription: description,
+  twitterImage: ogImage.url,
 })
 </script>
 
