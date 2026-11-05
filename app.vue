@@ -96,24 +96,13 @@ const clearAllToasts = () => {
   toast.removeAllGroups()
 }
 
-// adds listeners for push notifications and appStateChange and appUrlOpen
-const addListeners = async () => {
-  await App.addListener("appUrlOpen", (event: URLOpenListenerEvent) => {
-    //Handle the app url open event
-    handleAppUrlOpen(event)
-  })
-}
-
 onMounted(async () => {
-  // Register deep link listener IMMEDIATELY so we don't miss the launch URL event
   if (isNativeApp.value) {
-    await addListeners()
-
-    // Also check if the app was cold-launched via a deep link (event may have fired before listener)
-    const launchUrl = await App.getLaunchUrl()
-    if (launchUrl?.url) {
-      handleAppUrlOpen(launchUrl)
-    }
+    // Listens for the life of the app: deep links, OAuth callbacks, actionids and triggers.
+    // On a cold start, Capacitor holds the launch URL's event until this listener is added.
+    await App.addListener("appUrlOpen", (event: URLOpenListenerEvent) => {
+      handleAppUrlOpen(event)
+    })
   }
 
   // Initialize device info and app download link asynchronously (client-side only)
@@ -302,6 +291,9 @@ useSeoMeta({
   twitterCard: "summary_large_image",
   twitterSite: "@WNYC",
   themeColor,
+  twitterTitle: title,
+  twitterDescription: description,
+  twitterImage: ogImage.url,
 })
 </script>
 
