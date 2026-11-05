@@ -270,8 +270,8 @@ useHead({
     { rel: "canonical", href: canonicalUrl },
     {
       rel: "icon",
-      type: "image/x-icon",
-      href: "/favicon.ico",
+      type: "image/png",
+      href: "https://cms.prod.nypr.digital/images/362345/fill-32x32|format-png/", // Favicon for the site from PROD wagtail
     },
     {
       rel: "apple-touch-icon",
