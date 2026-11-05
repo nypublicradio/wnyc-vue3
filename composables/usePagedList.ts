@@ -11,12 +11,14 @@ export const usePagedList = (list: Ref<any>) => {
   const extra = ref<any[]>([])
   const next = ref(list.value?.nextPage ?? null)
   const pending = ref(false)
+  const error = ref<unknown>(null)
 
   watch(
     () => list.value?.listItems,
     () => {
       extra.value = []
       next.value = list.value?.nextPage ?? null
+      error.value = null
     }
   )
 
@@ -26,6 +28,7 @@ export const usePagedList = (list: Ref<any>) => {
   const loadMore = async () => {
     if (pending.value || !next.value) return
     pending.value = true
+    error.value = null
     const { path, offset } = next.value
     try {
       const res = await $fetch(`${config.public.BFF_URL}${path}`, { query: { offset } })
@@ -38,6 +41,7 @@ export const usePagedList = (list: Ref<any>) => {
       next.value = page.hasMore ? { path, offset: page.nextOffset } : null
       trackClickEvent("Event Tracking - load more episodes", "Shows Page", list.value?.title)
     } catch (err) {
+      error.value = err
       useGlobalToast().value = {
         severity: "error",
         summary: "Sorry. We are having trouble loading more episodes. Please try again later.",
@@ -50,5 +54,5 @@ export const usePagedList = (list: Ref<any>) => {
     }
   }
 
-  return { items, canLoadMore, pending, loadMore }
+  return { items, canLoadMore, pending, loadMore, error }
 }

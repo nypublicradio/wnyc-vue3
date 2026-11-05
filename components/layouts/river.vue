@@ -45,6 +45,7 @@ const {
   canLoadMore: canFetchMore,
   pending: fetching,
   loadMore: fetchMore,
+  error: hasError,
 } = usePagedList(toRef(props, "list"))
 const visibleCount = ref(props.initialLimit)
 const loadMoreRef = ref(null)
@@ -120,7 +121,7 @@ onUnmounted(() => stop())
       />
     </div>
     <div
-      v-if="canFetchMore"
+      v-if="canFetchMore && !hasError"
       class="flex flex-column justify-content-center mt-5"
     >
       <WnycLoader spinner size="40px" class="mt-8" />
