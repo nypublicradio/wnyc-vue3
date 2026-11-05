@@ -268,6 +268,8 @@ useHead({
   ],
   link: [
     { rel: "canonical", href: canonicalUrl },
+    // Local fallback favicon, used if the remote one below fails to load
+    { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
     {
       rel: "icon",
       type: "image/png",
