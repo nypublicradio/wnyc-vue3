@@ -118,10 +118,7 @@ const getSchedulePdfLink = async () => {
     }
   )
   const pdfData = response.data
-  const documentBaseUrl = config.public.IMAGE_BASE_URL.replace('images', 'documents')
-  const scheduleDownloadUrl = pdfData?.value?.meta?.downloadUrl
-  const scheduleFilename = scheduleDownloadUrl?.split('/').pop()
-  const schedulePdfLink = `${documentBaseUrl}${config.public.SCHEDULE_PDF_DOCUMENT_ID}/${scheduleFilename}`
+  const schedulePdfLink = pdfData?.value?.meta?.downloadUrl
   return schedulePdfLink
 }
 
