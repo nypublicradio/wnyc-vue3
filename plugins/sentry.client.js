@@ -39,6 +39,17 @@ export default defineNuxtPlugin((nuxtApp) => {
     environment: config.public.SENTRY_ENV,
   })
 
+  // Sentry wraps Nuxt's startup error handler, so Nuxt can't remove it once the app has loaded, and every
+  // later Vue error would show the error page. Once loaded, Vue errors are only reported and logged, like Nuxt
+  // does on its own (route and fatal errors still show the error page through Nuxt's own handling)
+  nuxtApp.hooks.hookOnce('app:suspense:resolve', () => {
+    vueApp.config.errorHandler = (error, instance, info) => {
+      console.error(`[Vue error in ${info}]`, error)
+    }
+    // reports to Sentry (with the component and lifecycle hook) before calling the handler above
+    Sentry.attachErrorHandler(vueApp, { attachProps: true })
+  })
+
   return {
     provide: {
       sentry: {

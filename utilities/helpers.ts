@@ -51,6 +51,7 @@ import {
   type AppTrackingStatusResponse,
 } from "capacitor-plugin-app-tracking-transparency"
 import { initMediaSession } from "~/utilities/media-session.js"
+import { isSameLiveStation } from "~/utilities/player"
 import { capacitorIosNotificationSettings } from '@nypublicradio/capacitor-ios-notification-settings'
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics'
 import { WAGTAIL_PAGE_TYPES } from "~/composables/data/basePages"
@@ -945,7 +946,7 @@ export const deleteFavorite = async (media: object, tableArg = "favorited") => {
   if (user.value) {
     // format the media object to save
     const uid = user.value?.id
-    const slug = media?.slug ?? media?.meta.slug
+    const slug = media?.slug ?? media?.meta?.slug
     //const media_id = media.media_id ?? media?.id
     //save instance to Supabase
     const client = useSupabaseClient()
@@ -1563,8 +1564,20 @@ export const refreshData = async (refreshUser = false) => {
   // watch on the live.vue handles this schedule data
 
   // update currentEpisode LIVE STREAM data and prep for player and media session IF it is or has been played and the expanded player and media session are open
-  if (currentEpisode.value && isLiveStream.value) {
-    currentEpisode.value = prepForPlayer(currentEpisodeHolder.value)
+  // only for the station that is playing, which may not be the app's station when the stream was started from the car
+  if (
+    currentEpisode.value &&
+    isLiveStream.value &&
+    isSameLiveStation(currentEpisode.value, currentEpisodeHolder.value)
+  ) {
+    // keep the stream urls that are playing, so the player doesn't restart (a stream started from the car only has the hls url)
+    const { hls, file, audio } = currentEpisode.value
+    currentEpisode.value = {
+      ...prepForPlayer(currentEpisodeHolder.value),
+      hls,
+      file,
+      audio,
+    }
     //update media session
     initMediaSession(currentEpisode.value)
   }
@@ -1730,39 +1743,4 @@ export const areShowTitlesEquivalent = (a?: string, b?: string): boolean => {
   return (
     normalizedA.includes(normalizedB) || normalizedB.includes(normalizedA)
   )
-}
-
-// quick simple way to play local mp3 files and detect when it is complete
-export function playLocalMp3 (url: string, callback: () => void) {
-  const audio = new Audio()
-
-  // Add event listener for audio completion
-  audio.addEventListener('ended', () => {
-    // execute the callback function
-    if (callback) {
-      callback()
-    }
-  })
-  // Set the source URL
-  audio.src = url
-
-  // Play the audio
-  audio.play().catch((error) => {
-    console.error('Error playing audio:', error)
-  })
-
-  // Return a function to stop the audio and remove the event listener
-  const stopLocalMp3 = () => {
-    audio.removeEventListener('ended', () => {
-      if (callback) {
-        callback()
-      }
-    })
-    audio.pause()
-    audio.currentTime = 0
-  }
-
-  return {
-    stopLocalMp3
-  }
 }

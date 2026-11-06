@@ -1,4 +1,5 @@
 <script setup>
+import { useGlobalToast } from "~/composables/states"
 import { useTopStories } from "~/composables/useTopStories"
 import {
   getNprTitle,
@@ -9,6 +10,7 @@ const { getFilteredTopStories } = useTopStories()
 
 const route = useRoute()
 const config = useRuntimeConfig()
+const globalToast = useGlobalToast()
 
 const storySource = "NPR"
 //const breadcrumbs = computed(() => [{ label: "Home", route: "/home" }])

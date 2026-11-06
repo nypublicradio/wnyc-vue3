@@ -62,6 +62,9 @@ project(':nypublicradio-capacitor-ios-notification-settings').projectDir = new F
 include ':nypublicradio-capacitor-remote-streamer'
 project(':nypublicradio-capacitor-remote-streamer').projectDir = new File('../node_modules/@nypublicradio/capacitor-remote-streamer/android')
 
+include ':nypublicradio-wnyc-auto'
+project(':nypublicradio-wnyc-auto').projectDir = new File('../node_modules/@nypublicradio/wnyc-auto/android')
+
 include ':bp-capacitor-background-mode'
 project(':bp-capacitor-background-mode').projectDir = new File('../node_modules/bp-capacitor-background-mode/android')
 

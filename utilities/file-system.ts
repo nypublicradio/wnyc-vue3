@@ -15,7 +15,6 @@ import { prepForPlayer } from "~/utilities/helpers"
 import { FALLBACKIMAGEEP } from "~/composables/globals"
 import { Preferences } from "@capacitor/preferences"
 import axios from 'axios'
-import { initMediaSession } from "~/utilities/media-session.js"
 import { useVImage } from "~/composables/useVImage"
 
 const { imageSolver } = useVImage()
@@ -440,22 +439,21 @@ export const playStoredMp3 = async (file) => {
             const savedImageSrc = Capacitor.convertFileSrc(image.uri)
 
             // set the currentEpisode to the file with updated stored URIs for the image adn audio
+            // the AudioPlayer plays it and sets up the media session
             currentEpisode.value = {
                 ...file,
                 file: savedAudioSrc,
                 audio: savedAudioSrc,
                 image: savedImageSrc
             }
-            togglePlayTrigger.value = !togglePlayTrigger.value
-            initMediaSession(currentEpisode.value)
         } catch (e) {
             console.error("Unable to read file", e)
         }
         // not sure how we would handle tracking the saveRecentlyPlayed without a connection. If this were to become a feature, we would need to save the file to local storage and then save it to the server when a connection is re-established
         //saveRecentlyPlayed(file, file.type)
+    } else {
+        togglePlayTrigger.value = !togglePlayTrigger.value
     }
-
-    togglePlayTrigger.value = !togglePlayTrigger.value
 }
 
 // handle getting the stored image URI
