@@ -150,6 +150,7 @@ jobs:
             --build-arg FEATURED_SHOWS_PAGE_ID='${{ vars.FEATURED_SHOWS_PAGE_ID }}' \
             --build-arg NUXT_SSR=true \
             --build-arg CMS_SITE='${{ vars.CMS_SITE }}' \
+            --build-arg SCHEDULE_PDF_DOCUMENT_ID='${{ vars.SCHEDULE_PDF_DOCUMENT_ID }}' \
             -t "${IMAGE}" .
           docker push "${IMAGE}"
           echo "image=${IMAGE}" >> $GITHUB_ENV
