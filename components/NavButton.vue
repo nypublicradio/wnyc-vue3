@@ -58,7 +58,7 @@ const emit = defineEmits([
   "emit-mouseleave",
 ])
 const isApp = useIsApp()
-const route = useRoute()
+const currentRoute = useRoute()
 // Vue Router does not natively fire watchers when clicking a link to the exact same route.
 // We increment this global state so that target pages (like /live) can manually listen for
 // same-page clicks and re-trigger scrolling or other logic.
@@ -105,9 +105,9 @@ const handleClick = () => {
   closePopover()
   emit("emit-click")
 
-  // `route` is still the current route here: the navigation this click
+  // `currentRoute` is still the current route here: the navigation this click
   // started has not resolved yet
-  if (route.fullPath === props.route) {
+  if (currentRoute.fullPath === props.route) {
     samePageNavTrigger.value++
   }
 
