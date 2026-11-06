@@ -58,6 +58,11 @@ const emit = defineEmits([
   "emit-mouseleave",
 ])
 const isApp = useIsApp()
+const currentRoute = useRoute()
+// Vue Router does not natively fire watchers when clicking a link to the exact same route.
+// We increment this global state so that target pages (like /live) can manually listen for
+// same-page clicks and re-trigger scrolling or other logic.
+const samePageNavTrigger = useState("useSamePageNavTrigger", () => 0)
 const fontWeight = ref(props.fontWeight)
 const hasMenuSlot = ref(Boolean(useSlots().menu))
 const op = ref()
@@ -92,6 +97,26 @@ const handleMouseLeave = () => {
   closePopover()
   emit("emit-mouseleave")
 }
+// handle the click on the link
+const handleClick = () => {
+  if (props.command) {
+    props.command()
+  }
+  closePopover()
+  emit("emit-click")
+
+  // `currentRoute` is still the current route here: the navigation this click
+  // started has not resolved yet
+  if (currentRoute.fullPath === props.route) {
+    samePageNavTrigger.value++
+  }
+
+  trackClickEvent(
+    `Click Tracking - ${props.label} Button`,
+    props.trackingLocation,
+    `${props.label} Button`
+  )
+}
 </script>
 <template>
   <VFlexibleLink
@@ -104,29 +129,7 @@ const handleMouseLeave = () => {
     :aria-haspopup="hasMenuSlot ? 'true' : 'false'"
     :tabindex="0"
     :radius="props.radius"
-    @flexible-link-click="
-      () => {
-        if (props.command) {
-          props.command()
-        }
-        closePopover()
-        emit('emit-click')
-
-        const route = useRoute()
-        // Vue Router does not natively fire watchers when clicking a link to the exact same route.
-        // We increment this global state so that target pages (like /live) can manually listen for
-        // same-page clicks and re-trigger scrolling or other logic.
-        if (route.fullPath === props.route) {
-          useState('useSamePageNavTrigger', () => 0).value++
-        }
-
-        trackClickEvent(
-          `Click Tracking - ${props.label} Button`,
-          props.trackingLocation,
-          `${props.label} Button`
-        )
-      }
-    "
+    @flexible-link-click="handleClick"
   >
     <Button
       :label="props.label"

@@ -3,6 +3,7 @@ import humps from 'humps'
 import { cmsSources, mediaTypeRoutes } from '~/composables/globals'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
 import { transformCuratedContent } from '~/utilities/curatedContent'
+import { attachNprNextPage } from '~/utilities/nprPaging'
 import { getCmsPathRedirect, getCmsRequestOptions } from '~/server/utils/cmsRedirect'
 
 // Helper to obtain runtime config, with test override support.
@@ -129,7 +130,7 @@ const getWagtailPageData = async (
 
             return {
                 ...await normalizeArticlePage(resData),
-                body: transformedCuratedContent
+                body: attachNprNextPage(transformedCuratedContent)
             }
         }
         return await normalizeArticlePage(resData)
