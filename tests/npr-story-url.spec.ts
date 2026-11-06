@@ -30,6 +30,6 @@ describe("getNprTitleSlug", () => {
   it("returns null for the normalizer's '/' fallback and missing input", () => {
     expect(getNprTitleSlug("/", id)).toBeNull()
     expect(getNprTitleSlug(undefined, id)).toBeNull()
-    expect(getNprTitleSlug(`https://www.npr.org/2026/11/05/${id}/${title}`, undefined)).toBeNull()
+    expect(getNprTitleSlug(`https://www.npr.org/2026/11/05/${id}/${title}`)).toBeNull()
   })
 })
