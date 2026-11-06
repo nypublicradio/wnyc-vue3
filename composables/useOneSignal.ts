@@ -95,10 +95,7 @@ export default function useOneSignal() {
           "Notification",
           `url = ${url}`
         )
-        // slight delay needed for a cold start, or it will route home after the notification route
-        setTimeout(async () => {
-          await navigateTo(route)
-        }, 1000)
+        navigateTo(route)
         return
       } else {
         // if the url is a link to a web page, then open it in a new tab
@@ -204,10 +201,7 @@ export default function useOneSignal() {
         "app opened from link",
         `url = ${event.url}`
       )
-      // slight delay needed for a cold start, or it will route home after the notification route
-      setTimeout(async () => {
-        await navigateTo(route)
-      }, 1000)
+      await navigateTo(route)
     }
   }
 
