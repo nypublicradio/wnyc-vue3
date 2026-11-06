@@ -268,29 +268,12 @@ useHead({
   ],
   link: [
     { rel: "canonical", href: canonicalUrl },
-    // Local fallback favicon, used if the remote one below fails to load
-    { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
-    {
-      rel: "icon",
-      type: "image/png",
-      href: "https://cms.prod.nypr.digital/images/362345/fill-32x32|format-png/", // Favicon for the site from PROD wagtail
-    },
+    // favicon.png is Proxied from PROD Wagtail with a local fallback, see server/routes/favicon.png.get.ts
+    { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon.png" },
     {
       rel: "apple-touch-icon",
       sizes: "180x180",
       href: "/apple-touch-icon.png",
-    },
-    {
-      rel: "icon",
-      type: "image/png",
-      sizes: "32x32",
-      href: "/favicon-32x32.png",
-    },
-    {
-      rel: "icon",
-      type: "image/png",
-      sizes: "16x16",
-      href: "/favicon-16x16.png",
     },
     { rel: "manifest", href: "/site.webmanifest" },
   ],
