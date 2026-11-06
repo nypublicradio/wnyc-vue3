@@ -1011,8 +1011,12 @@ export async function normalizeNprPage (article: NprArticle, componentType = "de
   const textBody = await processNprLayout(article)
   const { url: audioURL, duration: audioDuration, transcript } = await extractNprAudio(article)
 
-  const bylineUrl = article.collections?.find(c => c.rels?.includes('byline'))?.href ?? null
-  const authors = bylineUrl ? [await getAuthorsFromBylineUrl(bylineUrl)] : null
+  const bylineUrls: string[] = article.collections
+    ?.filter(c => c.rels?.includes('byline') && c.href)
+    .map(c => c.href as string) ?? []
+  const authors = bylineUrls.length
+    ? await Promise.all(bylineUrls.map(url => getAuthorsFromBylineUrl(url)))
+    : null
 
   // Fetch show info from program collection if available
   const programUrl = article.collections?.find(c => c.rels?.includes('program'))?.href ?? null
