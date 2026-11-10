@@ -6,7 +6,7 @@ import {
   isolateSlug,
   goToShowPage,
 } from "~/utilities/helpers"
-import { useCurrentEpisodeHolder } from "~/composables/states"
+import { useCurrentEpisodeHolder, useRecentlyFocused } from "~/composables/states"
 
 const emit = defineEmits(["on-click", "on-delete-favorite"])
 
@@ -154,12 +154,12 @@ const getDotMenuItems = (bucketItem) => {
         rounded
         class="flex-none z-1 flex-row-reverse"
         :aria-label="isFavorited ? 'Unfollow' : 'Follow'"
+        @click="handleAddToFavorites"
       >
         <template #icon>
           <FollowIcon
             class="h-2rem"
             :active="isFavorited"
-            @click="handleAddToFavorites"
           />
         </template>
       </Button>

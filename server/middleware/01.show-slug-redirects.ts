@@ -9,6 +9,7 @@ export default defineEventHandler(async (event) => {
         path.endsWith('_payload.json') ||
         path === '/' ||
         path === '/home' ||
+        path === '/_health' ||
         // Skip known Nuxt page routes that don't exist in Wagtail
         path.startsWith('/browse') ||
         path.startsWith('/events') ||

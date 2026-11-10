@@ -186,7 +186,7 @@ jobs:
           clean-bundle: true
       - setup_npmrc
       - node/install:
-          node-version: 18.18.2
+          node-version: 24.22.1
       - node/install-packages
       - run:
           name: Capacitor Setup
@@ -209,7 +209,7 @@ jobs:
           path: ios/App/output/scan
   android:
     docker: 
-      - image: cimg/android:2023.07
+      - image: cimg/android:2026.08.1
     parameters:
       FASTLANE_LANE:
         type: string
@@ -239,7 +239,7 @@ jobs:
           app-dir: android
           key: v1-gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "android/Gemfile.lock" }}
       - node/install:
-          node-version: 18.18.2
+          node-version: 24.22.1
       - setup_npmrc
       - android/restore-gradle-cache
       - android/decode-keystore:
@@ -254,7 +254,6 @@ jobs:
           command: |
             # Force NUXT_SSR=false for mobile builds (rename_env_vars.sh may override from context)
             export NUXT_SSR=false
-            patch node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/CapacitorWebView.java -i kludge/BackgroundPlay.diff
             npm run generate-splash
             npm run generate
             npx cap sync android
@@ -292,7 +291,7 @@ commands:
 executors:
   default:
     docker:
-      - image: node:18.18.2
+      - image: node:24.22.1
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASS
@@ -301,7 +300,7 @@ executors:
       JOBS: 2
   macosg2:
     macos:
-      xcode: "26.2.0"
+      xcode: "27.0.0"
     resource_class: m4pro.medium
     environment:
       JOBS: 2

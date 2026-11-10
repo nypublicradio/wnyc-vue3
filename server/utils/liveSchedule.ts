@@ -28,7 +28,7 @@ function hasValidTimes (episode: ScheduleEpisode) {
 
 // easy BFF location to store the link to the schedule PDF
 export function getSchedulePdfLink () {
-    return "https://images-prod.gothamist.com/documents/WNYC_New_Schedule_June_2026.pdf"
+    return "https://images-prod.gothamist.com/documents/September_2026_WNYC_Weekly_Schedule_-_Program_Schedule.pdf"
 }
 
 // Get the current episode selection from the schedule data

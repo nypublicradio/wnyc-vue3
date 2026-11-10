@@ -1,5 +1,4 @@
 <script setup>
-
 import { useBreakpoints } from "~/composables/useBreakpoints"
 const props = defineProps({
   label: {
@@ -56,7 +55,7 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
             xs: [112, 112],
             md: [192, 192],
             lg: [353, 235],
-            xl: [437, 292],
+            xl: [413, 276],
           }"
           :loading="props.loading"
         />
@@ -71,8 +70,8 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
         :size="{
           xs: [112, 112],
           md: [192, 192],
-          lg: [261, 174],
-          xl: [324, 216],
+          lg: [353, 235],
+          xl: [413, 276],
         }"
         v-once
       />

@@ -1,4 +1,6 @@
 <script setup>
+import { memberCenterLink } from "~/composables/globals"
+import { trackClickEvent } from "~/utilities/helpers"
 useHead({
   bodyAttrs: {
     class: "no-bottom-padding",
@@ -35,12 +37,33 @@ onMounted(() => {
     content_group: "login",
   })
 })
+
+const trackMemberCenter = () => {
+  trackClickEvent(
+    "Click Tracking - login page Member Center link",
+    "Login page",
+    "Member Center"
+  )
+}
 </script>
 
 <template>
   <div class="login-page">
     <section class="grid m-auto pb-0 lg:pr-0 pt-0">
-      <Login isRoute class="col-12 lg:col-6" />
+      <Login isRoute class="col-12 lg:col-6">
+        <template #header-bottom>
+          <div class="mt-3">
+            Manage donations:
+            <VFlexibleLink
+              :to="memberCenterLink"
+              aria-label="Member Center"
+              @flexible-link-click="trackMemberCenter"
+            >
+              Member Center
+            </VFlexibleLink>
+          </div>
+        </template>
+      </Login>
       <LoginSignupSideContent class="hidden col-6 lg:flex" />
     </section>
   </div>

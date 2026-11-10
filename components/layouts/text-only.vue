@@ -79,8 +79,8 @@ const reactiveItems = toRef(props.list, "listItems")
   .p-button {
     justify-content: flex-start;
     .p-button-label {
-      @include cardTitle();
       text-align: left;
+      @include cardTitle();
     }
   }
 }

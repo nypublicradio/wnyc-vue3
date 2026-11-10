@@ -263,3 +263,6 @@ const previewData = null
  * Global state for the current episode object.
  */
 export const usePreviewData = () => useState('usePreviewData', () => previewData)
+
+// track recently focused element for returning focus after closing modals or sidebars
+export const useRecentlyFocused = () => useState('useRecentlyFocused', () => null)

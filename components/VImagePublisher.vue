@@ -105,6 +105,13 @@ const props = defineProps({
     type: Array,
   },
   /**
+   * The desired object fit for image
+   */
+  objectFit: {
+    default: "cover",
+    type: String,
+  },
+  /**
    * address to navigate to when the image is clicked
    */
   to: {
@@ -257,6 +264,7 @@ const closeEnlarge = () => {
 
 onMounted(async () => {
   await nextTick()
+  if (!refThisImg.value) return
   thisWidth.value =
     refThisImg.value.offsetWidth !== 0
       ? refThisImg.value.offsetWidth
@@ -300,7 +308,10 @@ onMounted(async () => {
         <template v-if="allowPreview">
           <Image
             class="image prime-image"
-            :class="isVertical ? 'is-vertical' : ''"
+            :class="[
+              { 'is-vertical': isVertical },
+              props.objectFit ? `object-fit-${props.objectFit}` : '',
+            ]"
             image-class="prime-img-class"
             image-style="width: 100%; height: auto;"
             :srcset="srcset"
@@ -353,7 +364,10 @@ onMounted(async () => {
         <img
           v-else
           class="image native-image prime-img-class"
-          :class="isVertical ? 'is-vertical' : ''"
+          :class="[
+            { 'is-vertical': isVertical },
+            props.objectFit ? `object-fit-${props.objectFit}` : '',
+          ]"
           :srcset="srcset"
           :src="computedSrc()"
           :width="getDimensions().width"
@@ -398,8 +412,22 @@ onMounted(async () => {
       width: 100%;
       height: 100%;
       top: 0;
-      object-fit: cover;
       display: block;
+      &.object-fit-cover {
+        object-fit: cover;
+      }
+
+      &.object-fit-contain {
+        object-fit: contain;
+      }
+
+      &.object-fit-fill {
+        object-fit: fill;
+      }
+
+      &.object-fit-scale-down {
+        object-fit: scale-down;
+      }
       &.is-vertical {
         margin: auto;
         display: block;

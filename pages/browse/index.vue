@@ -307,6 +307,15 @@ useSeoMeta({
   }
 }
 
+@media (max-height: 400px) {
+  .browse-page {
+    .search {
+      position: static;
+    }
+  }
+}
+
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease;

@@ -5,13 +5,13 @@ export default defineNuxtPlugin(nuxtApp => {
         const router = nuxtApp.$router
         const isNetworkConnected = useIsNetworkConnected()
         const globalToast = useGlobalToast()
-        router.beforeEach((to, from, next) => {
+        router.beforeEach((to, from) => {
             // Perform pre-navigation checks
-            // check network connection and go next() if on the index page
+            // allow navigation when online, or leaving the index page
             if (isNetworkConnected.value || from.path === '/') {
-                next() // Continue with navigation
+                return true // Continue with navigation
             } else if (to.path === '/saved') {
-                next() // continue with navigation to saved page only
+                return true // continue with navigation to saved page only
             } else {
                 globalToast.value = {
                     severity: "error",
@@ -19,8 +19,7 @@ export default defineNuxtPlugin(nuxtApp => {
                     life: 6000,
                     closable: true,
                 }
-                //globalToast.value = null
-                next(new Error('Navigation aborted')) // Abort navigation with an error
+                return false // Abort navigation
             }
         })
 

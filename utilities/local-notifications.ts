@@ -1,6 +1,7 @@
 import { LocalNotifications } from "@capacitor/local-notifications"
 import { useGlobalToast } from "~/composables/states"
 import { formatDate, toggleAskNotificationPermissions } from "~/utilities/helpers"
+import { idToNumber } from "~/composables/data/basePages"
 //import { Capacitor } from "@capacitor/core"
 
 // assembles the proper title for the schedule entry
@@ -25,13 +26,20 @@ export const checkNotificationsList = (entry) => {
     const pendingLocalNotifications = usePendingLocalNotifications()
     return pendingLocalNotifications.value?.notifications.some(
         (notification) => notification.extra.id === entry.id
-    ) || false;
+    ) || false
+}
+
+// Legacy "ShowSchedule:<n>" ids use the numeric part; UUID ids are hashed to a safe integer.
+export const getNotificationId = (id) => {
+    const legacyId = String(id).split(":")[1]
+    return legacyId && Number.isInteger(Number(legacyId))
+        ? Number(legacyId)
+        : idToNumber(id)
 }
 
 // schedule a local notification
 export const scheduleLocalNotification = async (entry) => {
-    const idNumber = entry.id.split(":")
-    const id = Number(idNumber[1])
+    const id = getNotificationId(entry.id)
     const globalToast = useGlobalToast()
 
     const entryStartDate = await new Date(entry.attributes.start)
@@ -39,8 +47,8 @@ export const scheduleLocalNotification = async (entry) => {
     const title = `${getEntryTitle(entry)} is starting now on ${entry.station}!`
 
     const body = entry.attributes.scheduleEventTitle ? `${entry.attributes.scheduleEventTitle}` : ''
-    const serializedEntry = JSON.stringify(entry);
-    const parsedEntry = JSON.parse(serializedEntry);
+    const serializedEntry = JSON.stringify(entry)
+    const parsedEntry = JSON.parse(serializedEntry)
 
     const notificationBody = {
         notifications: [
@@ -102,11 +110,11 @@ export const initLocalNotifications = async () => {
 // cancel all pending notifications if they exist and alert the user
 export const cancelAllPendingLocalNotifications = async (pendingLocalNotifications) => {
     try {
-        const idsArray = pendingLocalNotifications.notifications.map(notification => ({ id: notification.id }));
-        await LocalNotifications.cancel({ notifications: idsArray });
+        const idsArray = pendingLocalNotifications.notifications.map(notification => ({ id: notification.id }))
+        await LocalNotifications.cancel({ notifications: idsArray })
 
         setPendingLocalNotifications()
     } catch (error) {
-        console.error('Error cancelling notifications:', error);
+        console.error('Error cancelling notifications:', error)
     }
-};
+}

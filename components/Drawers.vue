@@ -214,7 +214,7 @@ watch(settingsSideBarBrowser, async (newVal) => {
       v-model:visible="accountPromptSideBar"
       :baseZIndex="10003"
       position="bottom"
-      class="w-full hideX no-safe-area h-auto"
+      class="w-full no-safe-area h-auto style-mode-dark"
       id="account-prompt-sidebar"
       @hide="
         () => {
@@ -280,12 +280,11 @@ watch(settingsSideBarBrowser, async (newVal) => {
     max-width: $contentWidth;
     width: 100%;
     margin: auto;
+    justify-content: space-between;
 
     @include media("<lg") {
       padding: 0.5rem;
     }
-
-    justify-content: space-between;
   }
 
   .p-drawer-content {
@@ -352,5 +351,8 @@ watch(settingsSideBarBrowser, async (newVal) => {
       }
     }
   }
+}
+#account-prompt-sidebar.p-drawer .p-drawer-header {
+  justify-content: right;
 }
 </style>

@@ -1,5 +1,5 @@
 <script setup>
-import { useSignupSideBar, useLoginSideBar, useIsApp } from "~/composables/states"
+import { useSignupSideBar, useLoginSideBar, useIsApp, useRecentlyFocused } from "~/composables/states"
 
 const props = defineProps({
   styleMode: {
@@ -16,17 +16,31 @@ const loginSideBar = useLoginSideBar()
 const signupSideBar = useSignupSideBar()
 const accountPromptSideBar = useAccountPromptSideBar()
 const isApp = useIsApp()
+const recentlyFocused = useRecentlyFocused()
 
 const bgColorRef = ref(props.bgColor)
+const accountPromptHeading = ref(null)
+onMounted(() => {
+  if (accountPromptHeading.value) {
+    accountPromptHeading.value.setAttribute('tabindex', '-1')
+    accountPromptHeading.value.focus()
+  }
+})
+onUnmounted(() => {
+  console.log('recentlyFocused before unmount:', recentlyFocused.value)
+  if (recentlyFocused.value) {
+    recentlyFocused.value.focus()
+  }
+})
 </script>
 
 <template>
-  <div class="account-prompt-sidebar">
+  <div class="account-prompt-sidebar" role="dialog" aria-labelledby="account-prompt-heading">
     <section
       class="content flex flex-column gap-3 py-5 px-4"
       :class="`style-mode-${props.styleMode}`"
     >
-      <h1 class="font-tisa text-5xl line-height-1 mb-4">
+      <h1 id="account-prompt-heading" class="font-tisa text-5xl line-height-1 mb-4" ref="accountPromptHeading">
         Save now, <span class="no-wrap">listen later.</span>
       </h1>
       <p class="text-base mb-3">

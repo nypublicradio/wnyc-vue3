@@ -10,7 +10,15 @@ defineProps<{
   <VImage
     v-if="block.value.image"
     :src="block.value.image"
-    sizes="lg:672px md:885px sm:709px xs:517px xxs:316px"
+    object-fit="contain"
+    :ratio="[16, 9]"
+    :size="{
+      xxs: [317],
+      xs: [517],
+      sm: [672],
+      md: [885],
+      lg: [662],
+    }"
     :maxHeight="block.value.image.height"
     :maxWidth="block.value.image.width"
     :alt="block.value.image.alt"

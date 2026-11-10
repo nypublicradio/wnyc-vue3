@@ -132,7 +132,7 @@ jobs:
             --build-arg GTM_ID='${{ vars.GTM_ID }}' \
             --build-arg SUPABASE_URL='${{ vars.SUPABASE_URL }}' \
             --build-arg SUPABASE_KEY='${{ secrets.SUPABASE_KEY }}' \
-            --build-arg SUPABASE_AUTH_SIGN_IN_REDIRECT_TO='https://pr-${{ github.event.number }}-nypublicradio-wnyc-vue3.fly.dev' \
+            --build-arg SUPABASE_AUTH_SIGN_IN_REDIRECT_TO='https://pr-${{ github.event.number }}-nypublicradio-wnyc-vue3.fly.dev/confirm' \
             --build-arg SUPABASE_AUTH_TOKEN_NAME='${{ vars.SUPABASE_AUTH_TOKEN_NAME }}' \
             --build-arg BFF_URL='https://pr-${{ github.event.number }}-nypublicradio-wnyc-vue3.fly.dev' \
             --build-arg OPENWEB_SPOT_ID='${{ vars.OPENWEB_SPOT_ID }}' \

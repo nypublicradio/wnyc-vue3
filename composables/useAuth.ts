@@ -171,8 +171,26 @@ export const useAuth = () => {
         const supabase = useSupabaseClient()
         const urlObj = new URL(url)
 
-        // Try implicit flow first: tokens in the hash fragment (#access_token=...&refresh_token=...)
+        // The provider can hand the error back either in the query string or in the
+        // hash fragment. Apple in particular (OAuth/form_post flow) returns errors
+        // like "Unable to exchange external code" when the Supabase Apple client
+        // secret is expired or the Services ID is misconfigured. Surface it instead
+        // of silently returning the user to a logged-out state.
         const hashParams = new URLSearchParams(urlObj.hash.substring(1))
+        const errorCode = urlObj.searchParams.get("error") ?? hashParams.get("error")
+        if (errorCode) {
+            const errorDescription =
+                urlObj.searchParams.get("error_description") ??
+                hashParams.get("error_description") ??
+                "no description provided"
+            console.error(
+                `OAuth provider returned an error: ${errorCode} — ${errorDescription}`,
+                url
+            )
+            return false
+        }
+
+        // Try implicit flow first: tokens in the hash fragment (#access_token=...&refresh_token=...)
         const accessToken = hashParams.get("access_token")
         const hashRefreshToken = hashParams.get("refresh_token")
 

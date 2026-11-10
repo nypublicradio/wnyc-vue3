@@ -31,21 +31,28 @@ const isLgBreakpoint = computed(() => breakpoint("<lg"))
 
 // Compute isSquare synchronously during setup so it runs during SSR
 // (onBeforeMount does NOT run on the server, causing hydration mismatches)
+// Allow a few pixels of difference so near-square images still count as square
+const SQUARE_TOLERANCE_PX = 5
 const isSquare = ref(false)
 const featureItem = reactiveItems.value?.[0]
 if (featureItem) {
-  const imgHeight = Number(featureItem.imageFullHeight || featureItem.image?.height)
-  const imgWidth = Number(featureItem.imageFullWidth || featureItem.image?.width)
-  if (featureItem.cmsSource === mediaTypes.SIMPLECAST) {
-    isSquare.value = true
-  } else if (
+  const imgHeight = Number(
+    featureItem.imageFullHeight || featureItem.image?.height
+  )
+  const imgWidth = Number(
+    featureItem.imageFullWidth || featureItem.image?.width
+  )
+
+  if (
     imgHeight &&
     imgWidth &&
     !isNaN(imgHeight) &&
     !isNaN(imgWidth) &&
     imgHeight !== 0
   ) {
-    isSquare.value = imgHeight === imgWidth
+    isSquare.value = Math.abs(imgHeight - imgWidth) <= SQUARE_TOLERANCE_PX
+  } else {
+    isSquare.value = false
   }
 }
 
@@ -64,7 +71,9 @@ const featureSizes = computed(() => {
 
 <template>
   <div class="layout layout-horizontal-feature-ad">
-    <div class="ad mb-5 col-12 flex align-items-center justify-content-center lg:hidden">
+    <div
+      class="ad mb-5 col-12 flex align-items-center justify-content-center lg:hidden"
+    >
       <story-htlAd
         layout="rectangle"
         slotClass="htlad-wnyc_homepage_rectangle"
@@ -77,6 +86,7 @@ const featureSizes = computed(() => {
         :label="props.label || props.list?.title"
         :seeMore="props.seeMore"
       />
+
       <MediaCard
         v-if="reactiveItems?.length > 0"
         class="col-12 lg:col-8 hidden md:block"
@@ -87,7 +97,7 @@ const featureSizes = computed(() => {
         showTease
         imgCol="w-6"
         :size="featureSizes"
-        :allowVerticalEffect="!isSquare"
+        :allowVerticalEffect="false"
         :loading="props.loading"
       />
       <skeleton-media-card

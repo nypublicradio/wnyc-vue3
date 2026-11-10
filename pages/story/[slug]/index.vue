@@ -98,6 +98,9 @@ if (socialImage || image) {
         </div>
       </section>
       <EpisodeTemplate :pending="status !== 'success'" :episodeData="storyData">
+        <template #end-of-content>
+          <AntiFraudMessage />
+        </template>
         <template #bottom>
           <Divider class="mt-8 mb-5" />
           <TopStories :articles="filteredTopStories" />

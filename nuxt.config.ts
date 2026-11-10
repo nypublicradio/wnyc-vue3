@@ -57,6 +57,11 @@ export default defineNuxtConfig({
     // so default to original image URLs instead of /_ipx transformed URLs.
     provider: isSsrEnabled ? 'ipx' : 'none',
     dir: "public/",
+    // Remote hosts IPX is allowed to fetch + resize. Without this, external images
+    // (e.g. full-res Simplecast podcast art) bypass optimization and ship at source size.
+    domains: [
+      'image.simplecastcdn.com',
+    ],
     screens: {
       xxs: 375,
       xs: 390,
@@ -101,11 +106,19 @@ export default defineNuxtConfig({
     // Route rules only apply in SSR/website mode
     routeRules: isSsrEnabled && process.env.NODE_ENV === 'production' ? {
       '/home': { swr: 60 },
-      // Cache ALL shows and any nested episode pages under a show for 15 minutes
-      '/browse/shows/**': { swr: 900 },
-      '/npr/**': { swr: 900 },
-      '/events/**': { swr: 900 },
+      // These are unbounded URL spaces (one entry per show/episode/event). `swr`
+      // stores full responses in Nitro's in-process memory cache with no eviction,
+      // which leaked ~1MB/entry until the process hit its heap limit and crashed.
+      // CloudFront already caches on this same header, so emit it directly instead.
+      '/browse/shows/**': { headers: { 'cache-control': 's-maxage=900, stale-while-revalidate' } },
+      '/npr/**': { headers: { 'cache-control': 's-maxage=900, stale-while-revalidate' } },
+      '/events/**': { headers: { 'cache-control': 's-maxage=900, stale-while-revalidate' } },
       '/confirm': { ssr: false },
+      // Simplecast sources are external/uncontrolled, so don't cache hard. Serve fresh
+      // for 1 day, then stale-while-revalidate for a week (background refresh, no stall).
+      '/_ipx/**': { headers: { 'cache-control': 'public, max-age=86400, stale-while-revalidate=604800' } },
+      // Static brand art; long TTL but not immutable so edits recover within a month.
+      '/personalities/**': { headers: { 'cache-control': 'public, max-age=2592000' } },
     } : {},
   },
 
@@ -122,14 +135,15 @@ export default defineNuxtConfig({
 
   app: {
     head: {
+      // viewport-fit=cover must be in the initial HTML (app.vue's useHead adds it too late):
+      // Capacitor 8's SystemBars checks it at first paint on Android to decide between
+      // edge-to-edge with CSS safe-area insets and padding the WebView natively.
+      viewport: "viewport-fit=cover, width=device-width, initial-scale=1",
       link: [
-        // APIs & Backend
-        { rel: 'preconnect', href: 'https://vuycervrdrtycpjzhqxg.supabase.co' },
+        // Preconnect only to origins requested early in the load. Others (supabase,
+        // api.wnyc.org, api/cms.prod.nypr.digital) resolved too late to help and were
+        // flagged as unused by Lighthouse, so they're dropped to stay under ~4 hints.
         { rel: 'preconnect', href: 'https://firebase.googleapis.com' },
-        { rel: 'preconnect', href: 'https://api.wnyc.org' },
-        { rel: 'preconnect', href: 'https://api.prod.nypr.digital' },
-        { rel: 'preconnect', href: 'https://cms.prod.nypr.digital' },
-        // Audio & Assets
         { rel: 'preconnect', href: 'https://assets.webstream.wnyc.org' },
       ]
     },
@@ -148,6 +162,9 @@ export default defineNuxtConfig({
   //serverMiddleware: ['~/search/algolia-index'],
 
   vite: {
+    server: {
+      allowedHosts: ["local.dev.nypr.digital"],
+    },
     define: {
       __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: true,
     },

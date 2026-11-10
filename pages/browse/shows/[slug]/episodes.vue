@@ -24,7 +24,7 @@ const {
   status,
   error,
 } = await useFetchWrapper(
-  `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}?showOnly=true`,
+  `${config.public.BFF_URL}/api/pages/wagtail/${route.params.slug}`,
   {
     key: `show-episodes-page-${route.params.slug}`,
   }
@@ -190,7 +190,7 @@ useSeoMeta({
 })
 if (image) {
   useSeoMeta({
-   ogImage: image,
+    ogImage: image,
   })
 }
 

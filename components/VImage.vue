@@ -46,6 +46,7 @@ const props = defineProps({
   srcset: { default: undefined, type: Array },
   to: { default: null, type: String },
   width: { default: null, type: Number },
+  objectFit: { default: "cover", type: String },
 })
 
 const { getEpisodeFallBackImage } = useFallbackImages()
@@ -92,7 +93,8 @@ const imageVisibilityClass = computed(() => {
 
 // Use the simplified image dimensions composable
 const { width: imageWidth, height: imageHeight } = useVImageDimensions({
-  size: props.size,
+  size: props.size || props.sizes,
+  ratio: props.ratio,
 })
 const { getCmsSourceAndImageTemplate } = useVImage()
 
@@ -162,6 +164,7 @@ const childProps = computed(() => {
   if (props.sizes !== undefined) forwardedProps.sizes = props.sizes
   if (props.srcset !== undefined) forwardedProps.srcset = props.srcset
   if (props.to) forwardedProps.to = props.to
+  if (props.objectFit) forwardedProps.objectFit = props.objectFit
 
   // These are always passed, overridden by VImage's own computed values
   forwardedProps.src = imageTemplate.value

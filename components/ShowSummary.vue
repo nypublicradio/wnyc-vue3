@@ -1,12 +1,16 @@
 <script setup>
 import { useFallbackImages } from "~/composables/useFallbackImages"
 //import { useAppDownloadLink } from "~/composables/states"
-import { mediaTypeRoutes } from "~/composables/globals"
-
+import { mediaTypeRoutes, cmsSources } from "~/composables/globals"
+import AntiFraudMessage from "./AntiFraudMessage.vue"
 const props = defineProps({
   show: {
     type: Object,
     default: null,
+  },
+  showAntiFraudMessage: {
+    type: Boolean,
+    default: true,
   },
 })
 
@@ -64,6 +68,7 @@ const handleShowClick = () => {
           : { body: show?.tease || show?.description }
       "
     />
+    <AntiFraudMessage v-if="props.showAntiFraudMessage" />
     <story-htlAd
       class="hidden lg:block"
       layout="rectangle"

@@ -106,6 +106,7 @@ const closeLogin = () => {
           </VFlexibleLink>
         </div>
       </slot>
+      <slot name="header-bottom"></slot>
     </section>
 
     <section class="px-0 md:px-6">

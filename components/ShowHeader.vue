@@ -21,6 +21,7 @@ import {
   useCurrentEpisode,
   useIsLiveStream,
   useIsStreamLoading,
+  useRecentlyFocused,
 } from "~/composables/states"
 //import { mediaTypeRoutes, mediaTypes } from "~/composables/globals"
 import useSleepTimer from "~/composables/useSleepTimer"
@@ -79,6 +80,7 @@ const isEpisodePlaying = useIsEpisodePlaying()
 const isLiveStream = useIsLiveStream()
 const { getEpisodeFallBackImage } = useFallbackImages()
 const { handleSleepTimer, sleepTimerRunning } = useSleepTimer()
+const followButtonRef = ref(null)
 
 // if user is logged in, check if item is already favorited
 const isFavorited = ref(false)
@@ -95,28 +97,29 @@ const firstEpisodeWithAudio = () => {
     (item) => item.type === "curated_list"
   )
 
-  listItems?.forEach((item) => {
-    allListItems.push(...item.value?.list?.listItems)
-  })
-
-  const firstPlayableEpisode = allListItems.find((item) => {
-    if (hasAudio(item.audio)) {
-      return true
-    } else if (typeof item.audio === "string") {
-      return true
-    } else {
-      return false
-    }
-  })
-  if (!firstPlayableEpisode) {
-    toast.add({
-      severity: "info",
-      summary: "No playable episodes",
-      detail: "We couldn't find any playable audio for this show right now.",
-      life: 3000,
+  if (listItems?.length) {
+    listItems?.forEach((item) => {
+      allListItems.push(...item.value?.list?.listItems)
     })
+
+    const firstPlayableEpisode = allListItems.find((item) => {
+      if (hasAudio(item.audio)) {
+        return true
+      } else if (typeof item.audio === "string") {
+        return true
+      } else {
+        return false
+      }
+    })
+    return firstPlayableEpisode
   }
-  return firstPlayableEpisode
+  toast.add({
+    severity: "info",
+    summary: "No playable episodes",
+    detail: "We couldn't find any playable audio for this show right now.",
+    life: 3000,
+  })
+  return null
 }
 // computed properties to identify what is currently loaded
 const isLoadedEpisode = computed(() => {
@@ -196,6 +199,8 @@ const listenLiveNow = () => {
 
 // add item to favorites
 const handleAddToFavorites = () => {
+  const recentlyFocused = useRecentlyFocused()
+  recentlyFocused.value = followButtonRef.value?.$el
   // helper func for adding to favorites, also handles account prompt if not logged in
   addToFavorites2({
     item: show.value,
@@ -321,6 +326,7 @@ const isThisShowStreaming = computed(() => {
                   :aria-label="isFavorited ? 'Unfollow' : 'Follow'"
                   :label="isFavorited ? 'Unfollow' : 'Follow'"
                   @click="handleAddToFavorites"
+                  ref="followButtonRef"
                 >
                   <template #icon>
                     <FollowIcon
@@ -565,12 +571,12 @@ const isThisShowStreaming = computed(() => {
         transform: scaleX(1.2);
       }
       &.mobile {
-        @include media("<md") {
-          display: inline-flex !important;
-        }
         transform: scaleX(0.8);
         width: 100%;
         margin-top: 1rem;
+        @include media("<md") {
+          display: inline-flex !important;
+        }
       }
     }
   }

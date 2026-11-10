@@ -10,7 +10,7 @@ const props = defineProps<{
 useHead({
   script: [
     {
-      children: `window.twttr = (function(d, s, id) {
+      innerHTML: `window.twttr = (function(d, s, id) {
         var js, fjs = d.getElementsByTagName(s)[0],
             t = window.twttr || {};
         if (d.getElementById(id)) return t;
