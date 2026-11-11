@@ -1,4 +1,5 @@
 <script setup>
+
 const props = defineProps({
   label: {
     type: String,
@@ -40,29 +41,8 @@ const props = defineProps({
 })
 
 const emit = defineEmits(["load-more"])
-const {
-  items: reactiveItems,
-  canLoadMore: canFetchMore,
-  pending: fetching,
-  loadMore: fetchMore,
-  error: hasError,
-} = usePagedList(toRef(props, "list"))
+const reactiveItems = computed(() => props.list?.listItems)
 const visibleCount = ref(props.initialLimit)
-const loadMoreRef = ref(null)
-
-const { stop } = useIntersectionObserver(
-  loadMoreRef,
-  ([{ isIntersecting }]) => {
-    if (
-      isIntersecting &&
-      reactiveItems.value?.length &&
-      canFetchMore.value &&
-      !fetching.value
-    ) {
-      fetchMore()
-    }
-  }
-)
 
 watch(
   () => props.list?.listItems,
@@ -77,16 +57,13 @@ const visibleItems = computed(() => {
 })
 
 const hasMoreItems = computed(
-  () =>
-    props.enableLoadMore &&
-    (reactiveItems.value?.length || 0) > visibleItems.value.length
+  () => props.enableLoadMore && (reactiveItems.value?.length || 0) > visibleItems.value.length
 )
 
 const loadMore = () => {
   visibleCount.value += props.limitIncrement
   emit("load-more")
 }
-onUnmounted(() => stop())
 </script>
 
 <template>
@@ -120,20 +97,8 @@ onUnmounted(() => stop())
         @click="loadMore"
       />
     </div>
-    <div
-      v-if="canFetchMore && !hasError"
-      class="flex flex-column justify-content-center mt-5"
-    >
-      <WnycLoader spinner size="40px" class="mt-8" />
-      <div ref="loadMoreRef" class="w-full h-1rem"></div>
-    </div>
     <div v-if="!reactiveItems?.length" class="grid">
-      <div
-        v-for="index in 4"
-        :key="`skeleton-river-${index}`"
-        :class="props.cardClass"
-        v-once
-      >
+      <div v-for="index in 4" :key="`skeleton-river-${index}`" :class="props.cardClass" v-once>
         <skeleton-media-card
           isHorizontal
           imgCol="w-7rem md:w-12rem "

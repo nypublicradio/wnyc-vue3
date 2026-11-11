@@ -3,7 +3,7 @@ import humps from 'humps'
 import { cmsSources, mediaTypeRoutes } from '~/composables/globals'
 import { normalizeArticlePage } from '~/composables/data/articlePages'
 import { transformCuratedContent } from '~/utilities/curatedContent'
-import { attachNprNextPage } from '~/utilities/nprPaging'
+import { findNprShowId } from '~/utilities/nprPaging'
 import { getCmsPathRedirect, getCmsRequestOptions } from '~/server/utils/cmsRedirect'
 
 // Helper to obtain runtime config, with test override support.
@@ -130,7 +130,9 @@ const getWagtailPageData = async (
 
             return {
                 ...await normalizeArticlePage(resData),
-                body: attachNprNextPage(transformedCuratedContent)
+                // NPR collection id, so /episodes can page through an NPR show's back catalog
+                nprShowId: findNprShowId(transformedCuratedContent),
+                body: transformedCuratedContent
             }
         }
         return await normalizeArticlePage(resData)
