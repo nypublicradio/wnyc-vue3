@@ -213,7 +213,7 @@ onUnmounted(() => stop())
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col min-w-0 pr-2 lg:pr-4">
           <div class="flex flex-column gap-5">
-            <h2 class="md:text-xl">All Episodes</h2>
+            <h2>All Episodes</h2>
             <template v-for="ep in episodes" :key="ep.id">
               <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
               <MediaCard
