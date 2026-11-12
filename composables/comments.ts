@@ -1,4 +1,4 @@
-import { ArticlePage } from './types/Page'
+import type { ArticlePage } from './types/Page'
 
 // State to track the map of article ids to comment counts
 export const useCommentCounts = () => useState<Record<string, number>>('commentCounts', () => ({}))
