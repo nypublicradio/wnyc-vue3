@@ -268,11 +268,14 @@ useHead({
   ],
   link: [
     { rel: "canonical", href: canonicalUrl },
+    // favicon.png is Proxied from PROD Wagtail with a local fallback, see server/routes/favicon.png.get.ts
+    { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon.png" },
     {
-      rel: "icon",
-      type: "image/x-icon",
-      href: "https://media.wnyc.org/static/img/favicon_wnyc.ico?_=1553611630",
+      rel: "apple-touch-icon",
+      sizes: "180x180",
+      href: "/apple-touch-icon.png",
     },
+    { rel: "manifest", href: "/site.webmanifest" },
   ],
 })
 useSeoMeta({
@@ -291,9 +294,6 @@ useSeoMeta({
   twitterCard: "summary_large_image",
   twitterSite: "@WNYC",
   themeColor,
-  twitterTitle: title,
-  twitterDescription: description,
-  twitterImage: ogImage.url,
 })
 </script>
 
