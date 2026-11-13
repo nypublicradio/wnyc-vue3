@@ -1,5 +1,6 @@
 <script setup>
 import { RemoteStreamer } from "@nypublicradio/capacitor-remote-streamer"
+import { WnycAuto } from "@nypublicradio/wnyc-auto"
 import { Capacitor } from "@capacitor/core"
 import { ref, watch, nextTick } from "vue"
 import PlayIcon from "~/components/icons/PlayIcon.vue"
@@ -133,6 +134,20 @@ const getConfiguredAudioUrl = computed(() => {
     hasQuery ? "&" : "?"
   }listenerid=${adID}&aw_0_1st.lmt=${restriction}&aw_0_1st.userid=${userID}&device=${thisDevice}`
 })
+
+// CarPlay / Android Auto add the same parameters natively (wnyc-auto), but can't
+// see who is signed in, so share it. It's saved on the device for car cold starts.
+if (Capacitor.isNativePlatform()) {
+  watch(
+    () => currentUser?.value?.id ?? null,
+    (userId) => {
+      WnycAuto.setListenerContext({ userId: userId ? String(userId) : null }).catch((e) =>
+        console.warn("Failed to share listener context with the car experience:", e)
+      )
+    },
+    { immediate: true }
+  )
+}
 
 //player release utility function
 // ios and web just calls stop(), android calls releasePlayer()
@@ -497,7 +512,7 @@ onMounted(async () => {
     }
   }
 
-  await RemoteStreamer.addListener("playFromCarPlay", handleAutoPlayEvent)
+  // Playback started natively (CarPlay, Android Auto, Assistant): same event on both platforms
   await RemoteStreamer.addListener("playFromMediaId", handleAutoPlayEvent)
 
   // Sync with Auto/CarPlay if playback is already in progress when app opens

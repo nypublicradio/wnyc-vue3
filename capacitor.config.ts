@@ -1,4 +1,5 @@
 import type { CapacitorConfig } from '@capacitor/cli'
+import { wnycAutoConfig } from '@nypublicradio/wnyc-auto/config'
 
 const config: CapacitorConfig = {
   appId: 'org.wnyc.android',
@@ -62,10 +63,27 @@ const config: CapacitorConfig = {
       iconColor: "#de1e3d",
       sound: "notification.wav"
     },
+    // Player branding (the plugin itself is app-agnostic)
     RemoteStreamer: {
-      carExperienceEnabled: false,
-      bffBaseUrl: `${process.env.BFF_URL}`,
-    }
+      // Keep these exact strings: stream analytics may parse them
+      userAgent: {
+        ios: 'WNYC-App/iOS {appVersion}; {deviceModel}; iOS {osVersion}',
+        android: 'WNYC-App/{appVersion} (Android {osVersion}; {deviceModel})',
+      },
+      defaultTitle: 'WNYC',
+      android: {
+        notification: {
+          smallIcon: 'ic_stat_wnyc', // android/app/src/main/res/drawable/ic_stat_wnyc.xml // this is the icon that will show up in the upper left corner of the player in the notification area
+          channelName: 'Playback',
+        },
+      },
+    },
+    // CarPlay + Android Auto. Values live in @nypublicradio/wnyc-auto's
+    // config/wnyc-auto.config.json; this picks the environment for the build.
+    WnycAuto: wnycAutoConfig({
+      environment: process.env.ENV === 'prod' ? 'prod' : 'demo',
+      overrides: { bffBaseUrl: process.env.BFF_URL },
+    }),
   }
 }
 

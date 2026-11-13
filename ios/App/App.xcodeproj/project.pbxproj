@@ -227,9 +227,42 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		15F88FAA2EB3C85000B7B7BB /* OneSignalNotificationServiceExtension */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (15F88FB12EB3C85000B7B7BB /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = OneSignalNotificationServiceExtension; sourceTree = "<group>"; };
-		15F88FBA2EB3CB0A00B7B7BB /* OneSignalNotificationServiceExtensionAlpha */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (15F88FC12EB3CB0A00B7B7BB /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = OneSignalNotificationServiceExtensionAlpha; sourceTree = "<group>"; };
-		15F88FCA2EB3CB3600B7B7BB /* OneSignalNotificationServiceExtensionLocal */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (15F88FD12EB3CB3600B7B7BB /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = OneSignalNotificationServiceExtensionLocal; sourceTree = "<group>"; };
+		15F88FAA2EB3C85000B7B7BB /* OneSignalNotificationServiceExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				15F88FB12EB3C85000B7B7BB /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = OneSignalNotificationServiceExtension;
+			sourceTree = "<group>";
+		};
+		15F88FBA2EB3CB0A00B7B7BB /* OneSignalNotificationServiceExtensionAlpha */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				15F88FC12EB3CB0A00B7B7BB /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = OneSignalNotificationServiceExtensionAlpha;
+			sourceTree = "<group>";
+		};
+		15F88FCA2EB3CB3600B7B7BB /* OneSignalNotificationServiceExtensionLocal */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				15F88FD12EB3CB3600B7B7BB /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = OneSignalNotificationServiceExtensionLocal;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
