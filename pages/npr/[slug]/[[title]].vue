@@ -5,6 +5,14 @@ import {
   getNprDescription,
   getNprImage,
 } from "~/utilities/metadataHelpers"
+import { getNprTitleSlug } from "~/utilities/nprStoryUrl"
+
+definePageMeta({
+  // Key on the story id only, so adding the title to the URL (redirect below)
+  // reuses this page instead of remounting it and fetching the story again.
+  key: (route) => `npr-${route.params.slug}`,
+})
+
 const { getFilteredTopStories } = useTopStories()
 
 const route = useRoute()
@@ -32,6 +40,16 @@ const {
     },
   }
 )
+
+// Like npr.org: /npr/<id> and /npr/<id>/<wrong-title> redirect to /npr/<id>/<title>,
+// using NPR's own title slug from the story's npr.org link.
+const titleSlug = getNprTitleSlug(storyData.value?.link, route.params.slug)
+if (titleSlug && route.params.title !== titleSlug) {
+  await navigateTo(`/npr/${route.params.slug}/${titleSlug}`, {
+    replace: true, // client/app: swap the URL without adding a history entry
+    redirectCode: 301, // SSR: real 301, like npr.org
+  })
+}
 
 const filteredTopStories = computed(() =>
   getFilteredTopStories(storyData.value)

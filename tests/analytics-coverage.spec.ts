@@ -23,7 +23,7 @@ const expectedPageViewFiles = [
   'pages/home.vue',
   'pages/live.vue',
   'pages/login.vue',
-  'pages/npr/[slug]/index.vue',
+  'pages/npr/[slug]/[[title]].vue',
   'pages/npr/[slug]/transcript.vue',
   'pages/people/[slug].vue',
   'pages/saved.vue',
