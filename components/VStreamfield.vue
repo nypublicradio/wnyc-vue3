@@ -194,7 +194,12 @@ onMounted(() => {
             v-if="block?.value?.seeMoreLink"
             class="flex justify-content-center mt-4 w-full"
           >
-            <VFlexibleLink :to="getRouteOrLink(block?.value?.seeMoreLink.url)">
+            <VFlexibleLink
+              :to="
+                getRouteOrLink(block?.value?.seeMoreLink.url) ||
+                $route.path + '/episodes'
+              "
+            >
               <Button
                 severity="secondary"
                 variant="link"

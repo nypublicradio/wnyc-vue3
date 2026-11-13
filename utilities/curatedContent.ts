@@ -14,7 +14,7 @@ interface NprAsset {
 /**
  * Helper to handle NPR CDS items.
  */
-async function handleNprCdsItem (listItem: any, componentType: string, showSlug?: string, allData?: any[]) {
+export async function handleNprCdsItem (listItem: any, componentType: string, showSlug?: string, allData?: any[]) {
 	// Content can be either an object directly or an array with one element
 	const nprDocument: NprDocument = listItem.content
 		? (Array.isArray(listItem.content) ? listItem.content[0] : listItem.content)

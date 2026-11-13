@@ -52,6 +52,7 @@ import {
 } from "capacitor-plugin-app-tracking-transparency"
 import { initMediaSession } from "~/utilities/media-session.js"
 import { isSameLiveStation } from "~/utilities/player"
+import { getNprTitleSlug } from "~/utilities/nprStoryUrl"
 import { capacitorIosNotificationSettings } from '@nypublicradio/capacitor-ios-notification-settings'
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics'
 import { WAGTAIL_PAGE_TYPES } from "~/composables/data/basePages"
@@ -1166,8 +1167,11 @@ export const goToStoryPage = (story, params, log = true, returnRoute = false) =>
 
 /* centralized function to route to a story page */
 export const goToNprPage = (story, log = true, returnRoute = false) => {
+  const id = story.media_id ?? story.id
+  // Include NPR's title slug when known, so we land on /npr/<id>/<title> without the page's redirect hop
+  const titleSlug = getNprTitleSlug(story.link, id)
   const routeObj = {
-    path: `${mediaTypeRoutes[mediaTypes.NPR_EPISODE]}${story.media_id ?? story.id}`,
+    path: `${mediaTypeRoutes[mediaTypes.NPR_EPISODE]}${id}${titleSlug ? `/${titleSlug}` : ""}`,
   }
 
   if (returnRoute) return routeObj
