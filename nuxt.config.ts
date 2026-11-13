@@ -7,9 +7,13 @@ const isSsrEnabled =
 export default defineNuxtConfig({
   //devtools: { enabled: true },
 
-  // Nitro doesn't self-terminate after build in Docker; force-exit when Nuxt closes
+  // Nitro doesn't self-terminate after build in Docker; force-exit when Nuxt closes.
+  // Skip for `nuxi prepare` (close fires inside writeTypes, before .nuxt/tsconfig.json
+  // is written) and for dev (close fires on every dev-server restart).
   hooks: {
-    close: () => process.exit(0),
+    close: (nuxt) => {
+      if (!nuxt.options._prepare && !nuxt.options.dev) process.exit(0)
+    },
   },
 
   modules: [
