@@ -127,7 +127,7 @@ export const getSimplecastEpisodeImage = (episode, show) => {
   const image = episode.value?.listingImage || show.value?.image
   if (image) {
     return {
-      url: image,
+      url: image?.url,
       alt: episode.value?.listingImage ? episode.value?.title : show.value?.title,
       width: 512,
       height: 512,
