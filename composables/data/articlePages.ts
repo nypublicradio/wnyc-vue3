@@ -1011,8 +1011,12 @@ export async function normalizeNprPage (article: NprArticle, componentType = "de
   const textBody = await processNprLayout(article)
   const { url: audioURL, duration: audioDuration, transcript } = await extractNprAudio(article)
 
-  const bylineUrl = article.collections?.find(c => c.rels?.includes('byline'))?.href ?? null
-  const authors = bylineUrl ? [await getAuthorsFromBylineUrl(bylineUrl)] : null
+  const bylineUrls: string[] = article.collections
+    ?.filter(c => c.rels?.includes('byline') && c.href)
+    .map(c => c.href as string) ?? []
+  const authors = bylineUrls.length
+    ? await Promise.all(bylineUrls.map(url => getAuthorsFromBylineUrl(url)))
+    : null
 
   // Fetch show info from program collection if available
   const programUrl = article.collections?.find(c => c.rels?.includes('program'))?.href ?? null
@@ -1044,6 +1048,8 @@ export async function normalizeNprPage (article: NprArticle, componentType = "de
       firstPublishedAt: article.publishDateTime,
       slug: id,
       ...(derivedShowSlug ? { showSlug: derivedShowSlug } : {}),
+      // NPR collection id of the program (e.g. "2"), used to page through the show's back catalog
+      ...(programUrl ? { nprShowId: programUrl.split('/').pop() } : {}),
     },
     showTitle: showInfo.title,
     showSlug: derivedShowSlug,

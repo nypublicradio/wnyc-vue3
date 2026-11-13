@@ -1,11 +1,12 @@
 <script setup>
-import { useIntersectionObserver } from "@vueuse/core"
+import { useElementVisibility } from "@vueuse/core"
 import {
   checkIsFavorited,
   trackClickEvent,
   dynamicNavigation,
 } from "~/utilities/helpers"
 import { getShowImage } from "~/utilities/metadataHelpers"
+import { nprShowApiPath } from "~/utilities/nprPaging"
 import { useGlobalToast } from "~/composables/states"
 
 const config = useRuntimeConfig()
@@ -16,6 +17,7 @@ const episodes = ref([])
 const meta = ref(null)
 
 const pendingMore = ref(false)
+const loadMoreError = ref(false)
 const loadMoreRef = ref(null)
 
 // Await the initial show data fetch for SSR
@@ -37,9 +39,19 @@ if (show.value?.redirect) {
   })
 }
 
+// Simplecast podcast id, for shows linked to a podcast feed
 const podcastId = computed(
   () => show.value?.linkedDataSource?.[0]?.value?.id ?? null
 )
+// NPR collection id, for shows whose episodes come from NPR CDS
+const nprShowId = computed(() => show.value?.nprShowId ?? null)
+
+// Both endpoints return { data, meta: { hasMore, pagination: { offset, nextOffset } } }
+const episodesPath = computed(() => {
+  if (podcastId.value) return `/api/v3/show/${podcastId.value}/episodes`
+  if (nprShowId.value) return nprShowApiPath(nprShowId.value)
+  return null
+})
 
 // Await the initial episodes data fetch for SSR
 const {
@@ -48,11 +60,9 @@ const {
   error: scError,
 } = await useFetchWrapper(
   () =>
-    podcastId.value
-      ? `${config.public.BFF_URL}/api/v3/show/${podcastId.value}/episodes`
-      : null,
+    episodesPath.value ? `${config.public.BFF_URL}${episodesPath.value}` : null,
   {
-    key: `episodes-${podcastId.value || route.params.slug}`,
+    key: `episodes-${episodesPath.value || route.params.slug}`,
     query: { offset: 0, limit },
   }
 )
@@ -92,13 +102,14 @@ const loadMore = async () => {
 
   pendingMore.value = true
 
-  const nextOffset = meta.value.pagination.offset + limit
+  // Prefer the BFF's nextOffset: the NPR route trims limit near NPR's 2000-item cap
+  const nextOffset =
+    meta.value.pagination.nextOffset ?? meta.value.pagination.offset + limit
 
   try {
-    const res = await $fetch(
-      `${config.public.BFF_URL}/api/v3/show/${podcastId.value}/episodes`,
-      { query: { offset: nextOffset, limit } }
-    )
+    const res = await $fetch(`${config.public.BFF_URL}${episodesPath.value}`, {
+      query: { offset: nextOffset, limit },
+    })
 
     if (res?.data) {
       episodes.value = [...episodes.value, ...res.data]
@@ -111,6 +122,8 @@ const loadMore = async () => {
       show.value?.title
     )
   } catch (err) {
+    // stop auto-loading so the still-visible sentinel doesn't retry in a loop
+    loadMoreError.value = true
     const globalToast = useGlobalToast()
     globalToast.value = {
       severity: "error",
@@ -125,19 +138,20 @@ const loadMore = async () => {
   }
 }
 
-const { stop } = useIntersectionObserver(
-  loadMoreRef,
-  ([{ isIntersecting }]) => {
-    if (
-      isIntersecting &&
-      episodes.value?.length &&
-      hasMore.value &&
-      !pendingMore.value
-    ) {
-      loadMore()
-    }
+// Re-checked after every load, not just when the sentinel enters view: a page can add
+// nothing (NPR drops restricted stories), leaving the sentinel visible with more to fetch.
+const sentinelVisible = useElementVisibility(loadMoreRef)
+watch([sentinelVisible, pendingMore], ([visible, pending]) => {
+  // after a failed load, scrolling away and back retries
+  if (!visible) {
+    loadMoreError.value = false
+    return
   }
-)
+  // hasMore is false until the first page's meta has loaded
+  if (!pending && !loadMoreError.value && hasMore.value) {
+    loadMore()
+  }
+})
 
 const isFavorited = ref(false)
 onMounted(() => {
@@ -193,8 +207,6 @@ if (image) {
     ogImage: image,
   })
 }
-
-onUnmounted(() => stop())
 </script>
 
 <template>
@@ -213,25 +225,27 @@ onUnmounted(() => stop())
         <div class="col-fixed hidden xxl:block w-20rem"></div>
         <div class="col min-w-0 pr-2 lg:pr-4">
           <div class="flex flex-column gap-5">
-            <h2 class="md:text-xl">All Episodes</h2>
-            <template v-for="ep in episodes" :key="ep.id">
-              <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
-              <MediaCard
-                v-if="
-                  ep?.type !== 'segment' &&
-                  ep.estimatedDuration !== 0 &&
-                  ep?.hasAudio
-                "
-                :data="ep"
-                showPlayButton
-                is-horizontal
-                imgCol="w-7rem md:w-12rem"
-                :size="{ xs: [112, 112], md: [192, 192] }"
-                showTease
-                :showBg="true"
-                :showBgMobile="false"
-              />
-            </template>
+            <h2>All Episodes</h2>
+            <div class="flex flex-column gap-3">
+              <template v-for="ep in episodes" :key="ep.id">
+                <!-- if the duration comes back as 0, the estimateMp3Duration function was unable to get the duration due to the url being broken, so we just hide the episodes  -->
+                <MediaCard
+                  v-if="
+                    ep?.type !== 'segment' &&
+                    ep.estimatedDuration !== 0 &&
+                    ep?.hasAudio
+                  "
+                  :data="ep"
+                  showPlayButton
+                  is-horizontal
+                  imgCol="w-7rem md:w-12rem"
+                  :size="{ xs: [112, 112], md: [192, 192] }"
+                  showTease
+                  :showBg="true"
+                  :showBgMobile="false"
+                />
+              </template>
+            </div>
           </div>
           <div v-if="status === 'pending' || scStatus === 'pending'">
             <skeleton-media-card

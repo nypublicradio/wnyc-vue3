@@ -43,3 +43,6 @@ tests/
 vitest.config.ts
 jest.config.js
 jest.setup.js
+
+# graphify
+graphify-out/*
