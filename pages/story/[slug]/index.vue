@@ -1,5 +1,6 @@
 <script setup>
 import { cmsSources } from "~/composables/globals"
+import { useGlobalToast } from "~/composables/states"
 import { useTopStories } from "~/composables/useTopStories"
 import {
   getPublisherStoryTitle,
@@ -11,6 +12,7 @@ const { getFilteredTopStories } = useTopStories()
 
 const route = useRoute()
 const config = useRuntimeConfig()
+const globalToast = useGlobalToast()
 
 const storySource = "WNYC"
 

@@ -29,6 +29,7 @@ dependencies {
     implementation project(':capacitor-status-bar')
     implementation project(':nypublicradio-capacitor-ios-notification-settings')
     implementation project(':nypublicradio-capacitor-remote-streamer')
+    implementation project(':nypublicradio-wnyc-auto')
     implementation project(':bp-capacitor-background-mode')
     implementation project(':capacitor-native-settings')
     implementation "com.onesignal:OneSignal:5.1.35"
