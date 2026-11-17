@@ -1,8 +1,15 @@
-import { h, resolveComponent, type VNode } from 'vue'
+import { h, reactive, resolveComponent, type VNode } from 'vue'
 import { Parser, DomHandler } from 'htmlparser2'
 import VImage from '~/components/VImage.vue'
 import { useVImage } from '~/composables/useVImage'
 import { WAGTAILIMAGEDOMAINSOURCES } from '~/composables/globals'
+
+// Legacy Publisher player embeds point at audio by story id (#file=/audio/json/<id>/)
+const LEGACY_AUDIO_JSON = /#file=\/audio\/json\/(\d+)\/?/
+// story id -> audio URL, shared so each id is fetched once; missing or '' if not resolved
+const legacyAudioUrls = reactive<Record<string, string>>({})
+// not reactive: marking an id as requested during render must not trigger another render
+const requestedAudioIds = new Set<string>()
 
 interface HtmlParserOptions {
     tagClassMap?: Record<string, string>
@@ -14,6 +21,7 @@ interface HtmlParserOptions {
 export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {}): (() => VNode[]) => {
     const { getImageDimensions, templatizeImageUrl, isPublisherImageUrl, isNPRImageUrl } = useVImage()
     const { tagClassMap = {}, imagePropsMap = {}, parentWidth = 304 } = options
+    const { BFF_URL } = useRuntimeConfig().public
 
     let imageCounter = 0
     // check if the image is a gif
@@ -123,8 +131,24 @@ export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {
                     }
                 }
 
-                if (tagName === 'iframe') {
-                    return h(tagName, attrs, node.children ? processNodeList(node.children) : null)
+                // Resolve legacy Publisher audio embeds. Publisher's CORS only allows wnyc.org, so look the story up through the BFF.
+                // Runs client-side only; reading legacyAudioUrls re-renders this iframe once the URL arrives.
+                const legacyAudioId = tagName === 'iframe' && attrs.src?.match(LEGACY_AUDIO_JSON)?.[1]
+                if (legacyAudioId) {
+                    if (!import.meta.server && !requestedAudioIds.has(legacyAudioId)) {
+                        requestedAudioIds.add(legacyAudioId)
+                        $fetch(`${BFF_URL}/api/legacy-audio/${legacyAudioId}`)
+                            .then((story: { audio?: string | string[] }) => {
+                                legacyAudioUrls[legacyAudioId] = [story?.audio].flat()[0] ?? ''
+                            })
+                            .catch(() => { })
+                    }
+                    if (legacyAudioUrls[legacyAudioId]) {
+                        attrs.src = attrs.src.replace(LEGACY_AUDIO_JSON, `#file=${legacyAudioUrls[legacyAudioId]}`)
+                    } else {
+                        // no src until resolved, or the widget requests /audio/json/<id>/ from our server and 404s
+                        delete attrs.src
+                    }
                 }
 
                 // Skip script tags
