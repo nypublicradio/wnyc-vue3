@@ -115,7 +115,7 @@ function processNavigationData (bffData, appDownloadLink: string, isApp: boolean
     }
 
     // Merge Shows into third menu item
-    const showsItems = normalizeShowsMenuData(bffData.showsResponse, 5)
+    const showsItems = normalizeShowsMenuData(bffData.showsResponse, 6)
     if (workingHeaderNav[2]?.items?.[0]) {
         workingHeaderNav[2].items[0].splice(0, 0, ...showsItems)
     }

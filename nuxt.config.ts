@@ -165,6 +165,11 @@ export default defineNuxtConfig({
     server: {
       allowedHosts: ["local.dev.nypr.digital"],
     },
+    resolve: {
+      // Use the app's single copy of @capacitor/core, even when Capacitor plugins
+      // are linked locally (file:../…) and bring their own copy along
+      dedupe: ["@capacitor/core"],
+    },
     define: {
       __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: true,
     },
