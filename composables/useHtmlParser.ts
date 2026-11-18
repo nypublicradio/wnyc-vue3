@@ -6,7 +6,7 @@ import { WAGTAILIMAGEDOMAINSOURCES } from '~/composables/globals'
 
 // Legacy Publisher player embeds point at audio by story id (#file=/audio/json/<id>/)
 const LEGACY_AUDIO_JSON = /#file=\/audio\/json\/(\d+)\/?/
-// story id -> audio URL, shared so each id is fetched once; missing or '' if not resolved
+// story id -> audio URL, shared so each id is fetched once; missing while loading, '' once a lookup found no audio
 const legacyAudioUrls = reactive<Record<string, string>>({})
 // not reactive: marking an id as requested during render must not trigger another render
 const requestedAudioIds = new Set<string>()
@@ -141,13 +141,20 @@ export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {
                             .then((story: { audio?: string | string[] }) => {
                                 legacyAudioUrls[legacyAudioId] = [story?.audio].flat()[0] ?? ''
                             })
-                            .catch(() => { })
+                            .catch((error) => {
+                                // no response = network failure (e.g. offline), so let a later render retry; an HTTP error like 404 is final
+                                if (!error?.response) requestedAudioIds.delete(legacyAudioId)
+                                legacyAudioUrls[legacyAudioId] = ''
+                            })
                     }
-                    if (legacyAudioUrls[legacyAudioId]) {
-                        attrs.src = attrs.src.replace(LEGACY_AUDIO_JSON, `#file=${legacyAudioUrls[legacyAudioId]}`)
-                    } else {
-                        // no src until resolved, or the widget requests /audio/json/<id>/ from our server and 404s
+                    const audioUrl = legacyAudioUrls[legacyAudioId]
+                    if (audioUrl === undefined) {
+                        // no src while loading, or the widget requests /audio/json/<id>/ from our server and 404s
                         delete attrs.src
+                    } else {
+                        // encoded so the widget's hash parsing keeps the URL's own query string (&awEpisodeId=…);
+                        // '' gives an empty #file=, which makes the widget show "Audio player unavailable"
+                        attrs.src = attrs.src.replace(LEGACY_AUDIO_JSON, `#file=${encodeURIComponent(audioUrl)}`)
                     }
                 }
 
