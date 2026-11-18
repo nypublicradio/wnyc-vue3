@@ -28,6 +28,7 @@ const props = defineProps({
 const reactiveItems = toRef(props.list, "listItems")
 const { breakpoint } = useBreakpoints()
 const isLgBreakpoint = computed(() => breakpoint("<lg"))
+const isApp = useIsApp()
 
 // Compute isSquare synchronously during setup so it runs during SSR
 // (onBeforeMount does NOT run on the server, causing hydration mismatches)
@@ -76,7 +77,7 @@ const featureSizes = computed(() => {
     >
       <story-htlAd
         layout="rectangle"
-        slotClass="htlad-wnyc_homepage_rectangle"
+        :slotClass="isApp ? 'htlad-wnyc_homepage_rectangle_app' : 'htlad-wnyc_homepage_rectangle'"
         fineprint="WNYC is funded by sponsors and member donations"
       />
     </div>
@@ -116,7 +117,7 @@ const featureSizes = computed(() => {
       >
         <story-htlAd
           layout="rectangle"
-          slotClass="htlad-wnyc_homepage_rectangle"
+          :slotClass="isApp ? 'htlad-wnyc_homepage_rectangle_app' : 'htlad-wnyc_homepage_rectangle'"
           fineprint="WNYC is funded by sponsors and member donations"
         />
       </div>

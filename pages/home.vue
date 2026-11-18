@@ -77,7 +77,7 @@ onMounted(() => {
       </div>
       <!-- <VImage src="/fallback-ep.png" /> -->
     </section>
-    <!-- <story-htlAd layout="leaderboard" slotClass="htlad-wnyc_homepage_banner" /> -->
+    <!-- <story-htlAd layout="leaderboard" :slotClass="isApp ? 'htlad-wnyc_homepage_banner_app' : 'htlad-wnyc_homepage_banner'" /> -->
     <section v-if="appSettings?.ask_the_mayor" class="mb-4 thinContent">
       <atm-cta />
     </section>

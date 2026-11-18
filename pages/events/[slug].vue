@@ -1,6 +1,7 @@
 <script setup lang="js">
 import { useToast } from "primevue/usetoast"
 import { useTopStories } from "~/composables/useTopStories"
+import { useIsApp } from "~/composables/states"
 import { EVENT_BADGE_STYLES, useEventData } from "~/composables/useEventData"
 import { getEventTitle, getEventDescription, getEventImage } from "~/utilities/metadataHelpers"
 import useSeoMetaOverrides from "~/composables/useSeoMetaOverrides"
@@ -10,6 +11,7 @@ const { getFilteredTopStories } = useTopStories()
 const config = useRuntimeConfig()
 const route = useRoute()
 const toast = useToast()
+const isApp = useIsApp()
 
 const [
   { data: event, status, error },
@@ -294,7 +296,7 @@ useSocialMetaOverrides(eventData)
               <div class="event-rail__ad">
                 <story-htlAd
                   layout="rectangle"
-                  slotClass="htlad-wnyc_event_detail_rectangle"
+                  :slotClass="isApp ? 'htlad-wnyc_event_detail_rectangle_app' : 'htlad-wnyc_event_detail_rectangle'"
                   fineprint="WNYC is funded by sponsors and member donations"
                 />
               </div>
