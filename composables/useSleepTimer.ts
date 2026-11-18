@@ -16,6 +16,7 @@ import {
     useCurrentEpisode,
 } from "~/composables/states"
 import { Preferences } from "@capacitor/preferences"
+import { useBackgroundMode } from "~/composables/useBackgroundMode"
 
 // worker-timers requires Web Workers (browser-only).
 // Fall back to global setInterval/clearInterval on the server to avoid SSR crashes.
@@ -47,6 +48,7 @@ export default function useSleepTimer () {
     const sleepTimerSelectedTime = useSleepTimerSelectedTime()
     const currentUserProfile = useCurrentUserProfile()
     const globalToast = useGlobalToast()
+    const { disableBackgroundMode } = useBackgroundMode()
 
     const chunck = 60
     const chunckedTime = ref(0)
@@ -115,6 +117,12 @@ export default function useSleepTimer () {
         sleepTimerSideBar.value = false
     }
 
+    // Cancel the timer: the app no longer needs to run in the background
+    function cancelTimer () {
+        resetTimer()
+        disableBackgroundMode().catch((error) => console.error('Disabling background mode failed:', error))
+    }
+
     // Function to call when time ends
     function onTimeEnd () {
 
@@ -155,6 +163,9 @@ export default function useSleepTimer () {
 
                 // return the volume to 1
                 RemoteStreamer.setVolume({ volume: 1 })
+
+                // the app no longer needs to run in the background
+                disableBackgroundMode().catch((error) => console.error('Disabling background mode failed:', error))
 
                 //notify the user
                 globalToast.value = {
@@ -226,5 +237,5 @@ export default function useSleepTimer () {
         )
     }
 
-    return { sleepTimerSelectedTime, sleepTimerCurrentTime, sleepTimerRunning, formattedTime, startTimer, pauseTimer, resetTimer, onTimeEnd, onUpdateDuration, sleepTimerPaused, updateUserPreferences, getUserPreferenceSleepTime, handleSleepTimer }
+    return { sleepTimerSelectedTime, sleepTimerCurrentTime, sleepTimerRunning, formattedTime, startTimer, pauseTimer, resetTimer, cancelTimer, onTimeEnd, onUpdateDuration, sleepTimerPaused, updateUserPreferences, getUserPreferenceSleepTime, handleSleepTimer }
 }

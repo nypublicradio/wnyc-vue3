@@ -1,6 +1,6 @@
 import { getDate } from '~/utilities/helpers'
 import { useIsNetworkConnected, useIsApp, useIsLiveStream } from "~/composables/states"
-import { FALLBACKIMAGE/* , PLAYER_SKIP_TIME */ } from "~/composables/globals"
+import { FALLBACKIMAGE } from "~/composables/globals"
 import axios from 'axios'
 import { RemoteStreamer } from "@nypublicradio/capacitor-remote-streamer"
 import { useVImage } from "~/composables/useVImage"
@@ -21,12 +21,13 @@ const fetchMimeType = async (imageUrl) => {
 }
 
 // generate an array of artwork objects with different sizes and using an axios call to get the image type
-const generateMediaSessionArtworkArray = async (image) => {
+// the native player only uses an image url, so withType = false skips the request
+const generateMediaSessionArtworkArray = async (image, withType = true) => {
     const { imageSolver } = useVImage()
     const arr = []
 
     //have to get the format for publisher images
-    const format = await fetchMimeType(imageSolver(image, { w: 112, h: 112, q: 80, format: 'jpeg' }))
+    const format = withType ? await fetchMimeType(imageSolver(image, { w: 112, h: 112, q: 80, format: 'jpeg' })) : defaultMimeType
     imageSizes.forEach(size => {
         arr.push({
             src: imageSolver(image, { w: size, h: size, q: 80 }),
@@ -38,7 +39,7 @@ const generateMediaSessionArtworkArray = async (image) => {
 }
 
 // initialize the media session with the episode data
-export const initMediaSession = async (episode/* , skipTime = PLAYER_SKIP_TIME */) => {
+export const initMediaSession = async (episode) => {
     if (!import.meta.client) return
     if (!episode) return
 
@@ -49,7 +50,7 @@ export const initMediaSession = async (episode/* , skipTime = PLAYER_SKIP_TIME *
 
     // if this episode has a directory image, that means it has been downloaded, so to use the downloaded im age in the media session, otherwise use the image from the API response as normal
     // the "player_image" is generated from the prepForPlayer helper function
-    const artworkImageArray = currentEpisode?.directoryImage?.uri && !isNetworkConnected.value ? [{ src: currentEpisode.directoryImage.uri }] : await generateMediaSessionArtworkArray(currentEpisode.player_image?.template || currentEpisode.player_image || currentEpisode.image?.template || currentEpisode.image || FALLBACKIMAGE)
+    const artworkImageArray = currentEpisode?.directoryImage?.uri && !isNetworkConnected.value ? [{ src: currentEpisode.directoryImage.uri }] : await generateMediaSessionArtworkArray(currentEpisode.player_image?.template || currentEpisode.player_image || currentEpisode.image?.template || currentEpisode.image || FALLBACKIMAGE, !isApp.value)
     const artistSlot = currentEpisode.showTitle !== currentEpisode.title ? currentEpisode.showTitle : null || getDate(currentEpisode) || 'LIVE'
     if (isApp.value) {
 

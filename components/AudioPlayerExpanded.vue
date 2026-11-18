@@ -23,8 +23,6 @@ import { fetchAndStoreMp3, isAlreadyDownloaded } from "~/utilities/file-system"
 import StarIcon from "~/components/icons/StarIcon.vue"
 import DownloadIcon from "~/components/icons/DownloadIcon.vue"
 import ShareIcon from "~/components/icons/ShareIcon.vue"
-//import QueueIcon from "~/components/icons/QueueIcon.vue"
-//import MoreEpisodesIcon from "~/components/icons/MoreEpisodesIcon.vue"
 import FollowIcon from "~/components/icons/FollowIcon.vue"
 import SleepIcon from "~/components/icons/SleepIcon.vue"
 
@@ -36,8 +34,6 @@ const currentEpisode = useCurrentEpisode()
 const user = useCurrentUser()
 const isLiveStream = useIsLiveStream()
 const sleepTimerRunning = useSleepTimerRunning()
-const expandedFooterRef = ref(null)
-const expandedFooterheight = ref(0)
 const showShare = ref(true)
 const dotMenuRef = ref(null)
 const isApp = useIsApp()
@@ -49,6 +45,14 @@ const isShowFollowed = ref(false)
 const isShowFollowable = ref(true)
 const showDownload = ref(true)
 const route = useRoute()
+
+// an item started from the car has no page behind it to share or download
+const canShare = computed(
+  () => showShare.value && !currentEpisode.value?.fromAuto
+)
+const canDownload = computed(
+  () => showDownload.value && !currentEpisode.value?.fromAuto
+)
 
 // get true slug from id
 const getTrueSlugFromRedirects = async (link, isolateReturn = true) => {
@@ -65,37 +69,37 @@ const isLive = computed(() => {
 
 watch(
   currentEpisode,
-  async () => {
+  async (episode) => {
     // initially populate the true slug
-    trueSlug.value = await getTrueSlugFromRedirects(
-      currentEpisode.value.detailsLink,
-      true
-    )
+    const slug = await getTrueSlugFromRedirects(episode?.detailsLink, true)
+    // a newer episode loaded meanwhile
+    if (episode !== currentEpisode.value) return
+    trueSlug.value = slug
     // initially populate the true "to" destination if LIVE only
     if (isLive.value) {
-      trueTo.value = await getTrueSlugFromRedirects(
-        currentEpisode.value.detailsLink,
-        false
-      )
+      const to = await getTrueSlugFromRedirects(episode?.detailsLink, false)
+      if (episode !== currentEpisode.value) return
+      trueTo.value = to
       // handle if isShowFollowable
-      isShowFollowable.value = !trueTo.value.includes("http")
+      isShowFollowable.value =
+        Boolean(trueTo.value) && !trueTo.value.includes("http")
     }
   },
   { immediate: true }
 )
 
 onMounted(() => {
-  watchEffect(async () => {
+  // no awaits in here (checkIsFavorited is synchronous): everything read is tracked, so the follow state updates once the watch above resolves the show's true slug
+  watchEffect(() => {
     if (!user.value) return
     // hide share if it is a segment, which is only set in NPR direct show episodes
     currentEpisode.value?.isSegment
       ? (showShare.value = false)
       : (showShare.value = true)
-    isFavorited.value = await checkIsFavorited(
+    isFavorited.value = checkIsFavorited(
       currentEpisode.value?.meta?.slug || currentEpisode.value?.slug
     )
-    //const trueSlug = await getTrueSlugFromRedirects(currentEpisode.value.detailsLink)
-    isShowFollowed.value = await checkIsFavorited(trueSlug.value)
+    isShowFollowed.value = checkIsFavorited(trueSlug.value)
 
     // show/hide download button based on show title
     const showsWithoutDownload = ["nyc now", "wnyc news"]
@@ -106,11 +110,6 @@ onMounted(() => {
       ? !showsWithoutDownload.includes(showTitle) || !isApp.value
       : true
   })
-})
-
-onMounted(() => {
-  if (expandedFooterheight.value)
-    expandedFooterheight.value = `${expandedFooterRef.value.offsetHeight}px`
 })
 
 // add item to favorites
@@ -190,25 +189,6 @@ const handleShare = () => {
   shareAPI(currentEpisode.value, "Expanded Audio Player")
 }
 
-// const handleAddToQueue = () => {
-//   // toggle active state
-//   // update SB and LS with new state
-//   trackClickEvent(
-//     "Click Tracking - Add to Queue",
-//     "Expanded Audio Player",
-//     currentEpisode.value.title
-//   )
-// }
-
-// const handleMoreEpisodes = () => {
-//   // navitget to show page
-//   trackClickEvent(
-//     "Click Tracking - More Episodes",
-//     "Expanded Audio Player",
-//     currentEpisode.value.title
-//   )
-// }
-
 // set the items for the Dot menu
 const getDotMenuItems = () => {
   return [
@@ -243,26 +223,6 @@ const getDotMenuItems = () => {
                 },
               ]
             : []),
-          // ...(showShare.value
-          //   ? [
-          //       {
-          //         label: "Share",
-          //         customIcon: ShareIcon,
-          //         title: currentEpisode.value.title,
-          //         command: () => {
-          //           handleShare()
-          //         },
-          //       },
-          //     ]
-          //   : []),
-          // {
-          //   label: "More Episodes",
-          //   customIcon: MoreEpisodesIcon,
-          //   title: currentEpisode.value.title,
-          //   command: () => {
-          //     handleMoreEpisodes()
-          //   },
-          // },
         ]
       : [
           ...(!currentEpisode.value.hideFavorite
@@ -295,7 +255,7 @@ const getDotMenuItems = () => {
                 },
               ]
             : []),
-          ...(showDownload.value
+          ...(canDownload.value
             ? [
                 {
                   label: "Download",
@@ -307,7 +267,7 @@ const getDotMenuItems = () => {
                 },
               ]
             : []),
-          ...(showShare.value
+          ...(canShare.value
             ? [
                 {
                   label: "Share",
@@ -319,32 +279,6 @@ const getDotMenuItems = () => {
                 },
               ]
             : []),
-          // {
-          //   label: "Add to Queue",
-          //   active: true,
-          //   customIcon: QueueIcon,
-          //   title: currentEpisode.value.title,
-          //   command: () => {
-          //     handleAddToQueue()
-          //   },
-          // },
-          // {
-          //   label: "More Episodes",
-          //   customIcon: MoreEpisodesIcon,
-          //   title: currentEpisode.value.title,
-          //   command: () => {
-          //     handleMoreEpisodes()
-          //   },
-          // },
-          // {
-          //   label: `Follow ${currentEpisode.value.showTitle}`,
-          //   customIcon: FollowIcon,
-          //   active: isFavorited.value,
-          //   title: currentEpisode.value.title,
-          //   command: () => {
-          //     handleAddToFavorites()
-          //   },
-          // },
         ]),
   ]
 }
@@ -417,7 +351,7 @@ const moreFromClick = async () => {
           rounded
           aria-label="download"
           @click="handleDownload"
-          v-if="currentEpisode.hideFavorite && showDownload"
+          v-if="currentEpisode.hideFavorite && canDownload"
         >
           <template #icon>
             <DownloadIcon />
@@ -435,7 +369,7 @@ const moreFromClick = async () => {
 
       <div class="flex gap-1 align-items-center">
         <Button
-          v-if="showShare && !isLive"
+          v-if="canShare && !isLive"
           text
           severity="secondary"
           rounded
@@ -549,9 +483,9 @@ const moreFromClick = async () => {
           :imgSrc="author.image"
           :name="`${author.firstName} ${author.lastName}`"
           :to="
-            (currentEpisode.cmsSource = 'publisher'
+            (currentEpisode.cmsSource === 'publisher'
               ? author.url
-              : author.url.replace('people', 'staff'))
+              : author.url?.replace('people', 'staff'))
           "
           @on-click="emit('close-panel')"
         />
@@ -565,7 +499,6 @@ const moreFromClick = async () => {
       />
     </div>
     <div
-      ref="expandedFooterRef"
       v-if="
         !isLiveStream &&
         (currentEpisode.showSlug ||

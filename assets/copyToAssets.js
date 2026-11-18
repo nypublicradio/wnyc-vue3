@@ -5,6 +5,12 @@ fs.copyFile('./public/splash.png', './assets/splash.png', (err) => {
 })
 require('dotenv').config()
 const env = process.env.ENV
-fs.copyFile(`./public/icon-only-${env}.png`, './assets/icon-only.png', (err) => {
+fs.copyFile(`./public/icon-only-${ env }.png`, './assets/icon-only.png', (err) => {
+    if (err) throw err
+})
+fs.copyFile(`./public/icon-only-${ env }.png`, './assets/icon-foreground.png', (err) => {
+    if (err) throw err
+})
+fs.copyFile(`./public/icon-only-${ env }.png`, './assets/icon-background.png', (err) => {
     if (err) throw err
 })

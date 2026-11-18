@@ -1,8 +1,10 @@
 <script setup>
 import { getNprTitle, getNprDescription, getNprImage } from "~/utilities/metadataHelpers"
+import { useGlobalToast } from "~/composables/states"
 
 const route = useRoute()
 const config = useRuntimeConfig()
+const globalToast = useGlobalToast()
 
 const storySource = "NPR"
 
