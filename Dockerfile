@@ -6,6 +6,8 @@ WORKDIR /code
 COPY .npmrc .npmrc
 COPY ./package.json .
 COPY ./package-lock.json .
+# onnxruntime-node (via @huggingface/transformers) downloads CUDA binaries on linux-x64 by default; we don't use them and the v1.21.0 release asset 404s
+ENV ONNXRUNTIME_NODE_INSTALL_CUDA=skip
 RUN npm ci
 
 # Declare build args after npm ci so changing env vars doesn't bust the install cache
