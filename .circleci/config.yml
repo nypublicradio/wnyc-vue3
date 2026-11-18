@@ -230,6 +230,7 @@ jobs:
       ISAPP: "true"
       NUXT_SSR: "false"
       ENV: <<parameters.env>>
+      ONNXRUNTIME_NODE_INSTALL_CUDA: skip
     shell: /bin/bash --login -o pipefail
     steps:
       - checkout
@@ -298,6 +299,7 @@ executors:
     resource_class: xlarge
     environment: 
       JOBS: 2
+      ONNXRUNTIME_NODE_INSTALL_CUDA: skip
   macosg2:
     macos:
       xcode: "27.0.0"

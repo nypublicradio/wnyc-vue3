@@ -6,6 +6,8 @@ WORKDIR /app
 COPY package.json package-lock.json .npmrc ./
 
 # Install dependencies
+# onnxruntime-node (via @huggingface/transformers) downloads CUDA binaries on linux-x64 by default; we don't use them and the v1.21.0 release asset 404s
+ENV ONNXRUNTIME_NODE_INSTALL_CUDA=skip
 RUN npm ci
 
 # Expose Nuxt dev server port
