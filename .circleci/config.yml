@@ -230,6 +230,8 @@ jobs:
       ISAPP: "true"
       NUXT_SSR: "false"
       ENV: <<parameters.env>>
+      # skip onnxruntime-node's CUDA download on linux-x64 (unused; the v1.21.0 release asset 404s)
+      ONNXRUNTIME_NODE_INSTALL_CUDA: skip
     shell: /bin/bash --login -o pipefail
     steps:
       - checkout
@@ -296,8 +298,10 @@ executors:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASS
     resource_class: xlarge
-    environment: 
+    environment:
       JOBS: 2
+      # skip onnxruntime-node's CUDA download on linux-x64 (unused; the v1.21.0 release asset 404s)
+      ONNXRUNTIME_NODE_INSTALL_CUDA: skip
   macosg2:
     macos:
       xcode: "27.0.0"

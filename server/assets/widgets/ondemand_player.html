@@ -89,7 +89,11 @@
 
       if (fileToPlay) {
         let isValidUrl = false
-        const decodedFile = decodeURIComponent(fileToPlay)
+        // URLSearchParams already decoded the #file= value, so a literal % makes this second decode throw; keep the value as-is then
+        let decodedFile = fileToPlay
+        try {
+          decodedFile = decodeURIComponent(fileToPlay)
+        } catch (e) {}
 
         try {
           // Parse the URL (using current origin as base for relative URLs)
