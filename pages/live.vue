@@ -7,6 +7,7 @@ import {
   useAllCurrentStations,
   useIsEpisodePlaying,
   useIsStreamLoading,
+  useIsApp,
 } from "~/composables/states"
 
 const {
@@ -23,6 +24,7 @@ const currentEpisodeHolder = useCurrentEpisodeHolder()
 const currentEpisode = useCurrentEpisode()
 const isEpisodePlaying = useIsEpisodePlaying()
 const isStreamLoading = useIsStreamLoading()
+const isApp = useIsApp()
 const scheduleHolderRef = ref(null)
 const isPageMounted = ref(false)
 
@@ -287,7 +289,7 @@ useHead({
         >
           <story-htlAd
             layout="rectangle"
-            slotClass="htlad-wnyc_livepage_rectangle"
+            :slotClass="isApp ? 'htlad-wnyc_livepage_rectangle_app' : 'htlad-wnyc_livepage_rectangle'"
             fineprint="WNYC is funded by sponsors and member donations"
           />
         </div>

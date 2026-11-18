@@ -210,7 +210,7 @@ useSocialMetaOverrides(show)
                   >
                     <story-htlAd
                       layout="rectangle"
-                      slotClass="htlad-wnyc_show_page_rectangle"
+                      :slotClass="isApp ? 'htlad-wnyc_show_page_rectangle_app' : 'htlad-wnyc_show_page_rectangle'"
                       fineprint="WNYC is funded by sponsors and member donations"
                     />
                   </div>

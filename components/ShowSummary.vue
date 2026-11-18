@@ -1,6 +1,6 @@
 <script setup>
 import { useFallbackImages } from "~/composables/useFallbackImages"
-//import { useAppDownloadLink } from "~/composables/states"
+import { useIsApp } from "~/composables/states"
 import { mediaTypeRoutes, cmsSources } from "~/composables/globals"
 import AntiFraudMessage from "./AntiFraudMessage.vue"
 const props = defineProps({
@@ -18,7 +18,7 @@ const { show } = toRefs(props)
 
 //const appDownloadLink = useAppDownloadLink()
 const { getEpisodeFallBackImage } = useFallbackImages()
-
+const isApp = useIsApp()
 // Use computed properties to maintain reactivity
 const showImage = computed(
   () =>
@@ -72,7 +72,7 @@ const handleShowClick = () => {
     <story-htlAd
       class="hidden lg:block"
       layout="rectangle"
-      slotClass="htlad-wnyc_homepage_rectangle"
+      :slotClass="isApp ? 'htlad-wnyc_homepage_rectangle_app' : 'htlad-wnyc_homepage_rectangle'"
       fineprint="WNYC is funded by sponsors and member donations"
     />
   </div>

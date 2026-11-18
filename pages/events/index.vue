@@ -2,12 +2,14 @@
 import { useToast } from "primevue/usetoast"
 import { useTopStories } from "~/composables/useTopStories"
 import { useIntersectionObserver } from "@vueuse/core"
+import { useIsApp } from "~/composables/states"
 const {
   socialLinks,
 } = await useNavigationData()
 const { topStories } = useTopStories()
 const config = useRuntimeConfig()
 const toast = useToast()
+const isApp = useIsApp()
 
 const offset = ref(0)
 const limit = ref(5)

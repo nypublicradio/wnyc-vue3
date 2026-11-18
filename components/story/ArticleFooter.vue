@@ -18,6 +18,7 @@ const props = defineProps({
 })
 
 //const tags = ref(props.article.tags)
+const isApp = useIsApp()
 const isSponsored = ref(props.article?.sponsoredContent ?? false)
 const isDisableComments = ref(props.article?.disableComments ?? false)
 const profileData = computed(() =>
@@ -70,7 +71,7 @@ const { getUserFallBackImage } = useFallbackImages()
         >
           <story-htlAd
             layout="rectangle"
-            slotClass="htlad-wnyc_article_rectangle"
+            :slotClass="isApp ? 'htlad-wnyc_article_rectangle_app' : 'htlad-wnyc_article_rectangle'"
             fineprint="WNYC is funded by sponsors and member donations"
           />
         </div>
