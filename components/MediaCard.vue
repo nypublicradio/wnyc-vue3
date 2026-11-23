@@ -198,7 +198,6 @@ const reactiveData = toRef(props, "data")
 
 const dotMenuRef = ref(null)
 
-
 // set dynamic route
 const dynamicRoute = computed(() =>
   dynamicNavigation(
@@ -272,7 +271,7 @@ onMounted(() => {
 // add item to favorites
 const handleAddToFavorites = (bucketItem) => {
   const recentlyFocused = useRecentlyFocused()
-  recentlyFocused.value = dotMenuRef.value?.$el?.querySelector('button')
+  recentlyFocused.value = dotMenuRef.value?.$el?.querySelector("button")
   // helper func for adding to favorites, also handles account prompt if not logged in
   addToFavorites2({
     item: bucketItem,
@@ -503,6 +502,17 @@ const handleHasAudio = computed(() => {
 
 // handle event code here - make event data available for template access
 const eventData = ref(isEvent ? useEventData(reactiveData) : null)
+
+// handle event CTA URL
+const handleEventCta = () => {
+  if (!eventData.value?.eventCtaUrl) return
+  // click tracking
+  trackClickEvent(
+    "Click Tracking - Get Tickets button",
+    "MediaCard",
+    `Tickets page = ${eventData.value?.eventCtaUrl}`
+  )
+}
 </script>
 
 <template>
@@ -743,8 +753,9 @@ const eventData = ref(isEvent ? useEventData(reactiveData) : null)
               <div class="w-full md:w-auto">
                 <EventButton
                   v-if="eventData?.eventCtaUrl"
-                  class="z-2"
-                  @on-click="handleRouteClick"
+                  :href="eventData?.eventCtaUrl"
+                  class="z-2 relative"
+                  @on-click="handleEventCta"
                   buttonClass="px-5 md:px-3"
                   labelClass="text-base md:text-sm"
                 />
