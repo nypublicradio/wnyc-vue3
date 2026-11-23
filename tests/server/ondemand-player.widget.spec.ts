@@ -8,8 +8,9 @@ const bffAnswers = (body: unknown, ok = true) => vi.fn(async () => ({ ok, json: 
 // loads the real widget at url with a stubbed fetch; resolves to the audio src it plays, or null when it shows its error
 const play = async (url: string, fetch = bffAnswers({ audio })) => {
   const { document } = new JSDOM(widgetHtml, { url, runScripts: 'dangerously', beforeParse: (window) => { window.fetch = fetch } }).window
-  const audioEl = document.getElementById('audio-player')!
-  const errorEl = document.getElementById('error-msg')!
+  const audioEl = document.getElementById('audio-player')
+  const errorEl = document.getElementById('error-msg')
+  if (!audioEl || !errorEl) throw new Error('widget markup is missing #audio-player or #error-msg')
   await vi.waitFor(() => expect([audioEl.style.display, errorEl.style.display]).toContain('block'))
   return audioEl.style.display === 'block' ? audioEl.getAttribute('src') : null
 }
