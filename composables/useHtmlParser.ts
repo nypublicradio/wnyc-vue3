@@ -14,6 +14,7 @@ interface HtmlParserOptions {
 export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {}): (() => VNode[]) => {
     const { getImageDimensions, templatizeImageUrl, isPublisherImageUrl, isNPRImageUrl } = useVImage()
     const { tagClassMap = {}, imagePropsMap = {}, parentWidth = 304 } = options
+    const { BFF_URL } = useRuntimeConfig().public
 
     let imageCounter = 0
     // check if the image is a gif
@@ -111,20 +112,17 @@ export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {
                     return h(VImage, vImageProps)
                 }
 
-                // Intercept iframes and rewrite WNYC URLs to use local Nuxt routes
+                // Intercept iframes and rewrite WNYC URLs to our own routes (server/routes/widgets).
+                // Prefixed with BFF_URL because the app bundle has no server routes of its own.
                 if (tagName === 'iframe' && attrs.src && attrs.src.includes('wnyc.org')) {
                     try {
                         const urlObj = new URL(attrs.src)
                         if (urlObj.hostname.includes('wnyc.org')) {
-                            attrs.src = urlObj.pathname + urlObj.search + urlObj.hash
+                            attrs.src = BFF_URL + urlObj.pathname + urlObj.search + urlObj.hash
                         }
                     } catch (e) {
                         // ignore invalid URLs, they might already be relative
                     }
-                }
-
-                if (tagName === 'iframe') {
-                    return h(tagName, attrs, node.children ? processNodeList(node.children) : null)
                 }
 
                 // Skip script tags
