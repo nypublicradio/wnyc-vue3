@@ -28,6 +28,19 @@ describe('GET /api/legacy-audio/[storyId]', () => {
     expect(axiosMock).toHaveBeenCalledWith('https://publisher.test/api/v3/story-pk/1299425/?fields[story]=audio')
   })
 
+  it('answers a deleted story (Publisher 404) or a story without audio with an empty audio URL', async () => {
+    axiosMock.mockRejectedValueOnce(Object.assign(new Error('Not Found'), { response: { status: 404 } }))
+    await expect(callRoute('404')).resolves.toEqual({ audio: '' })
+
+    axiosMock.mockResolvedValueOnce({ data: { data: { attributes: {} } } })
+    await expect(callRoute('1299426')).resolves.toEqual({ audio: '' })
+  })
+
+  it('passes other Publisher errors on, so they are not cached', async () => {
+    axiosMock.mockRejectedValueOnce(Object.assign(new Error('Bad Gateway'), { response: { status: 502 } }))
+    await expect(callRoute('1299427')).rejects.toThrow('Bad Gateway')
+  })
+
   it('rejects non-numeric ids without calling Publisher', async () => {
     await expect(callRoute('../v3/buckets')).rejects.toMatchObject({ statusCode: 400 })
     expect(axiosMock).not.toHaveBeenCalled()

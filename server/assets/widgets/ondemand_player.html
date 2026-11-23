@@ -52,7 +52,7 @@
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", async () => {
       let fileToPlay = ""
       const hash = window.location.hash
       const pathname = window.location.pathname
@@ -79,9 +79,23 @@
         if (parts.length > 1) {
           const fileString = parts[1].split("&")[0]
           if (fileString) {
-            fileToPlay = fileString
+            // the path form is still percent-encoded (the #file= form was already decoded by URLSearchParams)
+            try {
+              fileToPlay = decodeURIComponent(fileString)
+            } catch (e) {
+              fileToPlay = fileString
+            }
           }
         }
+      }
+
+      // Legacy Publisher embeds name a story (/audio/json/<id>/) instead of a file; our server looks up its audio URL (server/api/legacy-audio)
+      const legacyStoryId = fileToPlay.match(/^\/audio\/json\/(\d+)/)?.[1]
+      if (legacyStoryId) {
+        fileToPlay = await fetch(`/api/legacy-audio/${legacyStoryId}`)
+          .then((res) => res.ok ? res.json() : {})
+          .then((data) => data.audio || "")
+          .catch(() => "")
       }
 
       const audioEl = document.getElementById("audio-player")
@@ -89,15 +103,10 @@
 
       if (fileToPlay) {
         let isValidUrl = false
-        // URLSearchParams already decoded the #file= value, so a literal % makes this second decode throw; keep the value as-is then
-        let decodedFile = fileToPlay
-        try {
-          decodedFile = decodeURIComponent(fileToPlay)
-        } catch (e) {}
 
         try {
           // Parse the URL (using current origin as base for relative URLs)
-          const urlObj = new URL(decodedFile, window.location.origin)
+          const urlObj = new URL(fileToPlay, window.location.origin)
           // Ensure it uses a safe web protocol
           if (urlObj.protocol === "http:" || urlObj.protocol === "https:") {
             isValidUrl = true
@@ -114,7 +123,7 @@
             errorMsg.style.display = "block"
           })
           
-          audioEl.src = decodedFile
+          audioEl.src = fileToPlay
           audioEl.style.display = "block"
         } else {
           audioEl.style.display = "none"

@@ -1,15 +1,8 @@
-import { h, reactive, resolveComponent, type VNode } from 'vue'
+import { h, resolveComponent, type VNode } from 'vue'
 import { Parser, DomHandler } from 'htmlparser2'
 import VImage from '~/components/VImage.vue'
 import { useVImage } from '~/composables/useVImage'
 import { WAGTAILIMAGEDOMAINSOURCES } from '~/composables/globals'
-
-// Legacy Publisher player embeds point at audio by story id (#file=/audio/json/<id>/)
-const LEGACY_AUDIO_JSON = /#file=\/audio\/json\/(\d+)\/?/
-// story id -> audio URL, shared so each id is fetched once; missing while loading, '' once a lookup found no audio
-const legacyAudioUrls = reactive<Record<string, string>>({})
-// not reactive: marking an id as requested during render must not trigger another render
-const requestedAudioIds = new Set<string>()
 
 interface HtmlParserOptions {
     tagClassMap?: Record<string, string>
@@ -119,42 +112,16 @@ export const useHtmlParser = (htmlString: string, options: HtmlParserOptions = {
                     return h(VImage, vImageProps)
                 }
 
-                // Intercept iframes and rewrite WNYC URLs to use local Nuxt routes
+                // Intercept iframes and rewrite WNYC URLs to our own routes (server/routes/widgets).
+                // Prefixed with BFF_URL because the app bundle has no server routes of its own.
                 if (tagName === 'iframe' && attrs.src && attrs.src.includes('wnyc.org')) {
                     try {
                         const urlObj = new URL(attrs.src)
                         if (urlObj.hostname.includes('wnyc.org')) {
-                            attrs.src = urlObj.pathname + urlObj.search + urlObj.hash
+                            attrs.src = BFF_URL + urlObj.pathname + urlObj.search + urlObj.hash
                         }
                     } catch (e) {
                         // ignore invalid URLs, they might already be relative
-                    }
-                }
-
-                // Resolve legacy Publisher audio embeds. Publisher's CORS only allows wnyc.org, so look the story up through the BFF.
-                // Runs client-side only; reading legacyAudioUrls re-renders this iframe once the URL arrives.
-                const legacyAudioId = tagName === 'iframe' && attrs.src?.match(LEGACY_AUDIO_JSON)?.[1]
-                if (legacyAudioId) {
-                    if (!import.meta.server && !requestedAudioIds.has(legacyAudioId)) {
-                        requestedAudioIds.add(legacyAudioId)
-                        $fetch(`${BFF_URL}/api/legacy-audio/${legacyAudioId}`)
-                            .then((story: { audio?: string | string[] }) => {
-                                legacyAudioUrls[legacyAudioId] = [story?.audio].flat()[0] ?? ''
-                            })
-                            .catch((error) => {
-                                // no response = network failure (e.g. offline), so let a later render retry; an HTTP error like 404 is final
-                                if (!error?.response) requestedAudioIds.delete(legacyAudioId)
-                                legacyAudioUrls[legacyAudioId] = ''
-                            })
-                    }
-                    const audioUrl = legacyAudioUrls[legacyAudioId]
-                    if (audioUrl === undefined) {
-                        // no src while loading, or the widget requests /audio/json/<id>/ from our server and 404s
-                        delete attrs.src
-                    } else {
-                        // encoded so the widget's hash parsing keeps the URL's own query string (&awEpisodeId=…);
-                        // '' gives an empty #file=, which makes the widget show "Audio player unavailable"
-                        attrs.src = attrs.src.replace(LEGACY_AUDIO_JSON, `#file=${encodeURIComponent(audioUrl)}`)
                     }
                 }
 
