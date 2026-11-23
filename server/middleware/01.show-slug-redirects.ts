@@ -10,6 +10,7 @@ export default defineEventHandler(async (event) => {
         path === '/' ||
         path === '/home' ||
         path === '/_health' ||
+        path === '/favicon.png' ||
         // Skip known Nuxt page routes that don't exist in Wagtail
         path.startsWith('/browse') ||
         path.startsWith('/events') ||
