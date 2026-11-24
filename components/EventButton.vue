@@ -40,7 +40,7 @@ const emit = defineEmits(["on-click"])
       :class="props.buttonClass"
       :href="props.href"
       target="_blank"
-      rel="noopener"
+      rel="noopener noreferrer"
     >
       <slot name="icon" v-if="props.showIcon">
         <div class="flex align-items-center icon">
