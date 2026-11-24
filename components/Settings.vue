@@ -247,6 +247,22 @@ const clickThisMenu = (ref, event) => {
             @change="onUpdateContinuousPlay"
           />
         </SBox>
+        <SBox
+          v-if="currentUserProfile?.text_size"
+          label="Text size"
+          class="cursor-pointer"
+          @click="(e) => clickThisMenu(textSizeRef, e)"
+        >
+          <DropupMenu
+            ref="textSizeRef"
+            v-model="currentUserProfile.text_size"
+            :options="textSizeOptions"
+            label="Text Size"
+            blockClick
+            checkMark
+            @change="onUpdateTextSize"
+          />
+        </SBox>
       </div>
     </section>
     <section v-if="isApp" class="notifications p-0">
