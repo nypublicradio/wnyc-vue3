@@ -25,7 +25,8 @@ const accountPromptSideBar = useAccountPromptSideBar()
 const accountDeleteSideBar = useAccountDeleteSideBar()
 const sleepTimerSideBar = useSleepTimerSideBar()
 const { saveScrollPosition, restoreScrollPosition } = useManageScrollPosition()
-
+const { currentUserProfile, textSizeOptions, onUpdateTextSize } =
+  useProfileSetting()
 const settingsSideBarBrowserRef = ref(null)
 
 let swipe = null
@@ -103,6 +104,17 @@ watch(settingsSideBarBrowser, async (newVal) => {
             </span>
           </div>
           <div class="flex gap-3 align-items-center mt-2 lg:mt-0">
+            <DropupMenu
+              v-model="currentUserProfile.text_size"
+              :options="textSizeOptions"
+              label="Text Size"
+              checkMark
+              @change="onUpdateTextSize"
+            >
+              <template #customButton>
+                <Button class="custom-text-size-button"> A </Button>
+              </template>
+            </DropupMenu>
             <DonateBtn trackingLocation="header Hamburger Menu" />
           </div>
         </div>
