@@ -10,6 +10,7 @@ import {
   useAccountPromptSideBar,
   useAccountDeleteSideBar,
   useSleepTimerSideBar,
+  useIsApp,
 } from "~/composables/states"
 import useManageScrollPosition from "~/composables/useManageScrollPosition"
 import { useSwipe } from "@vueuse/core"
@@ -25,7 +26,9 @@ const accountPromptSideBar = useAccountPromptSideBar()
 const accountDeleteSideBar = useAccountDeleteSideBar()
 const sleepTimerSideBar = useSleepTimerSideBar()
 const { saveScrollPosition, restoreScrollPosition } = useManageScrollPosition()
-
+const { currentUserProfile, textSizeOptions, onUpdateTextSize } =
+  useProfileSetting()
+const { isApp } = useIsApp()
 const settingsSideBarBrowserRef = ref(null)
 
 let swipe = null
@@ -97,12 +100,28 @@ watch(settingsSideBarBrowser, async (newVal) => {
           <div
             class="flex flex-wrap gap-3 flex-column align-items-start lg:flex-row lg:align-items-center p-2"
           >
-            <WnycLogo class="flex-none w-6rem lg:w-7rem" />
-            <span class="hidden lg:flex gap-3">
+            <WnycLogo class="flex-none w-6rem lg:w-6rem xl:w-7rem" />
+            <span class="hidden lg:flex xl:gap-3 gap-0 flex-wrap">
               <SettingsBrowserButtons />
             </span>
           </div>
           <div class="flex gap-3 align-items-center mt-2 lg:mt-0">
+            <DropupMenu
+              v-if="!isApp"
+              v-model="currentUserProfile.text_size"
+              :options="textSizeOptions"
+              checkMark
+              @change="onUpdateTextSize"
+            >
+              <template #customButton>
+                <Button severity="secondary" class="custom-text-size-button">
+                  <div class="flex gap-0 align-items-end">
+                    <span class="text-xs font-medium">T</span>
+                    <span class="text-lg font-medium">T</span>
+                  </div>
+                </Button>
+              </template>
+            </DropupMenu>
             <DonateBtn trackingLocation="header Hamburger Menu" />
           </div>
         </div>
