@@ -107,12 +107,16 @@ watch(settingsSideBarBrowser, async (newVal) => {
             <DropupMenu
               v-model="currentUserProfile.text_size"
               :options="textSizeOptions"
-              label="Text Size"
               checkMark
               @change="onUpdateTextSize"
             >
               <template #customButton>
-                <Button class="custom-text-size-button"> A </Button>
+                <Button severity="secondary" class="custom-text-size-button">
+                  <div class="flex gap-0 align-items-end">
+                    <span class="text-xs font-medium">T</span>
+                    <span class="text-lg font-medium">T</span>
+                  </div>
+                </Button>
               </template>
             </DropupMenu>
             <DonateBtn trackingLocation="header Hamburger Menu" />
