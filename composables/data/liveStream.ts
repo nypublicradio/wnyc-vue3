@@ -10,7 +10,10 @@ import {
   useAllCurrentStations,
   useCurrentUserProfile,
   useGlobalToast,
+  useCurrentEpisode,
+  useIsLiveStream,
 } from "~/composables/states"
+import { isSameLiveStation } from "~/utilities/player"
 
 // worker-timers requires Web Workers (browser-only).
 // Fall back to global setTimeout/clearTimeout on the server to avoid SSR crashes.
@@ -54,6 +57,8 @@ export async function updateAllLiveStreams (init = true) {
   const currentEpisodeHolder = useCurrentEpisodeHolder()
   const currentStreamStation = useCurrentStreamStation()
   const currentUserProfile = useCurrentUserProfile()
+  const currentEpisode = useCurrentEpisode()
+  const isLiveStream = useIsLiveStream()
   const config = useRuntimeConfig()
   // BFF
   try {
@@ -71,9 +76,14 @@ export async function updateAllLiveStreams (init = true) {
 
     // set all streams to the filtered array
     allCurrentStations.value = fetchingAll.filter(Boolean)
-    let thisStation = null
+    // a profile refresh (e.g. on reconnect) must not switch the app away from the live station that's playing
+    let thisStation = isLiveStream.value
+      ? allCurrentStations.value.find((station) => isSameLiveStation(currentEpisode.value, station))
+      : null
 
-    if (init) {
+    if (thisStation) {
+      currentStreamStation.value = thisStation.slug
+    } else if (init) {
       // set initial stream with the `currentStreamStation` value in the states.ts file
       thisStation = allCurrentStations.value.find((option) => {
         const profile =
