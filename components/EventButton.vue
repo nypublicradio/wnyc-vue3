@@ -20,6 +20,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  href: {
+    type: String,
+    default: "",
+  },
 })
 
 const emit = defineEmits(["on-click"])
@@ -30,9 +34,13 @@ const emit = defineEmits(["on-click"])
     <Button
       :severity="props.severity"
       @click="emit('on-click')"
-      aria-label="read this article"
+      :aria-label="`${props.label} button (opens in new tab)`"
       class="flex align-items-center cursor-pointer"
+      as="a"
       :class="props.buttonClass"
+      :href="props.href"
+      target="_blank"
+      rel="noopener noreferrer"
     >
       <slot name="icon" v-if="props.showIcon">
         <div class="flex align-items-center icon">
@@ -53,7 +61,10 @@ const emit = defineEmits(["on-click"])
   .p-button {
     padding: 0.219rem 0.75rem;
     min-height: 33px;
-    &.active {
+    text-decoration: none;
+    &.active,
+    &:focus {
+      border-radius: revert-layer;
       //border: var(--bw-toggle) 1px solid;
     }
   }

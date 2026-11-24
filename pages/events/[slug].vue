@@ -5,7 +5,7 @@ import { EVENT_BADGE_STYLES, useEventData } from "~/composables/useEventData"
 import { getEventTitle, getEventDescription, getEventImage } from "~/utilities/metadataHelpers"
 import useSeoMetaOverrides from "~/composables/useSeoMetaOverrides"
 import useSocialMetaOverrides from "~/composables/useSocialMetaOverrides"
-
+import { trackClickEvent } from "~/utilities/helpers"
 const { getFilteredTopStories } = useTopStories()
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -94,11 +94,12 @@ const formattedPrice = computed(() => {
 
 // handle event CTA URL
 const handleEventCta = () => {
-  if (!eventCtaUrl.value) return
-  navigateTo(eventCtaUrl.value, {
-    external: true,
-    open: { target: '_blank' }
-  })
+  // click tracking
+  trackClickEvent(
+    "Click Tracking - Get Tickets button",
+    `Event page slug: ${route.params.slug}`,
+    `Tickets page = ${eventCtaUrl.value}`
+  )
 }
 
 const otherEvents = computed(() => {
@@ -186,6 +187,7 @@ useSocialMetaOverrides(eventData)
                     class="event-hero__cta"
                     severity="primary"
                     @on-click="handleEventCta"
+                    :href="eventCtaUrl"
                   />
                 </div>
               </div>
@@ -459,6 +461,7 @@ useSocialMetaOverrides(eventData)
     grid-row: 3;
     align-self: flex-start;
     margin-top: 0.4rem;
+    width: fit-content;
   }
 }
 
