@@ -6,7 +6,8 @@ import {
   useIsPlayingBumper,
 } from "~/composables/states"
 
-import { togglePlayEpisode } from "~/utilities/helpers"
+import { prepForPlayer, togglePlayEpisode } from "~/utilities/helpers"
+import { initMediaSession } from "~/utilities/media-session.js"
 import { mediaTypes } from "~/composables/globals"
 import { usePlaylistQueue } from "~/composables/usePlaylistQueue"
 
@@ -42,6 +43,8 @@ export const useContinuousPlay = () => {
         enableCommandCenter: true,
         enableCommandCenterSeek: false,
       })
+      // Now Playing (car, lock screen) shows the station, so the bumper reads as the start of its live stream
+      if (isPlayingBumper.value) initMediaSession(prepForPlayer(currentEpisodeHolder.value), true)
     } catch (error) {
       // no bumper for this station
       console.warn("Live stream bumper not played:", error)

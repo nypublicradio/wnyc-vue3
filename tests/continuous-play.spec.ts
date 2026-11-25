@@ -14,7 +14,11 @@ vi.mock('~/composables/states', async () => {
   }
 })
 
-vi.mock('~/utilities/helpers', () => ({ togglePlayEpisode: vi.fn() }))
+vi.mock('~/utilities/helpers', () => ({
+  togglePlayEpisode: vi.fn(),
+  prepForPlayer: vi.fn((item) => ({ ...item, player_image: 'station.png' })),
+}))
+vi.mock('~/utilities/media-session.js', () => ({ initMediaSession: vi.fn() }))
 vi.mock('~/composables/globals', () => ({ mediaTypes: { LIVE: 'live' } }))
 vi.mock('~/composables/usePlaylistQueue', () => {
   const playNextInPlaylist = vi.fn(() => false)
@@ -28,6 +32,7 @@ const { useCurrentUserProfile, useCurrentEpisodeHolder, useIsPlayingBumper } = a
 const { togglePlayEpisode } = await import('~/utilities/helpers')
 const { usePlaylistQueue } = await import('~/composables/usePlaylistQueue')
 const { RemoteStreamer } = await import('@nypublicradio/capacitor-remote-streamer')
+const { initMediaSession } = await import('~/utilities/media-session.js')
 const { useContinuousPlay } = await import('~/composables/useContinuousPlay')
 
 const profile = useCurrentUserProfile()
@@ -64,6 +69,11 @@ describe('continuous play', () => {
       expect.objectContaining({ url: 'bundle:live-stream-audio-bumpers/wnyc-fm939.mp3' })
     )
     expect(togglePlayEpisode).not.toHaveBeenCalled()
+    // Now Playing shows the station during the bumper, as live
+    expect(initMediaSession).toHaveBeenCalledWith(
+      expect.objectContaining({ slug: 'wnyc-fm939', player_image: 'station.png' }),
+      true
+    )
 
     expect(bumperEnded()).toBe(true)
     expect(togglePlayEpisode).toHaveBeenCalledWith(station.value, 'live')
@@ -76,7 +86,15 @@ describe('continuous play', () => {
     const { playLiveStreamAfterEnd, bumperEnded } = useContinuousPlay()
     await playLiveStreamAfterEnd()
     expect(togglePlayEpisode).toHaveBeenCalledWith(station.value, 'live')
+    expect(initMediaSession).not.toHaveBeenCalled()
     expect(bumperEnded()).toBe(false)
+  })
+
+  it("doesn't show the station when something else started while the bumper loaded", async () => {
+    const { playLiveStreamAfterEnd, cancelBumper } = useContinuousPlay()
+    vi.mocked(RemoteStreamer.play).mockImplementationOnce(async () => cancelBumper())
+    await playLiveStreamAfterEnd()
+    expect(initMediaSession).not.toHaveBeenCalled()
   })
 
   it('forgets the bumper when something else starts', async () => {

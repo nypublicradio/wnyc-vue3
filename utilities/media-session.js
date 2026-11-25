@@ -38,13 +38,12 @@ const generateMediaSessionArtworkArray = async (image, withType = true) => {
     return arr
 }
 
-// initialize the media session with the episode data
-export const initMediaSession = async (episode) => {
+// initialize the media session with the episode data, shown as live when isLive (defaults to whether the live stream is playing)
+export const initMediaSession = async (episode, isLive = useIsLiveStream().value) => {
     if (!import.meta.client) return
     if (!episode) return
 
     const isNetworkConnected = useIsNetworkConnected()
-    const isLiveStream = useIsLiveStream()
     const isApp = useIsApp()
     currentEpisode = episode
 
@@ -70,9 +69,9 @@ export const initMediaSession = async (episode) => {
             title: currentEpisode.title,
             artist: artistSlot,
             album: currentEpisode.showTitle,
-            duration: !isLiveStream.value ? String(currentEpisode.duration) : 'LIVE',
+            duration: !isLive ? String(currentEpisode.duration) : 'LIVE',
             imageUrl: artworkImageUrl,
-            isLiveStream: isLiveStream.value,
+            isLiveStream: isLive,
         })
     } else {
         if ("mediaSession" in navigator) {
