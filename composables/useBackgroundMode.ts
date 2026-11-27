@@ -1,4 +1,5 @@
 import { ref } from 'vue';
+import { Capacitor } from "@capacitor/core"
 import { BackgroundMode } from "bp-capacitor-background-mode"
 
 // composable to handle the background mode for android only
@@ -16,14 +17,6 @@ export const useBackgroundMode = () => {
     }
   };
 
-  // Add appInBackground listener
-  const addAppInBackgroundListener = async () => {
-    await BackgroundMode.addListener("appInBackground", async () => {
-      await BackgroundMode.moveToForeground()
-      await BackgroundMode.wakeUp()
-    })
-  }
-
   // Initialize background mode
   const initBackgroundMode = async () => {
 
@@ -37,13 +30,18 @@ export const useBackgroundMode = () => {
         silent: true,
         hidden: true,
       });
-      await addAppInBackgroundListener()
       return true
     } else {
       return false
     }
   }
 
-  return { initBackgroundMode };
+  // Disable background mode once the sleep timer is over, so the app stops keeping itself awake in the background
+  const disableBackgroundMode = async () => {
+    if (Capacitor.getPlatform() !== "android") return
+    await BackgroundMode.disable()
+  }
+
+  return { initBackgroundMode, disableBackgroundMode };
 };
 
