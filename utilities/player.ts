@@ -24,6 +24,10 @@ export const stepVolume = (volume: number, step: number): number =>
 // live stream media ids from CarPlay / Android Auto are "live:<station slug>" (see MediaIds in wnyc-auto)
 const LIVE_MEDIA_ID_PREFIX = "live:"
 
+// the media id the car lists a station's live stream under, so CarPlay / Android Auto can tell it is playing
+export const liveMediaId = (station: Episode): string | undefined =>
+  station?.slug ? LIVE_MEDIA_ID_PREFIX + station.slug : undefined
+
 // metadata the native player sends when playback started natively (CarPlay, Android Auto, Google Assistant)
 export interface AutoPlayData {
   mediaId?: string

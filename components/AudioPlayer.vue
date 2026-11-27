@@ -37,6 +37,7 @@ import {
   getStreamUrl,
   isKnownDuration,
   buildAutoPlayEpisode,
+  liveMediaId,
 } from "~/utilities/player"
 import { useContinuousPlay } from "~/composables/useContinuousPlay"
 import { usePlaylistQueue } from "~/composables/usePlaylistQueue"
@@ -248,6 +249,7 @@ const switchEpisode = async (val) => {
         url: getConfiguredAudioUrl(val),
         enableCommandCenter: true,
         enableCommandCenterSeek: !isLiveStream.value,
+        mediaId: isLiveStream.value ? liveMediaId(val) : undefined,
       })
     } catch (error) {
       // e.g. the browser blocked autoplay, or the url can't be played

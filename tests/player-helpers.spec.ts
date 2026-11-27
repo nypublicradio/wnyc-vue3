@@ -4,6 +4,7 @@ import {
   getStreamUrl,
   isKnownDuration,
   isSameLiveStation,
+  liveMediaId,
   stepVolume,
 } from '~/utilities/player'
 
@@ -42,6 +43,13 @@ describe('player helpers', () => {
     expect(stepVolume(1, 0.1)).toBe(1)
     expect(stepVolume(0.05, -0.1)).toBe(0)
     expect(stepVolume(0, -0.1)).toBe(0)
+  })
+
+  it('names a live station the way the car does, so the car can tell it is playing', () => {
+    const mediaId = liveMediaId({ slug: 'wnyc-fm939', hls: 'https://example.org/fm939.m3u8' })
+    expect(mediaId).toBe('live:wnyc-fm939')
+    expect(buildAutoPlayEpisode({ mediaId, isLive: true }).slug).toBe('wnyc-fm939')
+    expect(liveMediaId({ hls: 'https://example.org/fm939.m3u8' })).toBeUndefined()
   })
 
   describe('an item started from the car', () => {
